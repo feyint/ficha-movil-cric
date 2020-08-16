@@ -17,11 +17,11 @@ export default class App extends Component {
     this.state = {
       localizationKey: 'es-CO',
     };
+    console.log('test');
   }
 
   render() {
     let storeApp = Store();
-
     return (
       <Provider store={storeApp}>
         <Root>
