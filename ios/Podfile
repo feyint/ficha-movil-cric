@@ -3,12 +3,12 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 
 platform :ios, '10.0'
 
-target 'cotizadorprestamos' do
+target 'ficha_familiar_movil' do
   config = use_native_modules!
 
   use_react_native!(:path => config["reactNativePath"])
 
-  target 'cotizadorprestamosTests' do
+  target 'ficha_familiar_movilTests' do
     inherit! :complete
     # Pods for testing
   end
@@ -20,5 +20,14 @@ target 'cotizadorprestamos' do
   use_flipper!
   post_install do |installer|
     flipper_post_install(installer)
+  end
+end
+
+target 'ficha_familiar_movil-tvOS' do
+  # Pods for ficha_familiar_movil-tvOS
+
+  target 'ficha_familiar_movil-tvOSTests' do
+    inherit! :search_paths
+    # Pods for testing
   end
 end
