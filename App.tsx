@@ -4,33 +4,29 @@ import {Provider} from 'react-redux';
 import 'react-native-gesture-handler';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import {Root} from 'native-base';
-//TODO POR DEFINIR ROOTEO EN BASE A TEMA
-//TODO POR DEFINIR nativebase tema generico
-import {LoginScreen} from './src/modules/auth/screens/';
+import {Provider as PaperProvider} from 'react-native-paper';
+import {LoginScreen} from './src/modules/auth/screens';
+import {theme} from './src/core/style/theme';
 
 const Stack = createStackNavigator();
 
 export default class App extends Component {
-  constructor() {
-    super();
-    this.state = {
-      localizationKey: 'es-CO',
-    };
-  }
-
   render() {
     let storeApp = Store();
 
     return (
       <Provider store={storeApp}>
-        <Root>
+        <PaperProvider theme={theme}>
           <NavigationContainer>
             <Stack.Navigator initialRouteName="Login">
-              <Stack.Screen name="Login" component={LoginScreen} />
+              <Stack.Screen
+                name="Iniciar Sesión"
+                component={LoginScreen}
+                options={{headerShown: false}}
+              />
             </Stack.Navigator>
           </NavigationContainer>
-        </Root>
+        </PaperProvider>
       </Provider>
     );
   }
