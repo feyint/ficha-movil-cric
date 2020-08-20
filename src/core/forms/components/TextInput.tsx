@@ -20,13 +20,6 @@ export default class TextInputBase extends Component<any, any> {
       rules: [],
     };
   }
-
-  componentWillMount() {
-    if (this.props.rules) {
-      this.setState({rules: MergeRules(this.props.rules)});
-    }
-  }
-
   render() {
     return (
       <View>

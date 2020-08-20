@@ -46,7 +46,6 @@ export default function LoginForm(props) {
         placeholder="Usuario"
         rules={rules.username}
       />
-      <BButton mode="contained" value="iniciar sesión" onPress={() => save} />
     </View>
   );
 }
