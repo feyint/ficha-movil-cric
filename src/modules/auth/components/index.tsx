@@ -1,2 +1,2 @@
 export {default as LoginForm} from './LoginForm';
-export {default as BasicExample} from './LoginForm2';
+export {default as Form} from './Form';

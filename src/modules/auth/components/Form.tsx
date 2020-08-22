@@ -1,59 +1,67 @@
 import * as React from 'react';
-import {View, StyleSheet} from 'react-native';
+import {Text, View, StyleSheet} from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {yupResolver} from '@hookform/resolvers';
 import * as yup from 'yup';
-import {BButton, BTextInput} from '../../../core/components';
-import {useNavigation} from '@react-navigation/native';
+import {BButton} from '../../../core/components';
+import {HelperText, TextInput} from 'react-native-paper';
 const schemaForm = yup.object().shape({
   username: yup.string().required(),
   password: yup.string().required(),
 });
 export default () => {
-  const navigation = useNavigation();
-  const {handleSubmit, control, errors} = useForm({
+  const {register, setValue, handleSubmit, control, errors} = useForm({
     resolver: yupResolver(schemaForm),
   });
   const onSubmit = (data: any) => {
     console.log(data);
-    navigation.navigate('MenuHome');
   };
-  const onChange = (arg: any) => {
+
+  const onChange = (arg) => {
     return {
       value: arg.nativeEvent.text,
     };
   };
+
   return (
     <KeyboardAwareScrollView>
       <View style={styles.container}>
         <Controller
           control={control}
           render={({onChange, onBlur, value}) => (
-            <BTextInput
+            <TextInput
+              mode="outlined"
               label="Usuario"
               onBlur={onBlur}
-              error={errors.username}
-              onChange={(value) => onChange(value)}
+              onChangeText={(value) => onChange(value)}
               value={value}
             />
           )}
           name="username"
         />
+        {errors.username ? (
+          <HelperText type="error">Campo obligatorio</HelperText>
+        ) : null}
         <Controller
           control={control}
           render={({onChange, onBlur, value}) => (
-            <BTextInput
+            <TextInput
               secureTextEntry={true}
+              mode="outlined"
+              style={styles.inputt}
               label="Contraseña"
               onBlur={onBlur}
-              error={errors.password}
-              onChange={(value) => onChange(value)}
+              onChangeText={(value) => onChange(value)}
               value={value}
             />
           )}
           name="password"
         />
+        {errors.password ? (
+          <HelperText type="error">Campo obligatorio</HelperText>
+        ) : null}
+
         <View>
           <BButton value="Iniciar Sesión" onPress={handleSubmit(onSubmit)} />
         </View>
@@ -73,5 +81,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 8,
+  },
+  inputt: {
   },
 });

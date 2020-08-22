@@ -12,7 +12,7 @@ export default class BButton extends Component<Props, any> {
       <Button
         style={[styles.button]}
         labelStyle={styles.text}
-        mode={this.props.mode ? this.props.mode : 'outlined'}
+        mode={this.props.mode ? this.props.mode : 'contained'}
         onPress={() => this.props.onPress()}>
         {this.props.value}
       </Button>
