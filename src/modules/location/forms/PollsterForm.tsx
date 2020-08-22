@@ -9,6 +9,7 @@ import {useNavigation} from '@react-navigation/native';
 const schemaForm = yup.object().shape({
   username: yup.string().required(),
   password: yup.string().required(),
+  identification: yup.string().required(),
 });
 export default () => {
   const navigation = useNavigation();
@@ -31,7 +32,7 @@ export default () => {
           control={control}
           render={({onChange, onBlur, value}) => (
             <BTextInput
-              label="Usuario"
+              label="Nombres"
               onBlur={onBlur}
               error={errors.username}
               onChange={(value) => onChange(value)}
@@ -44,8 +45,7 @@ export default () => {
           control={control}
           render={({onChange, onBlur, value}) => (
             <BTextInput
-              secureTextEntry={true}
-              label="Contraseña"
+              label="Apellidos"
               onBlur={onBlur}
               error={errors.password}
               onChange={(value) => onChange(value)}
@@ -54,8 +54,21 @@ export default () => {
           )}
           name="password"
         />
+        <Controller
+          control={control}
+          render={({onChange, onBlur, value}) => (
+            <BTextInput
+              label="Identificación"
+              onBlur={onBlur}
+              error={errors.password}
+              onChange={(value) => onChange(value)}
+              value={value}
+            />
+          )}
+          name="identification"
+        />
         <View>
-          <BButton value="Iniciar Sesión" onPress={handleSubmit(onSubmit)} />
+          <BButton value="Guardar Cambios" onPress={handleSubmit(onSubmit)} />
         </View>
       </View>
     </KeyboardAwareScrollView>

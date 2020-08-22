@@ -10,6 +10,8 @@ target 'ficha_familiar_movil' do
 
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
 
+  pod 'RealmJS', :path => '../node_modules/realm'
+
   target 'ficha_familiar_movilTests' do
     inherit! :complete
     # Pods for testing

@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
 import {View} from 'react-native';
-import {BButton, BHeader} from '../../../core/components';
+import {BButton} from '../../../core/components';
 //import {LoginForm} from '../components';
 import {NavigationProp} from '@react-navigation/native';
+import {Appbar} from 'react-native-paper';
 
 interface FormData {
   navigation: NavigationProp<any>;
@@ -12,9 +13,11 @@ class HomeScreen extends Component<any, any> {
   render() {
     return (
       <View>
-        <BHeader>Pagina de incio</BHeader>
+        <Appbar.Header>
+          <Appbar.Content title="Inicio" subtitle="ficha familiar" />
+        </Appbar.Header>
         <BButton
-          value="Crear Nueva Vivienda"
+          value="Crear Nueva"
           mode="contained"
           onPress={() => this.goHomeLocation()}
         />

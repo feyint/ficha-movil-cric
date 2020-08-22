@@ -1,34 +1,13 @@
-import React, {Component} from 'react';
+import * as React from 'react';
 import {View} from 'react-native';
-import {BButton, BHeader, BTextInput} from '../../../core/components';
 import {LoginForm} from '../components';
-import {NavigationProp} from '@react-navigation/native';
+import {BHeader} from '../../../core/components';
 
-type FormData = {
-  username: string;
-  password: string;
-  navigation: NavigationProp<any>;
+export default () => {
+  return (
+    <View>
+      <BHeader>Ficha Familiar</BHeader>
+      <LoginForm />
+    </View>
+  );
 };
-class LoginScreen extends Component<FormData, any> {
-  constructor(props: FormData) {
-    super(props);
-    // constructor stuff
-  }
-  render() {
-    return (
-      <View>
-        <BHeader>Iniciar Sesión</BHeader>
-        <LoginForm />
-        <BButton
-          mode="contained"
-          value="iniciar sesión"
-          onPress={() => this.doLogin()}
-        />
-      </View>
-    );
-  }
-  doLogin() {
-    this.props.navigation.navigate('MenuHome');
-  }
-}
-export default LoginScreen;

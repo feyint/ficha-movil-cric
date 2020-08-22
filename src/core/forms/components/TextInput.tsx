@@ -3,7 +3,7 @@ import {StyleSheet, View} from 'react-native';
 import {Controller} from 'react-hook-form';
 import {MergeRules} from '../rules';
 import {BTextInput} from '../../components';
-
+// TODO AJUSTAR ESTO POR AHORA NO ESTA IMPLEMENTADO
 interface Props {
   form: object; // Formulario en que se pinta el control
   name: string; // Nombre del campo en el Formulario

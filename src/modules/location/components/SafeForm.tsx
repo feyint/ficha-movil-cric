@@ -1,5 +1,5 @@
 import React, {Fragment} from 'react';
-import {BButton} from '../../../../core/components';
+import {BButton} from '../../../core/components';
 
 export interface SafeFormProps {}
 
