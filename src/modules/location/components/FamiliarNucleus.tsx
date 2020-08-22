@@ -1,7 +1,7 @@
 import {Fragment} from 'react';
 import {View} from 'react-native';
 import React from 'react';
-import BNumberInput from '../../../../core/components/BNumberInput';
+import BNumberInput from '../../../core/components/BNumberInput';
 
 export interface FamiliarNucleusProps {}
 

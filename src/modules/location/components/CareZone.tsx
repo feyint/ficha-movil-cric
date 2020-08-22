@@ -1,6 +1,6 @@
 import React, {Fragment} from 'react';
 import {View} from 'react-native';
-import {BTextInput} from '../../../../core/components';
+import {BTextInput} from '../../../core/components';
 
 export interface CareZoneProps {}
 
