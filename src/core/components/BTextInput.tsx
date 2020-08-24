@@ -16,9 +16,9 @@ interface Props {
   onBlur?: any;
   keyboardType?: any;
   secureTextEntry?: boolean;
+  disabled?: boolean;
 }
 export default class BTextInput extends Component<Props, State> {
-  state = {value: this.props.value ? this.props.value : ''};
   render() {
     return (
       <View>
@@ -29,6 +29,7 @@ export default class BTextInput extends Component<Props, State> {
           onBlur={this.props.onBlur}
           onChangeText={(text) => this.props.onChange(text)}
           value={this.props.value}
+          disabled={this.props.disabled}
         />
         {this.props.error ? (
           <HelperText type="error">

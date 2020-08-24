@@ -6,59 +6,69 @@ import {yupResolver} from '@hookform/resolvers';
 import * as yup from 'yup';
 import {BButton, BTextInput} from '../../../core/components';
 import {useNavigation} from '@react-navigation/native';
+import {connect} from 'react-redux';
+import {authAction} from '../state/actions';
+import {Snackbar} from 'react-native-paper';
+
 const schemaForm = yup.object().shape({
   username: yup.string().required(),
   password: yup.string().required(),
 });
-export default () => {
+const _LoginForm = (props) => {
   const navigation = useNavigation();
   const {handleSubmit, control, errors} = useForm({
     resolver: yupResolver(schemaForm),
   });
+  const [visible, setVisible] = React.useState(false);
   const onSubmit = (data: any) => {
-    console.log(data);
-    navigation.navigate('MenuHome');
+    const res = props.authAction(data);
+    if (res) {
+      navigation.navigate('MenuHome');
+    } else {
+      setVisible(!visible);
+    }
   };
-  const onChange = (arg: any) => {
-    return {
-      value: arg.nativeEvent.text,
-    };
-  };
+  const onDismissSnackBar = () => setVisible(false);
   return (
-    <KeyboardAwareScrollView>
-      <View style={styles.container}>
-        <Controller
-          control={control}
-          render={({onChange, onBlur, value}) => (
-            <BTextInput
-              label="Usuario"
-              onBlur={onBlur}
-              error={errors.username}
-              onChange={(value) => onChange(value)}
-              value={value}
-            />
-          )}
-          name="username"
-        />
-        <Controller
-          control={control}
-          render={({onChange, onBlur, value}) => (
-            <BTextInput
-              secureTextEntry={true}
-              label="Contraseña"
-              onBlur={onBlur}
-              error={errors.password}
-              onChange={(value) => onChange(value)}
-              value={value}
-            />
-          )}
-          name="password"
-        />
-        <View>
-          <BButton value="Iniciar Sesión" onPress={handleSubmit(onSubmit)} />
+    <View>
+      <KeyboardAwareScrollView>
+        <View style={styles.container}>
+          <Controller
+            control={control}
+            render={({onChange, onBlur, value}) => (
+              <BTextInput
+                label="Usuario"
+                onBlur={onBlur}
+                error={errors.username}
+                onChange={(value) => onChange(value)}
+                value={value}
+              />
+            )}
+            name="username"
+          />
+          <Controller
+            control={control}
+            render={({onChange, onBlur, value}) => (
+              <BTextInput
+                secureTextEntry={true}
+                label="Contraseña"
+                onBlur={onBlur}
+                error={errors.password}
+                onChange={(value) => onChange(value)}
+                value={value}
+              />
+            )}
+            name="password"
+          />
+          <View>
+            <BButton value="Iniciar Sesión" onPress={handleSubmit(onSubmit)} />
+          </View>
         </View>
-      </View>
-    </KeyboardAwareScrollView>
+      </KeyboardAwareScrollView>
+      <Snackbar duration={3000} visible={visible} onDismiss={onDismissSnackBar}>
+        Usuario o contraseña incorrecta
+      </Snackbar>
+    </View>
   );
 };
 
@@ -75,3 +85,7 @@ const styles = StyleSheet.create({
     padding: 8,
   },
 });
+const mapDispatchToProps = {
+  authAction,
+};
+export default connect(null, mapDispatchToProps)(_LoginForm);
