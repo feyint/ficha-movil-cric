@@ -25,7 +25,7 @@ class HomeScreen extends Component<any, any> {
     );
   }
   goHomeLocation() {
-    this.props.navigation.navigate('Ubicacion de la vivienda');
+    this.props.navigation.navigate('ManageHousingScreen');
   }
 }
 

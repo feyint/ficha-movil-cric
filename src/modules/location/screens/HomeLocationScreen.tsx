@@ -9,12 +9,14 @@ interface Props {
   navigation: NavigationProp<any>;
 }
 class HomeLocationScreen extends Component<Props, any> {
-  _goBack() {}
+  _goBack() {
+    this.props.navigation.goBack();
+  }
   render() {
     return (
       <View>
         <Appbar.Header>
-          <Appbar.BackAction onPress={() => this._goBack} />
+          <Appbar.BackAction onPress={() => this._goBack()} />
           <Appbar.Content title="Nueva Ficha Familiar" />
         </Appbar.Header>
         <BHeader>1. Ubicacion de la vivienda</BHeader>
