@@ -4,9 +4,10 @@ import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {yupResolver} from '@hookform/resolvers';
 import * as yup from 'yup';
-import {BButton, BTextInput, BPicker} from '../../../core/components';
+import {BButton, BTextInput, BPicker, AlertBox} from '../../../core/components';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
+import BNumberInput from '../../../core/components/BNumberInput';
 const schemaForm = yup.object().shape({
   firstname: yup.string().required(),
   lastname: yup.string().required(),
@@ -88,7 +89,7 @@ const _PollsterForm = (user) => {
         <Controller
           control={control}
           render={({onChange, onBlur, value}) => (
-            <BTextInput
+            <BNumberInput
               label="Identificación"
               onBlur={onBlur}
               error={errors.identification}
@@ -99,7 +100,7 @@ const _PollsterForm = (user) => {
           name="identification"
         />
         <View>
-          <BButton value="Guardar Cambios" onPress={handleSubmit(onSubmit)} />
+          <AlertBox value="Guardar Cambios" onPress={handleSubmit(onSubmit)} />
         </View>
       </View>
     </KeyboardAwareScrollView>
