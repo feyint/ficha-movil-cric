@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -8,6 +8,8 @@ import { BButton, BTextInput, BPicker } from '../../../core/components';
 import { useNavigation } from '@react-navigation/native';
 
 import { useSelector, useDispatch } from 'react-redux';
+
+import { allServices } from "../../../providers/DataBaseProvider";
 
 const schemaForm = yup.object().shape({
   housecode: yup.string().required(),
@@ -25,13 +27,15 @@ const _HouseForm = (props: any) => {
 
   console.log('catalogsHouse: ', catalogsHouse);
 
+  useEffect(() => {
+    console.log('Init House');
+    allServices().then((response) => {
+      console.log('Response BD: ', JSON.stringify(response));
+    });
+  }, []);
+
   const { handleSubmit, control, errors, setValue } = useForm({
     resolver: yupResolver(schemaForm),
-    defaultValues: {
-      housecode: '',
-      roofmaterial: '',
-      floormaterial: '',
-    },
   });
 
   const roofmaterials = [
@@ -62,7 +66,7 @@ const _HouseForm = (props: any) => {
               disabled={false}
               onBlur={onBlur}
               error={errors.housecode}
-              onChange={(value) => onChange(value)}
+              onChange={(value: any) => onChange(value)}
               value={value}
             />
           )}
@@ -77,7 +81,7 @@ const _HouseForm = (props: any) => {
               enabled={true}
               onBlur={onBlur}
               error={errors.roofmaterial}
-              onChange={(value) => {
+              onChange={(value: any) => {
                 onChange(value);
               }}
               value={value}
@@ -91,13 +95,12 @@ const _HouseForm = (props: any) => {
           control={control}
           render={({ onChange, onBlur, value }) => (
             <BPicker
-              style={styles.input}
               label="Material Piso"
               prompt="Seleccione una opción"
               enabled={true}
               onBlur={onBlur}
               error={errors.floormaterial}
-              onChange={(value) => {
+              onChange={(value: any) => {
                 onChange(value);
               }}
               value={value}

@@ -3,6 +3,7 @@ import {
     CATALOGS_HOUSE
 } from './actions';
 
+
 // TODO traer de la base de datos
 const CATALOGSHOUSEBD = [
     { 'Type': 1 },
