@@ -24,9 +24,10 @@ class ManageHousingScreen extends Component<Props, any> {
           <List.Item
             title="Ubicación"
             left={() => <List.Icon icon="map-marker" />}
+            onPress={() => this.goHomeLocation()}
           />
           <List.Item
-            onPress={() => this.goHomeLocation()}
+            onPress={() => this.goHouseMenuScreen()}
             title="Vivienda"
             left={() => <List.Icon icon="home" />}
           />
@@ -38,8 +39,11 @@ class ManageHousingScreen extends Component<Props, any> {
       </View>
     );
   }
-  goHomeLocation() {
+  goHouseMenuScreen() {
     this.props.navigation.navigate('HouseMenuScreen');
+  }
+  goHomeLocation() {
+    this.props.navigation.navigate('HomeLocationScreen');
   }
 }
 export default ManageHousingScreen;
