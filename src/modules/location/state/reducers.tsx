@@ -1,28 +1,20 @@
 
 import {
-    CATALOGS_HOUSE
+    ActionType
 } from './actions';
 
-
-// TODO traer de la base de datos
-const CATALOGSHOUSEBD = [
-    { 'Type': 1 },
-    { 'Type': 2 },
-    { 'Type': 3 },
-];
-
 const initialState = {
-    availableCatalogsHouse: CATALOGSHOUSEBD
+    availableCatalogsHouse: []
 };
 
 export default (state = initialState, action: any) => {
     switch (action.type) {
-        case CATALOGS_HOUSE:
+        case ActionType.SET_CATALOGS:
             return {
                 ...state,
-                availableCatalogsHouse: state.availableCatalogsHouse
+                availableCatalogsHouse: action.data
             };
-
+        default:
+            return state;
     }
-    return state;
 };

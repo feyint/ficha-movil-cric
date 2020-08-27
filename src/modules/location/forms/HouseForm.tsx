@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -6,10 +6,8 @@ import { yupResolver } from '@hookform/resolvers';
 import * as yup from 'yup';
 import { BButton, BTextInput, BPicker } from '../../../core/components';
 import { useNavigation } from '@react-navigation/native';
-
 import { useSelector, useDispatch } from 'react-redux';
-
-import { allServices } from "../../../providers/DataBaseProvider";
+import * as catalogsAction from "../../location/state/actions";
 
 const schemaForm = yup.object().shape({
   housecode: yup.string().required(),
@@ -19,20 +17,12 @@ const schemaForm = yup.object().shape({
 
 const _HouseForm = (props: any) => {
 
-  console.log('HouseForm props: ', props);
-
   const navigation = useNavigation();
-
-  const catalogsHouse = useSelector((state: any) => state.location.availableCatalogsHouse);
-
-  console.log('catalogsHouse: ', catalogsHouse);
+  const catalogsHouse = useSelector(state => state);
 
   useEffect(() => {
-    console.log('Init House');
-    allServices().then((response) => {
-      console.log('Response BD: ', JSON.stringify(response));
-    });
-  }, []);
+    console.log('catalogsHouse: ', catalogsHouse)
+  }, [])
 
   const { handleSubmit, control, errors, setValue } = useForm({
     resolver: yupResolver(schemaForm),
@@ -49,6 +39,7 @@ const _HouseForm = (props: any) => {
     { label: 'Semento', value: '2' },
     { label: 'Baldosa', value: '3' },
   ];
+
 
   const onSubmit = (data: any) => {
     console.log(data);
@@ -116,6 +107,7 @@ const _HouseForm = (props: any) => {
       </View>
     </KeyboardAwareScrollView>
   );
+
 };
 
 const styles = StyleSheet.create({
@@ -130,4 +122,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default _HouseForm;
+export default (_HouseForm);

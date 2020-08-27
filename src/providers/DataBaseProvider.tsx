@@ -43,7 +43,7 @@ const FVCCONVIVSCHEMA = {
   },
 };
 
-export const allServices = () => new Promise((resolve, reject) => {
+export const allCatalogs = () => new Promise((resolve, reject) => {
   Realm.open({
     schema: [FVCCONVIVSCHEMA],
     schemaVersion: 1,
@@ -63,7 +63,10 @@ export default class DataBaseProvider {
       schema: [UserSchema, FNCTIPIDENSCHEMA, FVBENCUESSCHEMA, FVCCONVIVSCHEMA],
     }).then((realm) => {
       realm.write(() => {
-        
+
+        let allCatalogs = realm.objects('FVCCONVIV');
+        realm.delete(allCatalogs); // Deletes
+
         realm.create('FVCCONVIV', {ID:1,	CODIGO:'1', TIPO: 'TENENCIA VIVIENDA', NOMBRE:'PROPIA'} );
         realm.create('FVCCONVIV', {ID:2,	CODIGO:'1', TIPO: 'TENENCIA VIVIENDA', NOMBRE:'ARRIENDO'} );
         realm.create('FVCCONVIV', {ID:3,	CODIGO:'1', TIPO: 'TENENCIA VIVIENDA', NOMBRE:'CASA FAMILIAR'} );
