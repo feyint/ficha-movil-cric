@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {HelperText, TextInput} from 'react-native-paper';
-import {View} from 'react-native';
+import {View, Alert} from 'react-native';
 
 interface State {
   value: string;
@@ -27,11 +27,14 @@ export default class BNumberInput extends Component<any, State> {
           onFocus={() => this.focus}
           onBlur={() => this.blur}
           mode="outlined"
-          //Aqui modifique el valor que se le envia al value a traves de props 
-          //onChangeText={() => this.props.value}
+          //Aqui modifique el valor que se le envia al value a traves de props
+
           keyboardType="numeric"
           onChangeText={(text) => this.onChanged(text)}
+          //onChangeText={(text) => this.props.onChange(text)}
+          //value={this.props.onChange(this.state.myNumber)}
           value={this.state.myNumber}
+          {...console.log(this.props.value)}
         />
         <HelperText type="error" visible={this.hasErrors()}>
           {this.props.errorText}
@@ -39,6 +42,7 @@ export default class BNumberInput extends Component<any, State> {
       </View>
     );
   }
+
   onChanged(text: any) {
     let newText = '';
     let numbers = '0123456789';
@@ -47,11 +51,13 @@ export default class BNumberInput extends Component<any, State> {
       if (numbers.indexOf(text[i]) > -1) {
         newText = newText + text[i];
       } else {
-        // your call back function
+        //Alert.alert('Porfavor ingrese solo caracteres numericos');
       }
     }
     this.setState({myNumber: newText});
+    this.props.onChange(text);
   }
+
   changetext(text: string) {
     //No me acepta numericos
     this.setState({value: text});
