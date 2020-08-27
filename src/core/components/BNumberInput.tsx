@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {HelperText, TextInput} from 'react-native-paper';
-import {View, Alert} from 'react-native';
+import {View} from 'react-native';
 
 interface State {
   value: string;

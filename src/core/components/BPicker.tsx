@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {HelperText, TextInput} from 'react-native-paper';
+import {HelperText} from 'react-native-paper';
 import {View, StyleSheet} from 'react-native';
 import {Picker} from '@react-native-community/picker';
 import {withTheme} from 'react-native-paper';
@@ -53,7 +53,7 @@ class BPicker extends Component<Props, State> {
         <View
           style={this.props.error ? styles.containerError : styles.container}>
           <Picker
-            mode="dialog"
+            mode="dropdown"
             prompt={this.props.prompt}
             enabled={this.props.enabled}
             selectedValue={this.state.selectedValue}
@@ -78,6 +78,7 @@ class BPicker extends Component<Props, State> {
 }
 const styles = StyleSheet.create({
   container: {
+    marginBottom: 5,
     color: 'black',
     borderRadius: 5,
     borderWidth: 1,

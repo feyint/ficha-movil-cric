@@ -1,10 +1,9 @@
 import React, {Component} from 'react';
-import {BHeader} from '../../../core/components';
-import {FamiliarNucleus, Department, SafeForm, CareZone} from '../components';
+//import {BHeader} from '../../../core/components';
 import {View} from 'react-native';
 import {Appbar} from 'react-native-paper';
 import {List} from 'react-native-paper';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {NavigationProp} from '@react-navigation/native';
 
 interface Props {
   navigation: NavigationProp<any>;
