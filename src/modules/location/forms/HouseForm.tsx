@@ -8,6 +8,8 @@ import { BButton, BTextInput, BPicker } from '../../../core/components';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
 import * as catalogsAction from "../../location/state/actions";
+import * as catalogutilities from "../../../core/utils/catalog";
+import { Catalog } from '../state/types';
 
 const schemaForm = yup.object().shape({
   housecode: yup.string().required(),
@@ -18,21 +20,18 @@ const schemaForm = yup.object().shape({
 const _HouseForm = (props: any) => {
 
   const navigation = useNavigation();
-  const catalogsHouse = useSelector(state => state);
+  const catalogs: Catalog[] = useSelector((state: any) => state.location.availableCatalogsHouse);
+  const [tenurehouse, setTenurehouse] = useState([]);
+  const [roofmaterials, setRoofmaterials] = useState([]);
 
   useEffect(() => {
-    console.log('catalogsHouse: ', catalogsHouse)
+    setTenurehouse(catalogutilities.getCatalog(catalogs, '1'));
+    setRoofmaterials(catalogutilities.getCatalog(catalogs, '2'));
   }, [])
 
   const { handleSubmit, control, errors, setValue } = useForm({
     resolver: yupResolver(schemaForm),
   });
-
-  const roofmaterials = [
-    { label: 'Teja', value: '1' },
-    { label: 'Eternit', value: '2' },
-    { label: 'Zinc', value: '3' },
-  ];
 
   const floormaterials = [
     { label: 'Tierra', value: '1' },
@@ -97,6 +96,25 @@ const _HouseForm = (props: any) => {
               value={value}
               selectedValue={value}
               items={floormaterials}
+            />
+          )}
+          name="floormaterial"
+        />
+        <Controller
+          control={control}
+          render={({ onChange, onBlur, value }) => (
+            <BPicker
+              label="Tenencia de la vivienda"
+              prompt="Seleccione una opción"
+              enabled={true}
+              onBlur={onBlur}
+              error={errors.floormaterial}
+              onChange={(value: any) => {
+                onChange(value);
+              }}
+              value={value}
+              selectedValue={value}
+              items={tenurehouse}
             />
           )}
           name="floormaterial"

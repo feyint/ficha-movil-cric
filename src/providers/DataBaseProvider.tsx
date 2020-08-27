@@ -49,6 +49,7 @@ export const allCatalogs = () => new Promise((resolve, reject) => {
     schemaVersion: 1,
   }).then(realm => {
     let servicios = realm.objects('FVCCONVIV');
+    console.log('Response realm: ', servicios);
     resolve(servicios);
   }).catch((error) => {
     console.log('Error listando');

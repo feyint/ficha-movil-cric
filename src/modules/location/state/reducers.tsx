@@ -8,6 +8,8 @@ const initialState = {
 };
 
 export default (state = initialState, action: any) => {
+    console.log('Action type: ', action.type);
+    console.log('Action data: ', action.data);
     switch (action.type) {
         case ActionType.SET_CATALOGS:
             return {
