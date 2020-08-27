@@ -1,7 +1,7 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import {LoginScreen, HomeScreen} from '../modules/auth/screens';
-import {LocationScreen, HomeLocationScreen, PollsterScreen, ManageHousingScreen, HousingStatusScreen} from '../modules/location/screens';
+import {LocationScreen, HomeLocationScreen, PollsterScreen, ManageHousingScreen, HousingStatusScreen, HouseScreen} from '../modules/location/screens';
 import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
 import HouseMenuScreen from '../modules/housing/screens/HouseMenuScreen';
 
@@ -35,9 +35,9 @@ export const Dashboard = () => {
         options={{headerShown: false, title: 'Datos del encuestador'}}
       />
       <DashboardStack.Screen
-        component={HousingStatusScreen}
-        name="HousingStatusScreen"
-        options={{headerShown: false, title: 'Estado de la vivienda'}}
+        component={HouseScreen}
+        name="HouseScreen"
+        options={{headerShown: false, title: 'Datos de la vivienda'}}
       />
       <DashboardStack.Screen
         name="MenuHome"
