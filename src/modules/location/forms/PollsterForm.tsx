@@ -11,7 +11,7 @@ import BNumberInput from '../../../core/components/BNumberInput';
 const schemaForm = yup.object().shape({
   firstname: yup.string().required(),
   lastname: yup.string().required(),
-  identification: yup.string().required(),
+  identification: yup.number().required(),
   identificationType: yup.string().optional(),
 });
 //TODO añadir el Confirmación de guardar cambios

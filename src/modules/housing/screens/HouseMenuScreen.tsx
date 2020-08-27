@@ -46,6 +46,7 @@ class HouseMenuScreen extends Component<Props, any> {
   goPollsterScreen() {
     this.props.navigation.navigate('PollsterScreen');
   }
+
   goHousingStatusScreen() {
     this.props.navigation.navigate('HousingStatusScreen');
   }

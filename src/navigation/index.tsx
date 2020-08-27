@@ -1,7 +1,7 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import {LoginScreen, HomeScreen} from '../modules/auth/screens';
-import {LocationScreen, HomeLocationScreen, PollsterScreen, ManageHousingScreen, HouseScreen} from '../modules/location/screens';
+import {LocationScreen, HomeLocationScreen, PollsterScreen, ManageHousingScreen, HousingStatusScreen, HouseScreen} from '../modules/location/screens';
 import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
 import HouseMenuScreen from '../modules/housing/screens/HouseMenuScreen';
 
