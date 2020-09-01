@@ -1,7 +1,15 @@
 import Realm from 'realm';
-//    type PropertyType = string | 'bool' | 'int' | 'float' | 'double' | 'string' | 'data' | 'date' | 'list' | 'linkingObjects';
-const UserSchema = {
-  name: 'User',
+export enum DataBaseSchemas {
+  UserSchema = 'User',
+  FNCTIPIDENSCHEMA = 'FNCTIPIDEN',
+  FVBENCUESSCHEMA = 'FVBENCUESSCHEMA',
+  FVCCONVIVSCHEMA = 'FVCCONVIV',
+  FVCELEVIVSCHEMA = 'FVCELEVIV',
+  FUBUBIVIVSCHEMA = 'FUBUBIVIV',
+}
+export const schemaVersion = 1;
+export const UserSchema = {
+  name: DataBaseSchemas.UserSchema,
   properties: {
     userid: 'int',
     firstName: 'string',
@@ -12,8 +20,8 @@ const UserSchema = {
     identification: 'string',
   },
 };
-const FNCTIPIDENSCHEMA = {
-  name: 'FNCTIPIDEN',
+export const FNCTIPIDENSCHEMA = {
+  name: DataBaseSchemas.FNCTIPIDENSCHEMA,
   properties: {
     ID: 'int',
     CODIGO: 'string',
@@ -22,8 +30,8 @@ const FNCTIPIDENSCHEMA = {
     FECHA_CREACION: 'date',
   },
 };
-const FVBENCUESSCHEMA = {
-  name: 'FVBENCUES',
+export const FVBENCUESSCHEMA = {
+  name: DataBaseSchemas.FVBENCUESSCHEMA,
   properties: {
     ID: 'int',
     IDENTIFICACION: 'string',
@@ -33,52 +41,69 @@ const FVBENCUESSCHEMA = {
     FECHA_CREACION: 'date',
   },
 };
-const FVCCONVIVSCHEMA = {
-  name: 'FVCCONVIV',
+export const FVCCONVIVSCHEMA = {
+  name: DataBaseSchemas.FVCCONVIVSCHEMA,
   properties: {
     ID: 'int',
     CODIGO: 'string',
-    TIPO: 'string',
     NOMBRE: 'string',
+    FVCELEVIV_ID: 'int',
   },
 };
-
-export const allServices = () => new Promise((resolve, reject) => {
-  Realm.open({
-    schema: [FVCCONVIVSCHEMA],
-    schemaVersion: 1,
-  }).then(realm => {
-    let servicios = realm.objects('FVCCONVIV');
-    resolve(servicios);
-  }).catch((error) => {
-    console.log('Error listando');
-    reject(error);
-  });
-});
-
+export const FVCELEVIVSCHEMA = {
+  name: DataBaseSchemas.FVCELEVIVSCHEMA,
+  primaryKey: 'ID',
+  properties: {
+    ID: 'int',
+    CODIGO: 'string',
+    NOMBRE: 'string',
+    ESTADO: 'bool',
+  },
+};
+//type PropertyType = string | 'bool' | 'int' | 'float' | 'double' | 'string' | 'data' | 'date' | 'list' | 'linkingObjects';
+export const FUBUBIVIVSCHEMA = {
+  name: DataBaseSchemas.FUBUBIVIVSCHEMA,
+  properties: {
+    ID: 'int',
+    CODIGO: 'string',
+    DIRECCION: 'string',
+    COORDENADA_X: 'int',
+    COORDENADA_Y: 'int',
+    HUMO_CASA: 'bool',
+    NUM_NUCLEOS: 'int',
+    FECHA_ACTIVIDAD: 'date',
+    FECHA_CREACION: 'date',
+    ORIGEN_DATA: 'string',
+    USUARIO_DATA: 'string',
+    FUCBARVER_ID: 'int',
+    RESIDUO_BOR: 'string',
+    RESIDUO_PELIGROSO: 'string',
+    ANIMAL_VACUNADO: 'int',
+    ANIMAL_NOVACUNADO: 'int',
+    RIESGO: 'bool',
+    OBSERVACION: 'string',
+    FUCUNICUI_ID: 'int',
+    FVBENCUES_ID: 'int',
+    LUGAR_COCINA: 'string',
+    HUMO_DENTRO: 'string',
+    ACCESO_INTERNET: 'bool',
+    TOTAL_ANIMAL: 'int',
+  },
+};
 export default class DataBaseProvider {
   async open() {
     await Realm.open({
-      schemaVersion: 1,
-      schema: [UserSchema, FNCTIPIDENSCHEMA, FVBENCUESSCHEMA, FVCCONVIVSCHEMA],
+      schemaVersion: schemaVersion,
+      schema: [
+        UserSchema,
+        FNCTIPIDENSCHEMA,
+        FVBENCUESSCHEMA,
+        FVCCONVIVSCHEMA,
+        FVCELEVIVSCHEMA,
+        FUBUBIVIVSCHEMA,
+      ],
     }).then((realm) => {
       realm.write(() => {
-        
-        realm.create('FVCCONVIV', {ID:1,	CODIGO:'1', TIPO: 'TENENCIA VIVIENDA', NOMBRE:'PROPIA'} );
-        realm.create('FVCCONVIV', {ID:2,	CODIGO:'1', TIPO: 'TENENCIA VIVIENDA', NOMBRE:'ARRIENDO'} );
-        realm.create('FVCCONVIV', {ID:3,	CODIGO:'1', TIPO: 'TENENCIA VIVIENDA', NOMBRE:'CASA FAMILIAR'} );
-        realm.create('FVCCONVIV', {ID:4,	CODIGO:'1', TIPO: 'TENENCIA VIVIENDA', NOMBRE:'POSADA'} );
-        realm.create('FVCCONVIV', {ID:5,	CODIGO:'1', TIPO: 'TENENCIA VIVIENDA', NOMBRE:'COMPARTIDA'} );
-        realm.create('FVCCONVIV', {ID:6,	CODIGO:'2', TIPO: 'MATERIAL TECHO', NOMBRE:'TEJA'} );
-        realm.create('FVCCONVIV', {ID:7,	CODIGO:'2', TIPO: 'MATERIAL TECHO', NOMBRE:'ETERNIT'} );
-        realm.create('FVCCONVIV', {ID:8,	CODIGO:'2', TIPO: 'MATERIAL TECHO', NOMBRE:'ZINC'} );
-        realm.create('FVCCONVIV', {ID:9,	CODIGO:'2', TIPO: 'MATERIAL TECHO', NOMBRE:'PAJA'} );
-        realm.create('FVCCONVIV', {ID:10, CODIGO:'2', TIPO: 'MATERIAL TECHO', NOMBRE:'PALMA'} );
-        realm.create('FVCCONVIV', {ID:11, CODIGO:'2', TIPO: 'MATERIAL TECHO', NOMBRE:'CARTON'} );
-        realm.create('FVCCONVIV', {ID:12, CODIGO:'2', TIPO: 'MATERIAL TECHO', NOMBRE:'PLANCHA CEMENTO'} );
-        realm.create('FVCCONVIV', {ID:13, CODIGO:'2', TIPO: 'MATERIAL TECHO', NOMBRE:'CABUYA'} );
-        realm.create('FVCCONVIV', {ID:14, CODIGO:'2', TIPO: 'MATERIAL TECHO', NOMBRE:'CAPTUS'} );
-        
         realm.create('User', {
           userid: 1,
           firstName: 'Luis',
@@ -88,7 +113,49 @@ export default class DataBaseProvider {
           identificationType: 1,
           identification: '1061809552',
         });
+        realm.create('FUBUBIVIV', {
+          ID: 123,
+          CODIGO: 'CODVIV10001',
+          DIRECCION: 'Calle 34CN',
+          COORDENADA_X: 12345,
+          COORDENADA_Y: 12345,
+          HUMO_CASA: false,
+          NUM_NUCLEOS: 10,
+          FECHA_ACTIVIDAD: new Date(),
+          FECHA_CREACION: new Date(),
+          ORIGEN_DATA: 'string',
+          USUARIO_DATA: 'string',
+          FUCBARVER_ID: 1,
+          RESIDUO_BOR: 'string',
+          RESIDUO_PELIGROSO: 'string',
+          ANIMAL_VACUNADO: 1,
+          ANIMAL_NOVACUNADO: 1,
+          RIESGO: false,
+          OBSERVACION: 'string',
+          FUCUNICUI_ID: 1,
+          FVBENCUES_ID: 1,
+          LUGAR_COCINA: 'string',
+          HUMO_DENTRO: 'string',
+          ACCESO_INTERNET: true,
+          TOTAL_ANIMAL: 10,
+        });
       });
     });
+  }
+  async countEntity(entity: string) {
+    let count = await Realm.open({
+      schemaVersion: schemaVersion,
+      schema: [
+        FNCTIPIDENSCHEMA,
+        FVBENCUESSCHEMA,
+        FVCCONVIVSCHEMA,
+        FVCELEVIVSCHEMA,
+      ],
+    }).then((realm) => {
+      let count = realm.objects(entity).length;
+      realm.close();
+      return count;
+    });
+    return count;
   }
 }

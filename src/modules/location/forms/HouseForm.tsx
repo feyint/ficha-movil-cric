@@ -1,15 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
-import { useForm, Controller } from 'react-hook-form';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { yupResolver } from '@hookform/resolvers';
+import React, {useState, useEffect} from 'react';
+import {View, StyleSheet, Text} from 'react-native';
+import {useForm, Controller} from 'react-hook-form';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {yupResolver} from '@hookform/resolvers';
 import * as yup from 'yup';
-import { BButton, BTextInput, BPicker } from '../../../core/components';
-import { useNavigation } from '@react-navigation/native';
+import {BButton, BTextInput, BPicker} from '../../../core/components';
+import {useNavigation} from '@react-navigation/native';
 
-import { useSelector, useDispatch } from 'react-redux';
-
-import { allServices } from "../../../providers/DataBaseProvider";
+import {useSelector, useDispatch} from 'react-redux';
+import {SyncCatalogService} from '../../../services';
 
 const schemaForm = yup.object().shape({
   housecode: yup.string().required(),
@@ -18,36 +17,37 @@ const schemaForm = yup.object().shape({
 });
 
 const _HouseForm = (props: any) => {
-
   console.log('HouseForm props: ', props);
 
   const navigation = useNavigation();
-
-  const catalogsHouse = useSelector((state: any) => state.location.availableCatalogsHouse);
+  const syncCatalogService = new SyncCatalogService();
+  const catalogsHouse = useSelector(
+    (state: any) => state.location.availableCatalogsHouse,
+  );
 
   console.log('catalogsHouse: ', catalogsHouse);
 
   useEffect(() => {
     console.log('Init House');
-    allServices().then((response) => {
+    syncCatalogService.allServices().then((response) => {
       console.log('Response BD: ', JSON.stringify(response));
     });
   }, []);
 
-  const { handleSubmit, control, errors, setValue } = useForm({
+  const {handleSubmit, control, errors, setValue} = useForm({
     resolver: yupResolver(schemaForm),
   });
 
   const roofmaterials = [
-    { label: 'Teja', value: '1' },
-    { label: 'Eternit', value: '2' },
-    { label: 'Zinc', value: '3' },
+    {label: 'Teja', value: '1'},
+    {label: 'Eternit', value: '2'},
+    {label: 'Zinc', value: '3'},
   ];
 
   const floormaterials = [
-    { label: 'Tierra', value: '1' },
-    { label: 'Semento', value: '2' },
-    { label: 'Baldosa', value: '3' },
+    {label: 'Tierra', value: '1'},
+    {label: 'Semento', value: '2'},
+    {label: 'Baldosa', value: '3'},
   ];
 
   const onSubmit = (data: any) => {
@@ -60,7 +60,7 @@ const _HouseForm = (props: any) => {
       <View style={styles.container}>
         <Controller
           control={control}
-          render={({ onChange, onBlur, value }) => (
+          render={({onChange, onBlur, value}) => (
             <BTextInput
               label="Código vivienda"
               disabled={false}
@@ -74,7 +74,7 @@ const _HouseForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({ onChange, onBlur, value }) => (
+          render={({onChange, onBlur, value}) => (
             <BPicker
               label="Material Techo"
               prompt="Seleccione una opción"
@@ -93,7 +93,7 @@ const _HouseForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({ onChange, onBlur, value }) => (
+          render={({onChange, onBlur, value}) => (
             <BPicker
               label="Material Piso"
               prompt="Seleccione una opción"
@@ -111,7 +111,11 @@ const _HouseForm = (props: any) => {
           name="floormaterial"
         />
         <View>
-          <BButton value="Guardar Cambios" onPress={handleSubmit(onSubmit)} />
+          <BButton
+            color="primary"
+            value="Guardar Cambios"
+            onPress={handleSubmit(onSubmit)}
+          />
         </View>
       </View>
     </KeyboardAwareScrollView>
@@ -128,6 +132,5 @@ const styles = StyleSheet.create({
     padding: 8,
   },
 });
-
 
 export default _HouseForm;

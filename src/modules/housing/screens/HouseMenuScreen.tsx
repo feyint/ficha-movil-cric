@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
-import { BHeader } from '../../../core/components';
-import { FamiliarNucleus, Department, SafeForm, CareZone } from '../components';
-import { View } from 'react-native';
-import { Appbar } from 'react-native-paper';
-import { List } from 'react-native-paper';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
+import React, {Component} from 'react';
+import {BHeader} from '../../../core/components';
+import {FamiliarNucleus, Department, SafeForm, CareZone} from '../components';
+import {View} from 'react-native';
+import {Appbar} from 'react-native-paper';
+import {List} from 'react-native-paper';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
 
 interface Props {
   navigation: NavigationProp<any>;
@@ -26,15 +26,18 @@ class HouseMenuScreen extends Component<Props, any> {
             title="Datos del encuestador"
             left={() => <List.Icon icon="account" />}
           />
-          <List.Item title="Vivienda" 
+          <List.Item
+            title="Vivienda"
             onPress={() => this.goHouseScreen()}
-            left={() => <List.Icon icon="home" />} />
+            left={() => <List.Icon icon="home" />}
+          />
           <List.Item
             title="Estado de la vivienda"
             left={() => <List.Icon icon="home-alert" />}
           />
           <List.Item
             title="Condiciones de la vivienda"
+            onPress={() => this.goHouseContitionsScreen()}
             left={() => <List.Icon icon="home-heart" />}
           />
         </List.Section>
@@ -49,6 +52,9 @@ class HouseMenuScreen extends Component<Props, any> {
   }
   goHouseScreen() {
     this.props.navigation.navigate('HouseScreen');
+  }
+  goHouseContitionsScreen() {
+    this.props.navigation.navigate('HouseConditionsScreen');
   }
 }
 export default HouseMenuScreen;

@@ -3,5 +3,5 @@ import {SessionReducers} from '../modules/auth/state';
 import {LocationReducers} from '../modules/location/state';
 export default combineReducers({
   session: SessionReducers,
-  location: LocationReducers
+  location: LocationReducers,
 });

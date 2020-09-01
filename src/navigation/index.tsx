@@ -1,9 +1,21 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import {LoginScreen, HomeScreen} from '../modules/auth/screens';
-import {LocationScreen, HomeLocationScreen, PollsterScreen, ManageHousingScreen, HouseScreen} from '../modules/location/screens';
+import {
+  LocationScreen,
+  HomeLocationScreen,
+  PollsterScreen,
+  ManageHousingScreen,
+  HouseScreen,
+} from '../modules/location/screens';
 import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
-import HouseMenuScreen from '../modules/housing/screens/HouseMenuScreen';
+import {
+  HouseConditionsScreen,
+  HouseMenuScreen,
+} from '../modules/housing/screens';
+import {useTheme} from 'react-native-paper';
+import Icon from 'react-native-vector-icons/Ionicons';
+import {SyncScreen} from '../modules/sync/screens';
 
 const DashboardStack = createStackNavigator();
 export const Dashboard = () => {
@@ -30,6 +42,11 @@ export const Dashboard = () => {
         options={{headerShown: false, title: 'Administrar Vivienda'}}
       />
       <DashboardStack.Screen
+        component={HouseConditionsScreen}
+        name="HouseConditionsScreen"
+        options={{headerShown: false, title: 'Condiciones de la vivienda'}}
+      />
+      <DashboardStack.Screen
         component={PollsterScreen}
         name="PollsterScreen"
         options={{headerShown: false, title: 'Datos del encuestador'}}
@@ -54,12 +71,28 @@ export const Dashboard = () => {
 };
 const BottomTabs = createMaterialBottomTabNavigator();
 export const HomeTabs = () => {
+  const {colors} = useTheme();
   return (
     <BottomTabs.Navigator
-      style={{backgroundColor: '#00917B'}}
-      activeColor="white">
-      <BottomTabs.Screen name="Ficha Familiar" component={HomeScreen} />
-      <BottomTabs.Screen name="Sincronización" component={HomeScreen} />
+      activeColor={colors.secondaryFont}
+      inactiveColor={colors.primaryFont}
+      barStyle={{backgroundColor: colors.primary}}>
+      <BottomTabs.Screen
+        name="Ficha Familiar"
+        component={HomeScreen}
+        options={{
+          tabBarIcon: ({color}) => <Icon name="home" size={20} color={color} />,
+        }}
+      />
+      <BottomTabs.Screen
+        name="Sincronización"
+        component={SyncScreen}
+        options={{
+          tabBarIcon: ({color}) => (
+            <Icon name="sync-outline" size={20} color={color} />
+          ),
+        }}
+      />
     </BottomTabs.Navigator>
   );
 };

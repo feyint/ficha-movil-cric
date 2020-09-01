@@ -6,7 +6,7 @@ import {Provider as PaperProvider} from 'react-native-paper';
 import {theme} from './src/core/style/theme';
 import {Dashboard} from './src/navigation';
 import Store from './src/state/Store';
-import DataBaseProvider from './src/providers/DataBaseProvider';
+import {DataBaseProvider, HttpProvider} from './src/providers';
 
 export default class App extends Component {
   constructor(props: any) {
@@ -14,9 +14,10 @@ export default class App extends Component {
     //initialize a piece of state that we will also be persisting
     this.state = {realm: null};
   }
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const dbProvider: DataBaseProvider = new DataBaseProvider();
     dbProvider.open();
+    HttpProvider.setDefaultHeaders();
   }
   render() {
     let storeApp = Store();
