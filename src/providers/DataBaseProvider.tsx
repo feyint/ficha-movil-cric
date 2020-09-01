@@ -90,6 +90,24 @@ export const FUBUBIVIVSCHEMA = {
     TOTAL_ANIMAL: 'int',
   },
 };
+
+export const allCatalogs = () =>
+  new Promise((resolve, reject) => {
+    Realm.open({
+      schema: [FVCCONVIVSCHEMA],
+      schemaVersion: 1,
+    })
+      .then((realm) => {
+        let servicios = realm.objects('FVCCONVIV');
+        console.log('Response realm: ', servicios);
+        resolve(servicios);
+      })
+      .catch((error) => {
+        console.log('Error listando');
+        reject(error);
+      });
+  });
+
 export default class DataBaseProvider {
   async open() {
     await Realm.open({

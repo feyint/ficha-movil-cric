@@ -24,3 +24,10 @@ export type FUBUBIVIV = {
   ACCESO_INTERNET: string;
   TOTAL_ANIMAL: string;
 };
+
+export type Catalog = {
+  ID: number;
+  CODIGO: string;
+  TIPO: string;
+  NOMBRE: string;
+};

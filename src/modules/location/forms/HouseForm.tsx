@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
@@ -6,9 +6,10 @@ import {yupResolver} from '@hookform/resolvers';
 import * as yup from 'yup';
 import {BButton, BTextInput, BPicker} from '../../../core/components';
 import {useNavigation} from '@react-navigation/native';
-
 import {useSelector, useDispatch} from 'react-redux';
-import {SyncCatalogService} from '../../../services';
+import * as catalogsAction from '../../location/state/actions';
+import * as catalogutilities from '../../../core/utils/catalog';
+import {Catalog} from '../state/types';
 
 const schemaForm = yup.object().shape({
   housecode: yup.string().required(),
@@ -17,21 +18,16 @@ const schemaForm = yup.object().shape({
 });
 
 const _HouseForm = (props: any) => {
-  console.log('HouseForm props: ', props);
-
   const navigation = useNavigation();
-  const syncCatalogService = new SyncCatalogService();
-  const catalogsHouse = useSelector(
+  const catalogs: Catalog[] = useSelector(
     (state: any) => state.location.availableCatalogsHouse,
   );
-
-  console.log('catalogsHouse: ', catalogsHouse);
+  const [tenurehouse, setTenurehouse] = useState([]);
+  const [roofmaterials, setRoofmaterials] = useState([]);
 
   useEffect(() => {
-    console.log('Init House');
-    syncCatalogService.allServices().then((response) => {
-      console.log('Response BD: ', JSON.stringify(response));
-    });
+    setTenurehouse(catalogutilities.getCatalog(catalogs, '1'));
+    setRoofmaterials(catalogutilities.getCatalog(catalogs, '2'));
   }, []);
 
   const {handleSubmit, control, errors, setValue} = useForm({
@@ -106,6 +102,25 @@ const _HouseForm = (props: any) => {
               value={value}
               selectedValue={value}
               items={floormaterials}
+            />
+          )}
+          name="floormaterial"
+        />
+        <Controller
+          control={control}
+          render={({onChange, onBlur, value}) => (
+            <BPicker
+              label="Tenencia de la vivienda"
+              prompt="Seleccione una opción"
+              enabled={true}
+              onBlur={onBlur}
+              error={errors.floormaterial}
+              onChange={(value: any) => {
+                onChange(value);
+              }}
+              value={value}
+              selectedValue={value}
+              items={tenurehouse}
             />
           )}
           name="floormaterial"
