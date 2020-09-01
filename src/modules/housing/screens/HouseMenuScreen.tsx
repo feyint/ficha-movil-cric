@@ -26,7 +26,13 @@ class HouseMenuScreen extends Component<Props, any> {
             title="Datos del encuestador"
             left={() => <List.Icon icon="account" />}
           />
-          <List.Item title="Vivienda" left={() => <List.Icon icon="home" />} />
+
+          <List.Item
+            title="Vivienda"
+            onPress={() => this.goHouseScreen()}
+            left={() => <List.Icon icon="home" />}
+          />
+
           <List.Item
             onPress={() => this.goHousingStatusScreen()}
             title="Estado de la vivienda"
@@ -34,6 +40,7 @@ class HouseMenuScreen extends Component<Props, any> {
           />
           <List.Item
             title="Condiciones de la vivienda"
+            onPress={() => this.goHouseContitionsScreen()}
             left={() => <List.Icon icon="home-heart" />}
           />
         </List.Section>
@@ -49,6 +56,9 @@ class HouseMenuScreen extends Component<Props, any> {
 
   goHousingStatusScreen() {
     this.props.navigation.navigate('HousingStatusScreen');
+  }
+  goHouseContitionsScreen() {
+    this.props.navigation.navigate('HouseConditionsScreen');
   }
 }
 export default HouseMenuScreen;

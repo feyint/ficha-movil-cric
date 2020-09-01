@@ -63,7 +63,11 @@ const _LoginForm = (props) => {
             name="password"
           />
           <View>
-            <BButton value="Iniciar Sesión" onPress={handleSubmit(onSubmit)} />
+            <BButton
+              color="primary"
+              value="Iniciar Sesión"
+              onPress={handleSubmit(onSubmit)}
+            />
           </View>
         </View>
       </KeyboardAwareScrollView>
