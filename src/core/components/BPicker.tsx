@@ -15,7 +15,7 @@ interface Props {
   onBlur?: any;
   onChange?: any;
   theme: any;
-  enabled: boolean;
+  enabled?: boolean;
 }
 interface State {
   selectedValue: string;

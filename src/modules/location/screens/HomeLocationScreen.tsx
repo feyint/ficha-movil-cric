@@ -4,7 +4,7 @@ import {FamiliarNucleus, Department, SafeForm, CareZone} from '../components';
 import {View} from 'react-native';
 import {Appbar} from 'react-native-paper';
 import {NavigationProp} from '@react-navigation/native';
-import HomeLocationForm from '../forms/HomeLocationForm';
+// import HomeLocationForm from '../forms/HomeLocationForm';
 
 interface Props {
   navigation: NavigationProp<any>;
@@ -21,7 +21,7 @@ class HomeLocationScreen extends Component<Props, any> {
           <Appbar.Content title="Nueva Ficha Familiar" />
         </Appbar.Header>
         <BHeader>Ubicacion de la vivienda</BHeader>
-        <HomeLocationForm />
+        {/* <HomeLocationForm /> */}
       </View>
     );
   }

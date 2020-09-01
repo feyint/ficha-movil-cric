@@ -14,7 +14,7 @@ const setDataUser = (data: User) => {
 
 export const authAction = (formData: LoginFormData) => (dispatch: any) => {
   let logged = false;
-  if (formData.username == 'Felipe') {
+  if (formData.username == 'F') {
     //TODO traer el usuario de la base de datos que tenga ese mismo username
     let user: User = {
       email: 'felipperoan@gmail.com',
