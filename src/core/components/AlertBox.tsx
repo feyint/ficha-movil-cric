@@ -13,7 +13,7 @@ export default class AlertBox extends Component<Props, any> {
       //Titulo
       'Guardar cambios',
       //Mensaje
-      'Desea guardar los cambios del encuestador?',
+      'Desea guardar los cambios?',
       [
         {
           text: 'Cancelar',
@@ -21,7 +21,6 @@ export default class AlertBox extends Component<Props, any> {
           style: 'cancel',
         },
         {text: 'Aceptar', onPress: () => this.props.onPress()},
-        //<BButton value={this.props.value} onPress={this.ShowAlertDialog} />
       ],
     );
   };

@@ -26,11 +26,13 @@ class HouseMenuScreen extends Component<Props, any> {
             title="Datos del encuestador"
             left={() => <List.Icon icon="account" />}
           />
+
           <List.Item
             title="Vivienda"
             onPress={() => this.goHouseScreen()}
             left={() => <List.Icon icon="home" />}
           />
+
           <List.Item
             onPress={() => this.goHousingStatusScreen()}
             title="Estado de la vivienda"
