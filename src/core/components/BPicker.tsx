@@ -3,6 +3,7 @@ import {HelperText} from 'react-native-paper';
 import {View, StyleSheet} from 'react-native';
 import {Picker} from '@react-native-community/picker';
 import {withTheme} from 'react-native-paper';
+import BError from './BError';
 
 interface Props {
   label?: string;
@@ -67,11 +68,7 @@ class BPicker extends Component<Props, State> {
             {this.renderItems()}
           </Picker>
         </View>
-        {this.props.error ? (
-          <HelperText type="error">
-            {this.props.errorText ? this.props.errorText : 'Campo invalido'}
-          </HelperText>
-        ) : null}
+        <BError text="Campo Invalido" error={this.props.error} />
       </View>
     );
   }

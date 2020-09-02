@@ -7,6 +7,7 @@ import {
   PollsterScreen,
   ManageHousingScreen,
   HouseScreen,
+  HousingStatusScreen,
 } from '../modules/location/screens';
 import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
 import {
@@ -65,6 +66,11 @@ export const Dashboard = () => {
         name="HouseMenuScreen"
         component={HouseMenuScreen}
         options={{headerShown: false}}
+      />
+      <DashboardStack.Screen
+        component={HousingStatusScreen}
+        name="HousingStatusScreen"
+        options={{headerShown: false, title: 'Estado de la vivienda'}}
       />
     </DashboardStack.Navigator>
   );
