@@ -10,17 +10,23 @@ import {
   HousingQuestion,
   HousingQuestionOption,
 } from '../modules/housing/state/types';
-import {FVBVIVIEN_FVCCONVIVSCHEMA} from '../state/house/types';
+import { FVBVIVIEN_FVCCONVIVSCHEMA } from '../state/house/types';
 
 export default class HousingService {
-  async getQuestionWithOptions() {
+  async getQuestionWithOptions(questionsQuery?: any[]) {
     let questionItems: HousingQuestion[] = [];
     const result = await Realm.open({
       schema: [FVCELEVIVSCHEMA],
       schemaVersion: schemaVersion,
     })
       .then((realm) => {
-        let servicios = realm.objects('FVCELEVIV');
+        let servicios;
+        if (questionsQuery) {
+          const query = questionsQuery.map(id => `CODIGO = "${id}"`).join(' OR ');
+          servicios = realm.objects('FVCELEVIV').filtered(`${query}`);
+        } else {
+          servicios = realm.objects('FVCELEVIV');
+        }
         return servicios;
       })
       .catch((error) => {

@@ -22,6 +22,8 @@ const schemaForm = yup.object().shape({
   floormaterial: yup.string().required(),
   wallmaterial: yup.string().required(),
   houseTenure: yup.string().required(),
+  kitchenislocated: yup.string().required(),
+  smokeinsidehouse: yup.string().required(),
 });
 
 /*const questionsCodes = {
@@ -43,7 +45,11 @@ const _HouseForm = (props: any) => {
   }, []);
 
   const fetchQuestions = async () => {
-    let result = await syncCatalogService.getQuestionWithOptions();
+    let result = await syncCatalogService.getQuestionWithOptions(
+      [QuestionCodes.MaterialTecho,
+      QuestionCodes.MaterialPiso,
+      QuestionCodes.MaterialPared,
+      QuestionCodes.Tenenciavivienda]);
     if (result) {
       setState({
         ...state,
@@ -66,6 +72,17 @@ const _HouseForm = (props: any) => {
     }
     return item;
   }
+
+  const listCocinaseencuentra = [
+    { value: '-1', label: "Seleccionar..." },
+    { value: '1', label: "ADENTRO" },
+    { value: '2', label: "AFUERA" },
+  ];
+  const listHumoDentro = [
+    { value: '-1', label: "Seleccionar..." },
+    { value: 'SI', label: "Si" },
+    { value: 'NO', label: "No" },
+  ];
 
   const { handleSubmit, control, errors, setValue } = useForm({
     resolver: yupResolver(schemaForm),
@@ -176,6 +193,42 @@ const _HouseForm = (props: any) => {
             />
           )}
           name="houseTenure"
+        />
+        <Text>La cocina se encuentra</Text>
+        <Controller
+          control={control}
+          render={({ onChange, onBlur, value }) => (
+            <BPicker
+              enabled={true}
+              onBlur={onBlur}
+              error={errors.wallmaterial}
+              onChange={(value: any) => {
+                onChange(value);
+              }}
+              value={value}
+              selectedValue={value}
+              items={listCocinaseencuentra}
+            />
+          )}
+          name="kitchenislocated"
+        />
+        <Text>Humo dentro de la casa</Text>
+        <Controller
+          control={control}
+          render={({ onChange, onBlur, value }) => (
+            <BPicker
+              enabled={true}
+              onBlur={onBlur}
+              error={errors.wallmaterial}
+              onChange={(value: any) => {
+                onChange(value);
+              }}
+              value={value}
+              selectedValue={value}
+              items={listHumoDentro}
+            />
+          )}
+          name="smokeinsidehouse"
         />
         <View>
           <BButton
