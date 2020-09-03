@@ -7,7 +7,7 @@ export const QuestionCodes = {
   Cocinacon: '6',
   Numerodepersonaspordormitorio: '8',
   Habitacionesenlavivienda: '26',
-  TipodeAlumbrado: '',
+  TipodeAlumbrado: '14',
   AccesoaInternet: '',
   Techo: '12',
   Piso: '29',
