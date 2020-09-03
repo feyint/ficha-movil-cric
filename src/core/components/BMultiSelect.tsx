@@ -5,7 +5,7 @@ import {Picker} from '@react-native-community/picker';
 import {withTheme} from 'react-native-paper';
 import MultiSelect from 'react-native-multiple-select';
 import SectionedMultiSelect from 'react-native-sectioned-multi-select';
-import {MultiSelectSchema} from '../../modules/housing/state/types';
+import {MultiSelectSchema} from '../utils/types';
 
 interface Props {
   label?: string;
@@ -19,6 +19,7 @@ interface Props {
   onChange?: any;
   theme: any;
   enabled?: boolean;
+  single?: boolean;
 }
 interface State {
   selectedItems: any[];
@@ -59,6 +60,7 @@ class BMultiSelect extends Component<Props, State> {
       <View>
         <View>
           <SectionedMultiSelect
+            single={this.props.single ? this.props.single : false}
             expandDropDowns={true}
             items={[this.props.items]}
             uniqueKey="id"

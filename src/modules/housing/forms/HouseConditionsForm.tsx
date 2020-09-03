@@ -1,26 +1,24 @@
-import React, {useRef, useState, useEffect} from 'react';
-import {View, StyleSheet, Text} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {View, StyleSheet} from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {yupResolver} from '@hookform/resolvers';
 import * as yup from 'yup';
-import {BButton, BPicker, BMultiSelect} from '../../../core/components';
+import {BButton, BMultiSelect} from '../../../core/components';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {HousingService} from '../../../services';
-import {MultiSelectSchema, HousingQuestion} from '../state/types';
+import {HousingQuestion} from '../state/types';
 import {capitalizeFirstLetter} from '../../../core/utils/utils';
+import {MultiSelectSchema} from '../../../core/utils/types';
+import {QuestionCodes, QuestionTypes} from '../../../core/utils/HousingTypes';
+import {saveAnswerLocal} from '../../../state/house/actions';
 const schemaForm = yup.object().shape({
   FVCELEVIV10: yup.array().required(),
   FVCELEVIV11: yup.array().required(),
   FVCELEVIV12: yup.array().required(),
 });
-const questionsCodes = {
-  FVCELEVIV10: '10',
-  FVCELEVIV11: '11',
-  FVCELEVIV12: '12',
-};
-const _HouseConditionForm = (user) => {
+const _HouseConditionForm = (props, user) => {
   const syncCatalogService = new HousingService();
   const [state, setState] = useState({
     questions: [] as HousingQuestion[],
@@ -65,16 +63,27 @@ const _HouseConditionForm = (user) => {
           control={control}
           render={({onChange, onBlur, value}) => (
             <BMultiSelect
-              label={getItemsForQuestion(questionsCodes.FVCELEVIV10).name}
+              label={
+                getItemsForQuestion(
+                  QuestionCodes.FuentedeAguaparaelconsumohumano,
+                ).name
+              }
               prompt="Seleccione una opción"
               onBlur={onBlur}
               error={errors.FVCELEVIV10}
-              onChange={(valuee: any) => {
-                console.log('Selected Items: ', valuee);
-                onChange(valuee);
+              onChange={(values: any) => {
+                console.log('Selected Items: ', values);
+                onChange(values);
+                props.saveAnswerLocal(
+                  QuestionTypes.multiSelect,
+                  QuestionCodes.FuentedeAguaparaelconsumohumano,
+                  values,
+                );
               }}
               value={value}
-              items={getItemsForQuestion(questionsCodes.FVCELEVIV10)}
+              items={getItemsForQuestion(
+                QuestionCodes.FuentedeAguaparaelconsumohumano,
+              )}
             />
           )}
           name="FVCELEVIV10"
@@ -83,15 +92,25 @@ const _HouseConditionForm = (user) => {
           control={control}
           render={({onChange, onBlur, value}) => (
             <BMultiSelect
-              label={getItemsForQuestion(questionsCodes.FVCELEVIV11).name}
+              label={
+                getItemsForQuestion(QuestionCodes.Tratamientodelaguaparaconsumo)
+                  .name
+              }
               prompt="Seleccione una opción"
               onBlur={onBlur}
               error={errors.FVCELEVIV11}
-              onChange={(valuee: any) => {
-                onChange(valuee);
+              onChange={(values: any) => {
+                onChange(values);
+                props.saveAnswerLocal(
+                  QuestionTypes.multiSelect,
+                  QuestionCodes.FuentedeAguaparaelconsumohumano,
+                  values,
+                );
               }}
               value={value}
-              items={getItemsForQuestion(questionsCodes.FVCELEVIV11)}
+              items={getItemsForQuestion(
+                QuestionCodes.Tratamientodelaguaparaconsumo,
+              )}
             />
           )}
           name="FVCELEVIV11"
@@ -100,15 +119,28 @@ const _HouseConditionForm = (user) => {
           control={control}
           render={({onChange, onBlur, value}) => (
             <BMultiSelect
-              label={getItemsForQuestion(questionsCodes.FVCELEVIV12).name}
+              single={true}
+              label={
+                getItemsForQuestion(
+                  QuestionCodes.AlmacenamientodelAguaparaconsumo,
+                ).name
+              }
               prompt="Seleccione una opción"
               onBlur={onBlur}
               error={errors.FVCELEVIV12}
-              onChange={(valuee: any) => {
-                onChange(valuee);
+              onChange={(values: any) => {
+                console.log('respuesta ', values);
+                onChange(values);
+                props.saveAnswerLocal(
+                  QuestionTypes.selectOne,
+                  QuestionCodes.FuentedeAguaparaelconsumohumano,
+                  values,
+                );
               }}
               value={value}
-              items={getItemsForQuestion(questionsCodes.FVCELEVIV12)}
+              items={getItemsForQuestion(
+                QuestionCodes.AlmacenamientodelAguaparaconsumo,
+              )}
             />
           )}
           name="FVCELEVIV12"
@@ -138,10 +170,15 @@ const styles = StyleSheet.create({
     padding: 8,
   },
 });
-
+const mapDispatchToProps = {
+  saveAnswerLocal,
+};
 const mapStateToProps = (session) => {
   return {
     user: session.session.user,
   };
 };
-export default connect(mapStateToProps)(_HouseConditionForm);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(_HouseConditionForm);

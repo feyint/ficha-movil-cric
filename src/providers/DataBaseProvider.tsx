@@ -6,6 +6,7 @@ export enum DataBaseSchemas {
   FVCCONVIVSCHEMA = 'FVCCONVIV',
   FVCELEVIVSCHEMA = 'FVCELEVIV',
   FUBUBIVIVSCHEMA = 'FUBUBIVIV',
+  FVBVIVIEN_FVCCONVIVSCHEMA = 'FVBVIVIEN_FVCCONVIV',
 }
 export const schemaVersion = 1;
 export const UserSchema = {
@@ -58,6 +59,18 @@ export const FVCELEVIVSCHEMA = {
     CODIGO: 'string',
     NOMBRE: 'string',
     ESTADO: 'bool',
+  },
+};
+export const FVBVIVIEN_FVCCONVIV = {
+  name: DataBaseSchemas.FVBVIVIEN_FVCCONVIVSCHEMA,
+  properties: {
+    FVBVIVIEN_CODE: 'string',
+    FVCELEVIV_CODE: 'string',
+    FVCCONVIV_CODE: 'string',
+    FVCCONVIV_ID: 'int',
+    FVBVIVIEN_ID: 'int',
+    FVCELEVIV_ID: 'int',
+    SYNCSTATE: 'int',
   },
 };
 //type PropertyType = string | 'bool' | 'int' | 'float' | 'double' | 'string' | 'data' | 'date' | 'list' | 'linkingObjects';
@@ -119,6 +132,7 @@ export default class DataBaseProvider {
         FVCCONVIVSCHEMA,
         FVCELEVIVSCHEMA,
         FUBUBIVIVSCHEMA,
+        FVBVIVIEN_FVCCONVIV,
       ],
     }).then((realm) => {
       realm.write(() => {
