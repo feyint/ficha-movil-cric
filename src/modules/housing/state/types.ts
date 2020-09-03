@@ -11,9 +11,3 @@ export type HousingQuestionOption = {
   NOMBRE: string;
   FVCELEVIV_ID: number;
 };
-
-export type MultiSelectSchema = {
-  name: string;
-  id: number;
-  children: {name: string; id: number}[];
-};

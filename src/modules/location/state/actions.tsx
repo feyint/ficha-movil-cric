@@ -1,5 +1,5 @@
-import {FUBUBIVIV} from './types';
-import {Catalog} from './types';
+import {FUBUBIVIV} from '../../../state/house/types';
+import {Catalog} from '../../../state/house/types';
 import {allCatalogs} from '../../../providers/DataBaseProvider';
 
 export const ActionType = {

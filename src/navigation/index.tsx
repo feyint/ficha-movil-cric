@@ -1,6 +1,6 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
-import {LoginScreen, HomeScreen} from '../modules/auth/screens';
+import {LoginScreen} from '../modules/auth/screens';
 import {
   LocationScreen,
   HomeLocationScreen,
@@ -12,6 +12,7 @@ import {createMaterialBottomTabNavigator} from '@react-navigation/material-botto
 import {
   HouseConditionsScreen,
   HouseMenuScreen,
+  HomeScreen,
 } from '../modules/housing/screens';
 import {useTheme} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/Ionicons';
