@@ -4,7 +4,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { yupResolver } from '@hookform/resolvers';
 import * as yup from 'yup';
-import { BButton, BTextInput, BPicker, BMultiSelect } from '../../../core/components';
+import { BButton, BTextInput, BPicker, BMultiSelect, BRadioButton } from '../../../core/components';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
 import * as catalogsAction from '../../location/state/actions';
@@ -103,7 +103,6 @@ const _HouseForm = (props: any) => {
     { value: '2', label: "AFUERA" },
   ];
   const listHumoDentro = [
-    { value: '-1', label: "Seleccione..." },
     { value: 'SI', label: "Si" },
     { value: 'NO', label: "No" },
   ];
@@ -244,17 +243,14 @@ const _HouseForm = (props: any) => {
         <Text>Humo dentro de la casa</Text>
         <Controller
           control={control}
-          render={({ onChange, onBlur, value }) => (
-            <BPicker
-              enabled={true}
-              onBlur={onBlur}
-              error={errors.smokeinsidehouse}
+          render={({ onChange, value }) => (
+            <BRadioButton
+              value={value}
+              items={listHumoDentro}
               onChange={(value: any) => {
                 onChange(value);
+                console.log('Selected Item: ', value);
               }}
-              value={value}
-              selectedValue={value}
-              items={listHumoDentro}
             />
           )}
           name="smokeinsidehouse"
