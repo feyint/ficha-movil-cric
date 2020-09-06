@@ -9,6 +9,7 @@ import {
   BTextInput,
   BPicker,
   BMultiSelect,
+  BRadioButton,
 } from '../../../core/components';
 import {useNavigation} from '@react-navigation/native';
 import {HousingService} from '../../../services';
@@ -77,9 +78,8 @@ const _HouseForm = (props: any) => {
     {value: '2', label: 'AFUERA'},
   ];
   const listHumoDentro = [
-    {value: '-1', label: 'Seleccione...'},
-    {value: 'SI', label: 'Si'},
-    {value: 'NO', label: 'No'},
+    { value: 'SI', label: "Si" },
+    { value: 'NO', label: "No" },
   ];
   const listAccesoInternet = [
     {value: '-1', label: 'Seleccione...'},
@@ -236,17 +236,14 @@ const _HouseForm = (props: any) => {
         <Text>Humo dentro de la casa</Text>
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
-            <BPicker
-              enabled={true}
-              onBlur={onBlur}
-              error={errors.smokeinsidehouse}
+          render={({onChange, value}) => (
+            <BRadioButton
+              value={value}
+              items={listHumoDentro}
               onChange={(value: any) => {
                 onChange(value);
+                console.log('Selected Item: ', value);
               }}
-              value={value}
-              selectedValue={value}
-              items={listHumoDentro}
             />
           )}
           name="smokeinsidehouse"
