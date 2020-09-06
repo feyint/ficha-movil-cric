@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {HelperText} from 'react-native-paper';
+import {HelperText, Text} from 'react-native-paper';
 import {View, StyleSheet} from 'react-native';
 import {Picker} from '@react-native-community/picker';
 import {withTheme} from 'react-native-paper';
@@ -15,55 +15,67 @@ interface Props {
   error?: boolean;
   onBlur?: any;
   onChange?: any;
+  onLoad?: any;
   theme: any;
   enabled?: boolean;
 }
-interface State {
-  selectedValue: string;
-}
 
-class BPicker extends Component<Props, State> {
+class BPicker extends Component<Props, any> {
   constructor(props: Props) {
     super(props);
-    //initialize a piece of state that we will also be persisting
-    this.state = {
-      selectedValue: this.props.selectedValue ? this.props.selectedValue : '',
-    };
-    if (this.state.selectedValue) {
-      this.props.onChange(this.state.selectedValue);
-    }
   }
-  componentDidMount() {
-    this.props.onChange(this.state.selectedValue);
-    console.log('componentDidMount');
-    if (this.state.selectedValue) {
+  UNSAFE_componentWillMount() {
+    if (this.props.onLoad) {
+      this.props.onLoad(true);
     }
   }
   renderItems() {
     let listItems: any = [];
     if (this.props.items) {
       this.props.items.forEach((item) => {
-        listItems.push(<Picker.Item label={item.label} value={item.value} />);
+        listItems.push(
+          <Picker.Item
+            key={item.value}
+            label={item.label}
+            value={item.value}
+          />,
+        );
       });
     }
     return listItems;
   }
+  renderLabel() {
+    return (
+      <View>
+        <Text>
+          {this.props.label ? this.props.label : 'Seleccione una opción'}
+        </Text>
+      </View>
+    );
+  }
   render() {
     return (
       <View>
+        <Text>{this.renderLabel()}</Text>
         <View
           style={this.props.error ? styles.containerError : styles.container}>
           <Picker
             mode="dropdown"
             prompt={this.props.prompt}
             enabled={this.props.enabled}
-            selectedValue={this.state.selectedValue}
+            selectedValue={this.props.selectedValue}
             onValueChange={(itemValue, itemIndex) => {
-              this.setState({selectedValue: itemValue}, () =>
-                this.props.onChange(itemValue),
-              );
+              if (itemValue === '-1') {
+                this.props.onChange(null);
+              } else {
+                this.props.onChange(itemValue);
+              }
             }}
-            style={this.props.enabled ? styles.picker : styles.pickerdisabled}
+            style={
+              this.props.enabled && !this.props.enabled
+                ? styles.pickerdisabled
+                : styles.picker
+            }
             onBlur={this.props.onBlur}>
             {this.renderItems()}
           </Picker>

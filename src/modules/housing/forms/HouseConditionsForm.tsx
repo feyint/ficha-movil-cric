@@ -4,21 +4,58 @@ import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {yupResolver} from '@hookform/resolvers';
 import * as yup from 'yup';
-import {BButton, BMultiSelect} from '../../../core/components';
+import {BButton, BMultiSelect, BPicker} from '../../../core/components';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {HousingService} from '../../../services';
 import {HousingQuestion} from '../state/types';
-import {capitalizeFirstLetter} from '../../../core/utils/utils';
-import {MultiSelectSchema} from '../../../core/utils/types';
 import {QuestionCodes, QuestionTypes} from '../../../core/utils/HousingTypes';
-import {saveAnswerLocal} from '../../../state/house/actions';
+import {
+  saveAnswerLocal,
+  getQuestionAnswer,
+  getQuestionWithOptions,
+} from '../../../state/house/actions';
+import {propName, propNameQuestion} from '../../../core/utils/utils';
+const questions = [
+  QuestionCodes.FuentedeAgua,
+  QuestionCodes.AlmacenamientoAguaconsumo,
+  QuestionCodes.Tratamientoagua,
+  QuestionCodes.Estadodelrecipiente,
+  QuestionCodes.ManejoderesiduosBiodegradables,
+  QuestionCodes.ManejoresiduosOrdinariosnoreciclables,
+  QuestionCodes.ManejoresiduosReciclables,
+  QuestionCodes.Manejoresiduospeligrosos,
+  QuestionCodes.Eliminacionexcretas,
+  QuestionCodes.Eliminacionexcretas,
+  QuestionCodes.DisposicionfinalAguasdomesticas,
+  QuestionCodes.Presenciadevectoresyroedoresdentrodelacasa,
+  QuestionCodes.TipodeRiesgodelavivienda,
+  QuestionCodes.Tipodeespacioproductivo,
+  QuestionCodes.Destinodelosproductos,
+  QuestionCodes.Practicasculturalesenelespacioproductivo,
+  QuestionCodes.Actividadesproductivasdentrodelavivienda,
+  QuestionCodes.Participalafamiliadepracticasculturalescolectivas,
+];
 const schemaForm = yup.object().shape({
-  FVCELEVIV10: yup.array().required(),
-  FVCELEVIV11: yup.array().required(),
-  FVCELEVIV12: yup.array().required(),
+  FuentedeAgua: yup.array().required(),
+  AlmacenamientoAguaconsumo: yup.array().required(),
+  Tratamientoagua: yup.array().required(),
+  Estadodelrecipiente: yup.number().required(),
+  // ManejoderesiduosBiodegradables: yup.array().required(),
+  // ManejoresiduosOrdinariosnoreciclables: yup.array().required(),
+  // ManejoresiduosReciclables: yup.array().required(),
+  // Manejoresiduospeligrosos: yup.array().required(),
+  // Eliminacionexcretas: yup.array().required(),
+  // DisposicionfinalAguasdomesticas: yup.array().required(),
+  // Presenciadevectoresyroedoresdentrodelacasa: yup.array().required(),
+  // TipodeRiesgodelavivienda: yup.array().required(),
+  // Tipodeespacioproductivo: yup.array().required(),
+  // Destinodelosproductos: yup.array().required(),
+  // Practicasculturalesenelespacioproductivo: yup.array().required(),
+  // Actividadesproductivasdentrodelavivienda: yup.array().required(),
+  // Participalafamiliadepracticasculturalescolectivas: yup.array().required(),
 });
-const _HouseConditionForm = (props, user) => {
+const _HouseConditionForm = (props: any) => {
   const syncCatalogService = new HousingService();
   const [state, setState] = useState({
     questions: [] as HousingQuestion[],
@@ -31,7 +68,7 @@ const _HouseConditionForm = (props, user) => {
     fetchQuestions();
   }, []);
   async function fetchQuestions() {
-    let result = await syncCatalogService.getQuestionWithOptions();
+    let result = await props.getQuestionWithOptions(questions);
     if (result) {
       setState({
         ...state,
@@ -39,23 +76,29 @@ const _HouseConditionForm = (props, user) => {
       });
     }
   }
-  function getItemsForQuestion(code: string) {
-    let item: MultiSelectSchema = {name: '', id: 0, children: []};
-    for (let i = 0; i < state.questions.length; i++) {
-      if (state.questions[i].CODIGO === code) {
-        item.id = state.questions[i].ID;
-        item.name = capitalizeFirstLetter(state.questions[i].NOMBRE);
-        for (let option of state.questions[i].OPTIONS) {
-          item.children.push({id: option.ID, name: option.NOMBRE});
-        }
-      }
-    }
-    return item;
+  async function getAnswers(type: number, code: string, prop: string) {
+    let question = await props.getQuestionAnswer(type, code);
+    console.log('DD ',question);
+    setValue(prop, question);
   }
-  const onSubmit = (data: any) => {
-    console.log(data);
-    navigation.goBack();
+  const getItemsForQuestionSelect = (code: string) => {
+    return syncCatalogService.getItemsForQuestionSelect(code, state.questions);
   };
+
+  const getQuestionlabel = (code: string) => {
+    return syncCatalogService.getQuestionlabel(code, state.questions);
+  };
+
+  const getItemsForQuestionMultiSelect = (code: string) => {
+    return syncCatalogService.getItemsForQuestionMultiSelect(
+      code,
+      state.questions,
+    );
+  };
+  function onSubmit(data: any) {
+    console.log('ddd', data);
+    navigation.goBack();
+  }
   return (
     <KeyboardAwareScrollView>
       <View style={styles.container}>
@@ -63,87 +106,125 @@ const _HouseConditionForm = (props, user) => {
           control={control}
           render={({onChange, onBlur, value}) => (
             <BMultiSelect
-              label={
-                getItemsForQuestion(
-                  QuestionCodes.FuentedeAguaparaelconsumohumano,
-                ).name
-              }
-              prompt="Seleccione una opción"
+              label={getQuestionlabel(QuestionCodes.FuentedeAgua)}
               onBlur={onBlur}
-              error={errors.FVCELEVIV10}
+              error={errors.FuentedeAgua}
               onChange={(values: any) => {
-                console.log('Selected Items: ', values);
+                console.log('FuentedeAgua ', values);
                 onChange(values);
                 props.saveAnswerLocal(
                   QuestionTypes.multiSelect,
-                  QuestionCodes.FuentedeAguaparaelconsumohumano,
+                  QuestionCodes.FuentedeAgua,
                   values,
                 );
               }}
-              value={value}
-              items={getItemsForQuestion(
-                QuestionCodes.FuentedeAguaparaelconsumohumano,
-              )}
+              onLoad={() => {
+                getAnswers(
+                  QuestionTypes.multiSelect,
+                  QuestionCodes.FuentedeAgua,
+                  'FuentedeAgua',
+                );
+              }}
+              selectedItems={value}
+              items={getItemsForQuestionMultiSelect(QuestionCodes.FuentedeAgua)}
             />
           )}
-          name="FVCELEVIV10"
+          name="FuentedeAgua"
         />
         <Controller
           control={control}
           render={({onChange, onBlur, value}) => (
             <BMultiSelect
-              label={
-                getItemsForQuestion(QuestionCodes.Tratamientodelaguaparaconsumo)
-                  .name
-              }
-              prompt="Seleccione una opción"
+              label={getQuestionlabel(QuestionCodes.Tratamientoagua)}
               onBlur={onBlur}
-              error={errors.FVCELEVIV11}
+              error={errors.Tratamientoagua}
               onChange={(values: any) => {
                 onChange(values);
                 props.saveAnswerLocal(
                   QuestionTypes.multiSelect,
-                  QuestionCodes.FuentedeAguaparaelconsumohumano,
+                  QuestionCodes.Tratamientoagua,
                   values,
                 );
               }}
-              value={value}
-              items={getItemsForQuestion(
-                QuestionCodes.Tratamientodelaguaparaconsumo,
+              onLoad={() => {
+                getAnswers(
+                  QuestionTypes.multiSelect,
+                  QuestionCodes.Tratamientoagua,
+                  'Tratamientoagua',
+                );
+              }}
+              selectedItems={value}
+              items={getItemsForQuestionMultiSelect(
+                QuestionCodes.Tratamientoagua,
               )}
             />
           )}
-          name="FVCELEVIV11"
+          name="Tratamientoagua"
         />
         <Controller
           control={control}
           render={({onChange, onBlur, value}) => (
             <BMultiSelect
-              single={true}
-              label={
-                getItemsForQuestion(
-                  QuestionCodes.AlmacenamientodelAguaparaconsumo,
-                ).name
-              }
-              prompt="Seleccione una opción"
+              label={getQuestionlabel(QuestionCodes.AlmacenamientoAguaconsumo)}
               onBlur={onBlur}
-              error={errors.FVCELEVIV12}
+              error={errors.AlmacenamientoAguaconsumo}
               onChange={(values: any) => {
                 console.log('respuesta ', values);
                 onChange(values);
                 props.saveAnswerLocal(
-                  QuestionTypes.selectOne,
-                  QuestionCodes.FuentedeAguaparaelconsumohumano,
+                  QuestionTypes.multiSelect,
+                  QuestionCodes.AlmacenamientoAguaconsumo,
                   values,
                 );
               }}
-              value={value}
-              items={getItemsForQuestion(
-                QuestionCodes.AlmacenamientodelAguaparaconsumo,
+              onLoad={() => {
+                getAnswers(
+                  QuestionTypes.multiSelect,
+                  QuestionCodes.AlmacenamientoAguaconsumo,
+                  'AlmacenamientoAguaconsumo',
+                );
+              }}
+              selectedItems={value}
+              items={getItemsForQuestionMultiSelect(
+                QuestionCodes.AlmacenamientoAguaconsumo,
               )}
             />
           )}
-          name="FVCELEVIV12"
+          name="AlmacenamientoAguaconsumo"
+        />
+        <Controller
+          control={control}
+          render={({onChange, onBlur, value}) => (
+            <BPicker
+              label="Estado del recipiente"
+              prompt="Seleccione una opción"
+              onBlur={onBlur}
+              error={errors.Estadodelrecipiente}
+              onChange={(vlue: any) => {
+                console.error(vlue);
+                onChange(vlue);
+                props.saveAnswerLocal(
+                  QuestionTypes.selectOne,
+                  QuestionCodes.Estadodelrecipiente,
+                  vlue,
+                );
+              }}
+              onLoad={() => {
+                getAnswers(
+                  QuestionTypes.selectOne,
+                  QuestionCodes.Estadodelrecipiente,
+                  'Estadodelrecipiente',
+                );
+              }}
+              value={value}
+              selectedValue={value}
+              items={
+                getItemsForQuestionSelect(QuestionCodes.Estadodelrecipiente)
+                  .children
+              }
+            />
+          )}
+          name="Estadodelrecipiente"
         />
         <View>
           <BButton
@@ -172,6 +253,8 @@ const styles = StyleSheet.create({
 });
 const mapDispatchToProps = {
   saveAnswerLocal,
+  getQuestionAnswer,
+  getQuestionWithOptions,
 };
 const mapStateToProps = (session) => {
   return {

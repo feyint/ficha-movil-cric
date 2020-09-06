@@ -1,17 +1,20 @@
 import React, {Component} from 'react';
-import {BHeader} from '../../../core/components';
-import {FamiliarNucleus, Department, SafeForm, CareZone} from '../components';
 import {View} from 'react-native';
 import {Appbar} from 'react-native-paper';
 import {List} from 'react-native-paper';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {connect} from 'react-redux';
+import {setQuestionWithOptions} from '../../../state/house/actions';
 
 interface Props {
   navigation: NavigationProp<any>;
 }
-class ManageHousingScreen extends Component<Props, any> {
+class ManageHousingScreen extends Component<any, any> {
   _goBack() {
     this.props.navigation.goBack();
+  }
+  UNSAFE_componentWillMount() {
+    this.props.setQuestionWithOptions();
   }
   render() {
     return (
@@ -28,10 +31,6 @@ class ManageHousingScreen extends Component<Props, any> {
           />
           <List.Item
             onPress={() => this.goHouseMenuScreen()}
-            title="Vivienda"
-            left={() => <List.Icon icon="home" />}
-          />
-          <List.Item
             title="Nucleo Familiar"
             left={() => <List.Icon icon="account-group" />}
           />
@@ -46,4 +45,7 @@ class ManageHousingScreen extends Component<Props, any> {
     this.props.navigation.navigate('HomeLocationScreen');
   }
 }
-export default ManageHousingScreen;
+const mapDispatchToProps = {
+  setQuestionWithOptions,
+};
+export default connect(null, mapDispatchToProps)(ManageHousingScreen);
