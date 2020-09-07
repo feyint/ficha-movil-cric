@@ -45,6 +45,7 @@ const initialState = {
 };
 
 export default (state = initialState, action: any) => {
+  console.log('Action House: ', action);
   switch (action.type) {
     case ActionType.SET_FUBUBIVIV:
       return {

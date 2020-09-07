@@ -1,4 +1,5 @@
 import {
+  FUBUBIVIVSCHEMA,
   FVCELEVIVSCHEMA,
   schemaVersion,
   FVCCONVIVSCHEMA,
@@ -10,11 +11,24 @@ import {
   HousingQuestion,
   HousingQuestionOption,
 } from '../modules/housing/state/types';
-import {FNBNUCVIV_FVCCONVIV} from '../state/house/types';
-import {SelectSchema, MultiSelectSchema} from '../core/utils/types';
-import {capitalizeFirstLetter} from '../core/utils/utils';
+import { FNBNUCVIV_FVCCONVIV } from '../state/house/types';
+import { SelectSchema, MultiSelectSchema } from '../core/utils/types';
+import { capitalizeFirstLetter } from '../core/utils/utils';
 
 export default class HousingService {
+  async getHouses() {
+    const result = await Realm.open({
+      schema: [FUBUBIVIVSCHEMA],
+      schemaVersion: schemaVersion,
+    }).then((realm) => {
+      let items = realm
+        .objects('FUBUBIVIV');
+      return items;
+    }).catch((error) => {
+      return error;
+    });
+    return result;
+  }
   async getQuestionWithOptions(questionsQuery?: any[]) {
     let questionItems: HousingQuestion[] = [];
     const result = await Realm.open({
@@ -122,7 +136,7 @@ export default class HousingService {
       });
   }
   getItemsForQuestionSelect(code: string, questions: HousingQuestion[]) {
-    let item: SelectSchema = {name: '', id: 0, children: []};
+    let item: SelectSchema = { name: '', id: 0, children: [] };
     for (let i = 0; i < questions.length; i++) {
       if (questions[i].CODIGO === code) {
         item.id = questions[i].ID;
@@ -133,20 +147,20 @@ export default class HousingService {
             label: option.NOMBRE,
           });
         }
-        item.children.unshift({value: '-1', label: 'Seleccione'});
+        item.children.unshift({ value: '-1', label: 'Seleccione' });
       }
     }
     console.log('ddddd ', item);
     return item;
   }
   getItemsForQuestionMultiSelect(code: string, questions: HousingQuestion[]) {
-    let item: MultiSelectSchema = {name: '', id: 0, children: []};
+    let item: MultiSelectSchema = { name: '', id: 0, children: [] };
     for (let i = 0; i < questions.length; i++) {
       if (questions[i].CODIGO === code) {
         item.id = questions[i].ID;
         item.name = capitalizeFirstLetter(questions[i].NOMBRE);
         for (let option of questions[i].OPTIONS) {
-          item.children.push({id: option.ID, name: option.NOMBRE});
+          item.children.push({ id: option.ID, name: option.NOMBRE });
         }
       }
     }
