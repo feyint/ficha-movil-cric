@@ -17,6 +17,8 @@ interface Props {
   keyboardType?: any;
   secureTextEntry?: boolean;
   disabled?: boolean;
+  multiline?: boolean;
+  numberOfLines?: number;
 }
 export default class BTextInput extends Component<Props, State> {
   render() {
@@ -30,6 +32,8 @@ export default class BTextInput extends Component<Props, State> {
           onChangeText={(text) => this.props.onChange(text)}
           value={this.props.value}
           disabled={this.props.disabled}
+          multiline={this.props.multiline}
+          numberOfLines={this.props.numberOfLines}
         />
         {this.props.error ? (
           <HelperText type="error">

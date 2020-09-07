@@ -17,6 +17,7 @@ interface Props {
   error?: boolean;
   onBlur?: any;
   onChange?: any;
+  onLoad?: any;
   theme: any;
   enabled?: boolean;
   single?: boolean;
@@ -33,14 +34,13 @@ class BMultiSelect extends Component<Props, State> {
     this.state = {
       selectedItems: this.props.selectedItems ? this.props.selectedItems : [],
     };
-    if (this.state.selectedItems) {
-      this.props.onChange(this.state.selectedItems);
-    }
+    // if (this.state.selectedItems) {
+    //   this.props.onChange(this.state.selectedItems);
+    // }
   }
-  componentDidMount() {
-    this.props.onChange(this.state.selectedItems);
-    console.log('componentDidMount');
-    if (this.state.selectedItems) {
+  UNSAFE_componentWillMount() {
+    if (this.props.onLoad) {
+      this.props.onLoad(true);
     }
   }
   onSelectedItemsChange(selectedItems: any) {
@@ -62,13 +62,15 @@ class BMultiSelect extends Component<Props, State> {
           <SectionedMultiSelect
             single={this.props.single ? this.props.single : false}
             expandDropDowns={true}
-            items={[this.props.items]}
+            items={this.props.items ? [this.props.items] : undefined}
             uniqueKey="id"
             subKey="children"
             selectText={this.props.label}
             confirmText="Confirmar selección"
             selectedText="Seleccionados"
-            searchPlaceholderText={this.props.prompt}
+            searchPlaceholderText={
+              this.props.prompt ? this.props.prompt : 'Seleccione una opción'
+            }
             noResultsComponent={this.renderNoResults()}
             styles={{
               selectToggle: this.props.error
@@ -83,7 +85,7 @@ class BMultiSelect extends Component<Props, State> {
             onSelectedItemsChange={(selectedItems) =>
               this.onSelectedItemsChange(selectedItems)
             }
-            selectedItems={this.state.selectedItems}
+            selectedItems={this.props.selectedItems}
           />
         </View>
         {this.props.error ? (
@@ -98,6 +100,9 @@ class BMultiSelect extends Component<Props, State> {
     return (
       <Text style={styles.noText}>No hay resultados para esa palabra.</Text>
     );
+  }
+  public setSelectedItem(selectedItems: any[]) {
+    console.log('selectedItems ', selectedItems);
   }
 }
 const styles = StyleSheet.create({
