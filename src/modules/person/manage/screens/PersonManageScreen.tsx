@@ -3,7 +3,7 @@ import {BHeader} from '../../../../core/components';
 import {View} from 'react-native';
 import {Appbar} from 'react-native-paper';
 import {NavigationProp} from '@react-navigation/native';
-import {PersonManageForm} from '../forms';
+//import {PersonManageForm} from '../forms';
 // import HomeLocationForm from '../forms/HomeLocationForm';
 
 interface Props {
@@ -21,7 +21,7 @@ class PersonManageScreen extends Component<Props, any> {
           <Appbar.Content title="Persona" />
         </Appbar.Header>
         <BHeader>Administrar persona</BHeader>
-        <PersonManageForm />
+        {/* <PersonManageForm /> */}
       </View>
     );
   }

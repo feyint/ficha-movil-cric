@@ -1,1 +1,1 @@
-export {default as PersonManageScreen} from './PersonManageScreen';
+//export {default as PersonManageScreen} from './PersonManageScreen';
