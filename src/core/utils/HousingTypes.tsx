@@ -1,9 +1,9 @@
-export const QuestionCodes = {
+export const QuestionFamilyCodes = {
   Tenenciavivienda: '1',
   MaterialTecho: '2',
   MaterialPiso: '3',
   MaterialPared: '4',
-  Presenciadevectoresyroedoresdentrodelacasa: '5',
+  PresenciadevectoresCasa: '5',
   Cocinacon: '6',
   Numerodepersonaspordormitorio: '8',
   Techo: '9',
@@ -20,13 +20,13 @@ export const QuestionCodes = {
   ManejoresiduosOrdinariosnoreciclables: '20',
   Eliminacionexcretas: '21',
   DisposicionfinalAguasdomesticas: '22',
-  Convivenciaconanimalesadentrodelacasa: '23',
+  ConvivenciaAnimalesCasa: '23',
   TipodeRiesgodelavivienda: '24',
   Tipodeespacioproductivo: '25',
   Destinodelosproductos: '26',
-  Practicasculturalesenelespacioproductivo: '27',
-  Actividadesproductivasdentrodelavivienda: '28',
-  Participalafamiliadepracticasculturalescolectivas: '29',
+  PracticasCulturalesProductivo: '27',
+  ActividadesProductivasVivienda: '28',
+  FamiliaPracticasCulturales: '29',
   Habitacionesenlavivienda: '30',
   ManejoresiduosReciclables: '31',
   Manejoresiduospeligrosos: '32',
@@ -36,3 +36,7 @@ export const QuestionTypes = {
   selectOne: 1,
   multiSelect: 2,
 };
+export const logicOption = [
+  {value: 'SI', label: 'Si'},
+  {value: 'NO', label: 'No'},
+];

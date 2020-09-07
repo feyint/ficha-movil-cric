@@ -1,11 +1,11 @@
-import {QuestionCodes} from './HousingTypes';
+import {QuestionFamilyCodes} from './HousingTypes';
 
 export function capitalizeFirstLetter(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
 }
 
 export function propNameQuestion(value: any): any {
-  let prop: any = QuestionCodes;
+  let prop: any = QuestionFamilyCodes;
   let propNameValue = '';
   for (var i in prop) {
     if (typeof prop[i] === 'object') {

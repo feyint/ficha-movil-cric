@@ -136,6 +136,7 @@ export default class HousingService {
         item.children.unshift({value: '-1', label: 'Seleccione'});
       }
     }
+    console.log('ddddd ', item);
     return item;
   }
   getItemsForQuestionMultiSelect(code: string, questions: HousingQuestion[]) {

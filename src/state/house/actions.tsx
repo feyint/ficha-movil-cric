@@ -37,7 +37,6 @@ export const saveAnswerLocal = (
       switch (type) {
         case 1: // oneOption
           let option = getOption(item.ID, JSON.parse(answer), family.ID);
-          console.error(option);
           if (option.FVCCONVIV_ID) {
             await houseServie.saveQuestionOption([option]);
           } else {

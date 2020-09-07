@@ -92,6 +92,7 @@ const _PollsterForm = (user) => {
             <BNumberInput
               label="Identificación"
               onBlur={onBlur}
+              disabled={true}
               error={errors.identification}
               onChange={(value) => onChange(value)}
               value={value}
@@ -100,7 +101,11 @@ const _PollsterForm = (user) => {
           name="identification"
         />
         <View>
-          <AlertBox value="Guardar Cambios" onPress={handleSubmit(onSubmit)} />
+          <BButton
+            color="secondary"
+            value="Volver"
+            onPress={handleSubmit(onSubmit)}
+          />
         </View>
       </View>
     </KeyboardAwareScrollView>

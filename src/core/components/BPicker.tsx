@@ -61,7 +61,9 @@ class BPicker extends Component<Props, any> {
           style={this.props.error ? styles.containerError : styles.container}>
           <Picker
             mode="dropdown"
-            prompt={this.props.prompt}
+            prompt={
+              this.props.prompt ? this.props.prompt : 'Seleccione una opción'
+            }
             enabled={this.props.enabled}
             selectedValue={this.props.selectedValue}
             onValueChange={(itemValue, itemIndex) => {
