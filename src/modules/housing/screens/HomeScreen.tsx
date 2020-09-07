@@ -1,11 +1,12 @@
-import React, {Component} from 'react';
-import {View} from 'react-native';
-import {BButton} from '../../../core/components';
+import React, { Component, useState } from 'react';
+import { View } from 'react-native';
+import { BButton } from '../../../core/components';
 //import {LoginForm} from '../components';
-import {NavigationProp} from '@react-navigation/native';
-import {Appbar} from 'react-native-paper';
-import {connect} from 'react-redux';
-import {setQuestionWithOptions} from '../../../state/house/actions';
+import { NavigationProp } from '@react-navigation/native';
+import { Appbar } from 'react-native-paper';
+import { connect } from 'react-redux';
+import { setQuestionWithOptions, setFNBNUCVIV } from '../../../state/house/actions';
+import { HouseList } from '../forms';
 
 interface FormData {
   navigation: NavigationProp<any>;
@@ -30,6 +31,12 @@ class HomeScreen extends Component<any, any> {
           mode="contained"
           onPress={() => this.goHomeLocation()}
         />
+        <HouseList onSelect={(value: any) => {
+          console.log('Selected Item: ', value);
+          this.props.setFNBNUCVIV(value);
+          this.goHomeLocation();
+        }} />
+
       </View>
     );
   }
@@ -39,5 +46,6 @@ class HomeScreen extends Component<any, any> {
 }
 const mapDispatchToProps = {
   setQuestionWithOptions,
+  setFNBNUCVIV
 };
 export default connect(null, mapDispatchToProps)(HomeScreen);
