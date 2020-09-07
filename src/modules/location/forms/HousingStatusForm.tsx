@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, Text} from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {yupResolver} from '@hookform/resolvers';
@@ -9,7 +9,10 @@ import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {HousingService} from '../../../services';
 import {HousingQuestion} from '../../housing/state/types';
-import {QuestionFamilyCodes, QuestionTypes} from '../../../core/utils/HousingTypes';
+import {
+  QuestionFamilyCodes,
+  QuestionTypes,
+} from '../../../core/utils/HousingTypes';
 import {SelectSchema} from '../../../core/utils/types';
 import {capitalizeFirstLetter} from '../../../core/utils/utils';
 import {
@@ -38,11 +41,11 @@ const _HousingStatusForm = (props: any) => {
 
   const fetchQuestions = async () => {
     let result = await syncCatalogService.getQuestionWithOptions([
-      QuestionCodes.Techo,
-      QuestionCodes.Pared,
-      QuestionCodes.Piso,
-      QuestionCodes.Ventilacion,
-      QuestionCodes.Iluminacion,
+      QuestionFamilyCodes.Techo,
+      QuestionFamilyCodes.Pared,
+      QuestionFamilyCodes.Piso,
+      QuestionFamilyCodes.Ventilacion,
+      QuestionFamilyCodes.Iluminacion,
     ]);
     if (result) {
       setState({
@@ -50,7 +53,7 @@ const _HousingStatusForm = (props: any) => {
         questions: result,
       });
     }
-  }
+  };
 
   /* const { handleSubmit, control, errors, setValue } = useForm({
     resolver: yupResolver(schemaForm),
@@ -68,29 +71,36 @@ const _HousingStatusForm = (props: any) => {
     { label: 'No adecuado', value: '3' },
   ];
  */
+  async function getAnswers(type: number, code: string, prop: string) {
+    let question = await props.getQuestionAnswer(type, code);
+    setValue(prop, question);
+  }
   const getItemsForQuestionSelect = (code: string) => {
-    let item: SelectSchema = { name: '', id: 0, children: [] };
+    let item: SelectSchema = {name: '', id: 0, children: []};
     for (let i = 0; i < state.questions.length; i++) {
       if (state.questions[i].CODIGO === code) {
         item.id = state.questions[i].ID;
         item.name = capitalizeFirstLetter(state.questions[i].NOMBRE);
         for (let option of state.questions[i].OPTIONS) {
-          item.children.push({ value: option.ID.toString(), label: option.NOMBRE });
+          item.children.push({
+            value: option.ID.toString(),
+            label: option.NOMBRE,
+          });
         }
-        item.children.unshift({ value: '-1', label: 'Seleccione' });
+        item.children.unshift({value: '-1', label: 'Seleccione'});
       }
     }
     return item;
-  }
+  };
 
-  const { handleSubmit, control, errors, setValue } = useForm({
+  const {handleSubmit, control, errors, setValue} = useForm({
     resolver: yupResolver(schemaForm),
   });
 
   const onSubmit = (data: any) => {
     console.log(data);
     navigation.goBack();
-  }
+  };
   return (
     <KeyboardAwareScrollView>
       <View style={styles.container}>
@@ -116,7 +126,7 @@ const _HousingStatusForm = (props: any) => {
           )}
           name="Techo"
         />
-        <Text>{getItemsForQuestionSelect(QuestionCodes.Piso).name}</Text>
+        <Text>{getItemsForQuestionSelect(QuestionFamilyCodes.Piso).name}</Text>
         <Controller
           control={control}
           render={({onChange, onBlur, value}) => (
@@ -142,12 +152,14 @@ const _HousingStatusForm = (props: any) => {
               }}
               value={value}
               selectedValue={value}
-              items={getItemsForQuestionSelect(QuestionCodes.Piso).children}
+              items={
+                getItemsForQuestionSelect(QuestionFamilyCodes.Piso).children
+              }
             />
           )}
           name="Piso"
         />
-        <Text>{getItemsForQuestionSelect(QuestionCodes.Pared).name}</Text>
+        <Text>{getItemsForQuestionSelect(QuestionFamilyCodes.Pared).name}</Text>
         <Controller
           control={control}
           render={({onChange, onBlur, value}) => (
@@ -155,7 +167,7 @@ const _HousingStatusForm = (props: any) => {
               //label="Pared"
               onBlur={onBlur}
               enabled={true}
-              onBlur={onBlur}
+              //onBlur={onBlur}
               error={errors.Pared}
               onChange={(vlue: any) => {
                 onChange(vlue);
@@ -181,7 +193,9 @@ const _HousingStatusForm = (props: any) => {
           )}
           name="Pared"
         />
-        <Text>{getItemsForQuestionSelect(QuestionCodes.Ventilacion).name}</Text>
+        <Text>
+          {getItemsForQuestionSelect(QuestionFamilyCodes.Ventilacion).name}
+        </Text>
         <Controller
           control={control}
           render={({onChange, onBlur, value}) => (
@@ -189,7 +203,7 @@ const _HousingStatusForm = (props: any) => {
               //label="Ventilation"
               onBlur={onBlur}
               enabled={true}
-              onBlur={onBlur}
+              //onBlur={onBlur}
               error={errors.Ventilacion}
               onChange={(vlue: any) => {
                 onChange(vlue);
@@ -208,12 +222,17 @@ const _HousingStatusForm = (props: any) => {
               }}
               value={value}
               selectedValue={value}
-              items={getItemsForQuestionSelect(QuestionCodes.Ventilacion).children}
+              items={
+                getItemsForQuestionSelect(QuestionFamilyCodes.Ventilacion)
+                  .children
+              }
             />
           )}
           name="Ventilacion"
         />
-        <Text>{getItemsForQuestionSelect(QuestionCodes.Iluminacion).name}</Text>
+        <Text>
+          {getItemsForQuestionSelect(QuestionFamilyCodes.Iluminacion).name}
+        </Text>
         <Controller
           control={control}
           render={({onChange, onBlur, value}) => (
@@ -221,7 +240,7 @@ const _HousingStatusForm = (props: any) => {
               //label="Iluminacion"
               onBlur={onBlur}
               enabled={true}
-              onBlur={onBlur}
+              //onBlur={onBlur}
               error={errors.Iluminacion}
               onChange={(vlue: any) => {
                 onChange(vlue);
@@ -240,7 +259,10 @@ const _HousingStatusForm = (props: any) => {
               }}
               value={value}
               selectedValue={value}
-              items={getItemsForQuestionSelect(QuestionCodes.Iluminacion).children}
+              items={
+                getItemsForQuestionSelect(QuestionFamilyCodes.Iluminacion)
+                  .children
+              }
             />
           )}
           name="Iluminacion"

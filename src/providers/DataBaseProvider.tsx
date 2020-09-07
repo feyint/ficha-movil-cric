@@ -8,6 +8,8 @@ export enum DataBaseSchemas {
   FUBUBIVIVSCHEMA = 'FUBUBIVIV',
   FNBNUCVIV_FVCCONVIVSCHEMA = 'FNBNUCVIV_FVCCONVIV',
   FNBNUCVIVSCHEMA = 'FNBNUCVIV',
+  FNCPERSONSCHEMA = 'FNCPERSON',
+  FNBNUCVIV_FNCPERSONSCHEMA = 'FNBNUCVIV_FNCPERSON',
 }
 export const schemaVersion = 2;
 export const UserSchema = {
@@ -32,6 +34,50 @@ export const FNCTIPIDENSCHEMA = {
     FECHA_CREACION: 'date',
   },
 };
+//-----------------------------------------------------------
+export const FNCPERSONSCHEMA = {
+  name: DataBaseSchemas.FNCPERSONSCHEMA,
+  properties: {
+    ID: 'int',
+    CODIGO: 'string',
+    IDENTIFICACION: 'int',
+    PRIMER_NOMBRE: 'string',
+    SEGUNDO_NOMBRE: 'string',
+    PRIMER_APELLIDO: 'string',
+    SEGUNDO_APELLIDO: 'string',
+    FECHA_NACIMIENTO: 'date',
+    EDAD: 'int',
+    EDAD_VISITA: 'int',
+    TEL_CEDULAR: 'int',
+    TEL_ALTERNO: 'int',
+    CORREO_ELECTRONICO: 'string',
+    FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
+    USUARIO_DATA: 'string',
+    FECHA_CREACION: {type: 'date', default: new Date()},
+    ORIGEN_DATA: 'date',
+    FNCTIPIDE_ID: 'int',
+    FNCORGANI_ID: 'int',
+    FNCLUNIND_ID: 'int',
+    FNCOCUPAC_ID: 'int',
+    FUCMUNICI_ID: 'int',
+    FNCPAREN_ID: 'int',
+    FNCGENERO_ID: 'int',
+  },
+};
+export const FNBNUCVIV_FNCPERSONSCHEMA = {
+  name: DataBaseSchemas.FNBNUCVIV_FNCPERSONSCHEMA,
+  properties: {
+    FNBNUCVIV_ID: 'int',
+    FNCPERSON_ID: 'int',
+    ID: 'int',
+    SELECCION: 'string',
+    FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
+    USUARIO_DATA: 'string',
+    FECHA_CREACION: {type: 'date', default: new Date()},
+    ORIGEN_DATA: 'string',
+  },
+};
+//-----------------------------------------------------------
 export const FVBENCUESSCHEMA = {
   name: DataBaseSchemas.FVBENCUESSCHEMA,
   properties: {
