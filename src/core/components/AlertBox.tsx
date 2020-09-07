@@ -6,6 +6,7 @@ interface Props {
   mode?: 'text' | 'outlined' | 'contained' | undefined;
   value: string;
   onPress?: any;
+  //color?: string;
 }
 export default class AlertBox extends Component<Props, any> {
   ShowAlertDialog = () => {
@@ -29,6 +30,7 @@ export default class AlertBox extends Component<Props, any> {
     return (
       <View style={styles.MainContainer}>
         <BButton
+          color="primary"
           value={this.props.value}
           onPress={() => {
             this.ShowAlertDialog();
