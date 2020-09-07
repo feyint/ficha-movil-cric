@@ -15,14 +15,14 @@ import { SelectSchema } from '../../../core/utils/types';
 import { capitalizeFirstLetter } from '../../../core/utils/utils';
 
 const schemaForm = yup.object().shape({
-  ceiling: yup.string().required(),
-  floor: yup.string().required(),
-  wall: yup.string().required(),
-  ilumination: yup.string().required(),
-  ventilation: yup.string().required(),
+  ceiling: yup.number().positive().required(),
+  floor: yup.number().positive().required(),
+  wall: yup.number().positive().required(),
+  ilumination: yup.number().positive().required(),
+  ventilation: yup.number().positive().required(),
 });
 
-const _HousingStatusForm = (user: any) => {
+const _HousingStatusForm = (props: any) => {
   const navigation = useNavigation();
 
   const syncCatalogService = new HousingService();
@@ -31,14 +31,19 @@ const _HousingStatusForm = (user: any) => {
     questions: [] as HousingQuestion[],
   });
 
-
   useEffect(() => {
     console.log('Init HousingStatusForm');
     fetchQuestions();
   }, []);
 
-  async function fetchQuestions() {
-    let result = await syncCatalogService.getQuestionWithOptions([QuestionCodes.Techo, QuestionCodes.Pared]);
+  const fetchQuestions = async () => {
+    let result = await syncCatalogService.getQuestionWithOptions([
+      QuestionCodes.Techo,
+      QuestionCodes.Pared,
+      QuestionCodes.Piso,
+      QuestionCodes.Ventilacion,
+      QuestionCodes.Iluminacion,
+    ]);
     if (result) {
       console.log('Result BD: ', result);
       setState({
@@ -48,7 +53,7 @@ const _HousingStatusForm = (user: any) => {
     }
   }
 
-  const { handleSubmit, control, errors, setValue } = useForm({
+  /* const { handleSubmit, control, errors, setValue } = useForm({
     resolver: yupResolver(schemaForm),
     defaultValues: {
       ceiling: user.user.ceiling,
@@ -57,13 +62,13 @@ const _HousingStatusForm = (user: any) => {
       ilumination: user.user.ilumination,
       ventilation: user.user.ventilation,
     },
-  });
-  const defaultOptions = [
+  }); */
+  /* const defaultOptions = [
     { label: 'Seleccione', value: '1' },
     { label: 'Adecuado', value: '2' },
     { label: 'No adecuado', value: '3' },
   ];
-
+ */
   const getItemsForQuestionSelect = (code: string) => {
     let item: SelectSchema = { name: '', id: 0, children: [] };
     for (let i = 0; i < state.questions.length; i++) {
@@ -79,6 +84,9 @@ const _HousingStatusForm = (user: any) => {
     return item;
   }
 
+  const { handleSubmit, control, errors, setValue } = useForm({
+    resolver: yupResolver(schemaForm),
+  });
 
   const onSubmit = (data: any) => {
     console.log(data);
@@ -89,16 +97,16 @@ const _HousingStatusForm = (user: any) => {
       <View style={styles.container}>
         <Text>{getItemsForQuestionSelect(QuestionCodes.Techo).name}</Text>
         <Controller
-          defaultValue=""
+          //defaultValue=""
           control={control}
           render={({ onChange, onBlur, value }) => (
             <BPicker
-              label="Techo"
-              prompt="Seleccione una opción"
+              //label="Techo"
+              //prompt="Seleccione una opción"
               enabled={true}
               onBlur={onBlur}
               error={errors.ceiling}
-              onChange={(value) => {
+              onChange={(value: any) => {
                 onChange(value);
               }}
               value={value}
@@ -108,31 +116,31 @@ const _HousingStatusForm = (user: any) => {
           )}
           name="ceiling"
         />
-        <Text>Piso</Text>
+        <Text>{getItemsForQuestionSelect(QuestionCodes.Piso).name}</Text>
         <Controller
           defaultValue=""
           control={control}
           render={({ onChange, onBlur, value }) => (
             <BPicker
-              label="Piso"
+              //label="Piso"
               enabled={true}
               onBlur={onBlur}
               error={errors.floor}
               onChange={(value) => onChange(value)}
               value={value}
               selectedValue={value}
-              items={defaultOptions}
+              items={getItemsForQuestionSelect(QuestionCodes.Piso).children}
             />
           )}
           name="floor"
         />
-        <Text>Pared</Text>
+        <Text>{getItemsForQuestionSelect(QuestionCodes.Pared).name}</Text>
         <Controller
           defaultValue=""
           control={control}
           render={({ onChange, onBlur, value }) => (
             <BPicker
-              label="Pared"
+              //label="Pared"
               onBlur={onBlur}
               enabled={true}
               error={errors.wall}
@@ -144,38 +152,38 @@ const _HousingStatusForm = (user: any) => {
           )}
           name="wall"
         />
-        <Text>Ventilacion</Text>
+        <Text>{getItemsForQuestionSelect(QuestionCodes.Ventilacion).name}</Text>
         <Controller
           defaultValue=""
           control={control}
           render={({ onChange, onBlur, value }) => (
             <BPicker
-              label="Ventilation"
+              //label="Ventilation"
               onBlur={onBlur}
               enabled={true}
               error={errors.ventilation}
               onChange={(value) => onChange(value)}
               value={value}
               selectedValue={value}
-              items={defaultOptions}
+              items={getItemsForQuestionSelect(QuestionCodes.Ventilacion).children}
             />
           )}
           name="ventilation"
         />
-        <Text>Iluminacion</Text>
+        <Text>{getItemsForQuestionSelect(QuestionCodes.Iluminacion).name}</Text>
         <Controller
           defaultValue=""
           control={control}
           render={({ onChange, onBlur, value }) => (
             <BPicker
-              label="Iluminacion"
+              //label="Iluminacion"
               onBlur={onBlur}
               enabled={true}
               error={errors.ilumination}
               onChange={(value) => onChange(value)}
               value={value}
               selectedValue={value}
-              items={defaultOptions}
+              items={getItemsForQuestionSelect(QuestionCodes.Iluminacion).children}
             />
           )}
           name="ilumination"
