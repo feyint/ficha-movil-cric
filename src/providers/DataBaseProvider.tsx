@@ -6,9 +6,10 @@ export enum DataBaseSchemas {
   FVCCONVIVSCHEMA = 'FVCCONVIV',
   FVCELEVIVSCHEMA = 'FVCELEVIV',
   FUBUBIVIVSCHEMA = 'FUBUBIVIV',
-  FVBVIVIEN_FVCCONVIVSCHEMA = 'FVBVIVIEN_FVCCONVIV',
+  FNBNUCVIV_FVCCONVIVSCHEMA = 'FNBNUCVIV_FVCCONVIV',
+  FNBNUCVIVSCHEMA = 'FNBNUCVIV',
 }
-export const schemaVersion = 1;
+export const schemaVersion = 2;
 export const UserSchema = {
   name: DataBaseSchemas.UserSchema,
   properties: {
@@ -61,19 +62,17 @@ export const FVCELEVIVSCHEMA = {
     ESTADO: 'bool',
   },
 };
-export const FVBVIVIEN_FVCCONVIV = {
-  name: DataBaseSchemas.FVBVIVIEN_FVCCONVIVSCHEMA,
+export const FNBNUCVIV_FVCCONVIVSCHEMA = {
+  name: DataBaseSchemas.FNBNUCVIV_FVCCONVIVSCHEMA,
   properties: {
-    FVBVIVIEN_CODE: 'string',
-    FVCELEVIV_CODE: 'string',
-    FVCCONVIV_CODE: 'string',
+    FNBNUCVIV_ID: 'int',
     FVCCONVIV_ID: 'int',
-    FVBVIVIEN_ID: 'int',
     FVCELEVIV_ID: 'int',
+    ID: 'int?',
+    SELECCION: 'string?',
     SYNCSTATE: 'int',
   },
 };
-//type PropertyType = string | 'bool' | 'int' | 'float' | 'double' | 'string' | 'data' | 'date' | 'list' | 'linkingObjects';
 export const FUBUBIVIVSCHEMA = {
   name: DataBaseSchemas.FUBUBIVIVSCHEMA,
   properties: {
@@ -84,8 +83,19 @@ export const FUBUBIVIVSCHEMA = {
     COORDENADA_Y: 'int',
     HUMO_CASA: 'bool',
     NUM_NUCLEOS: 'int',
-    FECHA_ACTIVIDAD: 'date',
-    FECHA_CREACION: 'date',
+    FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
+    FECHA_CREACION: {type: 'date', default: new Date()},
+    ORIGEN_DATA: 'string',
+    USUARIO_DATA: 'string',
+    FUCBARVER_ID: 'int',
+  },
+};
+export const FNBNUCVIVSCHEMA = {
+  name: DataBaseSchemas.FNBNUCVIVSCHEMA,
+  properties: {
+    ID: 'int',
+    CODIGO: 'string',
+    HUMO_CASA: 'bool',
     ORIGEN_DATA: 'string',
     USUARIO_DATA: 'string',
     FUCBARVER_ID: 'int',
@@ -95,12 +105,14 @@ export const FUBUBIVIVSCHEMA = {
     ANIMAL_NOVACUNADO: 'int',
     RIESGO: 'bool',
     OBSERVACION: 'string',
-    FUCUNICUI_ID: 'int',
-    FVBENCUES_ID: 'int',
     LUGAR_COCINA: 'string',
     HUMO_DENTRO: 'string',
     ACCESO_INTERNET: 'bool',
     TOTAL_ANIMAL: 'int',
+    FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
+    FECHA_CREACION: {type: 'date', default: new Date()},
+    FUBUBIVIV_ID: 'int',
+    FUBUBIVIV_CODE: 'string',
   },
 };
 
@@ -132,7 +144,8 @@ export default class DataBaseProvider {
         FVCCONVIVSCHEMA,
         FVCELEVIVSCHEMA,
         FUBUBIVIVSCHEMA,
-        FVBVIVIEN_FVCCONVIV,
+        FNBNUCVIVSCHEMA,
+        FNBNUCVIV_FVCCONVIVSCHEMA,
       ],
     }).then((realm) => {
       realm.write(() => {
@@ -145,14 +158,25 @@ export default class DataBaseProvider {
           identificationType: 1,
           identification: '1061809552',
         });
-        realm.create('FUBUBIVIV', {
+        realm.create(DataBaseSchemas.FUBUBIVIVSCHEMA, {
           ID: 123,
-          CODIGO: 'CODVIV10001',
+          CODIGO: 'CODVIVI1',
           DIRECCION: 'Calle 34CN',
           COORDENADA_X: 12345,
           COORDENADA_Y: 12345,
           HUMO_CASA: false,
-          NUM_NUCLEOS: 10,
+          NUM_NUCLEOS: 0,
+          FECHA_ACTIVIDAD: new Date(),
+          FECHA_CREACION: new Date(),
+          ORIGEN_DATA: 'string',
+          USUARIO_DATA: 'string',
+          FUCBARVER_ID: 1,
+          RESIDUO_BOR: 'string',
+        });
+        realm.create(DataBaseSchemas.FNBNUCVIVSCHEMA, {
+          ID: 1,
+          CODIGO: 'CODVIVI1_100-NF01',
+          HUMO_CASA: false,
           FECHA_ACTIVIDAD: new Date(),
           FECHA_CREACION: new Date(),
           ORIGEN_DATA: 'string',
@@ -163,13 +187,13 @@ export default class DataBaseProvider {
           ANIMAL_VACUNADO: 1,
           ANIMAL_NOVACUNADO: 1,
           RIESGO: false,
-          OBSERVACION: 'string',
-          FUCUNICUI_ID: 1,
-          FVBENCUES_ID: 1,
-          LUGAR_COCINA: 'string',
-          HUMO_DENTRO: 'string',
-          ACCESO_INTERNET: true,
-          TOTAL_ANIMAL: 10,
+          OBSERVACION: '',
+          LUGAR_COCINA: '',
+          HUMO_DENTRO: '',
+          ACCESO_INTERNET: false,
+          TOTAL_ANIMAL: 1,
+          FUBUBIVIV_ID: 123,
+          FUBUBIVIV_CODE: 'CODVIVI1',
         });
       });
     });

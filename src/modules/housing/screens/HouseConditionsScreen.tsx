@@ -18,7 +18,7 @@ class HouseConditionsScreen extends Component<Props, any> {
           <Appbar.BackAction onPress={() => this._goBack()} />
           <Appbar.Content title="Condiciones de la vivienda" />
         </Appbar.Header>
-        <HouseConditionsForm/>
+        <HouseConditionsForm />
       </View>
     );
   }

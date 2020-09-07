@@ -1,121 +1,104 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
-import { useForm, Controller } from 'react-hook-form';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { yupResolver } from '@hookform/resolvers';
+import React, {useState, useEffect} from 'react';
+import {View, StyleSheet, Text} from 'react-native';
+import {useForm, Controller} from 'react-hook-form';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {yupResolver} from '@hookform/resolvers';
 import * as yup from 'yup';
-import { BButton, BTextInput, BPicker, BMultiSelect, BRadioButton } from '../../../core/components';
-import { useNavigation } from '@react-navigation/native';
-import { useSelector, useDispatch } from 'react-redux';
-import * as catalogsAction from '../../location/state/actions';
-import * as catalogutilities from '../../../core/utils/catalog';
-import { Catalog } from '../state/types';
-import { capitalizeFirstLetter } from '../../../core/utils/utils';
-import { HousingService } from '../../../services';
-import { HousingQuestion } from '../../housing/state/types';
-import { SelectSchema, MultiSelectSchema } from '../../../core/utils/types';
-import { QuestionCodes, QuestionTypes } from '../../../core/utils/HousingTypes';
-
+import {
+  BButton,
+  BTextInput,
+  BPicker,
+  BMultiSelect,
+  BRadioButton,
+} from '../../../core/components';
+import {useNavigation} from '@react-navigation/native';
+import {HousingService} from '../../../services';
+import {HousingQuestion} from '../../housing/state/types';
+import {
+  QuestionFamilyCodes,
+  logicOption,
+  QuestionTypes,
+} from '../../../core/utils/HousingTypes';
+import {
+  saveAnswerLocal,
+  getQuestionAnswer,
+  getQuestionWithOptions,
+} from '../../../state/house/actions';
+import {connect} from 'react-redux';
 const schemaForm = yup.object().shape({
   housecode: yup.string().required(),
-  roofmaterial: yup.string().required(),
-  floormaterial: yup.string().required(),
-  wallmaterial: yup.string().required(),
-  housetenure: yup.string().required(),
+  MaterialTecho: yup.number().required(),
+  MaterialPiso: yup.string().required(),
+  MaterialPared: yup.string().required(),
+  Tenenciavivienda: yup.string().required(),
   kitchenislocated: yup.string().required(),
-  smokeinsidehouse: yup.string().required(),
-  cookwith: yup.string().required(),
-  numberpeoplebedroom: yup.string().required(),
-  roomsinhouse: yup.string().required(),
-  typelighting: yup.string().required(),
+  smokeinsidehouse: yup.string().required().oneOf(['SI', 'NO']),
+  Cocinacon: yup.string().required(),
+  Numerodepersonaspordormitorio: yup.string().required(),
+  Habitacionesenlavivienda: yup.string().required(),
+  TipodeAlumbrado: yup.string().required(),
   internetaccess: yup.string().required(),
 });
-
-/*const questionsCodes = {
-  FVCELEVIV2: '2',
-  FVCELEVIV3: '3',
-  FVCELEVIV4: '4',
-};*/
-
+const questions = [
+  QuestionFamilyCodes.MaterialTecho,
+  QuestionFamilyCodes.MaterialPiso,
+  QuestionFamilyCodes.MaterialPared,
+  QuestionFamilyCodes.Tenenciavivienda,
+  QuestionFamilyCodes.Cocinacon,
+  QuestionFamilyCodes.Numerodepersonaspordormitorio,
+  QuestionFamilyCodes.Habitacionesenlavivienda,
+  QuestionFamilyCodes.TipodeAlumbrado,
+];
+const listCocinaseEncuentra = [
+  {value: '-1', label: 'Seleccione...'},
+  {value: '1', label: 'ADENTRO'},
+  {value: '2', label: 'AFUERA'},
+];
+const listAccesoInternet = [
+  {value: '-1', label: 'Seleccione...'},
+  {value: 'SI', label: 'Si'},
+  {value: 'NO', label: 'No'},
+];
 const _HouseForm = (props: any) => {
   const navigation = useNavigation();
-
   const syncCatalogService = new HousingService();
   const [state, setState] = useState({
     questions: [] as HousingQuestion[],
   });
-
+  const {handleSubmit, control, errors, setValue} = useForm({
+    resolver: yupResolver(schemaForm),
+  });
   useEffect(() => {
     fetchQuestions();
   }, []);
-
   const fetchQuestions = async () => {
-    let result = await syncCatalogService.getQuestionWithOptions(
-      [QuestionCodes.MaterialTecho,
-      QuestionCodes.MaterialPiso,
-      QuestionCodes.MaterialPared,
-      QuestionCodes.Tenenciavivienda,
-      QuestionCodes.Cocinacon,
-      QuestionCodes.Numerodepersonaspordormitorio,
-      QuestionCodes.Habitacionesenlavivienda,
-      QuestionCodes.TipodeAlumbrado]);
+    let result = await syncCatalogService.getQuestionWithOptions(questions);
     if (result) {
       setState({
         ...state,
         questions: result,
       });
     }
+    setValue('housecode', props.FNBNUCVIV.CODIGO);
+  };
+  async function getAnswers(type: number, code: string, prop: string) {
+    let question = await props.getQuestionAnswer(type, code);
+    setValue(prop, question);
   }
-
   const getItemsForQuestionSelect = (code: string) => {
-    let item: SelectSchema = { name: '', id: 0, children: [] };
-    for (let i = 0; i < state.questions.length; i++) {
-      if (state.questions[i].CODIGO === code) {
-        item.id = state.questions[i].ID;
-        item.name = capitalizeFirstLetter(state.questions[i].NOMBRE);
-        for (let option of state.questions[i].OPTIONS) {
-          item.children.push({ value: option.ID.toString(), label: option.NOMBRE });
-        }
-        item.children.unshift({ value: '-1', label: 'Seleccione' });
-      }
-    }
-    return item;
-  }
+    return syncCatalogService.getItemsForQuestionSelect(code, state.questions);
+  };
+
+  const getQuestionlabel = (code: string) => {
+    return syncCatalogService.getQuestionlabel(code, state.questions);
+  };
 
   const getItemsForQuestionMultiSelect = (code: string) => {
-    let item: MultiSelectSchema = { name: '', id: 0, children: [] };
-    for (let i = 0; i < state.questions.length; i++) {
-      if (state.questions[i].CODIGO === code) {
-        item.id = state.questions[i].ID;
-        item.name = capitalizeFirstLetter(state.questions[i].NOMBRE);
-        for (let option of state.questions[i].OPTIONS) {
-          item.children.push({ id: option.ID, name: option.NOMBRE });
-        }
-        // item.children.unshift({ id: -1, name: 'Seleccione' });
-      }
-    }
-    return item;
-  }
-
-  const listCocinaseEncuentra = [
-    { value: '-1', label: "Seleccione..." },
-    { value: '1', label: "ADENTRO" },
-    { value: '2', label: "AFUERA" },
-  ];
-  const listHumoDentro = [
-    { value: 'SI', label: "Si" },
-    { value: 'NO', label: "No" },
-  ];
-  const listAccesoInternet = [
-    { value: '-1', label: "Seleccione..." },
-    { value: 'SI', label: "Si" },
-    { value: 'NO', label: "No" },
-  ];
-
-  const { handleSubmit, control, errors, setValue } = useForm({
-    resolver: yupResolver(schemaForm),
-  });
-
+    return syncCatalogService.getItemsForQuestionMultiSelect(
+      code,
+      state.questions,
+    );
+  };
   const onSubmit = (data: any) => {
     console.log(data);
     navigation.goBack();
@@ -124,16 +107,16 @@ const _HouseForm = (props: any) => {
   return (
     <KeyboardAwareScrollView>
       <View style={styles.container}>
-        <Text>Código vivienda</Text>
         <Controller
           control={control}
-          render={({ onChange, onBlur, value }) => (
+          render={({onChange, onBlur, value}) => (
             <BTextInput
               label="Código vivienda"
-              disabled={false}
+              disabled={true}
               onBlur={onBlur}
               error={errors.housecode}
               onChange={(value: any) => {
+                onChange(value);
                 console.log('Selected Item: ', value);
               }}
               value={value}
@@ -141,92 +124,150 @@ const _HouseForm = (props: any) => {
           )}
           name="housecode"
         />
-        <Text>{getItemsForQuestionSelect(QuestionCodes.MaterialTecho).name}</Text>
         <Controller
           control={control}
-          render={({ onChange, onBlur, value }) => (
+          render={({onChange, onBlur, value}) => (
             <BPicker
-              // label="Material Techo"
-              // prompt="Seleccione una opción"
-              enabled={true}
+              label={
+                getItemsForQuestionSelect(QuestionFamilyCodes.MaterialTecho)
+                  .name
+              }
               onBlur={onBlur}
-              error={errors.roofmaterial}
-              onChange={(value: any) => {
-                onChange(value);
-                console.log('Selected Item: ', value);
+              error={errors.MaterialTecho}
+              onChange={(vlue: any) => {
+                onChange(vlue);
+                props.saveAnswerLocal(
+                  QuestionTypes.selectOne,
+                  QuestionFamilyCodes.MaterialTecho,
+                  vlue,
+                );
+              }}
+              onLoad={() => {
+                getAnswers(
+                  QuestionTypes.selectOne,
+                  QuestionFamilyCodes.MaterialTecho,
+                  'MaterialTecho',
+                );
               }}
               value={value}
               selectedValue={value}
-              items={getItemsForQuestionSelect(QuestionCodes.MaterialTecho).children}
+              items={
+                getItemsForQuestionSelect(QuestionFamilyCodes.MaterialTecho)
+                  .children
+              }
             />
           )}
-          name="roofmaterial"
+          name="MaterialTecho"
         />
-        <Text>{getItemsForQuestionSelect(QuestionCodes.MaterialPiso).name}</Text>
         <Controller
           control={control}
-          render={({ onChange, onBlur, value }) => (
+          render={({onChange, onBlur, value}) => (
             <BPicker
-              // label="Material Piso"
-              // prompt="Seleccione una opción"
-              enabled={true}
+              label={
+                getItemsForQuestionSelect(QuestionFamilyCodes.MaterialPiso).name
+              }
               onBlur={onBlur}
-              error={errors.floormaterial}
-              onChange={(value: any) => {
-                onChange(value);
+              error={errors.MaterialPiso}
+              onChange={(vlue: any) => {
+                onChange(vlue);
+                props.saveAnswerLocal(
+                  QuestionTypes.selectOne,
+                  QuestionFamilyCodes.MaterialPiso,
+                  vlue,
+                );
+              }}
+              onLoad={() => {
+                getAnswers(
+                  QuestionTypes.selectOne,
+                  QuestionFamilyCodes.MaterialPiso,
+                  'MaterialPiso',
+                );
               }}
               value={value}
               selectedValue={value}
-              items={getItemsForQuestionSelect(QuestionCodes.MaterialPiso).children}
+              items={
+                getItemsForQuestionSelect(QuestionFamilyCodes.MaterialPiso)
+                  .children
+              }
             />
           )}
-          name="floormaterial"
+          name="MaterialPiso"
         />
-        <Text>{getItemsForQuestionSelect(QuestionCodes.MaterialPared).name}</Text>
         <Controller
           control={control}
-          render={({ onChange, onBlur, value }) => (
+          render={({onChange, onBlur, value}) => (
             <BPicker
-              // label="Material Pared"
-              // prompt="Seleccione una opción"
-              enabled={true}
+              label={
+                getItemsForQuestionSelect(QuestionFamilyCodes.MaterialPared)
+                  .name
+              }
               onBlur={onBlur}
-              error={errors.wallmaterial}
-              onChange={(value: any) => {
-                onChange(value);
+              error={errors.MaterialPared}
+              onChange={(vlue: any) => {
+                onChange(vlue);
+                props.saveAnswerLocal(
+                  QuestionTypes.selectOne,
+                  QuestionFamilyCodes.MaterialPared,
+                  vlue,
+                );
+              }}
+              onLoad={() => {
+                getAnswers(
+                  QuestionTypes.selectOne,
+                  QuestionFamilyCodes.MaterialPared,
+                  'MaterialPared',
+                );
               }}
               value={value}
               selectedValue={value}
-              items={getItemsForQuestionSelect(QuestionCodes.MaterialPared).children}
+              items={
+                getItemsForQuestionSelect(QuestionFamilyCodes.MaterialPared)
+                  .children
+              }
             />
           )}
-          name="wallmaterial"
+          name="MaterialPared"
         />
-        <Text>{getItemsForQuestionSelect(QuestionCodes.Tenenciavivienda).name}</Text>
         <Controller
           control={control}
-          render={({ onChange, onBlur, value }) => (
+          render={({onChange, onBlur, value}) => (
             <BPicker
-              // label="Tenencia vivienda"
-              // prompt="Seleccione una opción"
-              enabled={true}
+              label={
+                getItemsForQuestionSelect(QuestionFamilyCodes.Tenenciavivienda)
+                  .name
+              }
               onBlur={onBlur}
-              error={errors.housetenure}
-              onChange={(value: any) => {
-                onChange(value);
+              error={errors.Tenenciavivienda}
+              onChange={(vlue: any) => {
+                onChange(vlue);
+                props.saveAnswerLocal(
+                  QuestionTypes.selectOne,
+                  QuestionFamilyCodes.Tenenciavivienda,
+                  vlue,
+                );
+              }}
+              onLoad={() => {
+                getAnswers(
+                  QuestionTypes.selectOne,
+                  QuestionFamilyCodes.Tenenciavivienda,
+                  'Tenenciavivienda',
+                );
               }}
               value={value}
               selectedValue={value}
-              items={getItemsForQuestionSelect(QuestionCodes.Tenenciavivienda).children}
+              items={
+                getItemsForQuestionSelect(QuestionFamilyCodes.Tenenciavivienda)
+                  .children
+              }
             />
           )}
-          name="housetenure"
+          name="Tenenciavivienda"
         />
-        <Text>La cocina se encuentra</Text>
         <Controller
           control={control}
-          render={({ onChange, onBlur, value }) => (
+          render={({onChange, onBlur, value}) => (
             <BPicker
+              label="La cocina se encuentra"
               enabled={true}
               onBlur={onBlur}
               error={errors.kitchenislocated}
@@ -240,13 +281,14 @@ const _HouseForm = (props: any) => {
           )}
           name="kitchenislocated"
         />
-        <Text>Humo dentro de la casa</Text>
         <Controller
           control={control}
-          render={({ onChange, value }) => (
+          render={({onChange, value}) => (
             <BRadioButton
+              label="Humo dentro de la casa"
               value={value}
-              items={listHumoDentro}
+              error={errors.smokeinsidehouse}
+              items={logicOption}
               onChange={(value: any) => {
                 onChange(value);
                 console.log('Selected Item: ', value);
@@ -255,99 +297,154 @@ const _HouseForm = (props: any) => {
           )}
           name="smokeinsidehouse"
         />
-        <Text>{getItemsForQuestionMultiSelect(QuestionCodes.Cocinacon,).name}</Text>
         <Controller
           control={control}
-          render={({ onChange, onBlur, value }) => (
-            <BMultiSelect
+          render={({onChange, onBlur, value}) => (
+            <BPicker
               label={
-                getItemsForQuestionMultiSelect(
-                  QuestionCodes.Cocinacon,
+                getItemsForQuestionSelect(QuestionFamilyCodes.Cocinacon).name
+              }
+              onBlur={onBlur}
+              error={errors.Cocinacon}
+              onChange={(vlue: any) => {
+                onChange(vlue);
+                props.saveAnswerLocal(
+                  QuestionTypes.selectOne,
+                  QuestionFamilyCodes.Cocinacon,
+                  vlue,
+                );
+              }}
+              onLoad={() => {
+                getAnswers(
+                  QuestionTypes.selectOne,
+                  QuestionFamilyCodes.Cocinacon,
+                  'Cocinacon',
+                );
+              }}
+              value={value}
+              selectedValue={value}
+              items={
+                getItemsForQuestionSelect(QuestionFamilyCodes.Cocinacon)
+                  .children
+              }
+            />
+          )}
+          name="Cocinacon"
+        />
+        <Controller
+          control={control}
+          render={({onChange, onBlur, value}) => (
+            <BPicker
+              label={
+                getItemsForQuestionSelect(
+                  QuestionFamilyCodes.Numerodepersonaspordormitorio,
                 ).name
               }
-              prompt="Seleccione una opción"
               onBlur={onBlur}
-              error={errors.cookwith}
-              onChange={(values: any) => {
-                console.log('Selected Items: ', values);
-                onChange(values);
+              error={errors.Numerodepersonaspordormitorio}
+              onChange={(vlue: any) => {
+                onChange(vlue);
+                props.saveAnswerLocal(
+                  QuestionTypes.selectOne,
+                  QuestionFamilyCodes.Numerodepersonaspordormitorio,
+                  vlue,
+                );
               }}
-              value={value}
-              items={getItemsForQuestionMultiSelect(
-                QuestionCodes.Cocinacon,
-              )}
-            />
-          )}
-          name="cookwith"
-        />
-        <Text>{getItemsForQuestionSelect(QuestionCodes.Numerodepersonaspordormitorio).name}</Text>
-        <Controller
-          control={control}
-          render={({ onChange, onBlur, value }) => (
-            <BPicker
-              // label="Numero de personas por dormitorio"
-              // prompt="Seleccione una opción"
-              enabled={true}
-              onBlur={onBlur}
-              error={errors.numberpeoplebedroom}
-              onChange={(value: any) => {
-                onChange(value);
-                console.log('Selected Item: ', value);
+              onLoad={() => {
+                getAnswers(
+                  QuestionTypes.selectOne,
+                  QuestionFamilyCodes.Numerodepersonaspordormitorio,
+                  'Numerodepersonaspordormitorio',
+                );
               }}
               value={value}
               selectedValue={value}
-              items={getItemsForQuestionSelect(QuestionCodes.Numerodepersonaspordormitorio).children}
+              items={
+                getItemsForQuestionSelect(
+                  QuestionFamilyCodes.Numerodepersonaspordormitorio,
+                ).children
+              }
             />
           )}
-          name="numberpeoplebedroom"
+          name="Numerodepersonaspordormitorio"
         />
-        <Text>{getItemsForQuestionSelect(QuestionCodes.Habitacionesenlavivienda).name}</Text>
         <Controller
           control={control}
-          render={({ onChange, onBlur, value }) => (
+          render={({onChange, onBlur, value}) => (
             <BPicker
-              // label="Habitacionesenlavivienda"
-              // prompt="Habitacionesenlavivienda"
-              enabled={true}
+              label={
+                getItemsForQuestionSelect(
+                  QuestionFamilyCodes.Habitacionesenlavivienda,
+                ).name
+              }
               onBlur={onBlur}
-              error={errors.roomsinhouse}
-              onChange={(value: any) => {
-                onChange(value);
-                console.log('Selected Item: ', value);
+              error={errors.Habitacionesenlavivienda}
+              onChange={(vlue: any) => {
+                onChange(vlue);
+                props.saveAnswerLocal(
+                  QuestionTypes.selectOne,
+                  QuestionFamilyCodes.Habitacionesenlavivienda,
+                  vlue,
+                );
+              }}
+              onLoad={() => {
+                getAnswers(
+                  QuestionTypes.selectOne,
+                  QuestionFamilyCodes.Habitacionesenlavivienda,
+                  'Habitacionesenlavivienda',
+                );
               }}
               value={value}
               selectedValue={value}
-              items={getItemsForQuestionSelect(QuestionCodes.Habitacionesenlavivienda).children}
+              items={
+                getItemsForQuestionSelect(
+                  QuestionFamilyCodes.Habitacionesenlavivienda,
+                ).children
+              }
             />
           )}
-          name="roomsinhouse"
+          name="Habitacionesenlavivienda"
         />
-        <Text>{getItemsForQuestionSelect(QuestionCodes.TipodeAlumbrado).name}</Text>
         <Controller
           control={control}
-          render={({ onChange, onBlur, value }) => (
+          render={({onChange, onBlur, value}) => (
             <BPicker
-              // label="TipodeAlumbrado"
-              // prompt="TipodeAlumbrado"
-              enabled={true}
+              label={
+                getItemsForQuestionSelect(QuestionFamilyCodes.TipodeAlumbrado)
+                  .name
+              }
               onBlur={onBlur}
-              error={errors.typelighting}
-              onChange={(value: any) => {
-                onChange(value);
-                console.log('Selected Item: ', value);
+              error={errors.TipodeAlumbrado}
+              onChange={(vlue: any) => {
+                onChange(vlue);
+                props.saveAnswerLocal(
+                  QuestionTypes.selectOne,
+                  QuestionFamilyCodes.TipodeAlumbrado,
+                  vlue,
+                );
+              }}
+              onLoad={() => {
+                getAnswers(
+                  QuestionTypes.selectOne,
+                  QuestionFamilyCodes.TipodeAlumbrado,
+                  'TipodeAlumbrado',
+                );
               }}
               value={value}
               selectedValue={value}
-              items={getItemsForQuestionSelect(QuestionCodes.TipodeAlumbrado).children}
+              items={
+                getItemsForQuestionSelect(QuestionFamilyCodes.TipodeAlumbrado)
+                  .children
+              }
             />
           )}
-          name="typelighting"
+          name="TipodeAlumbrado"
         />
-        <Text>Acceso a Internet</Text>
         <Controller
           control={control}
-          render={({ onChange, onBlur, value }) => (
+          render={({onChange, onBlur, value}) => (
             <BPicker
+              label="Acceso a Internet"
               enabled={true}
               onBlur={onBlur}
               error={errors.internetaccess}
@@ -368,6 +465,7 @@ const _HouseForm = (props: any) => {
             onPress={handleSubmit(onSubmit)}
           />
         </View>
+        <View style={styles.spacer} />
       </View>
     </KeyboardAwareScrollView>
   );
@@ -377,11 +475,23 @@ const styles = StyleSheet.create({
   input: {
     padding: 3,
   },
+  spacer: {
+    height: 50,
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
     padding: 8,
   },
 });
-
-export default _HouseForm;
+const mapDispatchToProps = {
+  saveAnswerLocal,
+  getQuestionAnswer,
+  getQuestionWithOptions,
+};
+const mapStateToProps = (housing) => {
+  return {
+    FNBNUCVIV: housing.housing.FNBNUCVIV,
+  };
+};
+export default connect(mapStateToProps, mapDispatchToProps)(_HouseForm);

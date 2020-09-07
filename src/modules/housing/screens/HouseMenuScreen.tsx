@@ -22,17 +22,10 @@ class HouseMenuScreen extends Component<Props, any> {
         </Appbar.Header>
         <List.Section>
           <List.Item
-            onPress={() => this.goPollsterScreen()}
-            title="Datos del encuestador"
-            left={() => <List.Icon icon="account" />}
-          />
-
-          <List.Item
             title="Vivienda"
             onPress={() => this.goHouseScreen()}
             left={() => <List.Icon icon="home" />}
           />
-
           <List.Item
             onPress={() => this.goHousingStatusScreen()}
             title="Estado de la vivienda"
@@ -42,6 +35,15 @@ class HouseMenuScreen extends Component<Props, any> {
             title="Condiciones de la vivienda"
             onPress={() => this.goHouseContitionsScreen()}
             left={() => <List.Icon icon="home-heart" />}
+          />
+          <List.Item
+            title="Administrar personas"
+            left={() => <List.Icon icon="account-group" />}
+          />
+          <List.Item
+            onPress={() => this.goPollsterScreen()}
+            title="Datos del encuestador"
+            left={() => <List.Icon icon="account" />}
           />
         </List.Section>
       </View>

@@ -8,7 +8,6 @@ import {BButton, BTextInput} from '../../../core/components';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {authAction} from '../state/actions';
-import {fetchCatalogs} from "../../location/state/actions";
 import {Snackbar} from 'react-native-paper';
 
 const schemaForm = yup.object().shape({
@@ -24,7 +23,6 @@ const _LoginForm = (props) => {
   const onSubmit = (data: any) => {
     const res = props.authAction(data);
     if (res) {
-      props.fetchCatalogs();
       navigation.navigate('MenuHome');
     } else {
       setVisible(!visible);
@@ -93,6 +91,5 @@ const styles = StyleSheet.create({
 });
 const mapDispatchToProps = {
   authAction,
-  fetchCatalogs
 };
 export default connect(null, mapDispatchToProps)(_LoginForm);
