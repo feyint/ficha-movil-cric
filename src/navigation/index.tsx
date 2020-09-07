@@ -18,6 +18,7 @@ import {
 import {useTheme} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {SyncScreen} from '../modules/sync/screens';
+import { FamilyScreen } from '../modules/families/screens';
 //import {PersonManageScreen} from '../modules/person/manage/screens';
 
 const DashboardStack = createStackNavigator();
@@ -58,6 +59,11 @@ export const Dashboard = () => {
         component={HouseScreen}
         name="HouseScreen"
         options={{headerShown: false, title: 'Datos de la vivienda'}}
+      />
+      <DashboardStack.Screen
+        component={FamilyScreen}
+        name="FamilyScreen"
+        options={{headerShown: false, title: 'Nucleo Familiar'}}
       />
       <DashboardStack.Screen
         name="MenuHome"
