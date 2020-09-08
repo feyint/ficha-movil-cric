@@ -1,4 +1,5 @@
 import {
+  FNBNUCVIVSCHEMA,
   FUBUBIVIVSCHEMA,
   FVCELEVIVSCHEMA,
   schemaVersion,
@@ -17,6 +18,20 @@ import { SelectSchema, MultiSelectSchema } from '../core/utils/types';
 import { capitalizeFirstLetter } from '../core/utils/utils';
 
 export default class HousingService {
+  async getFamilies(HouseID: number) {
+    const result = await Realm.open({
+      schema: [FNBNUCVIVSCHEMA],
+      schemaVersion: schemaVersion,
+    }).then((realm) => {
+      let items = realm
+        .objects('FNBNUCVIV')
+        .filtered(`FUBUBIVIV_ID = ${HouseID}`);
+      return items;
+    }).catch((error) => {
+      return error;
+    });
+    return result;
+  }
   async getHouses() {
     const result = await Realm.open({
       schema: [FUBUBIVIVSCHEMA],

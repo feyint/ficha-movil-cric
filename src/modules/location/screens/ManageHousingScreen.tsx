@@ -30,13 +30,16 @@ class ManageHousingScreen extends Component<any, any> {
             onPress={() => this.goHomeLocation()}
           />
           <List.Item
-            onPress={() => this.goHouseMenuScreen()}
+            onPress={() => this.goFamilyScreen() /*this.goHouseMenuScreen()*/}
             title="Nucleo Familiar"
             left={() => <List.Icon icon="account-group" />}
           />
         </List.Section>
       </View>
     );
+  }
+  goFamilyScreen() {
+    this.props.navigation.navigate('FamilyScreen');
   }
   goHouseMenuScreen() {
     this.props.navigation.navigate('HouseMenuScreen');

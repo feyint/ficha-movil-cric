@@ -489,7 +489,7 @@ const mapDispatchToProps = {
   getQuestionAnswer,
   getQuestionWithOptions,
 };
-const mapStateToProps = (housing) => {
+const mapStateToProps = (housing: any) => {
   return {
     FNBNUCVIV: housing.housing.FNBNUCVIV,
   };

@@ -5,7 +5,7 @@ import { BButton } from '../../../core/components';
 import { NavigationProp } from '@react-navigation/native';
 import { Appbar } from 'react-native-paper';
 import { connect } from 'react-redux';
-import { setQuestionWithOptions, setFNBNUCVIV } from '../../../state/house/actions';
+import { setQuestionWithOptions, SaveFUBUBIVIV } from '../../../state/house/actions';
 import { HouseList } from '../forms';
 
 interface FormData {
@@ -33,7 +33,7 @@ class HomeScreen extends Component<any, any> {
         />
         <HouseList onSelect={(value: any) => {
           console.log('Selected Item: ', value);
-          this.props.setFNBNUCVIV(value);
+          this.props.SaveFUBUBIVIV(value);
           this.goHomeLocation();
         }} />
 
@@ -46,6 +46,6 @@ class HomeScreen extends Component<any, any> {
 }
 const mapDispatchToProps = {
   setQuestionWithOptions,
-  setFNBNUCVIV
+  SaveFUBUBIVIV
 };
 export default connect(null, mapDispatchToProps)(HomeScreen);
