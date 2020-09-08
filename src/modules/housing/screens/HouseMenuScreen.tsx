@@ -39,6 +39,7 @@ class HouseMenuScreen extends Component<Props, any> {
           <List.Item
             title="Administrar personas"
             left={() => <List.Icon icon="account-group" />}
+            onPress={() => this.goPersonManageScreen()}
           />
           <List.Item
             onPress={() => this.goPollsterScreen()}
@@ -63,6 +64,9 @@ class HouseMenuScreen extends Component<Props, any> {
   }
   goHouseContitionsScreen() {
     this.props.navigation.navigate('HouseConditionsScreen');
+  }
+  goPersonManageScreen() {
+    this.props.navigation.navigate('PersonManageScreen');
   }
 }
 export default HouseMenuScreen;
