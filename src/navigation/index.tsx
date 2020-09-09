@@ -18,7 +18,10 @@ import {
 import {useTheme} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {SyncScreen} from '../modules/sync/screens';
-import {PersonManageScreen} from '../modules/person/manage/screens';
+import {
+  PersonManageScreen,
+  ViewPersonScreen,
+} from '../modules/person/manage/screens';
 import { FamilyScreen } from '../modules/families/screens';
 //import {PersonManageScreen} from '../modules/person/manage/screens';
 
@@ -85,6 +88,11 @@ export const Dashboard = () => {
         component={PersonManageScreen}
         name="PersonManageScreen"
         options={{headerShown: false, title: 'Administrar persona'}}
+      />
+      <DashboardStack.Screen
+        component={ViewPersonScreen}
+        name="ViewPersonScreen"
+        options={{headerShown: false, title: 'Ver persona'}}
       />
     </DashboardStack.Navigator>
   );
