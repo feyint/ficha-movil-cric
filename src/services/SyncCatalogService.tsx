@@ -3,13 +3,26 @@ import DataBaseProvider, {
   schemaVersion,
   FVCELEVIVSCHEMA,
   DataBaseSchemas,
+  FUCDEPARTSCHEMA,
+  FUCMUNICISCHEMA,
+  FUCTIPTERSCHEMA,
+  FUCRESGUASCHEMA,
+  FUCBARVERSCHEMA,
+  FUCZONASCHEMA,
+  FUCUNICUISCHEMA,
+  FUCZONCUISCHEMA,
 } from '../providers/DataBaseProvider';
 import Realm from 'realm';
 import {HttpProvider} from '../providers';
 
 export default class SyncCatalogService {
   async getEntity(data: any) {
-    return await HttpProvider.post('common/v1/entity', data);
+    try {
+      return await HttpProvider.post('common/v1/entity', data);
+    } catch (error) {
+      console.log(error);
+      return {data: []};
+    }
   }
   async countEntities(entity: string) {
     let db = new DataBaseProvider();
@@ -59,22 +72,164 @@ export default class SyncCatalogService {
       FVCCONVIVSCHEMA,
       FVCCONVIVSchema,
     );
+    let itemFUCDEPART: any = await this.getEntity({entityName: 'FUCDEPART'});
+    const FUCDEPARTSCHEMAs = itemFUCDEPART.data.map((item) => {
+      return {
+        ID: item.id,
+        CODIGO: item.codigo,
+        NOMBRE: item.nombre,
+        ESTADO: item.estado,
+        FUCPAIS_ID: item.fucpaisId.id,
+      };
+    });
+    await this.syncSaveEntities(
+      DataBaseSchemas.FUCDEPARTSCHEMA,
+      FUCDEPARTSCHEMA,
+      FUCDEPARTSCHEMAs,
+    );
+    let itemFUCMUNICISCHEMAs: any = await this.getEntity({
+      entityName: 'FUCMUNICI',
+    });
+    const FUCMUNICISCHEMAs = itemFUCMUNICISCHEMAs.data.map((item) => {
+      return {
+        ID: item.id,
+        CODIGO: item.codigo,
+        NOMBRE: item.nombre,
+        ESTADO: item.estado,
+        FUCTIPMUN_ID: item.fuctipmunId.id,
+        FUCDEPART_ID: item.fucdepartId.id,
+      };
+    });
+    await this.syncSaveEntities(
+      DataBaseSchemas.FUCMUNICISCHEMA,
+      FUCMUNICISCHEMA,
+      FUCMUNICISCHEMAs,
+    );
+    let itemFUCTIPTERSCHEMAs: any = await this.getEntity({
+      entityName: 'FUCTIPTER',
+    });
+    const FUCTIPTERSCHEMAs = itemFUCTIPTERSCHEMAs.data.map((item) => {
+      return {
+        ID: item.id,
+        CODIGO: item.codigo,
+        NOMBRE: item.nombre,
+        ESTADO: item.estado,
+      };
+    });
+    await this.syncSaveEntities(
+      DataBaseSchemas.FUCTIPTERSCHEMA,
+      FUCTIPTERSCHEMA,
+      FUCTIPTERSCHEMAs,
+    );
+    let itemFUCRESGUASCHEMAs: any = await this.getEntity({
+      entityName: 'FUCRESGUA',
+    });
+    const FUCRESGUASCHEMAs = itemFUCRESGUASCHEMAs.data.map((item) => {
+      return {
+        ID: item.id,
+        CODIGO: item.codigo,
+        NOMBRE: item.nombre,
+        ESTADO: item.estado,
+        TIPRES: item.tipres,
+        FUCMUNICI_ID: item.fucmuniciId.id,
+        FUCTIPRES_ID: item.fuctipresId.id,
+        FUCTERCRI_ID: item.fuctercriId.id,
+      };
+    });
+    await this.syncSaveEntities(
+      DataBaseSchemas.FUCRESGUASCHEMA,
+      FUCRESGUASCHEMA,
+      FUCRESGUASCHEMAs,
+    );
+    let itemFUCBARVERSCHEMAs: any = await this.getEntity({
+      entityName: 'FUCBARVER',
+    });
+    if (itemFUCBARVERSCHEMAs && itemFUCBARVERSCHEMAs.data.length > 0) {
+      const FUCBARVERSCHEMAs = itemFUCBARVERSCHEMAs.data.map((item) => {
+        return {
+          ID: item.id,
+          CODIGO: item.codigo,
+          NOMBRE: item.nombre,
+          ESTADO: item.estado,
+          FUCRESGUA_ID: item.fucresguaId.id,
+          FUCZONCUI_ID: item.fuczoncuiId.id,
+          FUCTIPBAV_ID: item.fuctipbavId.id,
+        };
+      });
+      await this.syncSaveEntities(
+        DataBaseSchemas.FUCBARVERSCHEMA,
+        FUCBARVERSCHEMA,
+        FUCBARVERSCHEMAs,
+      );
+    }
+    let itemFUCZONASCHEMAs: any = await this.getEntity({
+      entityName: 'FUCZONA',
+    });
+    const FUCZONASCHEMAs = itemFUCZONASCHEMAs.data.map((item) => {
+      return {
+        ID: item.id,
+        CODIGO: item.codigo,
+        NOMBRE: item.nombre,
+        ESTADO: item.estado,
+      };
+    });
+    await this.syncSaveEntities(
+      DataBaseSchemas.FUCZONASCHEMA,
+      FUCZONASCHEMA,
+      FUCZONASCHEMAs,
+    );
+    let itemFUCUNICUISCHEMAs: any = await this.getEntity({
+      entityName: 'FUCUNICUI',
+    });
+    const FUCUNICUISCHEMAs = itemFUCUNICUISCHEMAs.data.map((item) => {
+      return {
+        ID: item.id,
+        CODIGO: item.codigo,
+        NOMBRE: item.nombre,
+        ESTADO: item.estado,
+        REPS: item.repes,
+      };
+    });
+    await this.syncSaveEntities(
+      DataBaseSchemas.FUCUNICUISCHEMA,
+      FUCUNICUISCHEMA,
+      FUCUNICUISCHEMAs,
+    );
+    let itemFUCZONCUISCHEMAs: any = await this.getEntity({
+      entityName: 'FUCZONCUI',
+    });
+    const FUCZONCUISCHEMAs = itemFUCZONCUISCHEMAs.data.map((item) => {
+      return {
+        ID: item.id,
+        CODIGO: item.codigo,
+        NOMBRE: item.nombre,
+        ESTADO: item.estado,
+        FUCUNICUI_ID: item.fucunicuiId.id,
+      };
+    });
+    await this.syncSaveEntities(
+      DataBaseSchemas.FUCZONCUISCHEMA,
+      FUCZONCUISCHEMA,
+      FUCZONCUISCHEMAs,
+    );
     // console.log('FVCELEVIV ', FVCELEVIVSchema);
   }
   async syncSaveEntities(type: string, schema: any, listItems: any[]) {
-    await Realm.open({
-      schema: [schema],
-      schemaVersion: schemaVersion,
-    }).then((realm) => {
-      realm.write(() => {
-        for (let i = 0; i < listItems.length; i++) {
-          const item = listItems[i];
-          console.log(type, ' ', item);
-          realm.create(type, item);
-        }
+    if (listItems.length > 0) {
+      await Realm.open({
+        schema: [schema],
+        schemaVersion: schemaVersion,
+      }).then((realm) => {
+        realm.write(() => {
+          for (let i = 0; i < listItems.length; i++) {
+            const item = listItems[i];
+            console.log(type, ' ', item);
+            realm.create(type, item);
+          }
+        });
+        console.log('couuunt ', realm.objects(type).length);
       });
-      console.log('couuunt ', realm.objects(type).length);
-    });
+    }
   }
   allServices() {
     return new Promise((resolve, reject) => {

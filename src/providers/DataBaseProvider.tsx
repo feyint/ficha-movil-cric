@@ -10,6 +10,14 @@ export enum DataBaseSchemas {
   FNBNUCVIVSCHEMA = 'FNBNUCVIV',
   FNCPERSONSCHEMA = 'FNCPERSON',
   FNBNUCVIV_FNCPERSONSCHEMA = 'FNBNUCVIV_FNCPERSON',
+  FUCDEPARTSCHEMA = 'FUCDEPART', // departamento
+  FUCMUNICISCHEMA = 'FUCMUNICI', // municipios
+  FUCTIPTERSCHEMA = 'FUCTIPTER', // tipo territorio
+  FUCRESGUASCHEMA = 'FUCRESGUA', // resguardo
+  FUCBARVERSCHEMA = 'FUCBARVER', // barrio vereda
+  FUCZONASCHEMA = 'FUCZONA', // barrio vereda
+  FUCUNICUISCHEMA = 'FUCUNICUI', // unidad de cuidado
+  FUCZONCUISCHEMA = 'FUCZONCUI', // Zona de cuidado
 }
 export const schemaVersion = 2;
 export const UserSchema = {
@@ -161,6 +169,116 @@ export const FNBNUCVIVSCHEMA = {
     FUBUBIVIV_CODE: 'string',
   },
 };
+export const FUCDEPARTSCHEMA = {
+  name: DataBaseSchemas.FUCDEPARTSCHEMA,
+  properties: {
+    ID: 'int',
+    CODIGO: 'string',
+    NOMBRE: 'string',
+    ESTADO: 'int',
+    USUARIO_DATA: 'string?',
+    FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
+    FECHA_CREACION: {type: 'date', default: new Date()},
+    FUCPAIS_ID: 'int',
+  },
+};
+export const FUCMUNICISCHEMA = {
+  name: DataBaseSchemas.FUCMUNICISCHEMA,
+  properties: {
+    ID: 'int',
+    CODIGO: 'string',
+    NOMBRE: 'string',
+    ESTADO: 'int',
+    USUARIO_DATA: 'string?',
+    FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
+    FECHA_CREACION: {type: 'date', default: new Date()},
+    FUCTIPMUN_ID: 'int',
+    FUCDEPART_ID: 'int',
+  },
+};
+export const FUCTIPTERSCHEMA = {
+  name: DataBaseSchemas.FUCTIPTERSCHEMA,
+  properties: {
+    ID: 'int',
+    CODIGO: 'string',
+    NOMBRE: 'string',
+    ESTADO: 'int',
+    USUARIO_DATA: 'string?',
+    FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
+    FECHA_CREACION: {type: 'date', default: new Date()},
+  },
+};
+export const FUCRESGUASCHEMA = {
+  name: DataBaseSchemas.FUCRESGUASCHEMA,
+  properties: {
+    ID: 'int',
+    CODIGO: 'string',
+    NOMBRE: 'string',
+    TIPRES: 'string',
+    ESTADO: 'int',
+    USUARIO_DATA: 'string?',
+    FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
+    FECHA_CREACION: {type: 'date', default: new Date()},
+    FUCMUNICI_ID: 'int',
+    FUCTIPRES_ID: 'int',
+    FUCTERCRI_ID: 'int',
+  },
+};
+export const FUCBARVERSCHEMA = {
+  name: DataBaseSchemas.FUCBARVERSCHEMA,
+  properties: {
+    ID: 'int',
+    CODIGO: 'string',
+    NOMBRE: 'string',
+    ESTADO: 'int',
+    USUARIO_DATA: 'string?',
+    FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
+    FECHA_CREACION: {type: 'date', default: new Date()},
+    FUCRESGUA_ID: 'int',
+    FUCZONCUI_ID: 'int',
+    FUCTIPBAV_ID: 'int',
+  },
+};
+export const FUCZONASCHEMA = {
+  name: DataBaseSchemas.FUCZONASCHEMA,
+  properties: {
+    ID: 'int',
+    CODIGO: 'string',
+    NOMBRE: 'string',
+    ESTADO: 'int',
+    USUARIO_DATA: 'string?',
+    FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
+    FECHA_CREACION: {type: 'date', default: new Date()},
+  },
+};
+export const FUCUNICUISCHEMA = {
+  name: DataBaseSchemas.FUCUNICUISCHEMA,
+  properties: {
+    ID: 'int',
+    CODIGO: 'string',
+    NOMBRE: 'string',
+    ESTADO: 'int',
+    USUARIO_DATA: 'string?',
+    FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
+    FECHA_CREACION: {type: 'date', default: new Date()},
+    ORIGEN_DATA: 'string?',
+    REPS: 'string?',
+  },
+};
+export const FUCZONCUISCHEMA = {
+  name: DataBaseSchemas.FUCZONCUISCHEMA,
+  properties: {
+    ID: 'int',
+    CODIGO: 'string',
+    NOMBRE: 'string',
+    ESTADO: 'int',
+    USUARIO_DATA: 'string?',
+    FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
+    FECHA_CREACION: {type: 'date', default: new Date()},
+    ORIGEN_DATA: 'string',
+    FUCUNICUI_ID: 'int',
+  },
+};
 
 export const allCatalogs = () =>
   new Promise((resolve, reject) => {
@@ -192,6 +310,14 @@ export default class DataBaseProvider {
         FUBUBIVIVSCHEMA,
         FNBNUCVIVSCHEMA,
         FNBNUCVIV_FVCCONVIVSCHEMA,
+        FUCDEPARTSCHEMA,
+        FUCMUNICISCHEMA,
+        FUCTIPTERSCHEMA,
+        FUCRESGUASCHEMA,
+        FUCBARVERSCHEMA,
+        FUCZONASCHEMA,
+        FUCUNICUISCHEMA,
+        FUCZONCUISCHEMA,
       ],
     }).then((realm) => {
       realm.write(() => {
@@ -252,6 +378,14 @@ export default class DataBaseProvider {
         FVBENCUESSCHEMA,
         FVCCONVIVSCHEMA,
         FVCELEVIVSCHEMA,
+        FUCDEPARTSCHEMA,
+        FUCMUNICISCHEMA,
+        FUCTIPTERSCHEMA,
+        FUCRESGUASCHEMA,
+        FUCBARVERSCHEMA,
+        FUCZONASCHEMA,
+        FUCUNICUISCHEMA,
+        FUCZONCUISCHEMA,
       ],
     }).then((realm) => {
       let count = realm.objects(entity).length;
