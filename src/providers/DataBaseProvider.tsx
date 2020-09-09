@@ -19,7 +19,7 @@ export enum DataBaseSchemas {
   FUCUNICUISCHEMA = 'FUCUNICUI', // unidad de cuidado
   FUCZONCUISCHEMA = 'FUCZONCUI', // Zona de cuidado
 }
-export const schemaVersion = 2;
+export const schemaVersion = 1;
 export const UserSchema = {
   name: DataBaseSchemas.UserSchema,
   properties: {
@@ -79,9 +79,9 @@ export const FNBNUCVIV_FNCPERSONSCHEMA = {
     FNCPERSON_ID: 'int',
     ID: 'int',
     SELECCION: 'string',
-    FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
+    FECHA_ACTIVIDAD: { type: 'date', default: new Date() },
     USUARIO_DATA: 'string',
-    FECHA_CREACION: {type: 'date', default: new Date()},
+    FECHA_CREACION: { type: 'date', default: new Date() },
     ORIGEN_DATA: 'string',
   },
 };
@@ -137,8 +137,8 @@ export const FUBUBIVIVSCHEMA = {
     COORDENADA_Y: 'int',
     HUMO_CASA: 'bool',
     NUM_NUCLEOS: 'int',
-    FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
-    FECHA_CREACION: {type: 'date', default: new Date()},
+    FECHA_ACTIVIDAD: { type: 'date', default: new Date() },
+    FECHA_CREACION: { type: 'date', default: new Date() },
     ORIGEN_DATA: 'string',
     USUARIO_DATA: 'string',
     FUCBARVER_ID: 'int',
@@ -163,8 +163,8 @@ export const FNBNUCVIVSCHEMA = {
     HUMO_DENTRO: 'string',
     ACCESO_INTERNET: 'bool',
     TOTAL_ANIMAL: 'int',
-    FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
-    FECHA_CREACION: {type: 'date', default: new Date()},
+    FECHA_ACTIVIDAD: { type: 'date', default: new Date() },
+    FECHA_CREACION: { type: 'date', default: new Date() },
     FUBUBIVIV_ID: 'int',
     FUBUBIVIV_CODE: 'string',
   },
@@ -318,6 +318,7 @@ export default class DataBaseProvider {
         FUCZONASCHEMA,
         FUCUNICUISCHEMA,
         FUCZONCUISCHEMA,
+        FNCPERSONSCHEMA,
       ],
     }).then((realm) => {
       realm.write(() => {
@@ -345,6 +346,34 @@ export default class DataBaseProvider {
           FUCBARVER_ID: 1,
           RESIDUO_BOR: 'string',
         });
+        //****************************************************************** */
+        realm.create(DataBaseSchemas.FNCPERSONSCHEMA, {
+          ID: 12345,
+          CODIGO: 'PERSON001',
+          IDENTIFICACION: 1061729337,
+          PRIMER_NOMBRE: 'ANDRES',
+          SEGUNDO_NOMBRE: 'FELIPE',
+          PRIMER_APELLIDO: 'GUTIERREZ',
+          SEGUNDO_APELLIDO: 'VIVAS',
+          FECHA_NACIMIENTO: new Date(),
+          EDAD: 30,
+          EDAD_VISITA: 30,
+          TEL_CEDULAR: 3192424333,
+          TEL_ALTERNO: 8342595,
+          CORREO_ELECTRONICO: 'LINKON90@GMAIL.COM',
+          FECHA_ACTIVIDAD: new Date(),
+          USUARIO_DATA: 'string',
+          FECHA_CREACION: new Date(),
+          ORIGEN_DATA: new Date(),
+          FNCTIPIDE_ID: 1,
+          FNCORGANI_ID: 1,
+          FNCLUNIND_ID: 1,
+          FNCOCUPAC_ID: 1,
+          FUCMUNICI_ID: 1,
+          FNCPAREN_ID: 1,
+          FNCGENERO_ID: 1,
+        });
+        //****************************************************************** */
         realm.create(DataBaseSchemas.FNBNUCVIVSCHEMA, {
           ID: 1,
           CODIGO: 'CODVIVI1_100-NF01',

@@ -6,6 +6,7 @@ import {
   FVCCONVIVSCHEMA,
   DataBaseSchemas,
   FNBNUCVIV_FVCCONVIVSCHEMA,
+  FNCPERSONSCHEMA,
 } from '../providers/DataBaseProvider';
 import Realm from 'realm';
 import {
@@ -38,6 +39,23 @@ export default class HousingService {
     }).then((realm) => {
       let items = realm
         .objects('FUBUBIVIV');
+      return items;
+    }).catch((error) => {
+      return error;
+    });
+    return result;
+  }
+  async getPersons() {
+    const result = await Realm.open({
+      schema: [FNCPERSONSCHEMA],
+      schemaVersion: schemaVersion,
+    }).then((realm) => {
+      let items = realm
+        .objects('FNCPERSON');
+        console.log('persona items', items);
+        for (let i of items) {
+          console.log('persona items for', i);
+          }
       return items;
     }).catch((error) => {
       return error;
