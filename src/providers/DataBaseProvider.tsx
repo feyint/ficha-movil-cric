@@ -3,8 +3,8 @@ export enum DataBaseSchemas {
   UserSchema = 'User',
   FNCTIPIDENSCHEMA = 'FNCTIPIDEN',
   FVBENCUESSCHEMA = 'FVBENCUESSCHEMA',
-  FVCCONVIVSCHEMA = 'FVCCONVIV',
-  FVCELEVIVSCHEMA = 'FVCELEVIV',
+  FVCCONVIVSCHEMA = 'FVCCONVIV', //respuestas housing
+  FVCELEVIVSCHEMA = 'FVCELEVIV', //preguntas housing
   FUBUBIVIVSCHEMA = 'FUBUBIVIV',
   FNBNUCVIV_FVCCONVIVSCHEMA = 'FNBNUCVIV_FVCCONVIV',
   FNBNUCVIVSCHEMA = 'FNBNUCVIV',
@@ -18,6 +18,8 @@ export enum DataBaseSchemas {
   FUCZONASCHEMA = 'FUCZONA', // barrio vereda
   FUCUNICUISCHEMA = 'FUCUNICUI', // unidad de cuidado
   FUCZONCUISCHEMA = 'FUCZONCUI', // Zona de cuidado
+  FNCELESALSCHEMA = 'FNCELESAL', //Preguntas salud
+  FNCCONSALSCHEMA = 'FNCCONSAL', //respuestas salud
 }
 export const schemaVersion = 1;
 export const UserSchema = {
@@ -85,6 +87,16 @@ export const FNBNUCVIV_FNCPERSONSCHEMA = {
     ORIGEN_DATA: 'string',
   },
 };
+export const FNCELESALSCHEMA = {
+  name: DataBaseSchemas.FNCELESALSCHEMA,
+  primaryKey: 'ID',
+  properties: {
+    ID: 'int',
+    CODIGO: 'string',
+    NOMBRE: 'string',
+    ESTADO: 'bool',
+  },
+};
 //-----------------------------------------------------------
 export const FVBENCUESSCHEMA = {
   name: DataBaseSchemas.FVBENCUESSCHEMA,
@@ -104,6 +116,15 @@ export const FVCCONVIVSCHEMA = {
     CODIGO: 'string',
     NOMBRE: 'string',
     FVCELEVIV_ID: 'int',
+  },
+};
+export const FNCCONSALSCHEMA = {
+  name: DataBaseSchemas.FNCCONSALSCHEMA,
+  properties: {
+    ID: 'int',
+    CODIGO: 'string',
+    NOMBRE: 'string',
+    FNCELESAL_ID: 'int',
   },
 };
 export const FVCELEVIVSCHEMA = {
@@ -319,6 +340,8 @@ export default class DataBaseProvider {
         FUCUNICUISCHEMA,
         FUCZONCUISCHEMA,
         FNCPERSONSCHEMA,
+        FNCELESALSCHEMA,
+        FNCCONSALSCHEMA,
       ],
     }).then((realm) => {
       realm.write(() => {
@@ -415,6 +438,8 @@ export default class DataBaseProvider {
         FUCZONASCHEMA,
         FUCUNICUISCHEMA,
         FUCZONCUISCHEMA,
+        FNCELESALSCHEMA,
+        FNCCONSALSCHEMA,
       ],
     }).then((realm) => {
       let count = realm.objects(entity).length;

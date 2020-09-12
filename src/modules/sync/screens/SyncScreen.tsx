@@ -24,6 +24,10 @@ interface State {
   FUCZONA: number;
   FUCUNICUI: number;
   FUCZONCUI: number;
+  /* /-------------------- */
+  FNCELESAL: number;
+  FNCCONSAL: number;
+  /* /-------------------- */
 }
 
 class SyncScreen extends Component<Props, State> {
@@ -41,6 +45,8 @@ class SyncScreen extends Component<Props, State> {
       FUCZONA: 0,
       FUCUNICUI: 0,
       FUCZONCUI: 0,
+      FNCELESAL: 0,
+      FNCCONSAL: 0,
     };
     this.countEntity();
   }
@@ -72,7 +78,17 @@ class SyncScreen extends Component<Props, State> {
             <Paragraph>
               FVCCONVIV (Opciones de Respuestas) : {this.state.FVCCONVIV}
             </Paragraph>
-            <Paragraph>FVCELEVIV (Preguntas Nucleo familiar): {this.state.FVCELEVIV}</Paragraph>
+            <Paragraph>
+              FVCELEVIV (Preguntas Nucleo familiar): {this.state.FVCELEVIV}
+            </Paragraph>
+            {/* ------------------------------------------ */}
+            <Paragraph>
+              FNCCONSAL (Opciones de Respuestas salud) : {this.state.FNCCONSAL}
+            </Paragraph>
+            <Paragraph>
+              FNCELESAL (Preguntas salud): {this.state.FNCELESAL}
+            </Paragraph>
+            {/* ------------------------------------------ */}
             <Paragraph>
               FUCDEPART (Departamentos) : {this.state.FUCDEPART}
             </Paragraph>
@@ -112,6 +128,14 @@ class SyncScreen extends Component<Props, State> {
     let countFVCELEVIV = await this.syncCatalogService.countEntities(
       'FVCELEVIV',
     );
+    //----------------------------------------------------------------------
+    let countFNCCONSAL = await this.syncCatalogService.countEntities(
+      'FNCCONSAL',
+    );
+    let countFNCELESAL = await this.syncCatalogService.countEntities(
+      'FNCELESAL',
+    );
+    //----------------------------------------------------------------------
     let countFUCDEPART = await this.syncCatalogService.countEntities(
       'FUCDEPART',
     );
@@ -137,6 +161,10 @@ class SyncScreen extends Component<Props, State> {
     this.setState({
       FVCCONVIV: countFVCCONVIV,
       FVCELEVIV: countFVCELEVIV,
+      //------------------------------
+      FNCELESAL: countFNCELESAL,
+      FNCCONSAL: countFNCCONSAL,
+      //------------------------------
       FUCDEPART: countFUCDEPART,
       FUCMUNICI: countFUCMUNICI,
       FUCTIPTER: countFUCTIPTER,

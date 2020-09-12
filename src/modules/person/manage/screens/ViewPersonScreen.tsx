@@ -60,7 +60,7 @@ class ViewPersonScreen extends Component<any, any> {
             <List.Item
               title="8. Estado de salud en la visita"
               left={() => <List.Icon icon="map-marker" />}
-              //onPress={() => this.goHomeLocation()}
+              onPress={() => this.goHealthStatusVisitScreen()}
             />
             <List.Item
               title="9. Hábitos no saludables"
@@ -105,6 +105,9 @@ class ViewPersonScreen extends Component<any, any> {
   }
   goHomeLocation() {
     this.props.navigation.navigate('HomeLocationScreen');
+  }
+  goHealthStatusVisitScreen() {
+    this.props.navigation.navigate('HealthStatusVisitScreen');
   }
 }
 

@@ -19,6 +19,7 @@ import {useTheme} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {SyncScreen} from '../modules/sync/screens';
 import {
+  HealthStatusVisitScreen,
   PersonManageScreen,
   ViewPersonScreen,
 } from '../modules/person/manage/screens';
@@ -93,6 +94,14 @@ export const Dashboard = () => {
         component={ViewPersonScreen}
         name="ViewPersonScreen"
         options={{headerShown: false, title: 'Ver persona'}}
+      />
+      <DashboardStack.Screen
+        component={HealthStatusVisitScreen}
+        name="HealthStatusVisitScreen"
+        options={{
+          headerShown: false,
+          title: 'Estado de salud de la persona en la visita',
+        }}
       />
     </DashboardStack.Navigator>
   );
