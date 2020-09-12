@@ -90,7 +90,7 @@ class BMultiSelect extends Component<Props, State> {
         </View>
         {this.props.error ? (
           <HelperText type="error">
-            {this.props.errorText ? this.props.errorText : 'Campo invalido'}
+            {this.props.errorText ? this.props.errorText : 'El campo es requerido'}
           </HelperText>
         ) : null}
       </View>

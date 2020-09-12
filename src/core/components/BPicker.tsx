@@ -82,7 +82,7 @@ class BPicker extends Component<Props, any> {
             {this.renderItems()}
           </Picker>
         </View>
-        <BError text="Campo Invalido" error={this.props.error} />
+        <BError text="El campo es requerido" error={this.props.error} />
       </View>
     );
   }

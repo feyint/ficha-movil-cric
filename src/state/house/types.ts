@@ -4,8 +4,6 @@ export type FUBUBIVIV = {
   DIRECCION: string;
   COORDENADA_X: number;
   COORDENADA_Y: number;
-  HUMO_CASA: boolean;
-  NUM_NUCLEOS: number;
   FECHA_ACTIVIDAD: Date;
   FECHA_CREACION: Date;
   ORIGEN_DATA: string;

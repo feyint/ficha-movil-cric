@@ -1,9 +1,8 @@
-import React, {Component, Fragment} from 'react';
-import {BHeader} from '../../../core/components';
-import {FamiliarNucleus, Department, SafeForm, CareZone} from '../components';
+import React, {Component} from 'react';
 import {View} from 'react-native';
 import {Appbar} from 'react-native-paper';
 import {NavigationProp} from '@react-navigation/native';
+import HomeLocationForm from '../forms/HomeLocationForm';
 // import HomeLocationForm from '../forms/HomeLocationForm';
 
 interface Props {
@@ -18,10 +17,9 @@ class HomeLocationScreen extends Component<Props, any> {
       <View>
         <Appbar.Header>
           <Appbar.BackAction onPress={() => this._goBack()} />
-          <Appbar.Content title="Nueva Ficha Familiar" />
+          <Appbar.Content title="Datos de ubicación" />
         </Appbar.Header>
-        <BHeader>Ubicacion de la vivienda</BHeader>
-        {/* <HomeLocationForm /> */}
+        <HomeLocationForm />
       </View>
     );
   }

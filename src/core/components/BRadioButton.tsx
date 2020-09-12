@@ -60,7 +60,7 @@ class BRadioButton extends Component<Props, State> {
             })}
           </RadioButton.Group>
         </View>
-        <BError text="Campo Invalido" error={this.props.error} />
+        <BError text="El campo es requerido" error={this.props.error} />
       </View>
     );
   }

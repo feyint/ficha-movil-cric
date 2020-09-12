@@ -12,6 +12,8 @@ target 'ficha_familiar_movil' do
 
   pod 'RealmJS', :path => '../node_modules/realm'
 
+  pod 'react-native-geolocation', :path => '../node_modules/@react-native-community/geolocation'
+
   target 'ficha_familiar_movilTests' do
     inherit! :complete
     # Pods for testing

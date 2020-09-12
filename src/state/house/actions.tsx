@@ -7,20 +7,41 @@ export const ActionType = {
   SET_FNBNUCVIV: 'SET_FNBNUCVIV',
   SET_HOUSING_QUESTION_LIST: 'SET_HOUSING_QUESTION_LIST',
 };
-const setFUBUBIVIV = (data: FUBUBIVIV) => {
+const _setFUBUBIVIV = (data: FUBUBIVIV) => {
   return {type: ActionType.SET_FUBUBIVIV, data};
 };
-const set_FNBNUCVIV = (data: FNBNUCVIV) => {
+const _setFNBNUCVIV = (data: FNBNUCVIV) => {
   return {type: ActionType.SET_FNBNUCVIV, data};
+};
+export const clearFUBUBIVIV = () => (dispatch: any) => {
+  let data: any = {
+    ID: null,
+    CODIGO: '',
+    DIRECCION: '',
+    COORDENADA_X: null,
+    COORDENADA_Y: null,
+    NUM_NUCLEOS: null,
+    FECHA_ACTIVIDAD: new Date(),
+    FECHA_CREACION: new Date(),
+    ORIGEN_DATA: '',
+    USUARIO_DATA: '',
+    FUCBARVER_ID: null,
+  };
+  dispatch(_setFUBUBIVIV(data));
+};
+export const saveFUBUBIVIV = (data: any) => async (dispatch: any) => {
+  let houseServie: HousingService = new HousingService();
+  await houseServie.SaveHouse(data);
+  dispatch(_setFUBUBIVIV(data));
+};
+export const setFUBUBIVIV = (data: any) => async (dispatch: any) => {
+  dispatch(_setFUBUBIVIV(data));
 };
 const setHOUSING_QUESTION_LIST = (data: HousingQuestion[]) => {
   return {type: ActionType.SET_HOUSING_QUESTION_LIST, data};
 };
-export const SaveFUBUBIVIV = (data: any) => (dispatch: any) => {
-  dispatch(setFUBUBIVIV(data));
-};
 export const setFNBNUCVIV = (data: any) => (dispatch: any) => {
-  dispatch(set_FNBNUCVIV(data));
+  dispatch(_setFNBNUCVIV(data));
 };
 export const saveAnswerLocal = (
   type: number,

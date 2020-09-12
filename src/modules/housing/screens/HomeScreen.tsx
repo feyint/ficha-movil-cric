@@ -1,12 +1,12 @@
-import React, { Component, useState } from 'react';
-import { View } from 'react-native';
-import { BButton } from '../../../core/components';
+import React, {Component, useState} from 'react';
+import {View} from 'react-native';
+import {BButton} from '../../../core/components';
 //import {LoginForm} from '../components';
-import { NavigationProp } from '@react-navigation/native';
-import { Appbar } from 'react-native-paper';
-import { connect } from 'react-redux';
-import { setQuestionWithOptions, SaveFUBUBIVIV } from '../../../state/house/actions';
-import { HouseList } from '../forms';
+import {NavigationProp} from '@react-navigation/native';
+import {Appbar} from 'react-native-paper';
+import {connect} from 'react-redux';
+import {setFUBUBIVIV, clearFUBUBIVIV} from '../../../state/house/actions';
+import {HouseList} from '../forms';
 
 interface FormData {
   navigation: NavigationProp<any>;
@@ -17,7 +17,6 @@ class HomeScreen extends Component<any, any> {
     super(props);
   }
   UNSAFE_componentWillMount() {
-    //this.props.setQuestionWithOptions();
   }
   render() {
     return (
@@ -29,23 +28,28 @@ class HomeScreen extends Component<any, any> {
           color="primary"
           value="Crear Nueva"
           mode="contained"
-          onPress={() => this.goHomeLocation()}
+          onPress={() => this.createNew()}
         />
-        <HouseList onSelect={(value: any) => {
-          console.log('Selected Item: ', value);
-          this.props.SaveFUBUBIVIV(value);
-          this.goHomeLocation();
-        }} />
-
+        <HouseList
+          onSelect={(value: any) => {
+            this.goToHouse(value);
+          }}
+        />
       </View>
     );
   }
-  goHomeLocation() {
+  createNew() {
+    this.props.clearFUBUBIVIV();
+    this.props.navigation.navigate('ManageHousingScreen');
+  }
+  async goToHouse(value) {
+    console.log('Selected Item: ', value);
+    await this.props.setFUBUBIVIV(value);
     this.props.navigation.navigate('ManageHousingScreen');
   }
 }
 const mapDispatchToProps = {
-  setQuestionWithOptions,
-  SaveFUBUBIVIV
+  setFUBUBIVIV,
+  clearFUBUBIVIV,
 };
 export default connect(null, mapDispatchToProps)(HomeScreen);

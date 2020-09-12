@@ -30,14 +30,41 @@ export default class SyncCatalogService {
   }
   async clearEntities() {
     await Realm.open({
-      schema: [FVCCONVIVSCHEMA, FVCELEVIVSCHEMA],
+      schema: [
+        FVCCONVIVSCHEMA,
+        FVCELEVIVSCHEMA,
+        FUCDEPARTSCHEMA,
+        FUCMUNICISCHEMA,
+        FUCTIPTERSCHEMA,
+        FUCRESGUASCHEMA,
+        FUCBARVERSCHEMA,
+        FUCZONASCHEMA,
+        FUCUNICUISCHEMA,
+        FUCZONCUISCHEMA,
+      ],
       schemaVersion: schemaVersion,
     }).then((realm) => {
       realm.write(() => {
         let itemsFVCCONVIV = realm.objects('FVCCONVIV');
         let itemFVCELEVIV = realm.objects('FVCELEVIV');
+        let itemFUCDEPART = realm.objects('FUCDEPART');
+        let itemFUCMUNICI = realm.objects('FUCMUNICI');
+        let itemFUCTIPTER = realm.objects('FUCTIPTER');
+        let itemFUCRESGUA = realm.objects('FUCRESGUA');
+        let itemFUCBARVER = realm.objects('FUCBARVER');
+        let itemFUCZONA = realm.objects('FUCZONA');
+        let itemFUCZONCUI = realm.objects('FUCZONCUI');
+        let itemFUCUNICUI = realm.objects('FUCUNICUI');
         realm.delete(itemsFVCCONVIV);
         realm.delete(itemFVCELEVIV);
+        realm.delete(itemFUCDEPART);
+        realm.delete(itemFUCMUNICI);
+        realm.delete(itemFUCTIPTER);
+        realm.delete(itemFUCRESGUA);
+        realm.delete(itemFUCBARVER);
+        realm.delete(itemFUCZONA);
+        realm.delete(itemFUCZONCUI);
+        realm.delete(itemFUCUNICUI);
       });
     });
   }
@@ -153,7 +180,7 @@ export default class SyncCatalogService {
           ESTADO: item.estado,
           FUCRESGUA_ID: item.fucresguaId.id,
           FUCZONCUI_ID: item.fuczoncuiId.id,
-          FUCTIPBAV_ID: item.fuctipbavId.id,
+          FUCZONA_ID: item.fuczonaId.id,
         };
       });
       await this.syncSaveEntities(
@@ -204,7 +231,8 @@ export default class SyncCatalogService {
         CODIGO: item.codigo,
         NOMBRE: item.nombre,
         ESTADO: item.estado,
-        FUCUNICUI_ID: item.fucunicuiId.id,
+        FUCSEDCUI_ID: item.fubsedcuiId.id,
+        CODIGO_FF: item.codigoFf,
       };
     });
     await this.syncSaveEntities(

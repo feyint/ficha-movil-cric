@@ -9,9 +9,10 @@ import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {HousingService} from '../../../services';
 import {HousingQuestion} from '../../housing/state/types';
-import {QuestionFamilyCodes, QuestionTypes} from '../../../core/utils/HousingTypes';
-import {SelectSchema} from '../../../core/utils/types';
-import {capitalizeFirstLetter} from '../../../core/utils/utils';
+import {
+  QuestionFamilyCodes,
+  QuestionTypes,
+} from '../../../core/utils/HousingTypes';
 import {
   saveAnswerLocal,
   getQuestionAnswer,
@@ -64,12 +65,7 @@ const _HousingStatusForm = (props: any) => {
   const getQuestionlabel = (code: string) => {
     return syncCatalogService.getQuestionlabel(code, state.questions);
   };
-  const defaultOptions = [
-    {label: 'Seleccione', value: '1'},
-    {label: 'Adecuado', value: '2'},
-    {label: 'No adecuado', value: '3'},
-  ];
-  function onSubmit(data: any) {
+  function onSubmit() {
     navigation.goBack();
   }
   return (
@@ -197,7 +193,8 @@ const _HousingStatusForm = (props: any) => {
               value={value}
               selectedValue={value}
               items={
-                getItemsForQuestionSelect(QuestionFamilyCodes.Ventilacion).children
+                getItemsForQuestionSelect(QuestionFamilyCodes.Ventilacion)
+                  .children
               }
             />
           )}
@@ -229,7 +226,8 @@ const _HousingStatusForm = (props: any) => {
               value={value}
               selectedValue={value}
               items={
-                getItemsForQuestionSelect(QuestionFamilyCodes.Ventilacion).children
+                getItemsForQuestionSelect(QuestionFamilyCodes.Ventilacion)
+                  .children
               }
             />
           )}
