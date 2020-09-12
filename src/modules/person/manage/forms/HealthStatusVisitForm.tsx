@@ -14,7 +14,7 @@ import {
   QuestionPersonCodes,
   QuestionTypes,
   //logicOption,
-} from '../../../../core/utils/HousingTypes';
+} from '../../../../core/utils/PersonTypes';
 import {
   saveAnswerLocal,
   getQuestionAnswer,

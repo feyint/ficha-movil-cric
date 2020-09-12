@@ -83,9 +83,22 @@ export default class SyncCatalogService {
       FVCCONVIVSCHEMA,
       FVCCONVIVSchema,
     );
-    //------------------------------------------------------------------------------------
+    let itemFNCELESAL: any = await this.getEntity({entityName: 'FNCELESAL'});
+    const FNCELESALSchema = itemFNCELESAL.data.map((item: any) => {
+      return {
+        ID: item.id,
+        CODIGO: item.codigo,
+        NOMBRE: item.nombre,
+        ESTADO: item.estado === 1 ? true : false,
+      };
+    });
+    await this.syncSaveEntities(
+      DataBaseSchemas.FNCELESALSCHEMA,
+      FNCELESALSCHEMA,
+      FNCELESALSchema,
+    );
     let itemFNCCONSAL: any = await this.getEntity({entityName: 'FNCCONSAL'});
-    const FNCCONSALSchema = itemFNCCONSAL.data.map((item) => {
+    const FNCCONSALSchema = itemFNCCONSAL.data.map((item: any) => {
       return {
         ID: item.id,
         CODIGO: item.codigo,

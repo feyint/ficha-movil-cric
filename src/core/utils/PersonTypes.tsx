@@ -17,3 +17,8 @@ export const QuestionPersonCodes = {
   ColoresSemaforo: '16',
   DesparasitacionExterna: '17',
 };
+
+export const QuestionTypes = {
+  selectOne: 1,
+  multiSelect: 2,
+};
