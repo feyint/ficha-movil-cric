@@ -5,6 +5,7 @@ import { FamilyList } from '../form';
 import { BButton } from '../../../core/components';
 import { connect } from 'react-redux';
 import { setFNBNUCVIV } from '../../../state/house/actions';
+import { setQuestionWithOptions } from '../../../state/person/actions';
 import { NavigationProp } from '@react-navigation/native';
 
 interface Props {
@@ -32,7 +33,10 @@ class FamilyScreen extends Component<any, any> {
           color="primary"
           value="Crear Nuevo"
           mode="contained"
-          onPress={() => this.goHouseMenuScreen()}
+          onPress={() => {
+            this.goHouseMenuScreen();
+            this.props.setQuestionWithOptions();
+          }}
         />
         <FamilyList onPress={(family: any) => {
           console.log('Family->', family);
@@ -50,7 +54,8 @@ class FamilyScreen extends Component<any, any> {
 
 }
 const mapDispatchToProps = {
-  setFNBNUCVIV
+  setFNBNUCVIV,
+  setQuestionWithOptions
 };
 
 export default connect(null, mapDispatchToProps)(FamilyScreen);

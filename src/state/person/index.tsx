@@ -1,1 +1,1 @@
-export {default as HousingReducers} from './reducers';
+export {default as PersonReducers} from './reducers';

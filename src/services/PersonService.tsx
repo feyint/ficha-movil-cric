@@ -1,54 +1,17 @@
-/* eslint-disable prettier/prettier */
+
 import {
-    FNBNUCVIVSCHEMA,
-    FUBUBIVIVSCHEMA,
-    FVCELEVIVSCHEMA,
+    FNCELESALSCHEMA,
+    FNCCONSALSCHEMA,
     schemaVersion,
-    FVCCONVIVSCHEMA,
-    DataBaseSchemas,
-    FNBNUCVIV_FVCCONVIVSCHEMA,
     FNCPERSONSCHEMA,
 } from '../providers/DataBaseProvider';
 import Realm from 'realm';
-import {
-    HousingQuestion,
-    HousingQuestionOption,
-} from '../modules/housing/state/types';
-import {
-    PersonQuestion, PersonQuestionOption,
-} from '../modules/person/manage/state/types';
-import { FNBNUCVIV_FVCCONVIV } from '../state/house/types';
+import { PersonQuestion, PersonQuestionOption } from '../modules/person/manage/state/types';
 import { SelectSchema, MultiSelectSchema } from '../core/utils/types';
 import { capitalizeFirstLetter } from '../core/utils/utils';
 
 export default class PersonService {
-    async getFamilies(HouseID: number) {
-        const result = await Realm.open({
-            schema: [FNBNUCVIVSCHEMA],
-            schemaVersion: schemaVersion,
-        }).then((realm) => {
-            let items = realm
-                .objects('FNBNUCVIV')
-                .filtered(`FUBUBIVIV_ID = ${HouseID}`);
-            return items;
-        }).catch((error) => {
-            return error;
-        });
-        return result;
-    }
-    async getHouses() {
-        const result = await Realm.open({
-            schema: [FUBUBIVIVSCHEMA],
-            schemaVersion: schemaVersion,
-        }).then((realm) => {
-            let items = realm
-                .objects('FUBUBIVIV');
-            return items;
-        }).catch((error) => {
-            return error;
-        });
-        return result;
-    }
+
     async getPersons() {
         const result = await Realm.open({
             schema: [FNCPERSONSCHEMA],
@@ -66,10 +29,11 @@ export default class PersonService {
         });
         return result;
     }
+
     async getQuestionWithOptions(questionsQuery?: any[]) {
-        let questionItems: HousingQuestion[] = [];
+        let questionItems: PersonQuestion[] = [];
         const result = await Realm.open({
-            schema: [FVCELEVIVSCHEMA],
+            schema: [FNCELESALSCHEMA],
             schemaVersion: schemaVersion,
         })
             .then((realm) => {
@@ -78,9 +42,9 @@ export default class PersonService {
                     const query = questionsQuery
                         .map((id) => `CODIGO = "${id}"`)
                         .join(' OR ');
-                    servicios = realm.objects('FVCELEVIV').filtered(`${query}`);
+                    servicios = realm.objects('FNCELESAL').filtered(`${query}`);
                 } else {
-                    servicios = realm.objects('FVCELEVIV');
+                    servicios = realm.objects('FNCELESAL');
                 }
                 return servicios;
             })
@@ -88,7 +52,7 @@ export default class PersonService {
                 return error;
             });
         for (let i = 0; i < result.length; i++) {
-            let questionItem: HousingQuestion = {
+            let questionItem: PersonQuestion = {
                 ID: result[i].ID,
                 CODIGO: result[i].CODIGO,
                 NOMBRE: result[i].NOMBRE,
@@ -97,21 +61,22 @@ export default class PersonService {
             };
             let options = await this.getQuestionOptions(result[i].ID);
             for (let question of options) {
-                questionItem.OPTIONS.push(question as HousingQuestionOption);
+                questionItem.OPTIONS.push(question as PersonQuestionOption);
             }
             questionItems.push(questionItem);
         }
         return questionItems;
     }
+
     async getQuestionOptions(QuestionID: number) {
         const result = await Realm.open({
-            schema: [FVCCONVIVSCHEMA],
+            schema: [FNCCONSALSCHEMA],
             schemaVersion: schemaVersion,
         })
             .then((realm) => {
                 let items = realm
-                    .objects('FVCCONVIV')
-                    .filtered(`FVCELEVIV_ID = ${QuestionID}`);
+                    .objects('FNCCONSAL')
+                    .filtered(`FNCELESAL_ID = ${QuestionID}`);
                 return items;
             })
             .catch((error) => {
@@ -119,60 +84,8 @@ export default class PersonService {
             });
         return result;
     }
-    async saveQuestionOption(answeroption: FNBNUCVIV_FVCCONVIV[]) {
-        //TODO consultar si ya existe
-        await Realm.open({
-            schema: [FNBNUCVIV_FVCCONVIVSCHEMA],
-            schemaVersion: schemaVersion,
-        })
-            .then((realm) => {
-                let options = realm
-                    .objects(DataBaseSchemas.FNBNUCVIV_FVCCONVIVSCHEMA)
-                    .filtered(
-                        `FNBNUCVIV_ID = ${answeroption[0].FNBNUCVIV_ID} AND FVCELEVIV_ID = ${answeroption[0].FVCELEVIV_ID}`,
-                    );
-                console.log('registros ya en base de datos', options.length);
-                realm.write(() => {
-                    realm.delete(options);
-                    for (let i = 0; i < answeroption.length; i++) {
-                        console.log('option ', answeroption[i]);
-                        realm.create(DataBaseSchemas.FNBNUCVIV_FVCCONVIVSCHEMA, {
-                            FNBNUCVIV_ID: answeroption[i].FNBNUCVIV_ID,
-                            FVCCONVIV_ID: answeroption[i].FVCCONVIV_ID,
-                            FVCELEVIV_ID: answeroption[i].FVCELEVIV_ID,
-                            SYNCSTATE: answeroption[i].SYNCSTATE,
-                        });
-                    }
-                });
-            })
-            .catch((error) => {
-                console.log(error);
-                return error;
-            });
-    }
-    async deleteAnswerForQuestion(FNBNUCVIV_ID: number, FVCELEVIV_ID: number) {
-        //TODO consultar si ya existe
-        await Realm.open({
-            schema: [FNBNUCVIV_FVCCONVIVSCHEMA],
-            schemaVersion: schemaVersion,
-        })
-            .then((realm) => {
-                let options = realm
-                    .objects(DataBaseSchemas.FNBNUCVIV_FVCCONVIVSCHEMA)
-                    .filtered(
-                        `FNBNUCVIV_ID = ${FNBNUCVIV_ID} AND FVCELEVIV_ID = ${FVCELEVIV_ID}`,
-                    );
-                console.log('borrar ', options.length);
-                realm.write(() => {
-                    realm.delete(options);
-                });
-            })
-            .catch((error) => {
-                console.log(error);
-                return error;
-            });
-    }
-    getItemsForQuestionSelect(code: string, questions: HousingQuestion[]) {
+
+    getItemsForQuestionSelect(code: string, questions: PersonQuestion[]) {
         let item: SelectSchema = { name: '', id: 0, children: [] };
         for (let i = 0; i < questions.length; i++) {
             if (questions[i].CODIGO === code) {
@@ -187,9 +100,9 @@ export default class PersonService {
                 item.children.unshift({ value: '-1', label: 'Seleccione' });
             }
         }
-        console.log('ddddd ', item);
         return item;
     }
+
     getItemsForQuestionMultiSelect(code: string, questions: PersonQuestion[]) {
         let item: MultiSelectSchema = { name: '', id: 0, children: [] };
         for (let i = 0; i < questions.length; i++) {
@@ -203,58 +116,12 @@ export default class PersonService {
         }
         return item;
     }
+
     getQuestionlabel(code: string, questions: PersonQuestion[]) {
         for (let i = 0; i < questions.length; i++) {
             if (questions[i].CODIGO === code) {
                 return capitalizeFirstLetter(questions[i].NOMBRE);
             }
         }
-    }
-
-    async getAnswerMultiSelect(FNBNUCVIV_ID: any, FVCELEVIV_ID: any) {
-        const result = await Realm.open({
-            schema: [FNBNUCVIV_FVCCONVIVSCHEMA],
-            schemaVersion: schemaVersion,
-        })
-            .then((realm) => {
-                console.log(`FNBNUCVIV_ID = ${FNBNUCVIV_ID} AND FVCELEVIV_ID = ${FVCELEVIV_ID}`);
-                let items = realm
-                    .objects(DataBaseSchemas.FNBNUCVIV_FVCCONVIVSCHEMA)
-                    .filtered(
-                        `FNBNUCVIV_ID = ${FNBNUCVIV_ID} AND FVCELEVIV_ID = ${FVCELEVIV_ID}`,
-                    );
-                console.warn('items getAnswerMultiSelect ', items.length);
-                return items.map((item: any) => {
-                    return item.FVCCONVIV_ID;
-                });
-            })
-            .catch((error) => {
-                return error;
-            });
-        return result;
-    }
-    async getAnswerOneOption(FNBNUCVIV_ID: any, FVCELEVIV_ID: any) {
-        const result = await Realm.open({
-            schema: [FNBNUCVIV_FVCCONVIVSCHEMA],
-            schemaVersion: schemaVersion,
-        })
-            .then((realm) => {
-                console.log(`aaaaaaaaaaa FNBNUCVIV_ID = ${FNBNUCVIV_ID} AND FVCELEVIV_ID = ${FVCELEVIV_ID}`);
-                let items = realm
-                    .objects(DataBaseSchemas.FNBNUCVIV_FVCCONVIVSCHEMA)
-                    .filtered(
-                        `FNBNUCVIV_ID = ${FNBNUCVIV_ID} AND FVCELEVIV_ID = ${FVCELEVIV_ID}`,
-                    );
-                console.warn('items getAnswerMultiSelect ', items.length);
-                if (items.length > 0) {
-                    return items[0].FVCCONVIV_ID;
-                } else {
-                    return '';
-                }
-            })
-            .catch((error) => {
-                return error;
-            });
-        return result;
     }
 }
