@@ -20,6 +20,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import {SyncScreen} from '../modules/sync/screens';
 import {
   HealthStatusVisitScreen,
+  MortalityLast12MonthsScreen,
   PersonManageScreen,
   ViewPersonScreen,
 } from '../modules/person/manage/screens';
@@ -101,6 +102,14 @@ export const Dashboard = () => {
         options={{
           headerShown: false,
           title: 'Estado de salud de la persona en la visita',
+        }}
+      />
+      <DashboardStack.Screen
+        component={MortalityLast12MonthsScreen}
+        name="MortalityLast12MonthsScreen"
+        options={{
+          headerShown: false,
+          title: 'Mortalidad en los ultimos 12 meses',
         }}
       />
     </DashboardStack.Navigator>

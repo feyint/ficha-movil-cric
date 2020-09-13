@@ -90,7 +90,7 @@ class ViewPersonScreen extends Component<any, any> {
             <List.Item
               title="14. Mortalidad en los últimos 12 meses"
               left={() => <List.Icon icon="emoticon-dead" />}
-              //onPress={() => this.goHomeLocation()}
+              onPress={() => this.goMortalityLast12MonthsScreen()}
             />
           </List.Section>
         </KeyboardAwareScrollView>
@@ -108,6 +108,9 @@ class ViewPersonScreen extends Component<any, any> {
   }
   goHealthStatusVisitScreen() {
     this.props.navigation.navigate('HealthStatusVisitScreen');
+  }
+  goMortalityLast12MonthsScreen() {
+    this.props.navigation.navigate('MortalityLast12MonthsScreen');
   }
 }
 

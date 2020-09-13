@@ -1,13 +1,13 @@
 import React, {Component} from 'react';
 import {View} from 'react-native';
 import {Appbar} from 'react-native-paper';
-import {HealthStatusVisitForm} from '../forms';
+import {MortalityLast12MonthsForm} from '../forms';
 import {NavigationProp} from '@react-navigation/native';
 
 interface Props {
   navigation: NavigationProp<any>;
 }
-class HealthStatusVisitScreen extends Component<Props, any> {
+class MortalityLast12MonthsScreen extends Component<Props, any> {
   //TODO añadir el back interceptor
   _goBack() {
     this.props.navigation.goBack();
@@ -17,11 +17,11 @@ class HealthStatusVisitScreen extends Component<Props, any> {
       <View>
         <Appbar.Header>
           <Appbar.BackAction onPress={() => this._goBack()} />
-          <Appbar.Content title="Estado de salud en la visita" />
+          <Appbar.Content title="Mortalidad en los ultimos 12 meses" />
         </Appbar.Header>
-        <HealthStatusVisitForm />
+        <MortalityLast12MonthsForm />
       </View>
     );
   }
 }
-export default HealthStatusVisitScreen;
+export default MortalityLast12MonthsScreen;
