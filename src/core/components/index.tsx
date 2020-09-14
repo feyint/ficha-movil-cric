@@ -6,3 +6,4 @@ export {default as BMultiSelect} from './BMultiSelect';
 export {default as AlertBox} from './AlertBox';
 export {default as BRadioButton} from './BRadioButton';
 export {default as BDatePickerModal} from './BDatePickerModal';
+export {default as BImagePicker} from './BImagePicker';
