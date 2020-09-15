@@ -4,7 +4,7 @@ import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {yupResolver} from '@hookform/resolvers';
 import * as yup from 'yup';
-import {BButton, BMultiSelect} from '../../../../core/components';
+import {BButton, BMultiSelect, BPicker} from '../../../../core/components';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {PersonService} from '../../../../services';
@@ -16,18 +16,18 @@ import {
 import {getQuestionWithOptions} from '../../../../state/person/actions';
 import {PersonQuestion} from '../state/types';
 
-const questions = [
-  QuestionPersonCodes.DesarmoniaOccidental,
-  QuestionPersonCodes.AntecedentesFamiliares,
-];
+const questions = [QuestionPersonCodes.Fuma];
 
 const schemaForm = yup.object().shape({
-  DesarmoniaOccidental: yup.array().required(),
-  AntecedentesFamiliares: yup.array().required(),
+  Fuma: yup.array().required(),
 });
 
-const _HealthStatusVisitForm = (props: any) => {
+const _SocialSecurityForm = (props: any) => {
   const syncCatalogService = new PersonService();
+
+  const getItemsForQuestionSelect = (code: string) => {
+    return syncCatalogService.getItemsForQuestionSelect(code, state.questions);
+  };
 
   const [state, setState] = useState({
     questions: [] as PersonQuestion[],
@@ -75,10 +75,10 @@ const _HealthStatusVisitForm = (props: any) => {
         <Controller
           control={control}
           render={({onChange, onBlur, value}) => (
-            <BMultiSelect
-              label={getQuestionlabel(QuestionPersonCodes.DesarmoniaOccidental)}
+            <BPicker
+              label={getQuestionlabel(QuestionPersonCodes.Fuma)}
               onBlur={onBlur}
-              error={errors.DesarmoniaOccidental}
+              error={errors.Fuma}
               onChange={(values: any) => {
                 onChange(values);
                 console.log('save');
@@ -86,40 +86,15 @@ const _HealthStatusVisitForm = (props: any) => {
               onLoad={() => {
                 console.log('onLoad');
               }}
-              selectedItems={value}
-              items={getItemsForQuestionMultiSelect(
-                QuestionPersonCodes.DesarmoniaOccidental,
-              )}
+              value={value}
+              selectedValue={value}
+              items={
+                getItemsForQuestionSelect(QuestionPersonCodes.Fuma).children
+              }
             />
           )}
-          name="DesarmoniasOccidentales"
+          name="Fuma"
         />
-
-        <Controller
-          control={control}
-          render={({onChange, onBlur, value}) => (
-            <BMultiSelect
-              label={getQuestionlabel(
-                QuestionPersonCodes.AntecedentesFamiliares,
-              )}
-              onBlur={onBlur}
-              error={errors.AntecedentesFamiliares}
-              onChange={(values: any) => {
-                onChange(values);
-                console.log('save');
-              }}
-              onLoad={() => {
-                console.log('onLoad');
-              }}
-              selectedItems={value}
-              items={getItemsForQuestionMultiSelect(
-                QuestionPersonCodes.AntecedentesFamiliares,
-              )}
-            />
-          )}
-          name="AntecedentesFamiliares"
-        />
-
         <View>
           <BButton
             color="secondary"
@@ -160,4 +135,4 @@ const mapStateToProps = (session: any) => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(_HealthStatusVisitForm);
+)(_SocialSecurityForm);

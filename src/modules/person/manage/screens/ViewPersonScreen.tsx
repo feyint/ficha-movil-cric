@@ -40,7 +40,7 @@ class ViewPersonScreen extends Component<any, any> {
             <List.Item
               title="4. Seguridad social"
               left={() => <List.Icon icon="bottle-tonic-plus" />}
-              //onPress={() => this.goHomeLocation()}
+              onPress={() => this.goSocialSecurityScreen()}
             />
             <List.Item
               title="5. Datos de contacto"
@@ -65,7 +65,7 @@ class ViewPersonScreen extends Component<any, any> {
             <List.Item
               title="9. Hábitos no saludables"
               left={() => <List.Icon icon="map-marker" />}
-              //onPress={() => this.goHomeLocation()}
+              onPress={() => this.goUnhealthyHabitsScreen()}
             />
             <List.Item
               title="10. Salud sexual y reproductiva - Antecedentes gineco obstétricos"
@@ -111,6 +111,12 @@ class ViewPersonScreen extends Component<any, any> {
   }
   goMortalityLast12MonthsScreen() {
     this.props.navigation.navigate('MortalityLast12MonthsScreen');
+  }
+  goSocialSecurityScreen() {
+    this.props.navigation.navigate('SocialSecurityScreen');
+  }
+  goUnhealthyHabitsScreen() {
+    this.props.navigation.navigate('UnhealthyHabitsScreen');
   }
 }
 

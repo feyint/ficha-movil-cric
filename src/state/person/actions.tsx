@@ -1,13 +1,12 @@
-
-import { PersonService } from '../../services';
-import { PersonQuestion } from '../../modules/person/manage/state/types';
+import {PersonService} from '../../services';
+import {PersonQuestion} from '../../modules/person/manage/state/types';
 
 export const ActionType = {
   SET_PERSON_QUESTION_LIST: 'SET_PERSON_QUESTION_LIST',
 };
 
 const setPERSON_QUESTION_LIST = (data: PersonQuestion[]) => {
-  return { type: ActionType.SET_PERSON_QUESTION_LIST, data };
+  return {type: ActionType.SET_PERSON_QUESTION_LIST, data};
 };
 
 export const setQuestionWithOptions = () => async (dispatch: any) => {

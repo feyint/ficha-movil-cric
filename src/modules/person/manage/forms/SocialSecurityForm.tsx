@@ -26,7 +26,7 @@ const schemaForm = yup.object().shape({
   AntecedentesFamiliares: yup.array().required(),
 });
 
-const _HealthStatusVisitForm = (props: any) => {
+const _SocialSecurityForm = (props: any) => {
   const syncCatalogService = new PersonService();
 
   const [state, setState] = useState({
@@ -160,4 +160,4 @@ const mapStateToProps = (session: any) => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(_HealthStatusVisitForm);
+)(_SocialSecurityForm);
