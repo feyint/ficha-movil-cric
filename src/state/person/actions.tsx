@@ -63,7 +63,7 @@ export const saveAnswerLocal = (type: number, questionCode: string, answer: any)
             if (option.FNCCONSAL_ID) {
               await personServie.saveQuestionOption([option]);
             } else {
-              // await houseServie.deleteAnswerForQuestion(family.ID, item.ID);
+              await personServie.deleteAnswerForQuestion(family.ID, item.ID);
             }
             break;
           case 2: // multiSelect
@@ -73,9 +73,9 @@ export const saveAnswerLocal = (type: number, questionCode: string, answer: any)
               options.push(opt);
             }
             if (options.length > 0) {
-              // await houseServie.saveQuestionOption(options);
+              await personServie.saveQuestionOption(options);
             } else {
-              // await houseServie.deleteAnswerForQuestion(family.ID, item.ID);
+              await personServie.deleteAnswerForQuestion(family.ID, item.ID);
             }
             break;
           default:
@@ -105,15 +105,13 @@ export const getQuestionAnswer = (type: number, questionCode: string) => async (
       let option = await personServie.getAnswerOneOption(family.ID, question.ID);
       return '' + option;
     case 2: // multiSelect
-    // let options = [];
-    // options = await personServie.getAnswerMultiSelect(family.ID, question.ID);
-    // return options;
+      let options = [];
+      options = await personServie.getAnswerMultiSelect(family.ID, question.ID);
+      return options;
     default:
       break;
   }
 };
-
-
 
 /**
  * 

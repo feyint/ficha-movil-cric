@@ -202,7 +202,7 @@ export default class PersonService {
       schemaVersion: schemaVersion,
     })
       .then((realm) => {
-        console.log(`aaaaaaaaaaa FNBINFSAL_ID = ${FNBINFSAL_ID} AND FNCELESAL_ID = ${FVCELEVIV_ID}`);
+        console.log(`FNBINFSAL_ID = ${FNBINFSAL_ID} AND FNCELESAL_ID = ${FVCELEVIV_ID}`);
         let items = realm
           .objects(DataBaseSchemas.FNBINFSAL_FNCCONSALSCHEMA)
           .filtered(
@@ -220,6 +220,64 @@ export default class PersonService {
       });
     return result;
   }
+
+  /**
+   * 
+   * @param FNBINFSAL_ID 
+   * @param FVCELEVIV_ID 
+   */
+  async deleteAnswerForQuestion(FNBINFSAL_ID: number, FVCELEVIV_ID: number) {
+    //TODO consultar si ya existe
+    await Realm.open({
+      schema: [FNBINFSAL_FNCCONSALSCHEMA],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        let options = realm
+          .objects(DataBaseSchemas.FNBINFSAL_FNCCONSALSCHEMA)
+          .filtered(
+            `FNBINFSAL_ID = ${FNBINFSAL_ID} AND FVCELEVIV_ID = ${FVCELEVIV_ID}`,
+          );
+        console.log('borrar ', options.length);
+        realm.write(() => {
+          realm.delete(options);
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+        return error;
+      });
+  }
+
+
+  /**
+   * 
+   * @param FNBINFSAL_ID 
+   * @param FVCELEVIV_ID 
+   */
+  async getAnswerMultiSelect(FNBINFSAL_ID: any, FVCELEVIV_ID: any) {
+    const result = await Realm.open({
+      schema: [FNBINFSAL_FNCCONSALSCHEMA],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        console.log(`FNBINFSAL_ID = ${FNBINFSAL_ID} AND FVCELEVIV_ID = ${FVCELEVIV_ID}`);
+        let items = realm
+          .objects(DataBaseSchemas.FNBINFSAL_FNCCONSALSCHEMA)
+          .filtered(
+            `FNBINFSAL_ID = ${FNBINFSAL_ID} AND FVCELEVIV_ID = ${FVCELEVIV_ID}`,
+          );
+        console.warn('items getAnswerMultiSelect ', items.length);
+        return items.map((item: any) => {
+          return item.FVCCONVIV_ID;
+        });
+      })
+      .catch((error) => {
+        return error;
+      });
+    return result;
+  }
+
 
 
 }
