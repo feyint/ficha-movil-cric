@@ -2,17 +2,22 @@ import {
   FNCELESALSCHEMA,
   FNCCONSALSCHEMA,
   schemaVersion,
-  FNCPERSONSCHEMA,
+  FNCPERSONSCHEMA, FNBINFSAL_FNCCONSALSCHEMA, DataBaseSchemas
 } from '../providers/DataBaseProvider';
 import Realm from 'realm';
 import {
   PersonQuestion,
   PersonQuestionOption,
 } from '../modules/person/manage/state/types';
-import {SelectSchema, MultiSelectSchema} from '../core/utils/types';
-import {capitalizeFirstLetter} from '../core/utils/utils';
+import { SelectSchema, MultiSelectSchema } from '../core/utils/types';
+import { capitalizeFirstLetter } from '../core/utils/utils';
+import { FNBINFSAL_FNCCONSAL } from '../state/person/types';
 
 export default class PersonService {
+
+  /**
+   * 
+   */
   async getPersons() {
     const result = await Realm.open({
       schema: [FNCPERSONSCHEMA],
@@ -32,6 +37,10 @@ export default class PersonService {
     return result;
   }
 
+  /**
+   * 
+   * @param questionsQuery 
+   */
   async getQuestionWithOptions(questionsQuery?: any[]) {
     let questionItems: PersonQuestion[] = [];
     const result = await Realm.open({
@@ -70,6 +79,10 @@ export default class PersonService {
     return questionItems;
   }
 
+  /**
+   * 
+   * @param QuestionID 
+   */
   async getQuestionOptions(QuestionID: number) {
     const result = await Realm.open({
       schema: [FNCCONSALSCHEMA],
@@ -87,8 +100,13 @@ export default class PersonService {
     return result;
   }
 
+  /**
+   * 
+   * @param code 
+   * @param questions 
+   */
   getItemsForQuestionSelect(code: string, questions: PersonQuestion[]) {
-    let item: SelectSchema = {name: '', id: 0, children: []};
+    let item: SelectSchema = { name: '', id: 0, children: [] };
     for (let i = 0; i < questions.length; i++) {
       if (questions[i].CODIGO === code) {
         item.id = questions[i].ID;
@@ -99,26 +117,36 @@ export default class PersonService {
             label: option.NOMBRE,
           });
         }
-        item.children.unshift({value: '-1', label: 'Seleccione'});
+        item.children.unshift({ value: '-1', label: 'Seleccione' });
       }
     }
     return item;
   }
 
+  /**
+   * 
+   * @param code 
+   * @param questions 
+   */
   getItemsForQuestionMultiSelect(code: string, questions: PersonQuestion[]) {
-    let item: MultiSelectSchema = {name: '', id: 0, children: []};
+    let item: MultiSelectSchema = { name: '', id: 0, children: [] };
     for (let i = 0; i < questions.length; i++) {
       if (questions[i].CODIGO === code) {
         item.id = questions[i].ID;
         item.name = capitalizeFirstLetter(questions[i].NOMBRE);
         for (let option of questions[i].OPTIONS) {
-          item.children.push({id: option.ID, name: option.NOMBRE});
+          item.children.push({ id: option.ID, name: option.NOMBRE });
         }
       }
     }
     return item;
   }
 
+  /**
+   * 
+   * @param code 
+   * @param questions 
+   */
   getQuestionlabel(code: string, questions: PersonQuestion[]) {
     for (let i = 0; i < questions.length; i++) {
       if (questions[i].CODIGO === code) {
@@ -126,4 +154,72 @@ export default class PersonService {
       }
     }
   }
+
+  /**
+   * 
+   * @param answeroption 
+   */
+  async saveQuestionOption(answeroption: FNBINFSAL_FNCCONSAL[]) {
+    //TODO consultar si ya existe
+    await Realm.open({
+      schema: [FNBINFSAL_FNCCONSALSCHEMA],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        let options = realm
+          .objects(DataBaseSchemas.FNBINFSAL_FNCCONSALSCHEMA)
+          .filtered(
+            `FNBINFSAL_ID = ${answeroption[0].FNBINFSAL_ID} AND FNCELESAL_ID = ${answeroption[0].FNCELESAL_ID}`,
+          );
+        console.log('registros ya en base de datos', options.length);
+        realm.write(() => {
+          realm.delete(options);
+          for (let i = 0; i < answeroption.length; i++) {
+            console.log('option ', answeroption[i]);
+            realm.create(DataBaseSchemas.FNBINFSAL_FNCCONSALSCHEMA, {
+              FNCCONSAL_ID: answeroption[i].FNCCONSAL_ID,
+              FNBINFSAL_ID: answeroption[i].FNBINFSAL_ID,
+              FNCELESAL_ID: answeroption[i].FNCELESAL_ID,
+              SYNCSTATE: answeroption[i].SYNCSTATE,
+            });
+          }
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+        return error;
+      });
+  }
+
+  /**
+   * 
+   * @param FNBINFSAL_ID 
+   * @param FVCELEVIV_ID 
+   */
+  async getAnswerOneOption(FNBINFSAL_ID: any, FVCELEVIV_ID: any) {
+    const result = await Realm.open({
+      schema: [FNBINFSAL_FNCCONSALSCHEMA],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        console.log(`aaaaaaaaaaa FNBINFSAL_ID = ${FNBINFSAL_ID} AND FNCELESAL_ID = ${FVCELEVIV_ID}`);
+        let items = realm
+          .objects(DataBaseSchemas.FNBINFSAL_FNCCONSALSCHEMA)
+          .filtered(
+            `FNBINFSAL_ID = ${FNBINFSAL_ID} AND FNCELESAL_ID = ${FVCELEVIV_ID}`,
+          );
+        console.warn('items getAnswerOneOption ', items.length);
+        if (items.length > 0) {
+          return items[0].FNCCONSAL_ID;
+        } else {
+          return '';
+        }
+      })
+      .catch((error) => {
+        return error;
+      });
+    return result;
+  }
+
+
 }

@@ -1,28 +1,29 @@
-import React, {useState, useEffect} from 'react';
-import {View, StyleSheet} from 'react-native';
-import {useForm, Controller} from 'react-hook-form';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {yupResolver} from '@hookform/resolvers';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet } from 'react-native';
+import { useForm, Controller } from 'react-hook-form';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { yupResolver } from '@hookform/resolvers';
 import * as yup from 'yup';
-import {BButton, BMultiSelect, BPicker} from '../../../../core/components';
-import {useNavigation} from '@react-navigation/native';
-import {connect} from 'react-redux';
-import {PersonService} from '../../../../services';
-
+import { BButton, BPicker } from '../../../../core/components';
+import { useNavigation } from '@react-navigation/native';
+import { connect } from 'react-redux';
+import { PersonService } from '../../../../services';
 import {
   QuestionPersonCodes,
   QuestionTypes,
 } from '../../../../core/utils/PersonTypes';
-import {getQuestionWithOptions} from '../../../../state/person/actions';
-import {PersonQuestion} from '../state/types';
+import { getQuestionWithOptions, saveAnswerLocal, getQuestionAnswer } from '../../../../state/person/actions';
+import { PersonQuestion } from '../state/types';
 
 const questions = [QuestionPersonCodes.Fuma];
 
 const schemaForm = yup.object().shape({
   Fuma: yup.array().required(),
+  ConsumeBebidasAlcoholicas: yup.array().required(),
+  EvidenciaConsumoSustanciasPsicoactivas: yup.array().required(),
 });
 
-const _SocialSecurityForm = (props: any) => {
+const _UnhealthyHabitsForm = (props: any) => {
   const syncCatalogService = new PersonService();
 
   const getItemsForQuestionSelect = (code: string) => {
@@ -35,7 +36,7 @@ const _SocialSecurityForm = (props: any) => {
 
   const navigation = useNavigation();
 
-  const {handleSubmit, control, errors, setValue} = useForm({
+  const { handleSubmit, control, errors, setValue } = useForm({
     resolver: yupResolver(schemaForm),
   });
 
@@ -53,17 +54,15 @@ const _SocialSecurityForm = (props: any) => {
     }
   }
 
+  async function getAnswers(type: number, code: string, prop: string) {
+    let question = await props.getQuestionAnswer(type, code);
+    setValue(prop, question);
+  }
+
   const getQuestionlabel = (code: string) => {
     return syncCatalogService.getQuestionlabel(code, state.questions);
   };
 
-  const getItemsForQuestionMultiSelect = (code: string) => {
-    console.log('state.questions: ', state.questions);
-    return syncCatalogService.getItemsForQuestionMultiSelect(
-      code,
-      state.questions,
-    );
-  };
 
   function onSubmit(data: any) {
     navigation.goBack();
@@ -74,17 +73,26 @@ const _SocialSecurityForm = (props: any) => {
       <View style={styles.container}>
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({ onChange, onBlur, value }) => (
             <BPicker
               label={getQuestionlabel(QuestionPersonCodes.Fuma)}
               onBlur={onBlur}
               error={errors.Fuma}
-              onChange={(values: any) => {
-                onChange(values);
-                console.log('save');
+              onChange={(value: any) => {
+                onChange(value);
+                console.log('save: ', value);
+                props.saveAnswerLocal(
+                  QuestionTypes.selectOne,
+                  QuestionPersonCodes.Fuma,
+                  value,
+                );
               }}
               onLoad={() => {
-                console.log('onLoad');
+                getAnswers(
+                  QuestionTypes.selectOne,
+                  QuestionPersonCodes.Fuma,
+                  'Fuma',
+                );
               }}
               value={value}
               selectedValue={value}
@@ -94,6 +102,70 @@ const _SocialSecurityForm = (props: any) => {
             />
           )}
           name="Fuma"
+        />
+        <Controller
+          control={control}
+          render={({ onChange, onBlur, value }) => (
+            <BPicker
+              label={getQuestionlabel(QuestionPersonCodes.Evice)}
+              onBlur={onBlur}
+              error={errors.ConsumeBebidasAlcoholicas}
+              onChange={(value: any) => {
+                onChange(value);
+                console.log('save: ', value);
+                props.saveAnswerLocal(
+                  QuestionTypes.selectOne,
+                  QuestionPersonCodes.ConsumeBebidasAlcoholicas,
+                  value,
+                );
+              }}
+              onLoad={() => {
+                getAnswers(
+                  QuestionTypes.selectOne,
+                  QuestionPersonCodes.ConsumeBebidasAlcoholicas,
+                  'ConsumeBebidasAlcoholicas',
+                );
+              }}
+              value={value}
+              selectedValue={value}
+              items={
+                getItemsForQuestionSelect(QuestionPersonCodes.ConsumeBebidasAlcoholicas).children
+              }
+            />
+          )}
+          name="ConsumeBebidasAlcoholicas"
+        />
+        <Controller
+          control={control}
+          render={({ onChange, onBlur, value }) => (
+            <BPicker
+              label={getQuestionlabel(QuestionPersonCodes.EvidenciaConsumoSustanciasPsicoactivas)}
+              onBlur={onBlur}
+              error={errors.EvidenciaConsumoSustanciasPsicoactivas}
+              onChange={(value: any) => {
+                onChange(value);
+                console.log('save: ', value);
+                props.saveAnswerLocal(
+                  QuestionTypes.selectOne,
+                  QuestionPersonCodes.EvidenciaConsumoSustanciasPsicoactivas,
+                  value,
+                );
+              }}
+              onLoad={() => {
+                getAnswers(
+                  QuestionTypes.selectOne,
+                  QuestionPersonCodes.EvidenciaConsumoSustanciasPsicoactivas,
+                  'EvidenciaConsumoSustanciasPsicoactivas',
+                );
+              }}
+              value={value}
+              selectedValue={value}
+              items={
+                getItemsForQuestionSelect(QuestionPersonCodes.EvidenciaConsumoSustanciasPsicoactivas).children
+              }
+            />
+          )}
+          name="EvidenciaConsumoSustanciasPsicoactivas"
         />
         <View>
           <BButton
@@ -126,6 +198,8 @@ const styles = StyleSheet.create({
 });
 const mapDispatchToProps = {
   getQuestionWithOptions,
+  saveAnswerLocal,
+  getQuestionAnswer
 };
 const mapStateToProps = (session: any) => {
   return {
@@ -135,4 +209,4 @@ const mapStateToProps = (session: any) => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(_SocialSecurityForm);
+)(_UnhealthyHabitsForm);
