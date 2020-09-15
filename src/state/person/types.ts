@@ -1,43 +1,24 @@
-export type FUBUBIVIV = {
+
+export type FNBINFSAL = {
   ID: number;
-  CODIGO: string;
-  DIRECCION: string;
-  COORDENADA_X: number;
-  COORDENADA_Y: number;
-  HUMO_CASA: boolean;
-  NUM_NUCLEOS: number;
+  PESO: number;
+  TALLA: number;
+  TA_SISTOLICA: number;
+  TA_DIASTOLICA: number;
+  USO_PROTESIS: number;
+  TIEMPO_PROTESIS: number;
+  ULTIMA_VISITA: Date;
+  FECHA_MUERTE: Date;
+  DEFUNCION: string;
   FECHA_ACTIVIDAD: Date;
+  USUARIO_DATA: string;
   FECHA_CREACION: Date;
   ORIGEN_DATA: string;
-  USUARIO_DATA: string;
-  FUCBARVER_ID: number;
 };
-export type FNBNUCVIV = {
-  ID: number;
-  CODIGO: string;
-  HUMO_CASA: boolean;
-  ORIGEN_DATA: string;
-  USUARIO_DATA: string;
-  FUCBARVER_ID: number;
-  RESIDUO_BOR: string;
-  RESIDUO_PELIGROSO: string;
-  ANIMAL_VACUNADO: number;
-  ANIMAL_NOVACUNADO: number;
-  RIESGO: boolean;
-  OBSERVACION: string;
-  LUGAR_COCINA: string;
-  HUMO_DENTRO: string;
-  ACCESO_INTERNET: boolean;
-  TOTAL_ANIMAL: number;
-  FECHA_ACTIVIDAD: Date;
-  FECHA_CREACION: Date;
-  FUBUBIVIV_ID: number;
-  FUBUBIVIV_CODE: string;
-};
-export type FNBNUCVIV_FVCCONVIV = {
+export type FNBINFSAL_FNCCONSAL = {
   ID?: number;
-  FNBNUCVIV_ID: number;
-  FVCCONVIV_ID: number;
-  FVCELEVIV_ID: number;
+  FNCCONSAL_ID: number;
+  FNBINFSAL_ID: number;
+  FNCELESAL_ID: number;
   SYNCSTATE: number;
 };
