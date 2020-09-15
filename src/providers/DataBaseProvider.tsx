@@ -20,6 +20,9 @@ export enum DataBaseSchemas {
   FUCZONCUISCHEMA = 'FUCZONCUI', // Zona de cuidado
   FNCELESALSCHEMA = 'FNCELESAL', //Preguntas salud
   FNCCONSALSCHEMA = 'FNCCONSAL', //respuestas salud
+  FNCELEPERSCHEMA = 'FNCELEPER', //preguntas
+  FNCCONPERSCHEMA = 'FNCCONPER', //respuestas
+  FNCDESARMSCHEMA = 'FNCDESARM',
   FNBINFSAL_FNCCONSALSCHEMA = 'FNBINFSAL_FNCCONSAL',
 }
 export const schemaVersion = 1;
@@ -98,6 +101,16 @@ export const FNCELESALSCHEMA = {
     ESTADO: 'bool',
   },
 };
+export const FNCELEPERSCHEMA = {
+  name: DataBaseSchemas.FNCELEPERSCHEMA,
+  primaryKey: 'ID',
+  properties: {
+    ID: 'int',
+    CODIGO: 'string',
+    NOMBRE: 'string',
+    ESTADO: 'bool',
+  },
+};
 //-----------------------------------------------------------
 export const FVBENCUESSCHEMA = {
   name: DataBaseSchemas.FVBENCUESSCHEMA,
@@ -126,6 +139,24 @@ export const FNCCONSALSCHEMA = {
     CODIGO: 'string',
     NOMBRE: 'string',
     FNCELESAL_ID: 'int',
+  },
+};
+export const FNCDESARMSCHEMA = {
+  name: DataBaseSchemas.FNCDESARMSCHEMA,
+  properties: {
+    ID: 'int',
+    CODIGO: 'string',
+    NOMBRE: 'string',
+    //FNCELESAL_ID: 'int',
+  },
+};
+export const FNCCONPERSCHEMA = {
+  name: DataBaseSchemas.FNCCONPERSCHEMA,
+  properties: {
+    ID: 'int',
+    CODIGO: 'string',
+    NOMBRE: 'string',
+    FNCELEPER_ID: 'int',
   },
 };
 export const FVCELEVIVSCHEMA = {
@@ -352,6 +383,9 @@ export default class DataBaseProvider {
         FNCPERSONSCHEMA,
         FNCELESALSCHEMA,
         FNCCONSALSCHEMA,
+        FNCELEPERSCHEMA,
+        FNCCONPERSCHEMA,
+        FNCDESARMSCHEMA,
         FNBINFSAL_FNCCONSALSCHEMA
       ],
     }).then((realm) => {
@@ -451,6 +485,9 @@ export default class DataBaseProvider {
         FUCZONCUISCHEMA,
         FNCELESALSCHEMA,
         FNCCONSALSCHEMA,
+        FNCELEPERSCHEMA,
+        FNCCONPERSCHEMA,
+        FNCDESARMSCHEMA,
       ],
     }).then((realm) => {
       let count = realm.objects(entity).length;
