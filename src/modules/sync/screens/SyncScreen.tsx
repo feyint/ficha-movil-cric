@@ -27,6 +27,9 @@ interface State {
   /* /-------------------- */
   FNCELESAL: number;
   FNCCONSAL: number;
+  FNCELEPER: number;
+  FNCCONPER: number;
+  FNCDESARM: number;
   /* /-------------------- */
 }
 
@@ -47,6 +50,9 @@ class SyncScreen extends Component<Props, State> {
       FUCZONCUI: 0,
       FNCELESAL: 0,
       FNCCONSAL: 0,
+      FNCELEPER: 0,
+      FNCCONPER: 0,
+      FNCDESARM: 0,
     };
     this.countEntity();
   }
@@ -87,6 +93,15 @@ class SyncScreen extends Component<Props, State> {
             </Paragraph>
             <Paragraph>
               FNCELESAL (Preguntas salud): {this.state.FNCELESAL}
+            </Paragraph>
+            <Paragraph>
+              FNCELEPER (Preguntas persona) : {this.state.FNCELEPER}
+            </Paragraph>
+            <Paragraph>
+              FNCCONPER (respuestas persona): {this.state.FNCCONPER}
+            </Paragraph>
+            <Paragraph>
+              FNCDESARM (respuestas desarmonia): {this.state.FNCDESARM}
             </Paragraph>
             {/* ------------------------------------------ */}
             <Paragraph>
@@ -135,6 +150,15 @@ class SyncScreen extends Component<Props, State> {
     let countFNCELESAL = await this.syncCatalogService.countEntities(
       'FNCELESAL',
     );
+    let countFNCELEPER = await this.syncCatalogService.countEntities(
+      'FNCELEPER',
+    );
+    let countFNCCONPER = await this.syncCatalogService.countEntities(
+      'FNCCONPER',
+    );
+    let countFNCDESARM = await this.syncCatalogService.countEntities(
+      'FNCDESARM',
+    );
     //----------------------------------------------------------------------
     let countFUCDEPART = await this.syncCatalogService.countEntities(
       'FUCDEPART',
@@ -164,6 +188,9 @@ class SyncScreen extends Component<Props, State> {
       //------------------------------
       FNCELESAL: countFNCELESAL,
       FNCCONSAL: countFNCCONSAL,
+      FNCELEPER: countFNCELEPER,
+      FNCCONPER: countFNCCONPER,
+      FNCDESARM: countFNCDESARM,
       //------------------------------
       FUCDEPART: countFUCDEPART,
       FUCMUNICI: countFUCMUNICI,
