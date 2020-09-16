@@ -269,7 +269,7 @@ export default class PersonService {
           );
         console.warn('items getAnswerMultiSelect ', items.length);
         return items.map((item: any) => {
-          return item.FVCCONVIV_ID;
+          return item.FNCCONSAL_ID;
         });
       })
       .catch((error) => {

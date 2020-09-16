@@ -12,6 +12,7 @@ export const QuestionPersonCodes = {
   Fuma: '11',
   ConsumeBebidasAlcoholicas: '18',
   EvidenciaConsumoSustanciasPsicoactivas: '17',
+  EvidenciaViolencia: '19',
   EstadoNutricional: '12',
   RealizacionDePruebasDeCerologiaYVihEnElUltimoTrimestreGestacional: '13',
   RealizacionRitualOPracticasCulturales: '14',

@@ -4,7 +4,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { yupResolver } from '@hookform/resolvers';
 import * as yup from 'yup';
-import { BButton, BPicker } from '../../../../core/components';
+import { BButton, BMultiSelect, BPicker } from '../../../../core/components';
 import { useNavigation } from '@react-navigation/native';
 import { connect } from 'react-redux';
 import { PersonService } from '../../../../services';
@@ -15,12 +15,17 @@ import {
 import { getQuestionWithOptions, saveAnswerLocal, getQuestionAnswer } from '../../../../state/person/actions';
 import { PersonQuestion } from '../state/types';
 
-const questions = [QuestionPersonCodes.Fuma];
+const questions = [QuestionPersonCodes.Fuma,
+QuestionPersonCodes.ConsumeBebidasAlcoholicas,
+QuestionPersonCodes.EvidenciaConsumoSustanciasPsicoactivas,
+QuestionPersonCodes.EvidenciaViolencia,
+];
 
 const schemaForm = yup.object().shape({
-  Fuma: yup.array().required(),
-  ConsumeBebidasAlcoholicas: yup.array().required(),
-  EvidenciaConsumoSustanciasPsicoactivas: yup.array().required(),
+  Fuma: yup.number().required(),
+  ConsumeBebidasAlcoholicas: yup.number().required(),
+  EvidenciaConsumoSustanciasPsicoactivas: yup.number().required(),
+  EvidenciaViolencia: yup.array().required(),
 });
 
 const _UnhealthyHabitsForm = (props: any) => {
@@ -63,6 +68,13 @@ const _UnhealthyHabitsForm = (props: any) => {
     return syncCatalogService.getQuestionlabel(code, state.questions);
   };
 
+  const getItemsForQuestionMultiSelect = (code: string) => {
+    console.log('state.questions: ', state.questions);
+    return syncCatalogService.getItemsForQuestionMultiSelect(
+      code,
+      state.questions,
+    );
+  };
 
   function onSubmit(data: any) {
     navigation.goBack();
@@ -166,6 +178,38 @@ const _UnhealthyHabitsForm = (props: any) => {
             />
           )}
           name="EvidenciaConsumoSustanciasPsicoactivas"
+        />
+        <Controller
+          control={control}
+          render={({ onChange, onBlur, value }) => (
+            <BMultiSelect
+              label={getQuestionlabel(
+                QuestionPersonCodes.EvidenciaViolencia,
+              )}
+              onBlur={onBlur}
+              error={errors.EvidenciaViolencia}
+              onChange={(values: any) => {
+                onChange(values);
+                props.saveAnswerLocal(
+                  QuestionTypes.multiSelect,
+                  QuestionPersonCodes.EvidenciaViolencia,
+                  values,
+                );
+              }}
+              onLoad={() => {
+                getAnswers(
+                  QuestionTypes.multiSelect,
+                  QuestionPersonCodes.EvidenciaViolencia,
+                  'EvidenciaViolencia',
+                );
+              }}
+              selectedItems={value}
+              items={getItemsForQuestionMultiSelect(
+                QuestionPersonCodes.EvidenciaViolencia,
+              )}
+            />
+          )}
+          name="EvidenciaViolencia"
         />
         <View>
           <BButton
