@@ -8,8 +8,8 @@ import { connect } from 'react-redux';
 import * as yup from 'yup';
 import { BButton, BDatePickerModal, BImagePicker, BPicker } from '../../../../core/components';
 import { PersonService } from '../../../../services';
-import { QuestionPersonCodes } from '../../../../core/utils/PersonTypes';
-import { getQuestionWithOptions } from '../../../../state/person/actions';
+import { QuestionPersonCodes, QuestionTypes } from '../../../../core/utils/PersonTypes';
+import { getQuestionWithOptions, saveAnswerLocal, getQuestionAnswer } from '../../../../state/person/actions';
 import { PersonQuestion } from '../state/types';
 
 const questions = [
@@ -18,9 +18,9 @@ const questions = [
 ];
 
 const schemaForm = yup.object().shape({
-  FechaMuerte: yup.array().required(),
-  Causa: yup.array().required(),
-  RealizacionritualOpracticasculturales: yup.array().required(),
+  FechaMuerte: yup.date().required(),
+  CausaDeLaMuerte: yup.number().required(),
+  RealizacionritualOpracticasculturales: yup.number().required(),
   Soportes: yup.array().required(),
 });
 
@@ -41,6 +41,12 @@ const _MortalityLast12MonthsForm = (props: any) => {
   useEffect(() => {
     fetchQuestions();
   }, []);
+
+
+  async function getAnswers(type: number, code: string, prop: string) {
+    let question = await props.getQuestionAnswer(type, code);
+    setValue(prop, question);
+  }
 
   async function fetchQuestions() {
     let result = await props.getQuestionWithOptions(questions);
@@ -75,6 +81,9 @@ const _MortalityLast12MonthsForm = (props: any) => {
                 onChange(value);
                 console.log('Selected Item: ', value);
               }}
+              onLoad={() => {
+                console.log('OnLoad BDatePickerModal');
+              }}
               value={value}
             />
           )}
@@ -88,12 +97,21 @@ const _MortalityLast12MonthsForm = (props: any) => {
                 getItemsForQuestionSelect(QuestionPersonCodes.CausaDeLaMuerte).name
               }
               onBlur={onBlur}
-              error={errors.Causa}
-              onChange={(vlue: any) => {
-                onChange(vlue);
+              error={errors.CausaDeLaMuerte}
+              onChange={(value: any) => {
+                onChange(value);
+                props.saveAnswerLocal(
+                  QuestionTypes.selectOne,
+                  QuestionPersonCodes.CausaDeLaMuerte,
+                  value,
+                );
               }}
               onLoad={() => {
-                console.log('onLoad');
+                getAnswers(
+                  QuestionTypes.selectOne,
+                  QuestionPersonCodes.CausaDeLaMuerte,
+                  'CausaDeLaMuerte',
+                );
               }}
               value={value}
               selectedValue={value}
@@ -102,7 +120,7 @@ const _MortalityLast12MonthsForm = (props: any) => {
               }
             />
           )}
-          name="Causa"
+          name="CausaDeLaMuerte"
         />
         <Controller
           control={control}
@@ -112,12 +130,21 @@ const _MortalityLast12MonthsForm = (props: any) => {
                 getItemsForQuestionSelect(QuestionPersonCodes.RealizacionRitualOPracticasCulturales).name
               }
               onBlur={onBlur}
-              error={errors.RealizacionritualOpracticasculturales}
-              onChange={(vlue: any) => {
-                onChange(vlue);
+              error={errors.RealizacionRitualOPracticasCulturales}
+              onChange={(value: any) => {
+                onChange(value);
+                props.saveAnswerLocal(
+                  QuestionTypes.selectOne,
+                  QuestionPersonCodes.RealizacionRitualOPracticasCulturales,
+                  value,
+                );
               }}
               onLoad={() => {
-                console.log('onLoad');
+                getAnswers(
+                  QuestionTypes.selectOne,
+                  QuestionPersonCodes.RealizacionRitualOPracticasCulturales,
+                  'RealizacionRitualOPracticasCulturales',
+                );
               }}
               value={value}
               selectedValue={value}
@@ -126,8 +153,9 @@ const _MortalityLast12MonthsForm = (props: any) => {
               }
             />
           )}
-          name="RealizacionritualOpracticasculturales"
+          name="RealizacionRitualOPracticasCulturales"
         />
+
         <Controller
           control={control}
           render={({ onChange, onBlur, value }) => (
@@ -142,7 +170,7 @@ const _MortalityLast12MonthsForm = (props: any) => {
               value={value}
             />
           )}
-          name="Sportes"
+          name="Soporte"
         />
         <BButton
           color="secondary"
@@ -174,6 +202,8 @@ const styles = StyleSheet.create({
 
 const mapDispatchToProps = {
   getQuestionWithOptions,
+  saveAnswerLocal,
+  getQuestionAnswer
 };
 
 const mapStateToProps = (session: any) => {

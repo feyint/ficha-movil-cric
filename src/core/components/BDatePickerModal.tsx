@@ -16,6 +16,7 @@ interface Props {
     errorText?: string;
     error?: boolean;
     onChange?: any;
+    onLoad?: any;
     onBlur?: any;
     disabled?: boolean;
     isVisible?: boolean;
@@ -28,6 +29,12 @@ export default class BDatePickerModal extends Component<Props, State> {
             value: this.props.value ? this.props.value : new Date(),
             isVisible: this.props.isVisible ? this.props.isVisible : false,
         };
+    }
+    UNSAFE_componentWillMount() {
+        console.log('UNSAFE_componentWillMount (BDatePickerModal)');
+        if (this.props.onLoad) {
+            this.props.onLoad(true);
+        }
     }
     hideDatePicket = () => {
         this.setState({ isVisible: false })
