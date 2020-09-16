@@ -194,19 +194,19 @@ export default class PersonService {
   /**
    * 
    * @param FNBINFSAL_ID 
-   * @param FVCELEVIV_ID 
+   * @param FNCELESAL_ID 
    */
-  async getAnswerOneOption(FNBINFSAL_ID: any, FVCELEVIV_ID: any) {
+  async getAnswerOneOption(FNBINFSAL_ID: any, FNCELESAL_ID: any) {
     const result = await Realm.open({
       schema: [FNBINFSAL_FNCCONSALSCHEMA],
       schemaVersion: schemaVersion,
     })
       .then((realm) => {
-        console.log(`FNBINFSAL_ID = ${FNBINFSAL_ID} AND FNCELESAL_ID = ${FVCELEVIV_ID}`);
+        console.log(`FNBINFSAL_ID = ${FNBINFSAL_ID} AND FNCELESAL_ID = ${FNCELESAL_ID}`);
         let items = realm
           .objects(DataBaseSchemas.FNBINFSAL_FNCCONSALSCHEMA)
           .filtered(
-            `FNBINFSAL_ID = ${FNBINFSAL_ID} AND FNCELESAL_ID = ${FVCELEVIV_ID}`,
+            `FNBINFSAL_ID = ${FNBINFSAL_ID} AND FNCELESAL_ID = ${FNCELESAL_ID}`,
           );
         console.warn('items getAnswerOneOption ', items.length);
         if (items.length > 0) {
@@ -224,9 +224,9 @@ export default class PersonService {
   /**
    * 
    * @param FNBINFSAL_ID 
-   * @param FVCELEVIV_ID 
+   * @param FNCELESAL_ID 
    */
-  async deleteAnswerForQuestion(FNBINFSAL_ID: number, FVCELEVIV_ID: number) {
+  async deleteAnswerForQuestion(FNBINFSAL_ID: number, FNCELESAL_ID: number) {
     //TODO consultar si ya existe
     await Realm.open({
       schema: [FNBINFSAL_FNCCONSALSCHEMA],
@@ -236,7 +236,7 @@ export default class PersonService {
         let options = realm
           .objects(DataBaseSchemas.FNBINFSAL_FNCCONSALSCHEMA)
           .filtered(
-            `FNBINFSAL_ID = ${FNBINFSAL_ID} AND FVCELEVIV_ID = ${FVCELEVIV_ID}`,
+            `FNBINFSAL_ID = ${FNBINFSAL_ID} AND FNCELESAL_ID = ${FNCELESAL_ID}`,
           );
         console.log('borrar ', options.length);
         realm.write(() => {
@@ -253,19 +253,19 @@ export default class PersonService {
   /**
    * 
    * @param FNBINFSAL_ID 
-   * @param FVCELEVIV_ID 
+   * @param FNCELESAL_ID 
    */
-  async getAnswerMultiSelect(FNBINFSAL_ID: any, FVCELEVIV_ID: any) {
+  async getAnswerMultiSelect(FNBINFSAL_ID: any, FNCELESAL_ID: any) {
     const result = await Realm.open({
       schema: [FNBINFSAL_FNCCONSALSCHEMA],
       schemaVersion: schemaVersion,
     })
       .then((realm) => {
-        console.log(`FNBINFSAL_ID = ${FNBINFSAL_ID} AND FVCELEVIV_ID = ${FVCELEVIV_ID}`);
+        console.log(`FNBINFSAL_ID = ${FNBINFSAL_ID} AND FNCELESAL_ID = ${FNCELESAL_ID}`);
         let items = realm
           .objects(DataBaseSchemas.FNBINFSAL_FNCCONSALSCHEMA)
           .filtered(
-            `FNBINFSAL_ID = ${FNBINFSAL_ID} AND FVCELEVIV_ID = ${FVCELEVIV_ID}`,
+            `FNBINFSAL_ID = ${FNBINFSAL_ID} AND FNCELESAL_ID = ${FNCELESAL_ID}`,
           );
         console.warn('items getAnswerMultiSelect ', items.length);
         return items.map((item: any) => {

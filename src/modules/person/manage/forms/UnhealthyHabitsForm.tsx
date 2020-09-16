@@ -107,7 +107,7 @@ const _UnhealthyHabitsForm = (props: any) => {
           control={control}
           render={({ onChange, onBlur, value }) => (
             <BPicker
-              label={getQuestionlabel(QuestionPersonCodes.Evice)}
+              label={getQuestionlabel(QuestionPersonCodes.ConsumeBebidasAlcoholicas)}
               onBlur={onBlur}
               error={errors.ConsumeBebidasAlcoholicas}
               onChange={(value: any) => {
