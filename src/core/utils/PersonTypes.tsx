@@ -25,3 +25,24 @@ export const QuestionTypes = {
   selectOne: 1,
   multiSelect: 2,
 };
+
+export const QuestionConditionPersonCodes = {
+  EPS: '1',
+  EstadoCivil: '2',
+  SeguridadSocial: '3',
+  GrupoEtnico: '4',
+  Casta: '5',
+  LenguaMaterna: '6',
+  DominioLenguaMaterna: '7',
+  NivelEstudio: '8',
+  CapacidadDiversa: '9',
+  TipoTrabajo: '10',
+  PoblacionPensionada: '11',
+  OtrosSaberesAnsestrales: '12',
+  Religion: '13',
+  TipoDeCuidadosCulturalesQueRealiza: '14',
+  ProgramaDeSalud: '15',
+  LunaOccidental: '16',
+  LactanciaMaterna: '17',
+  OcupacionGranGrupo: '19',
+};

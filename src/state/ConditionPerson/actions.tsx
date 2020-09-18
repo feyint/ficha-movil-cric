@@ -1,23 +1,23 @@
-import {PersonService} from '../../services';
-import {PersonQuestion} from '../../modules/person/manage/state/types';
-import {FNBINFSAL, FNBINFSAL_FNCCONSAL} from './types';
+import {ConditionPersonService} from '../../services';
+import {ConditionPersonQuestion} from '../../modules/person/manage/state/types';
+import {FNCPERSON, FNCPERSON_FNCCONPER} from './types';
 
 export const ActionType = {
-  SET_PERSON_QUESTION_LIST: 'SET_PERSON_QUESTION_LIST',
+  SET_CONDITIONPERSON_QUESTION_LIST: 'SET_CONDITIONPERSON_QUESTION_LIST',
 };
 
-const setPERSON_QUESTION_LIST = (data: PersonQuestion[]) => {
-  return {type: ActionType.SET_PERSON_QUESTION_LIST, data};
+const setCONDITIONPERSON_QUESTION_LIST = (data: ConditionPersonQuestion[]) => {
+  return {type: ActionType.SET_CONDITIONPERSON_QUESTION_LIST, data};
 };
 
 /**
  *
  */
 export const setQuestionWithOptions = () => async (dispatch: any) => {
-  let questionItems: PersonQuestion[] = [];
-  let personServie: PersonService = new PersonService();
+  let questionItems: ConditionPersonQuestion[] = [];
+  let personServie: ConditionPersonService = new ConditionPersonService();
   questionItems = await personServie.getQuestionWithOptions();
-  dispatch(setPERSON_QUESTION_LIST(questionItems));
+  dispatch(setCONDITIONPERSON_QUESTION_LIST(questionItems));
 };
 
 /**
@@ -29,7 +29,8 @@ export const getQuestionWithOptions = (questionsQuery?: any[]) => async (
   getState: any,
 ) => {
   const store = getState();
-  let questionItems: PersonQuestion[] = store.person.PERSONQUESTIONLIST;
+  let questionItems: ConditionPersonQuestion[] =
+    store.conditionperson.CONDITIONPERSONQUESTIONLIST;
   if (questionItems.length === 0) {
     setQuestionWithOptions();
   }
@@ -54,21 +55,22 @@ export const saveAnswerLocal = (
 ) => async (_dispatch: any, getState: any) => {
   if (questionCode) {
     const store = getState();
-    let questionItems: PersonQuestion[] = store.person.PERSONQUESTIONLIST;
+    let questionItems: ConditionPersonQuestion[] =
+      store.conditionperson.CONDITIONPERSONQUESTIONLIST;
     let item: any = getQuestionByCode(questionCode, questionItems);
     if (item) {
-      let family: FNBINFSAL = store.person.FNBINFSAL;
-      let personServie: PersonService = new PersonService();
+      let family: FNCPERSON = store.conditionperson.FNCPERSON;
+      let personServie: ConditionPersonService = new ConditionPersonService();
       switch (type) {
         case 1: // oneOption
           let option = getOption(item.ID, JSON.parse(answer), family.ID);
-          if (option.FNCCONSAL_ID) {
+          if (option.FNCCONPER_ID) {
             await personServie.saveQuestionOption([option]);
           } else {
             await personServie.deleteAnswerForQuestion(family.ID, item.ID);
           }
           break;
-        case 2: // multiSelect
+          case 2: // multiSelect
           let options = [];
           for (let i = 0; i < answer.length; i++) {
             let opt = getOption(item.ID, answer[i], family.ID);
@@ -97,9 +99,10 @@ export const getQuestionAnswer = (type: number, questionCode: string) => async (
   getState: any,
 ) => {
   const store = getState();
-  let family: FNBINFSAL = store.person.FNBINFSAL;
-  let personServie: PersonService = new PersonService();
-  let questionItems: PersonQuestion[] = store.person.PERSONQUESTIONLIST;
+  let family: FNCPERSON = store.conditionperson.FNCPERSON;
+  let personServie: ConditionPersonService = new ConditionPersonService();
+  let questionItems: ConditionPersonQuestion[] =
+    store.conditionperson.CONDITIONPERSONQUESTIONLIST;
   let question = getQuestionByCode(questionCode, questionItems);
   console.log('answer query ', question);
   switch (type) {
@@ -125,7 +128,7 @@ export const getQuestionAnswer = (type: number, questionCode: string) => async (
  */
 export function getQuestionByCode(
   questionCode: string,
-  questionItems: PersonQuestion[],
+  questionItems: ConditionPersonQuestion[],
 ) {
   if (questionItems.length === 0) {
     setQuestionWithOptions();
@@ -133,20 +136,20 @@ export function getQuestionByCode(
   let item = questionItems.find(item => {
     return item.CODIGO === questionCode;
   });
-  return item as PersonQuestion;
+  return item as ConditionPersonQuestion;
 }
 
 /**
  *
  * @param questionID
  * @param answerID
- * @param fnbinfsalID
+ * @param fncpersonID
  */
-function getOption(questionID: number, answerID: number, fnbinfsalID: number) {
-  let object: FNBINFSAL_FNCCONSAL = {
-    FNCCONSAL_ID: answerID,
-    FNBINFSAL_ID: fnbinfsalID,
-    FNCELESAL_ID: questionID,
+function getOption(questionID: number, answerID: number, fncpersonID: number) {
+  let object: FNCPERSON_FNCCONPER = {
+    FNCCONPER_ID: answerID,
+    FNCPERSON_ID: fncpersonID,
+    FNCELEPER_ID: questionID,
     SYNCSTATE: 0,
   };
   return object;

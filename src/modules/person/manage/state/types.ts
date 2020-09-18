@@ -11,3 +11,16 @@ export type PersonQuestionOption = {
   NOMBRE: string;
   FNCELESAL_ID: number;
 };
+export type ConditionPersonQuestion = {
+  ID: number;
+  CODIGO: string;
+  NOMBRE: string;
+  ESTADO: number;
+  OPTIONS: ConditionPersonQuestionOption[];
+};
+export type ConditionPersonQuestionOption = {
+  ID: number;
+  CODIGO: string;
+  NOMBRE: string;
+  FNCELEPER_ID: number;
+};

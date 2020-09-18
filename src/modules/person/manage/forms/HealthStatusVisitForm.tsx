@@ -13,7 +13,11 @@ import {
   QuestionPersonCodes,
   QuestionTypes,
 } from '../../../../core/utils/PersonTypes';
-import {getQuestionWithOptions} from '../../../../state/person/actions';
+import {
+  getQuestionWithOptions,
+  saveAnswerLocal,
+  getQuestionAnswer,
+} from '../../../../state/person/actions';
 import {PersonQuestion} from '../state/types';
 
 const questions = [
@@ -53,6 +57,11 @@ const _HealthStatusVisitForm = (props: any) => {
     }
   }
 
+  async function getAnswers(type: number, code: string, prop: string) {
+    let question = await props.getQuestionAnswer(type, code);
+    setValue(prop, question);
+  }
+
   const getQuestionlabel = (code: string) => {
     return syncCatalogService.getQuestionlabel(code, state.questions);
   };
@@ -72,6 +81,39 @@ const _HealthStatusVisitForm = (props: any) => {
   return (
     <KeyboardAwareScrollView>
       <View style={styles.container}>
+        {/* <Controller
+          control={control}
+          render={({onChange, onBlur, value}) => (
+            <BMultiSelect
+              label={'Desarmonia propia'}
+              onBlur={onBlur}
+              error={errors.DesarmoniaOccidental}
+              onChange={(values: any) => {
+                onChange(values);
+                console.log('save');
+                props.saveAnswerLocal(
+                  QuestionTypes.multiSelect,
+                  QuestionPersonCodes.DesarmoniaOccidental,
+                  values,
+                );
+              }}
+              onLoad={() => {
+                console.log('onLoad');
+                getAnswers(
+                  QuestionTypes.multiSelect,
+                  QuestionPersonCodes.DesarmoniaOccidental,
+                  'DesarmoniaOccidental',
+                );
+              }}
+              selectedItems={value}
+              items={getItemsForQuestionMultiSelect(
+                QuestionPersonCodes.DesarmoniaOccidental,
+              )}
+            />
+          )}
+          name="DesarmoniaOccidental"
+        /> */}
+
         <Controller
           control={control}
           render={({onChange, onBlur, value}) => (
@@ -82,9 +124,19 @@ const _HealthStatusVisitForm = (props: any) => {
               onChange={(values: any) => {
                 onChange(values);
                 console.log('save');
+                props.saveAnswerLocal(
+                  QuestionTypes.multiSelect,
+                  QuestionPersonCodes.DesarmoniaOccidental,
+                  values,
+                );
               }}
               onLoad={() => {
                 console.log('onLoad');
+                getAnswers(
+                  QuestionTypes.multiSelect,
+                  QuestionPersonCodes.DesarmoniaOccidental,
+                  'DesarmoniaOccidental',
+                );
               }}
               selectedItems={value}
               items={getItemsForQuestionMultiSelect(
@@ -92,7 +144,7 @@ const _HealthStatusVisitForm = (props: any) => {
               )}
             />
           )}
-          name="DesarmoniasOccidentales"
+          name="DesarmoniaOccidental"
         />
 
         <Controller
@@ -107,9 +159,19 @@ const _HealthStatusVisitForm = (props: any) => {
               onChange={(values: any) => {
                 onChange(values);
                 console.log('save');
+                props.saveAnswerLocal(
+                  QuestionTypes.multiSelect,
+                  QuestionPersonCodes.AntecedentesFamiliares,
+                  values,
+                );
               }}
               onLoad={() => {
                 console.log('onLoad');
+                getAnswers(
+                  QuestionTypes.multiSelect,
+                  QuestionPersonCodes.AntecedentesFamiliares,
+                  'AntecedentesFamiliares',
+                );
               }}
               selectedItems={value}
               items={getItemsForQuestionMultiSelect(
@@ -151,6 +213,8 @@ const styles = StyleSheet.create({
 });
 const mapDispatchToProps = {
   getQuestionWithOptions,
+  saveAnswerLocal,
+  getQuestionAnswer,
 };
 const mapStateToProps = (session: any) => {
   return {

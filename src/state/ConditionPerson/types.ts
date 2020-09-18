@@ -42,8 +42,8 @@ export type FNCPERSON = {
 };
 export type FNCPERSON_FNCCONPER = {
   ID?: number;
-  FNCCONPER_ID: number;
   FNCPERSON_ID: number;
+  FNCCONPER_ID: number;
   FNCELEPER_ID: number;
   SYNCSTATE: number;
 };

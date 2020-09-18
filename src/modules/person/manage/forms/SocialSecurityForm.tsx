@@ -4,36 +4,48 @@ import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {yupResolver} from '@hookform/resolvers';
 import * as yup from 'yup';
-import {BButton, BMultiSelect} from '../../../../core/components';
+import {BButton, BMultiSelect, BPicker} from '../../../../core/components';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
-import {PersonService} from '../../../../services';
+import {ConditionPersonService} from '../../../../services';
 
 import {
-  QuestionPersonCodes,
+  QuestionConditionPersonCodes,
   QuestionTypes,
 } from '../../../../core/utils/PersonTypes';
-import {getQuestionWithOptions} from '../../../../state/person/actions';
-import {PersonQuestion} from '../state/types';
+import {
+  getQuestionWithOptions,
+  saveAnswerLocal,
+  getQuestionAnswer,
+} from '../../../../state/ConditionPerson/actions';
+import {ConditionPersonQuestion} from '../state/types';
 
 const questions = [
-  QuestionPersonCodes.DesarmoniaOccidental,
-  QuestionPersonCodes.AntecedentesFamiliares,
+  QuestionConditionPersonCodes.SeguridadSocial,
+  QuestionConditionPersonCodes.EPS,
+  QuestionConditionPersonCodes.ProgramaDeSalud,
 ];
 
 const schemaForm = yup.object().shape({
-  DesarmoniaOccidental: yup.array().required(),
-  AntecedentesFamiliares: yup.array().required(),
+  SeguridadSocial: yup.number().required(),
+  EPS: yup.number().required(),
+  ProgramaDeSalud: yup.array().required(),
 });
 
 const _SocialSecurityForm = (props: any) => {
-  const syncCatalogService = new PersonService();
+  const syncCatalogService = new ConditionPersonService();
 
   const [state, setState] = useState({
-    questions: [] as PersonQuestion[],
+    questions: [] as ConditionPersonQuestion[],
   });
 
+  const [pikerEnable, setPikerEnable] = useState(false);
+
   const navigation = useNavigation();
+
+  const getItemsForQuestionSelect = (code: string) => {
+    return syncCatalogService.getItemsForQuestionSelect(code, state.questions);
+  };
 
   const {handleSubmit, control, errors, setValue} = useForm({
     resolver: yupResolver(schemaForm),
@@ -51,6 +63,11 @@ const _SocialSecurityForm = (props: any) => {
         questions: result,
       });
     }
+  }
+
+  async function getAnswers(type: number, code: string, prop: string) {
+    let question = await props.getQuestionAnswer(type, code);
+    setValue(prop, question);
   }
 
   const getQuestionlabel = (code: string) => {
@@ -75,51 +92,114 @@ const _SocialSecurityForm = (props: any) => {
         <Controller
           control={control}
           render={({onChange, onBlur, value}) => (
-            <BMultiSelect
-              label={getQuestionlabel(QuestionPersonCodes.DesarmoniaOccidental)}
+            <BPicker
+              label={getQuestionlabel(
+                QuestionConditionPersonCodes.SeguridadSocial,
+              )}
               onBlur={onBlur}
-              error={errors.DesarmoniaOccidental}
-              onChange={(values: any) => {
-                onChange(values);
-                console.log('save');
+              error={errors.SeguridadSocial}
+              onChange={(value: any) => {
+                onChange(value);
+                console.log('save seguridad social value es: ', value);
+                props.saveAnswerLocal(
+                  QuestionTypes.selectOne,
+                  QuestionConditionPersonCodes.SeguridadSocial,
+                  value,
+                );
+                if (value == 93 || value == 94 || value == 92) {
+                  console.log('verdadero');
+                  setPikerEnable(true);
+                } else {
+                  console.log('falso');
+                  setPikerEnable(false);
+                }
               }}
               onLoad={() => {
-                console.log('onLoad');
+                getAnswers(
+                  QuestionTypes.selectOne,
+                  QuestionConditionPersonCodes.SeguridadSocial,
+                  'SeguridadSocial',
+                );
               }}
-              selectedItems={value}
-              items={getItemsForQuestionMultiSelect(
-                QuestionPersonCodes.DesarmoniaOccidental,
-              )}
+              value={value}
+              selectedValue={value}
+              items={
+                getItemsForQuestionSelect(
+                  QuestionConditionPersonCodes.SeguridadSocial,
+                ).children
+              }
             />
           )}
-          name="DesarmoniasOccidentales"
+          name="SeguridadSocial"
         />
-
+        <Controller
+          control={control}
+          render={({onChange, onBlur, value}) => (
+            <BPicker
+              enabled={pikerEnable}
+              label={getQuestionlabel(QuestionConditionPersonCodes.EPS)}
+              onBlur={onBlur}
+              error={errors.EPS}
+              onChange={(value: any) => {
+                onChange(value);
+                console.log('save: ', value);
+                props.saveAnswerLocal(
+                  QuestionTypes.selectOne,
+                  QuestionConditionPersonCodes.EPS,
+                  value,
+                );
+              }}
+              onLoad={() => {
+                getAnswers(
+                  QuestionTypes.selectOne,
+                  QuestionConditionPersonCodes.EPS,
+                  'EPS',
+                );
+              }}
+              value={value}
+              selectedValue={value}
+              items={
+                getItemsForQuestionSelect(QuestionConditionPersonCodes.EPS)
+                  .children
+              }
+            />
+          )}
+          name="EPS"
+        />
         <Controller
           control={control}
           render={({onChange, onBlur, value}) => (
             <BMultiSelect
               label={getQuestionlabel(
-                QuestionPersonCodes.AntecedentesFamiliares,
+                QuestionConditionPersonCodes.ProgramaDeSalud,
               )}
               onBlur={onBlur}
-              error={errors.AntecedentesFamiliares}
+              error={errors.ProgramaDeSalud}
               onChange={(values: any) => {
                 onChange(values);
-                console.log('save');
+                console.log('save', value);
+                props.saveAnswerLocal(
+                  QuestionTypes.multiSelect,
+                  QuestionConditionPersonCodes.ProgramaDeSalud,
+                  value,
+                );
               }}
               onLoad={() => {
                 console.log('onLoad');
+                getAnswers(
+                  QuestionTypes.multiSelect,
+                  QuestionConditionPersonCodes.ProgramaDeSalud,
+                  'ProgramaDeSalud',
+                );
               }}
               selectedItems={value}
               items={getItemsForQuestionMultiSelect(
-                QuestionPersonCodes.AntecedentesFamiliares,
+                QuestionConditionPersonCodes.ProgramaDeSalud,
               )}
             />
           )}
-          name="AntecedentesFamiliares"
+          name="ProgramaDeSalud"
         />
-
         <View>
           <BButton
             color="secondary"
@@ -151,6 +231,8 @@ const styles = StyleSheet.create({
 });
 const mapDispatchToProps = {
   getQuestionWithOptions,
+  saveAnswerLocal,
+  getQuestionAnswer,
 };
 const mapStateToProps = (session: any) => {
   return {

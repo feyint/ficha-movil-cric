@@ -24,6 +24,7 @@ export enum DataBaseSchemas {
   FNCCONPERSCHEMA = 'FNCCONPER', //respuestas
   FNCDESARMSCHEMA = 'FNCDESARM',
   FNBINFSAL_FNCCONSALSCHEMA = 'FNBINFSAL_FNCCONSAL',
+  FNCPERSON_FNCCONPERSCHEMA = 'FNCPERSON_FNCCONPER',
 }
 export const schemaVersion = 1;
 export const UserSchema = {
@@ -342,6 +343,16 @@ export const FNBINFSAL_FNCCONSALSCHEMA = {
     SYNCSTATE: 'int',
   },
 };
+export const FNCPERSON_FNCCONPERSCHEMA = {
+  name: DataBaseSchemas.FNCPERSON_FNCCONPERSCHEMA,
+  properties: {
+    ID: 'int?',
+    FNCCONPER_ID: 'int',
+    FNCPERSON_ID: 'int',
+    FNCELEPER_ID: 'int',
+    SYNCSTATE: 'int',
+  },
+};
 export const allCatalogs = () =>
   new Promise((resolve, reject) => {
     Realm.open({
@@ -386,7 +397,8 @@ export default class DataBaseProvider {
         FNCELEPERSCHEMA,
         FNCCONPERSCHEMA,
         FNCDESARMSCHEMA,
-        FNBINFSAL_FNCCONSALSCHEMA
+        FNBINFSAL_FNCCONSALSCHEMA,
+        FNCPERSON_FNCCONPERSCHEMA,
       ],
     }).then((realm) => {
       realm.write(() => {

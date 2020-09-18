@@ -5,7 +5,8 @@ import { FamilyList } from '../form';
 import { BButton } from '../../../core/components';
 import { connect } from 'react-redux';
 import { setFNBNUCVIV } from '../../../state/house/actions';
-import { setQuestionWithOptions } from '../../../state/person/actions';
+import { setQuestionWithOptions } from '../../../state/ConditionPerson/actions';
+//import { setQuestionWithOptions as setConditionQuestionWithOptions } from '../../../state/ConditionPerson/actions;
 import { NavigationProp } from '@react-navigation/native';
 
 interface Props {
