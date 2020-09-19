@@ -4,19 +4,19 @@ import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {yupResolver} from '@hookform/resolvers';
 import * as yup from 'yup';
-import {BTextInput, BPicker, AlertBox, BButton} from '../../../core/components';
+import {BTextInput, BPicker, BButton} from '../../../core/components';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {getEntitySelect, getLasHouseCode} from '../state/actions';
 import {SelectSchema} from '../../../core/utils/types';
 import Geolocation from '@react-native-community/geolocation';
-import {saveFUBUBIVIV} from '../../../state/house/actions';
+import {saveFUBUBIVIV, updateFUBUBIVIV} from '../../../state/house/actions';
 import {FUBUBIVIV} from '../../../state/house/types';
 import {HousingService} from '../../../services';
 
 interface GeolocationData {
-  latitude: number;
-  longitude: number;
+  latitude: string;
+  longitude: string;
 }
 const schemaForm = yup.object().shape({
   department: yup.string().required(),
@@ -34,30 +34,44 @@ const _HomeLocationForm = (props: any) => {
   const navigation = useNavigation();
   const [error, setError] = useState('');
   const [position, setPosition] = useState<GeolocationData>({
-    latitude: 0,
-    longitude: 0,
+    latitude: '',
+    longitude: '',
   });
   const {handleSubmit, control, errors, getValues, setValue} = useForm({
     resolver: yupResolver(schemaForm),
-    defaultValues: {
-      department: '1', // Cauca 8
-      territoryType: '',
-      housingCode: '',
-    },
   });
-  const [state, setState] = useState({
-    departamentoSelect: {id: 0, name: '', children: []} as SelectSchema,
-    tipoterritorioSelect: {id: 0, name: '', children: []} as SelectSchema,
-    isresguardo: false,
-    municipioSelect: {id: 0, name: '', children: []} as SelectSchema,
-    resguardoSelect: {id: 0, name: '', children: []} as SelectSchema,
-    centropobladoSelect: {id: 0, name: '', children: []} as SelectSchema,
-  });
+  const [department, setDepartment] = useState('');
   const [municipio, setMunicipio] = useState('');
-  const [houseCode, setHouseCode] = useState({secuense: 0, code: ''});
+  const [originalhouseCode, setoriginalHouseCode] = useState('');
+  const [houseCode, setHouseCode] = useState('');
   const [tipoterritorio, setTipoterritorio] = useState('-1');
+  const [centropoblado, setCentropoblado] = useState('');
   const [tipoterritorioLabel, setTipoterritorioLabel] = useState('');
-  const [barrioVereda, setBarrioVereda] = useState({
+  const [barrioVereda, setBarrioVereda] = useState('');
+  const [address, setAddress] = useState('');
+  const [municipioSelect, setMunicipioSelect] = useState<SelectSchema>({
+    id: 0,
+    name: '',
+    children: [],
+  });
+  const [tipoterritorioSelect, setTipoterritorioSelect] = useState<
+    SelectSchema
+  >({
+    id: 0,
+    name: '',
+    children: [],
+  });
+  const [departamentoSelect, setDepartamentoSelect] = useState<SelectSchema>({
+    id: 0,
+    name: '',
+    children: [],
+  });
+  const [barrioVeredaSelect, setBarrioVeredaSelect] = useState<SelectSchema>({
+    id: 0,
+    name: '',
+    children: [],
+  });
+  const [rescentropSelect, setrescentropSelect] = useState<SelectSchema>({
     id: 0,
     name: '',
     children: [],
@@ -66,10 +80,8 @@ const _HomeLocationForm = (props: any) => {
     fetchQuestions();
   }, []);
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    useMunicipio();
+    // useMunicipio();
   }, [municipio]);
-
   async function fetchQuestions() {
     let FUCDEPART = await props.getEntitySelect('FUCDEPART');
     let FUCTIPTER = await props.getEntitySelect('FUCTIPTER');
@@ -78,23 +90,22 @@ const _HomeLocationForm = (props: any) => {
       'FUCDEPART_ID',
       getValues().department,
     );
-    setState({
-      ...state,
-      tipoterritorioSelect: FUCTIPTER,
-      departamentoSelect: FUCDEPART,
-      municipioSelect: FUCMUNICI,
-    });
-    setTimeout(() => {
-      getDefaultValues();
-    });
+    setDepartamentoSelect(FUCDEPART);
+    setTipoterritorioSelect(FUCTIPTER);
+    setMunicipioSelect(FUCMUNICI);
+    getDefaultValues();
   }
+
   async function getDefaultValues() {
-    console.error(props.FUBUBIVIV);
+    //console.error(props.FUBUBIVIV);
     if (props.FUBUBIVIV.CODIGO !== '') {
-      setValue('latitude', '' + props.FUBUBIVIV.COORDENADA_X);
-      setValue('longitude', '' + props.FUBUBIVIV.COORDENADA_Y);
-      setValue('address', props.FUBUBIVIV.DIRECCION);
-      setValue('housingCode', props.FUBUBIVIV.CODIGO);
+      setoriginalHouseCode(props.FUBUBIVIV.CODIGO);
+      setPosition({
+        latitude: '' + props.FUBUBIVIV.COORDENADA_X,
+        longitude: '' + props.FUBUBIVIV.COORDENADA_Y,
+      });
+      setAddress(props.FUBUBIVIV.DIRECCION);
+      setHouseCode(props.FUBUBIVIV.CODIGO);
       let FUCBARVER_ID = props.FUBUBIVIV.FUCBARVER_ID;
       let service: HousingService = new HousingService();
       let barver = await service.getUbicationEntity(
@@ -129,25 +140,52 @@ const _HomeLocationForm = (props: any) => {
         null,
         true,
       );
+      setDepartment('' + dept.ID);
+      setMunicipio('' + munici.ID);
+      setTipoterritorio('' + cenpoblado.FUCTIPRES_ID);
+      if (cenpoblado.FUCTIPRES_ID == '1') {
+        changeLabelType('3');
+      } else {
+        changeLabelType('2');
+      }
+      let FUCRESGUA = await props.getEntitySelect(
+        'FUCRESGUA',
+        'FUCMUNICI_ID',
+        munici.ID,
+        'FUCTIPRES_ID',
+        cenpoblado.FUCTIPRES_ID,
+      );
+      setrescentropSelect(FUCRESGUA);
+      setCentropoblado('' + cenpoblado.ID);
+      let FUCBARVER = await props.getEntitySelect(
+        'FUCBARVER',
+        'FUCRESGUA_ID',
+        cenpoblado.ID,
+      );
+      setBarrioVeredaSelect(FUCBARVER);
+      setBarrioVereda('' + barver.ID);
       setValue('department', '' + dept.ID);
-      //setValue('municipality', '' + munici.ID);
-      //setMunicipio('' + munici.ID);
-      //onChangeDept('' + munici.ID);
-      console.error(barver);
-      console.error(cenpoblado);
-      console.error(munici);
-      console.error(dept);
+      setValue('municipality', '' + munici.ID);
+      setValue('territoryType', '' + cenpoblado.FUCTIPRES_ID);
+      setValue('shelterOrCouncil', '' + cenpoblado.ID);
+      setValue('sidewalk', '' + barver.ID);
+      setValue('latitude', '' + props.FUBUBIVIV.COORDENADA_X);
+      setValue('longitude', '' + props.FUBUBIVIV.COORDENADA_Y);
+      setValue('address', '' + props.FUBUBIVIV.DIRECCION);
+      // console.error(barver);
+      // console.error(cenpoblado);
+      // console.error(munici);
+      // console.error(dept);
     } else {
-      getCurrentPosition();
+      await getCurrentPosition();
     }
   }
   async function getCurrentPosition() {
     Geolocation.getCurrentPosition(
       (pos) => {
-        setError('');
         setPosition({
-          latitude: pos.coords.latitude,
-          longitude: pos.coords.longitude,
+          latitude: '' + pos.coords.latitude,
+          longitude: '' + pos.coords.longitude,
         });
         setValue('latitude', '' + pos.coords.latitude);
         setValue('longitude', '' + pos.coords.longitude);
@@ -155,42 +193,28 @@ const _HomeLocationForm = (props: any) => {
       (e) => setError(e.message),
     );
   }
-  async function useMunicipio() {
-    setTipoterritorio('-1');
-    setValue('territoryType', '-1');
-    setState({
-      ...state,
-      resguardoSelect: {id: 0, name: '', children: []},
-    });
-  }
   async function onChangeDept(idDept: any) {
-    console.log('se llamaaaaaaaaaaaaaaa');
     let FUCMUNICI = await props.getEntitySelect(
       'FUCMUNICI',
       'FUCDEPART_ID',
       idDept,
     );
-    setState({
-      ...state,
-      municipioSelect: FUCMUNICI,
-    });
+    setMunicipioSelect(FUCMUNICI);
     setValue('municipality', '-1');
     setMunicipio('-1');
   }
-  async function onChangeMuni(munid, typeid = '') {
+  async function onChangeMuni(munid: string, typeid: string) {
     let FUCRESGUA = await props.getEntitySelect(
       'FUCRESGUA',
       'FUCMUNICI_ID',
       munid,
       'FUCTIPRES_ID',
-      typeid !== '' ? typeid : tipoterritorio,
+      typeid,
     );
-    setState({
-      ...state,
-      resguardoSelect: FUCRESGUA,
-    });
-    setMunicipio(munid);
-    setTipoterritorio(typeid);
+    //console.error('FUCRESGUA', FUCRESGUA);
+    setrescentropSelect(FUCRESGUA);
+    setValue('shelterOrCouncil', '');
+    setCentropoblado('');
   }
   async function onChangeTypeTerr(typeid: any) {
     if (typeid == '1') {
@@ -215,13 +239,21 @@ const _HomeLocationForm = (props: any) => {
         'FUCRESGUA_ID',
         resguaId,
       );
-      setBarrioVereda(FUCBARVER);
-      for (let i = 0; i < state.resguardoSelect.children.length; i++) {
-        const item = state.resguardoSelect.children[i];
+      setBarrioVeredaSelect(FUCBARVER);
+      //console.error('length ', FUCBARVER.children.length);
+      //console.error('resguaId  ', resguaId);
+      for (let i = 0; i < rescentropSelect.children.length; i++) {
+        const item: any = rescentropSelect.children[i];
+        //console.warn('item.item ', item.item);
         if (item.item && item.item.ID == resguaId) {
-          console.log('item  ', item.item.CODIGO);
           let ress = await props.getLasHouseCode(item.item.CODIGO);
+          //console.error('ress  ', `${item.item.CODIGO}-${ress}`);
+          setHouseCode(`${item.item.CODIGO}-${ress}`);
           setValue('housingCode', `${item.item.CODIGO}-${ress}`);
+          if (FUCBARVER.children.length == 1) {
+            setValue('sidewalk', '', {shouldValidate: true});
+            setBarrioVereda('');
+          }
           console.log('ress ', ress);
         }
       }
@@ -229,16 +261,27 @@ const _HomeLocationForm = (props: any) => {
   }
   const onSubmit = async (data: any) => {
     if (props.FUBUBIVIV.CODIGO !== '') {
-    } else {
       console.log(data);
       let item: FUBUBIVIV = {
-        CODIGO: data.housingCode,
+        ID: props.FUBUBIVIV.ID,
+        CODIGO: houseCode,
         COORDENADA_X: position.latitude,
-        COORDENADA_Y: data.longitude,
+        COORDENADA_Y: position.longitude,
         DIRECCION: data.address,
         FUCBARVER_ID: JSON.parse(data.sidewalk),
       };
-      await props.saveFUBUBIVIV(item);
+      let result = await props.updateFUBUBIVIV(item, originalhouseCode);
+      navigation.goBack();
+    } else {
+      // SAVE
+      let item: FUBUBIVIV = {
+        CODIGO: houseCode,
+        COORDENADA_X: position.latitude,
+        COORDENADA_Y: position.longitude,
+        DIRECCION: data.address,
+        FUCBARVER_ID: JSON.parse(data.sidewalk),
+      };
+      let result = await props.saveFUBUBIVIV(item);
       navigation.goBack();
     }
   };
@@ -253,8 +296,10 @@ const _HomeLocationForm = (props: any) => {
               disabled={true}
               onBlur={onBlur}
               error={errors.housingCode}
-              onChange={(value) => onChange(value)}
-              value={value}
+              value={houseCode}
+              onChange={(valueC: any) => {
+                onChange(valueC);
+              }}
             />
           )}
           name="housingCode"
@@ -271,18 +316,17 @@ const _HomeLocationForm = (props: any) => {
               onChange={(value: any) => {
                 onChange(value);
                 if (value) {
+                  setDepartment(value);
                   onChangeDept(value);
                 }
               }}
               onLoad={() => {
                 // todo
               }}
-              value={value}
-              selectedValue={value}
-              items={state.departamentoSelect.children}
+              selectedValue={department}
+              items={departamentoSelect.children}
             />
           )}
-          defaultValue=""
           name="department"
         />
         <Controller
@@ -296,14 +340,13 @@ const _HomeLocationForm = (props: any) => {
               error={errors.municipality}
               onChange={(value) => {
                 onChange(value);
-                onChangeMuni(value);
+                setMunicipio(value);
+                onChangeMuni(value, tipoterritorio);
               }}
-              value={value}
-              selectedValue={value}
-              items={state.municipioSelect.children}
+              selectedValue={municipio}
+              items={municipioSelect.children}
             />
           )}
-          defaultValue=""
           name="municipality"
         />
         <Controller
@@ -317,11 +360,13 @@ const _HomeLocationForm = (props: any) => {
               error={errors.territoryType}
               onChange={(value) => {
                 onChange(value);
-                onChangeTypeTerr(value);
+                if (value) {
+                  setTipoterritorio(value);
+                  onChangeTypeTerr(value);
+                }
               }}
-              value={value}
-              selectedValue={value}
-              items={state.tipoterritorioSelect.children}
+              selectedValue={tipoterritorio}
+              items={tipoterritorioSelect.children}
             />
           )}
           name="territoryType"
@@ -337,14 +382,15 @@ const _HomeLocationForm = (props: any) => {
               error={errors.shelterOrCouncil}
               onChange={(value) => {
                 onChange(value);
-                onChangeCentroOResgua(value);
+                if (value) {
+                  setCentropoblado(value);
+                  onChangeCentroOResgua(value);
+                }
               }}
-              value={value}
-              selectedValue={value}
-              items={state.resguardoSelect.children}
+              selectedValue={centropoblado}
+              items={rescentropSelect.children}
             />
           )}
-          defaultValue=""
           name="shelterOrCouncil"
         />
         <Controller
@@ -357,65 +403,82 @@ const _HomeLocationForm = (props: any) => {
               onBlur={onBlur}
               error={errors.sidewalk}
               onChange={(value) => {
+                //console.error(value);
                 onChange(value);
+                setBarrioVereda(value);
               }}
-              value={value}
-              selectedValue={value}
-              items={barrioVereda.children}
+              selectedValue={barrioVereda}
+              items={barrioVeredaSelect.children}
             />
           )}
-          defaultValue=""
           name="sidewalk"
         />
         <Controller
           control={control}
           render={({onChange, onBlur, value}) => (
             <BTextInput
-              label="CoordenadasX"
+              value={position.latitude}
+              label="Latitud"
+              disabled={false}
+              onBlur={onBlur}
+              error={errors.latitude}
+              onChange={(value) => {
+                onChange(value);
+                setPosition({
+                  ...position,
+                  latitude: value,
+                });
+              }}
+            />
+          )}
+          name="latitude"
+        />
+        <Controller
+          value={position.longitude}
+          control={control}
+          render={({onChange, onBlur, value}) => (
+            <BTextInput
+              value={position.longitude}
+              label="Longitud"
               disabled={false}
               onBlur={onBlur}
               error={errors.longitude}
-              onChange={(value) => onChange(value)}
-              value={value}
+              onChange={(value) => {
+                onChange(value);
+                setPosition({
+                  ...position,
+                  longitude: value,
+                });
+              }}
             />
           )}
-          defaultValue=""
           name="longitude"
         />
         <Controller
           control={control}
           render={({onChange, onBlur, value}) => (
             <BTextInput
-              label="CoordenadasY"
-              disabled={false}
-              onBlur={onBlur}
-              error={errors.latitude}
-              onChange={(value) => onChange(value)}
-              value={value}
-            />
-          )}
-          defaultValue=""
-          name="latitude"
-        />
-        <Controller
-          control={control}
-          render={({onChange, onBlur, value}) => (
-            <BTextInput
+              value={address}
               label="Dirección"
               disabled={false}
               onBlur={onBlur}
               error={errors.address}
-              onChange={(value) => onChange(value)}
-              value={value}
+              onChange={(value) => {
+                onChange(value);
+                setAddress(value);
+              }}
             />
           )}
-          defaultValue=""
           name="address"
         />
         <View>
           <BButton
             color="secondary"
-            value="Guardar Cambios"
+            value={
+              props.FUBUBIVIV.CODIGO == ''
+                ? 'Guardar Cambios'
+                : 'Actualizar Registro'
+            }
             onPress={handleSubmit(onSubmit)}
           />
         </View>
@@ -450,6 +513,7 @@ const mapDispatchToProps = {
   getEntitySelect,
   getLasHouseCode,
   saveFUBUBIVIV,
+  updateFUBUBIVIV,
 };
 const mapStateToProps = (housing: any) => {
   return {

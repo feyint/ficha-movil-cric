@@ -36,11 +36,13 @@ class ManageHousingScreen extends Component<any, any> {
             left={() => <List.Icon icon="map-marker" />}
             onPress={() => this.goHomeLocation()}
           />
-          <List.Item
-            onPress={() => this.goFamilyScreen() /*this.goHouseMenuScreen()*/}
-            title="Nucleo Familiar"
-            left={() => <List.Icon icon="account-group" />}
-          />
+          {this.props.FUBUBIVIV && this.props.FUBUBIVIV.CODIGO !== '' ? (
+            <List.Item
+              onPress={() => this.goFamilyScreen() /*this.goHouseMenuScreen()*/}
+              title="Nucleo Familiar"
+              left={() => <List.Icon icon="account-group" />}
+            />
+          ) : null}
         </List.Section>
       </View>
     );

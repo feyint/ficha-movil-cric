@@ -4,22 +4,26 @@ import {Appbar} from 'react-native-paper';
 import {FamilyList} from '../form';
 import {BButton} from '../../../core/components';
 import {connect} from 'react-redux';
-import {setFNBNUCVIV} from '../../../state/house/actions';
+import {setFNBNUCVIV, clearFNBNUCVIV} from '../../../state/house/actions';
 import {NavigationProp} from '@react-navigation/native';
+import { HousingService } from '../../../services';
 
-interface Props {
-  navigation: NavigationProp<any>;
+interface State {
+  families: any[];
 }
-class FamilyScreen extends Component<any, any> {
+class FamilyScreen extends Component<any, State> {
   constructor(props: any) {
     super(props);
+    this.state = {
+      families: [],
+    };
   }
   //TODO añadir el back interceptor
   _goBack() {
     this.props.navigation.goBack();
   }
-  UNSAFE_componentWillMount() {
-    //this.props.setQuestionWithOptions();
+  async UNSAFE_componentWillMount() {
+    await this.fetchFamilies();
   }
   render() {
     return (
@@ -32,25 +36,47 @@ class FamilyScreen extends Component<any, any> {
           color="primary"
           value="Crear Nuevo"
           mode="contained"
-          onPress={() => this.goHouseMenuScreen()}
+          onPress={() => this.createNewNF()}
         />
         <FamilyList
+          families={this.state.families}
           onPress={(family: any) => {
             console.log('Family->', family);
-            this.props.setFNBNUCVIV(family);
-            this.goHouseMenuScreen();
+            this.goHouseMenuScreen(family);
           }}
         />
       </View>
     );
   }
-
-  goHouseMenuScreen() {
+  async fetchFamilies() {
+    let syncHousingService = new HousingService();
+    let result = await syncHousingService.getFamilies(this.props.FUBUBIVIV.ID);
+    // console.error('result ', result);
+    if (result) {
+      this.setState({families: result});
+    }
+  }
+  createNewNF() {
+    this.props.clearFNBNUCVIV();
+    this.props.navigation.navigate('HouseMenuScreen', {
+      onGoBack: async () => {
+        await this.fetchFamilies();
+      },
+    });
+  }
+  goHouseMenuScreen(family: any) {
+    this.props.setFNBNUCVIV(family);
     this.props.navigation.navigate('HouseMenuScreen');
   }
 }
 const mapDispatchToProps = {
   setFNBNUCVIV,
+  clearFNBNUCVIV,
+};
+const mapStateToProps = (housing: any) => {
+  return {
+    FUBUBIVIV: housing.housing.FUBUBIVIV,
+  };
 };
 
-export default connect(null, mapDispatchToProps)(FamilyScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(FamilyScreen);

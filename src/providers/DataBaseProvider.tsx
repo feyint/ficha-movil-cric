@@ -19,7 +19,7 @@ export enum DataBaseSchemas {
   FUCUNICUISCHEMA = 'FUCUNICUI', // unidad de cuidado
   FUCZONCUISCHEMA = 'FUCZONCUI', // Zona de cuidado
 }
-export const schemaVersion = 1;
+export const schemaVersion = 3;
 export const UserSchema = {
   name: DataBaseSchemas.UserSchema,
   properties: {
@@ -129,12 +129,13 @@ export const FNBNUCVIV_FVCCONVIVSCHEMA = {
 };
 export const FUBUBIVIVSCHEMA = {
   name: DataBaseSchemas.FUBUBIVIVSCHEMA,
+  primaryKey: 'ID',
   properties: {
-    ID: 'int?',
+    ID: 'int',
     CODIGO: 'string',
     DIRECCION: 'string',
-    COORDENADA_X: 'float',
-    COORDENADA_Y: 'float',
+    COORDENADA_X: 'string',
+    COORDENADA_Y: 'string',
     NUM_NUCLEOS: {type: 'int', default: 0},
     FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
     FECHA_CREACION: {type: 'date', default: new Date()},
@@ -148,24 +149,22 @@ export const FNBNUCVIVSCHEMA = {
   properties: {
     ID: 'int',
     CODIGO: 'string',
-    HUMO_CASA: 'bool',
-    ORIGEN_DATA: 'string',
-    USUARIO_DATA: 'string',
-    FUCBARVER_ID: 'int',
-    RESIDUO_BOR: 'string',
-    RESIDUO_PELIGROSO: 'string',
-    ANIMAL_VACUNADO: 'int',
-    ANIMAL_NOVACUNADO: 'int',
-    RIESGO: 'bool',
-    OBSERVACION: 'string',
-    LUGAR_COCINA: 'string',
-    HUMO_DENTRO: 'string',
-    ACCESO_INTERNET: 'bool',
-    TOTAL_ANIMAL: 'int',
+    HUMO_CASA: 'bool?',
+    ORIGEN_DATA: 'string?',
+    USUARIO_DATA: 'string?',
+    RESIDUO_BOR: 'string?',
+    RESIDUO_PELIGROSO: 'string?',
+    ANIMAL_VACUNADO: 'int?',
+    ANIMAL_NOVACUNADO: 'int?',
+    RIESGO: 'bool?',
+    OBSERVACION: 'string?',
+    LUGAR_COCINA: 'string?',
+    HUMO_DENTRO: 'string?',
+    ACCESO_INTERNET: 'bool?',
+    TOTAL_ANIMAL: 'int?',
     FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
     FECHA_CREACION: {type: 'date', default: new Date()},
     FUBUBIVIV_ID: 'int',
-    FUBUBIVIV_CODE: 'string',
   },
 };
 export const FUCDEPARTSCHEMA = {
@@ -331,15 +330,15 @@ export default class DataBaseProvider {
           identificationType: 1,
           identification: '1061809552',
         });
-        realm.create('FUCBARVER', {
-          ID: 2,
-          CODIGO: 'CODBV_2',
-          NOMBRE: 'Barrio vereda 2',
-          ESTADO: 1,
-          FUCRESGUA_ID: 1925,
-          FUCZONCUI_ID: 1,
-          FUCZONA_ID: 1,
-        });
+        // realm.create('FUCBARVER', {
+        //   ID: 2,
+        //   CODIGO: 'CODBV_2',
+        //   NOMBRE: 'Barrio vereda 2',
+        //   ESTADO: 1,
+        //   FUCRESGUA_ID: 1925,
+        //   FUCZONCUI_ID: 1,
+        //   FUCZONA_ID: 1,
+        // });
         // realm.create(DataBaseSchemas.FUBUBIVIVSCHEMA, {
         //   ID: 123,
         //   CODIGO: 'CODVIVI1',

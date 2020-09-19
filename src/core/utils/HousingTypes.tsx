@@ -37,6 +37,6 @@ export const QuestionTypes = {
   multiSelect: 2,
 };
 export const logicOption = [
-  {value: 'SI', label: 'Si'},
-  {value: 'NO', label: 'No'},
+  {value: true, label: 'Si'},
+  {value: false, label: 'No'},
 ];

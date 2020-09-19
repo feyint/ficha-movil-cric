@@ -1,6 +1,7 @@
 import {FUBUBIVIV, FNBNUCVIV_FVCCONVIV, FNBNUCVIV} from './types';
 import {HousingService} from '../../services';
 import {HousingQuestion} from '../../modules/housing/state/types';
+import { prototype } from 'realm';
 
 export const ActionType = {
   SET_FUBUBIVIV: 'SET_FUBUBIVIV',
@@ -29,9 +30,63 @@ export const clearFUBUBIVIV = () => (dispatch: any) => {
   };
   dispatch(_setFUBUBIVIV(data));
 };
+export const clearFNBNUCVIV = () => (dispatch: any) => {
+  // eslint-disable-next-line no-shadow
+  let FNBNUCVIV: any = {
+    ID: null,
+    CODIGO: '',
+    HUMO_CASA: false,
+    FECHA_ACTIVIDAD: null,
+    FECHA_CREACION: null,
+    ORIGEN_DATA: '',
+    USUARIO_DATA: '',
+    FUCBARVER_ID: null,
+    RESIDUO_BOR: '',
+    RESIDUO_PELIGROSO: '',
+    ANIMAL_VACUNADO: null,
+    ANIMAL_NOVACUNADO: null,
+    RIESGO: false,
+    OBSERVACION: '',
+    LUGAR_COCINA: '',
+    HUMO_DENTRO: '',
+    ACCESO_INTERNET: false,
+    TOTAL_ANIMAL: null,
+    FUBUBIVIV_ID: null,
+    FUBUBIVIV_CODE: '',
+  };
+  dispatch(_setFNBNUCVIV(FNBNUCVIV));
+};
 export const saveFUBUBIVIV = (data: any) => async (dispatch: any) => {
   let houseServie: HousingService = new HousingService();
   await houseServie.SaveHouse(data);
+  dispatch(_setFUBUBIVIV(data));
+};
+export const saveFNBNUCVIV = (data: any) => async (dispatch: any) => {
+  let houseServie: HousingService = new HousingService();
+  let insert = await houseServie.SaveFNBNUCVIV(data);
+  dispatch(_setFNBNUCVIV(data));
+  return insert;
+};
+export const saveFNBNUCVIVPropiety = (propiety: any, value: any) => async (
+  dispatch: any,
+  getState: any,
+) => {
+  const store = getState();
+  let family: any = store.housing.FNBNUCVIV;
+  let houseServie: HousingService = new HousingService();
+  let updatedProp = await houseServie.SaveFNBNUCVIVPropiety(
+    family.ID,
+    propiety,
+    value,
+  );
+  if (updatedProp == true) {
+    family[propiety] = value;
+    dispatch(_setFNBNUCVIV(family));
+  }
+};
+export const updateFUBUBIVIV = (data: any) => async (dispatch: any) => {
+  let houseServie: HousingService = new HousingService();
+  await houseServie.UpdateHouse(data);
   dispatch(_setFUBUBIVIV(data));
 };
 export const setFUBUBIVIV = (data: any) => async (dispatch: any) => {
@@ -48,7 +103,7 @@ export const saveAnswerLocal = (
   questionCode: string,
   answer: any,
 ) => async (_dispatch: any, getState: any) => {
-  if (questionCode) {
+  if (questionCode && answer) {
     const store = getState();
     let questionItems: HousingQuestion[] = store.housing.HOUSINGQUESTIONLIST;
     let item: any = getQuestionByCode(questionCode, questionItems);

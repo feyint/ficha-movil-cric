@@ -16,8 +16,7 @@ class HomeScreen extends Component<any, any> {
   constructor(props: any) {
     super(props);
   }
-  UNSAFE_componentWillMount() {
-  }
+  UNSAFE_componentWillMount() {}
   render() {
     return (
       <View>

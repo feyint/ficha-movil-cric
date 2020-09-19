@@ -3,28 +3,16 @@ import {RadioButton, Text} from 'react-native-paper';
 import {View, StyleSheet} from 'react-native';
 import BError from './BError';
 
-interface State {
-  selectedValue: string;
-}
 interface Props {
-  items?: {label: string; value: string}[];
+  items?: {label: string; value: any}[];
   onChange?: any;
-  value?: string;
+  value: any;
   label?: string;
   error?: boolean;
 }
-class BRadioButton extends Component<Props, State> {
+class BRadioButton extends Component<Props, any> {
   constructor(props: Props) {
     super(props);
-
-    this.state = {
-      selectedValue: this.props.value ? this.props.value : '',
-    };
-  }
-
-  componentDidMount() {
-    this.props.onChange(this.state.selectedValue);
-    console.log('BRadioButton componentDidMount: ', this.state);
   }
   renderLabel() {
     return (
@@ -41,11 +29,9 @@ class BRadioButton extends Component<Props, State> {
         {this.renderLabel()}
         <View style={styles.flexDirection}>
           <RadioButton.Group
-            value={this.state.selectedValue}
+            value={'' + this.props.value}
             onValueChange={(selectedValue) => {
-              this.setState({selectedValue: selectedValue}, () =>
-                this.props.onChange(selectedValue),
-              );
+              this.props.onChange(selectedValue);
             }}>
             {this.props.items?.map((item) => {
               return (
@@ -53,7 +39,7 @@ class BRadioButton extends Component<Props, State> {
                   <RadioButton.Item
                     style={styles.flexDirection}
                     label={item.label}
-                    value={item.value}
+                    value={'' + item.value}
                   />
                 </View>
               );

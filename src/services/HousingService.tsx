@@ -21,7 +21,7 @@ import {
   HousingQuestion,
   HousingQuestionOption,
 } from '../modules/housing/state/types';
-import {FNBNUCVIV_FVCCONVIV, FUBUBIVIV} from '../state/house/types';
+import {FNBNUCVIV_FVCCONVIV, FUBUBIVIV, FNBNUCVIV} from '../state/house/types';
 import {SelectSchema, MultiSelectSchema} from '../core/utils/types';
 import {capitalizeFirstLetter} from '../core/utils/utils';
 const HOUSECODE_INCREMENT = '0000';
@@ -35,7 +35,10 @@ export default class HousingService {
         let items = realm
           .objects('FNBNUCVIV')
           .filtered(`FUBUBIVIV_ID = ${HouseID}`);
-        return items;
+        if (items.length > 0) {
+          return items;
+        }
+        return [];
       })
       .catch((error) => {
         return error;
@@ -57,7 +60,10 @@ export default class HousingService {
     return result;
   }
   async SaveHouse(item: FUBUBIVIV) {
-    console.log('llega a guardar', item);
+    let FUBUBIVIV_ID = await this.getLastEntityID(
+      DataBaseSchemas.FUBUBIVIVSCHEMA,
+    );
+    item.ID = FUBUBIVIV_ID;
     const result = await Realm.open({
       schema: [FUBUBIVIVSCHEMA],
       schemaVersion: schemaVersion,
@@ -65,16 +71,112 @@ export default class HousingService {
       .then((realm) => {
         realm.write(() => {
           let result = realm.create('FUBUBIVIV', item);
-          console.error('result ', result);
+          console.log('INSERT ITEM ', result);
         });
       })
       .catch((error) => {
-        console.error(error);
         return error;
       });
     return result;
   }
-  async getLasHouseCode(code) {
+  async UpdateHouse(item: FUBUBIVIV) {
+    console.log('UPDATE HOUSE', item);
+    const result = await Realm.open({
+      schema: [FUBUBIVIVSCHEMA],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        let house: any = realm
+          .objects('FUBUBIVIV')
+          .filtered(`ID = ${item.ID}`)
+          .sorted('ID', true)[0];
+        if (house) {
+          realm.write(() => {
+            house.CODIGO = item.CODIGO;
+            house.DIRECCION = item.DIRECCION;
+            house.COORDENADA_X = item.COORDENADA_X;
+            house.COORDENADA_Y = item.COORDENADA_Y;
+            house.FUCBARVER_ID = item.FUCBARVER_ID;
+            house.FECHA_ACTIVIDAD = new Date();
+          });
+        }
+      })
+      .catch((error) => {
+        return error;
+      });
+    return result;
+  }
+  async getLastEntityID(entity: string) {
+    const result = await Realm.open({
+      schema: [FUBUBIVIVSCHEMA, FNBNUCVIVSCHEMA],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        let increment = 1;
+        let item: any = realm.objects(entity).sorted('ID', true)[0];
+        if (item) {
+          increment = item.ID + 1;
+        }
+        return increment;
+      })
+      .catch((error) => {
+        return error;
+      });
+    return result;
+  }
+  async SaveFNBNUCVIV(item: FNBNUCVIV) {
+    let FNBNUCVIV_ID = await this.getLastEntityID(
+      DataBaseSchemas.FNBNUCVIVSCHEMA,
+    );
+    item.ID = FNBNUCVIV_ID;
+    const result = await Realm.open({
+      schema: [FNBNUCVIVSCHEMA],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        realm.write(() => {
+          let result = realm.create('FNBNUCVIV', item);
+          //console.error('INSERT ITEM ', result);
+          return result;
+        });
+      })
+      .catch((error) => {
+        //console.error('error FNBNUCVIV ', error);
+        return error;
+      });
+    return result;
+  }
+  async SaveFNBNUCVIVPropiety(
+    FNBNUCVIVID: number,
+    propiety: string,
+    value: any,
+  ) {
+    const result = await Realm.open({
+      schema: [FNBNUCVIVSCHEMA],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        realm.write(() => {
+          let item: any = realm
+            .objects(DataBaseSchemas.FNBNUCVIVSCHEMA)
+            .filtered(`ID = ${FNBNUCVIVID}`)
+            .sorted('ID', true)[0];
+          if (item) {
+            console.error('result[propiety] ', propiety, value);
+            item[propiety] = value;
+            return true;
+          } else {
+            return false;
+          }
+        });
+      })
+      .catch((error) => {
+        console.error('error FNBNUCVIV ', error);
+        return error;
+      });
+    return result;
+  }
+  async getLasHouseCode(code: string) {
     const result = await Realm.open({
       schema: [FUBUBIVIVSCHEMA],
       schemaVersion: schemaVersion,
@@ -86,12 +188,36 @@ export default class HousingService {
           .filtered(`CODIGO BEGINSWITH "${code}"`)
           .sorted('CODIGO', true)[0];
         if (item) {
-          console.error('ya existe ', item);
           let values = item.CODIGO.split('-');
           increment = this.incrementNumber(values[1]);
           console.log('incrementincrement ', increment);
         } else {
-          increment = this.incrementNumber('1');
+          increment = this.incrementNumber('0');
+        }
+        return increment;
+      })
+      .catch((error) => {
+        return error;
+      });
+    return result;
+  }
+  async getLastNucleoCode(code: string) {
+    const result = await Realm.open({
+      schema: [FNBNUCVIVSCHEMA],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        let increment = '';
+        let item: any = realm
+          .objects(DataBaseSchemas.FNBNUCVIVSCHEMA)
+          .filtered(`CODIGO BEGINSWITH "${code}"`)
+          .sorted('CODIGO', true)[0];
+        if (item) {
+          let values = item.CODIGO.split('-');
+          //console.error('values' , values);
+          increment = '' + (parseInt(values[2], 10) + 1);
+        } else {
+          increment = '1';
         }
         return increment;
       })
@@ -102,12 +228,10 @@ export default class HousingService {
   }
   incrementNumber(numberstring) {
     let number = parseInt(numberstring, 10) + 1;
-    console.error('number ', number);
     let initial = HOUSECODE_INCREMENT.substring(
       0,
       HOUSECODE_INCREMENT.length - number.toString().length,
     );
-    console.error('initial ', initial);
     let code = initial + number;
     return code;
   }
@@ -269,7 +393,7 @@ export default class HousingService {
           .filtered(
             `FNBNUCVIV_ID = ${FNBNUCVIV_ID} AND FVCELEVIV_ID = ${FVCELEVIV_ID}`,
           );
-        console.log('borrar ', options.length);
+        console.log('borrar respuestas', options.length);
         realm.write(() => {
           realm.delete(options);
         });

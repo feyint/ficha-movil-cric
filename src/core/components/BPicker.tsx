@@ -8,7 +8,6 @@ import BError from './BError';
 interface Props {
   label?: string;
   prompt?: string;
-  value?: string;
   selectedValue?: string;
   items?: {label: string; value: string; item?: any}[];
   errorText?: string;

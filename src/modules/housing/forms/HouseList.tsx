@@ -41,7 +41,7 @@ const _HouseList = (props: any) => {
 
 const styles = StyleSheet.create({
   spacer: {
-    height: 50,
+    height: 150,
   },
   container: {
     flex: 1,

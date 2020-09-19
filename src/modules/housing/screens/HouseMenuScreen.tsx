@@ -5,11 +5,32 @@ import {View} from 'react-native';
 import {Appbar} from 'react-native-paper';
 import {List} from 'react-native-paper';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {connect} from 'react-redux';
+import {saveFNBNUCVIV} from '../../../state/house/actions';
+import {HousingService} from '../../../services';
 
 interface Props {
   navigation: NavigationProp<any>;
 }
-class HouseMenuScreen extends Component<Props, any> {
+class HouseMenuScreen extends Component<any, any> {
+  // constructor(props: any) {
+  //   super(props);
+  // }
+  async UNSAFE_componentWillMount() {
+    if (this.props.FNBNUCVIV.CODIGO == '') {
+      const syncCatalogService = new HousingService();
+      let NFCODIGO = await syncCatalogService.getLastNucleoCode(
+        this.props.FUBUBIVIV.CODIGO,
+      );
+      let fNBNUCVIV: any = {
+        CODIGO: this.props.FUBUBIVIV.CODIGO + '-' + NFCODIGO,
+        FUBUBIVIV_ID: this.props.FUBUBIVIV.ID,
+      };
+      let insert = await this.props.saveFNBNUCVIV(fNBNUCVIV);
+      //console.error('nuevo insert ', insert);
+    } else {
+    }
+  }
   _goBack() {
     this.props.navigation.goBack();
   }
@@ -18,7 +39,9 @@ class HouseMenuScreen extends Component<Props, any> {
       <View>
         <Appbar.Header>
           <Appbar.BackAction onPress={() => this._goBack()} />
-          <Appbar.Content title="Vivienda" />
+          <Appbar.Content
+            title="Vivienda"
+            subtitle={this.props.FNBNUCVIV.CODIGO}/>
         </Appbar.Header>
         <List.Section>
           <List.Item
@@ -69,4 +92,13 @@ class HouseMenuScreen extends Component<Props, any> {
     this.props.navigation.navigate('PersonManageScreen');
   }
 }
-export default HouseMenuScreen;
+const mapDispatchToProps = {
+  saveFNBNUCVIV,
+};
+const mapStateToProps = (housing: any) => {
+  return {
+    FNBNUCVIV: housing.housing.FNBNUCVIV,
+    FUBUBIVIV: housing.housing.FUBUBIVIV,
+  };
+};
+export default connect(mapStateToProps, mapDispatchToProps)(HouseMenuScreen);
