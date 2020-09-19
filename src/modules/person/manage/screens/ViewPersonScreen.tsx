@@ -40,7 +40,7 @@ class ViewPersonScreen extends Component<any, any> {
             <List.Item
               title="4. Seguridad social"
               left={() => <List.Icon icon="bottle-tonic-plus" />}
-              //onPress={() => this.goHomeLocation()}
+              onPress={() => this.goSocialSecurityScreen()}
             />
             <List.Item
               title="5. Datos de contacto"
@@ -60,12 +60,12 @@ class ViewPersonScreen extends Component<any, any> {
             <List.Item
               title="8. Estado de salud en la visita"
               left={() => <List.Icon icon="map-marker" />}
-              //onPress={() => this.goHomeLocation()}
+              onPress={() => this.goHealthStatusVisitScreen()}
             />
             <List.Item
               title="9. Hábitos no saludables"
               left={() => <List.Icon icon="map-marker" />}
-              //onPress={() => this.goHomeLocation()}
+              onPress={() => this.goUnhealthyHabitsScreen()}
             />
             <List.Item
               title="10. Salud sexual y reproductiva - Antecedentes gineco obstétricos"
@@ -90,7 +90,7 @@ class ViewPersonScreen extends Component<any, any> {
             <List.Item
               title="14. Mortalidad en los últimos 12 meses"
               left={() => <List.Icon icon="emoticon-dead" />}
-              //onPress={() => this.goHomeLocation()}
+              onPress={() => this.goMortalityLast12MonthsScreen()}
             />
           </List.Section>
         </KeyboardAwareScrollView>
@@ -105,6 +105,18 @@ class ViewPersonScreen extends Component<any, any> {
   }
   goHomeLocation() {
     this.props.navigation.navigate('HomeLocationScreen');
+  }
+  goHealthStatusVisitScreen() {
+    this.props.navigation.navigate('HealthStatusVisitScreen');
+  }
+  goMortalityLast12MonthsScreen() {
+    this.props.navigation.navigate('MortalityLast12MonthsScreen');
+  }
+  goSocialSecurityScreen() {
+    this.props.navigation.navigate('SocialSecurityScreen');
+  }
+  goUnhealthyHabitsScreen() {
+    this.props.navigation.navigate('UnhealthyHabitsScreen');
   }
 }
 

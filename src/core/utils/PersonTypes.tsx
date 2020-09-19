@@ -1,0 +1,48 @@
+export const QuestionPersonCodes = {
+  DesarmoniaOccidental: '1',
+  Alimentacion: '2',
+  SaludVisual: '3',
+  SaludAuditivaYComunicativa: '4',
+  SaludBucal: '5',
+  RiesgoPadecerDiabetes: '6',
+  SintomaticoRespiratorio: '7',
+  SintomaticoDeMalaria: '8',
+  DesparasitacionInterna: '9',
+  AntecedentesFamiliares: '10',
+  Fuma: '11',
+  ConsumeBebidasAlcoholicas: '18',
+  EvidenciaConsumoSustanciasPsicoactivas: '17',
+  EvidenciaViolencia: '19',
+  EstadoNutricional: '12',
+  RealizacionDePruebasDeCerologiaYVihEnElUltimoTrimestreGestacional: '13',
+  RealizacionRitualOPracticasCulturales: '14',
+  CausaDeLaMuerte: '15',
+  ColoresSemaforo: '16',
+  DesparasitacionExterna: '17',
+};
+
+export const QuestionTypes = {
+  selectOne: 1,
+  multiSelect: 2,
+};
+
+export const QuestionConditionPersonCodes = {
+  EPS: '1',
+  EstadoCivil: '2',
+  SeguridadSocial: '3',
+  GrupoEtnico: '4',
+  Casta: '5',
+  LenguaMaterna: '6',
+  DominioLenguaMaterna: '7',
+  NivelEstudio: '8',
+  CapacidadDiversa: '9',
+  TipoTrabajo: '10',
+  PoblacionPensionada: '11',
+  OtrosSaberesAnsestrales: '12',
+  Religion: '13',
+  TipoDeCuidadosCulturalesQueRealiza: '14',
+  ProgramaDeSalud: '15',
+  LunaOccidental: '16',
+  LactanciaMaterna: '17',
+  OcupacionGranGrupo: '19',
+};

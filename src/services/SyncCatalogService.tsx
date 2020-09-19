@@ -11,6 +11,11 @@ import DataBaseProvider, {
   FUCZONASCHEMA,
   FUCUNICUISCHEMA,
   FUCZONCUISCHEMA,
+  FNCELESALSCHEMA,
+  FNCCONSALSCHEMA,
+  FNCELEPERSCHEMA,
+  FNCCONPERSCHEMA,
+  FNCDESARMSCHEMA,
 } from '../providers/DataBaseProvider';
 import Realm from 'realm';
 import {HttpProvider} from '../providers';
@@ -41,6 +46,11 @@ export default class SyncCatalogService {
         FUCZONASCHEMA,
         FUCUNICUISCHEMA,
         FUCZONCUISCHEMA,
+        FNCELESALSCHEMA,
+        FNCCONSALSCHEMA,
+        FNCELEPERSCHEMA,
+        FNCCONPERSCHEMA,
+        FNCDESARMSCHEMA,
       ],
       schemaVersion: schemaVersion,
     }).then((realm) => {
@@ -65,6 +75,18 @@ export default class SyncCatalogService {
         realm.delete(itemFUCZONA);
         realm.delete(itemFUCZONCUI);
         realm.delete(itemFUCUNICUI);
+        let itemFNCELESAL = realm.objects('FNCELESAL');
+        let itemFNCCONSAL = realm.objects('FNCCONSAL');
+        let itemFNCELEPER = realm.objects('FNCELEPER');
+        let itemFNCCONPER = realm.objects('FNCCONPER');
+        let itemFNCDESARM = realm.objects('FNCDESARM');
+        realm.delete(itemsFVCCONVIV);
+        realm.delete(itemFVCELEVIV);
+        realm.delete(itemFNCELESAL);
+        realm.delete(itemFNCCONSAL);
+        realm.delete(itemFNCELEPER);
+        realm.delete(itemFNCCONPER);
+        realm.delete(itemFNCDESARM);
       });
     });
   }
@@ -99,6 +121,81 @@ export default class SyncCatalogService {
       FVCCONVIVSCHEMA,
       FVCCONVIVSchema,
     );
+    let itemFNCDESARM: any = await this.getEntity({entityName: 'FNCDESARM'});
+    const FNCDESARMSchema = itemFNCDESARM.data.map((item: any) => {
+      return {
+        ID: item.id,
+        CODIGO: item.codigo,
+        NOMBRE: item.nombre,
+        ESTADO: item.estado,
+        //FNCELESAL_ID: item.fncelesalId.id,
+      };
+    });
+    await this.syncSaveEntities(
+      DataBaseSchemas.FNCDESARMSCHEMA,
+      FNCDESARMSCHEMA,
+      FNCDESARMSchema,
+    );
+    let itemFNCELESAL: any = await this.getEntity({entityName: 'FNCELESAL'});
+    const FNCELESALSchema = itemFNCELESAL.data.map((item: any) => {
+      return {
+        ID: item.id,
+        CODIGO: item.codigo,
+        NOMBRE: item.nombre,
+        ESTADO: item.estado === 1 ? true : false,
+      };
+    });
+    await this.syncSaveEntities(
+      DataBaseSchemas.FNCELESALSCHEMA,
+      FNCELESALSCHEMA,
+      FNCELESALSchema,
+    );
+    let itemFNCCONSAL: any = await this.getEntity({entityName: 'FNCCONSAL'});
+    const FNCCONSALSchema = itemFNCCONSAL.data.map((item: any) => {
+      return {
+        ID: item.id,
+        CODIGO: item.codigo,
+        NOMBRE: item.nombre,
+        ESTADO: item.estado,
+        FNCELESAL_ID: item.fncelesalId.id,
+      };
+    });
+    await this.syncSaveEntities(
+      DataBaseSchemas.FNCCONSALSCHEMA,
+      FNCCONSALSCHEMA,
+      FNCCONSALSchema,
+    );
+    let itemFNCELEPER: any = await this.getEntity({entityName: 'FNCELEPER'});
+    const FNCELEPERSchema = itemFNCELEPER.data.map((item: any) => {
+      return {
+        ID: item.id,
+        CODIGO: item.codigo,
+        NOMBRE: item.nombre,
+        ESTADO: item.estado === 1 ? true : false,
+      };
+    });
+    await this.syncSaveEntities(
+      DataBaseSchemas.FNCELEPERSCHEMA,
+      FNCELEPERSCHEMA,
+      FNCELEPERSchema,
+    );
+    let itemFNCCONPER: any = await this.getEntity({entityName: 'FNCCONPER'});
+    const FNCCONPERSchema = itemFNCCONPER.data.map((item: any) => {
+      return {
+        ID: item.id,
+        CODIGO: item.codigo,
+        NOMBRE: item.nombre,
+        ESTADO: item.estado,
+        FNCELEPER_ID: item.fnceleperId.id,
+      };
+    });
+    await this.syncSaveEntities(
+      DataBaseSchemas.FNCCONPERSCHEMA,
+      FNCCONPERSCHEMA,
+      FNCCONPERSchema,
+    );
+
+    //------------------------------------------------------------------------------------
     let itemFUCDEPART: any = await this.getEntity({entityName: 'FUCDEPART'});
     const FUCDEPARTSCHEMAs = itemFUCDEPART.data.map((item) => {
       return {

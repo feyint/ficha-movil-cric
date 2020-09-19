@@ -6,7 +6,7 @@ import {BButton} from '../../../core/components';
 import {connect} from 'react-redux';
 import {setFNBNUCVIV, clearFNBNUCVIV} from '../../../state/house/actions';
 import {NavigationProp} from '@react-navigation/native';
-import { HousingService } from '../../../services';
+import {HousingService} from '../../../services';
 
 interface State {
   families: any[];

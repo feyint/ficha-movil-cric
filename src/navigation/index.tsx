@@ -19,11 +19,14 @@ import {useTheme} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {SyncScreen} from '../modules/sync/screens';
 import {
+  HealthStatusVisitScreen,
+  MortalityLast12MonthsScreen,
   PersonManageScreen,
   ViewPersonScreen,
+  SocialSecurityScreen,
+  UnhealthyHabitsScreen,
 } from '../modules/person/manage/screens';
-import { FamilyScreen } from '../modules/families/screens';
-//import {PersonManageScreen} from '../modules/person/manage/screens';
+import {FamilyScreen} from '../modules/families/screens';
 
 const DashboardStack = createStackNavigator();
 export const Dashboard = () => {
@@ -93,6 +96,38 @@ export const Dashboard = () => {
         component={ViewPersonScreen}
         name="ViewPersonScreen"
         options={{headerShown: false, title: 'Ver persona'}}
+      />
+      <DashboardStack.Screen
+        component={HealthStatusVisitScreen}
+        name="HealthStatusVisitScreen"
+        options={{
+          headerShown: false,
+          title: 'Estado de salud de la persona en la visita',
+        }}
+      />
+      <DashboardStack.Screen
+        component={MortalityLast12MonthsScreen}
+        name="MortalityLast12MonthsScreen"
+        options={{
+          headerShown: false,
+          title: 'Mortalidad en los ultimos 12 meses',
+        }}
+      />
+      <DashboardStack.Screen
+        component={SocialSecurityScreen}
+        name="SocialSecurityScreen"
+        options={{
+          headerShown: false,
+          title: 'Seguridad social',
+        }}
+      />
+      <DashboardStack.Screen
+        component={UnhealthyHabitsScreen}
+        name="UnhealthyHabitsScreen"
+        options={{
+          headerShown: false,
+          title: 'Habitos no saludables',
+        }}
       />
     </DashboardStack.Navigator>
   );
