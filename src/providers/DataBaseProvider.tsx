@@ -26,7 +26,7 @@ export enum DataBaseSchemas {
   FNBINFSAL_FNCCONSALSCHEMA = 'FNBINFSAL_FNCCONSAL',
   FNCPERSON_FNCCONPERSCHEMA = 'FNCPERSON_FNCCONPER',
 }
-export const schemaVersion = 1;
+export const schemaVersion = 4;
 export const UserSchema = {
   name: DataBaseSchemas.UserSchema,
   properties: {
@@ -52,6 +52,7 @@ export const FNCTIPIDENSCHEMA = {
 //-----------------------------------------------------------
 export const FNCPERSONSCHEMA = {
   name: DataBaseSchemas.FNCPERSONSCHEMA,
+  primaryKey: 'ID',
   properties: {
     ID: 'int',
     CODIGO: 'string',
@@ -86,9 +87,9 @@ export const FNBNUCVIV_FNCPERSONSCHEMA = {
     FNCPERSON_ID: 'int',
     ID: 'int',
     SELECCION: 'string',
-    FECHA_ACTIVIDAD: { type: 'date', default: new Date() },
+    FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
     USUARIO_DATA: 'string',
-    FECHA_CREACION: { type: 'date', default: new Date() },
+    FECHA_CREACION: {type: 'date', default: new Date()},
     ORIGEN_DATA: 'string',
   },
 };
@@ -183,18 +184,18 @@ export const FNBNUCVIV_FVCCONVIVSCHEMA = {
 };
 export const FUBUBIVIVSCHEMA = {
   name: DataBaseSchemas.FUBUBIVIVSCHEMA,
+  primaryKey: 'ID',
   properties: {
     ID: 'int',
     CODIGO: 'string',
     DIRECCION: 'string',
-    COORDENADA_X: 'int',
-    COORDENADA_Y: 'int',
-    HUMO_CASA: 'bool',
-    NUM_NUCLEOS: 'int',
-    FECHA_ACTIVIDAD: { type: 'date', default: new Date() },
-    FECHA_CREACION: { type: 'date', default: new Date() },
-    ORIGEN_DATA: 'string',
-    USUARIO_DATA: 'string',
+    COORDENADA_X: 'string',
+    COORDENADA_Y: 'string',
+    NUM_NUCLEOS: {type: 'int', default: 0},
+    FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
+    FECHA_CREACION: {type: 'date', default: new Date()},
+    ORIGEN_DATA: 'string?',
+    USUARIO_DATA: 'string?',
     FUCBARVER_ID: 'int',
   },
 };
@@ -203,24 +204,22 @@ export const FNBNUCVIVSCHEMA = {
   properties: {
     ID: 'int',
     CODIGO: 'string',
-    HUMO_CASA: 'bool',
-    ORIGEN_DATA: 'string',
-    USUARIO_DATA: 'string',
-    FUCBARVER_ID: 'int',
-    RESIDUO_BOR: 'string',
-    RESIDUO_PELIGROSO: 'string',
-    ANIMAL_VACUNADO: 'int',
-    ANIMAL_NOVACUNADO: 'int',
-    RIESGO: 'bool',
-    OBSERVACION: 'string',
-    LUGAR_COCINA: 'string',
-    HUMO_DENTRO: 'string',
-    ACCESO_INTERNET: 'bool',
-    TOTAL_ANIMAL: 'int',
-    FECHA_ACTIVIDAD: { type: 'date', default: new Date() },
-    FECHA_CREACION: { type: 'date', default: new Date() },
+    HUMO_CASA: 'bool?',
+    ORIGEN_DATA: 'string?',
+    USUARIO_DATA: 'string?',
+    RESIDUO_BOR: 'string?',
+    RESIDUO_PELIGROSO: 'string?',
+    ANIMAL_VACUNADO: 'int?',
+    ANIMAL_NOVACUNADO: 'int?',
+    RIESGO: 'bool?',
+    OBSERVACION: 'string?',
+    LUGAR_COCINA: 'string?',
+    HUMO_DENTRO: 'string?',
+    ACCESO_INTERNET: 'bool?',
+    TOTAL_ANIMAL: 'int?',
+    FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
+    FECHA_CREACION: {type: 'date', default: new Date()},
     FUBUBIVIV_ID: 'int',
-    FUBUBIVIV_CODE: 'string',
   },
 };
 export const FUCDEPARTSCHEMA = {
@@ -268,7 +267,6 @@ export const FUCRESGUASCHEMA = {
     ID: 'int',
     CODIGO: 'string',
     NOMBRE: 'string',
-    TIPRES: 'string',
     ESTADO: 'int',
     USUARIO_DATA: 'string?',
     FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
@@ -280,6 +278,7 @@ export const FUCRESGUASCHEMA = {
 };
 export const FUCBARVERSCHEMA = {
   name: DataBaseSchemas.FUCBARVERSCHEMA,
+  primaryKey: 'ID',
   properties: {
     ID: 'int',
     CODIGO: 'string',
@@ -290,7 +289,7 @@ export const FUCBARVERSCHEMA = {
     FECHA_CREACION: {type: 'date', default: new Date()},
     FUCRESGUA_ID: 'int',
     FUCZONCUI_ID: 'int',
-    FUCTIPBAV_ID: 'int',
+    FUCZONA_ID: 'int',
   },
 };
 export const FUCZONASCHEMA = {
@@ -329,8 +328,9 @@ export const FUCZONCUISCHEMA = {
     USUARIO_DATA: 'string?',
     FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
     FECHA_CREACION: {type: 'date', default: new Date()},
-    ORIGEN_DATA: 'string',
-    FUCUNICUI_ID: 'int',
+    ORIGEN_DATA: 'string?',
+    CODIGO_FF: 'string',
+    FUCSEDCUI_ID: 'int',
   },
 };
 export const FNBINFSAL_FNCCONSALSCHEMA = {
@@ -411,21 +411,30 @@ export default class DataBaseProvider {
           identificationType: 1,
           identification: '1061809552',
         });
-        realm.create(DataBaseSchemas.FUBUBIVIVSCHEMA, {
-          ID: 123,
-          CODIGO: 'CODVIVI1',
-          DIRECCION: 'Calle 34CN',
-          COORDENADA_X: 12345,
-          COORDENADA_Y: 12345,
-          HUMO_CASA: false,
-          NUM_NUCLEOS: 0,
-          FECHA_ACTIVIDAD: new Date(),
-          FECHA_CREACION: new Date(),
-          ORIGEN_DATA: 'string',
-          USUARIO_DATA: 'string',
-          FUCBARVER_ID: 1,
-          RESIDUO_BOR: 'string',
-        });
+        // realm.create('FUCBARVER', {
+        //   ID: 2,
+        //   CODIGO: 'CODBV_2',
+        //   NOMBRE: 'Barrio vereda 2',
+        //   ESTADO: 1,
+        //   FUCRESGUA_ID: 1925,
+        //   FUCZONCUI_ID: 1,
+        //   FUCZONA_ID: 1,
+        // });
+        // realm.create(DataBaseSchemas.FUBUBIVIVSCHEMA, {
+        //   ID: 123,
+        //   CODIGO: 'CODVIVI1',
+        //   DIRECCION: 'Calle 34CN',
+        //   COORDENADA_X: 12345,
+        //   COORDENADA_Y: 12345,
+        //   HUMO_CASA: false,
+        //   NUM_NUCLEOS: 0,
+        //   FECHA_ACTIVIDAD: new Date(),
+        //   FECHA_CREACION: new Date(),
+        //   ORIGEN_DATA: 'string',
+        //   USUARIO_DATA: 'string',
+        //   FUCBARVER_ID: 1,
+        //   RESIDUO_BOR: 'string',
+        // });
         //****************************************************************** */
         realm.create(DataBaseSchemas.FNCPERSONSCHEMA, {
           ID: 12345,
@@ -454,28 +463,28 @@ export default class DataBaseProvider {
           FNCGENERO_ID: 1,
         });
         //****************************************************************** */
-        realm.create(DataBaseSchemas.FNBNUCVIVSCHEMA, {
-          ID: 1,
-          CODIGO: 'CODVIVI1_100-NF01',
-          HUMO_CASA: false,
-          FECHA_ACTIVIDAD: new Date(),
-          FECHA_CREACION: new Date(),
-          ORIGEN_DATA: 'string',
-          USUARIO_DATA: 'string',
-          FUCBARVER_ID: 1,
-          RESIDUO_BOR: 'string',
-          RESIDUO_PELIGROSO: 'string',
-          ANIMAL_VACUNADO: 1,
-          ANIMAL_NOVACUNADO: 1,
-          RIESGO: false,
-          OBSERVACION: '',
-          LUGAR_COCINA: '',
-          HUMO_DENTRO: '',
-          ACCESO_INTERNET: false,
-          TOTAL_ANIMAL: 1,
-          FUBUBIVIV_ID: 123,
-          FUBUBIVIV_CODE: 'CODVIVI1',
-        });
+        // realm.create(DataBaseSchemas.FNBNUCVIVSCHEMA, {
+        //   ID: 1,
+        //   CODIGO: 'CODVIVI1_100-NF01',
+        //   HUMO_CASA: false,
+        //   FECHA_ACTIVIDAD: new Date(),
+        //   FECHA_CREACION: new Date(),
+        //   ORIGEN_DATA: 'string',
+        //   USUARIO_DATA: 'string',
+        //   FUCBARVER_ID: 1,
+        //   RESIDUO_BOR: 'string',
+        //   RESIDUO_PELIGROSO: 'string',
+        //   ANIMAL_VACUNADO: 1,
+        //   ANIMAL_NOVACUNADO: 1,
+        //   RIESGO: false,
+        //   OBSERVACION: '',
+        //   LUGAR_COCINA: '',
+        //   HUMO_DENTRO: '',
+        //   ACCESO_INTERNET: false,
+        //   TOTAL_ANIMAL: 1,
+        //   FUBUBIVIV_ID: 123,
+        //   FUBUBIVIV_CODE: 'CODVIVI1',
+        // });
       });
     });
   }

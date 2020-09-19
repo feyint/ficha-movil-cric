@@ -2,10 +2,8 @@ export type FUBUBIVIV = {
   ID: number;
   CODIGO: string;
   DIRECCION: string;
-  COORDENADA_X: number;
-  COORDENADA_Y: number;
-  HUMO_CASA: boolean;
-  NUM_NUCLEOS: number;
+  COORDENADA_X: string;
+  COORDENADA_Y: string;
   FECHA_ACTIVIDAD: Date;
   FECHA_CREACION: Date;
   ORIGEN_DATA: string;
@@ -29,8 +27,6 @@ export type FNBNUCVIV = {
   HUMO_DENTRO: string;
   ACCESO_INTERNET: boolean;
   TOTAL_ANIMAL: number;
-  FECHA_ACTIVIDAD: Date;
-  FECHA_CREACION: Date;
   FUBUBIVIV_ID: number;
   FUBUBIVIV_CODE: string;
 };

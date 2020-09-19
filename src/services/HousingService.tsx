@@ -7,59 +7,294 @@ import {
   DataBaseSchemas,
   FNBNUCVIV_FVCCONVIVSCHEMA,
   FNCPERSONSCHEMA,
+  FUCDEPARTSCHEMA,
+  FUCMUNICISCHEMA,
+  FUCTIPTERSCHEMA,
+  FUCRESGUASCHEMA,
+  FUCBARVERSCHEMA,
+  FUCZONASCHEMA,
+  FUCUNICUISCHEMA,
+  FUCZONCUISCHEMA,
 } from '../providers/DataBaseProvider';
 import Realm from 'realm';
 import {
   HousingQuestion,
   HousingQuestionOption,
 } from '../modules/housing/state/types';
-import { FNBNUCVIV_FVCCONVIV } from '../state/house/types';
-import { SelectSchema, MultiSelectSchema } from '../core/utils/types';
-import { capitalizeFirstLetter } from '../core/utils/utils';
-
+import {FNBNUCVIV_FVCCONVIV, FUBUBIVIV, FNBNUCVIV} from '../state/house/types';
+import {SelectSchema, MultiSelectSchema} from '../core/utils/types';
+import {capitalizeFirstLetter} from '../core/utils/utils';
+const HOUSECODE_INCREMENT = '0000';
 export default class HousingService {
   async getFamilies(HouseID: number) {
     const result = await Realm.open({
       schema: [FNBNUCVIVSCHEMA],
       schemaVersion: schemaVersion,
-    }).then((realm) => {
-      let items = realm
-        .objects('FNBNUCVIV')
-        .filtered(`FUBUBIVIV_ID = ${HouseID}`);
-      return items;
-    }).catch((error) => {
-      return error;
-    });
+    })
+      .then((realm) => {
+        let items = realm
+          .objects('FNBNUCVIV')
+          .filtered(`FUBUBIVIV_ID = ${HouseID}`);
+        if (items.length > 0) {
+          return items;
+        }
+        return [];
+      })
+      .catch((error) => {
+        return error;
+      });
     return result;
   }
   async getHouses() {
     const result = await Realm.open({
       schema: [FUBUBIVIVSCHEMA],
       schemaVersion: schemaVersion,
-    }).then((realm) => {
-      let items = realm
-        .objects('FUBUBIVIV');
-      return items;
-    }).catch((error) => {
-      return error;
-    });
+    })
+      .then((realm) => {
+        let items = realm.objects('FUBUBIVIV');
+        return items;
+      })
+      .catch((error) => {
+        return error;
+      });
+    return result;
+  }
+  async SaveHouse(item: FUBUBIVIV) {
+    let FUBUBIVIV_ID = await this.getLastEntityID(
+      DataBaseSchemas.FUBUBIVIVSCHEMA,
+    );
+    item.ID = FUBUBIVIV_ID;
+    const result = await Realm.open({
+      schema: [FUBUBIVIVSCHEMA],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        realm.write(() => {
+          let result = realm.create('FUBUBIVIV', item);
+          console.log('INSERT ITEM ', result);
+        });
+      })
+      .catch((error) => {
+        return error;
+      });
+    return result;
+  }
+  async UpdateHouse(item: FUBUBIVIV) {
+    console.log('UPDATE HOUSE', item);
+    const result = await Realm.open({
+      schema: [FUBUBIVIVSCHEMA],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        let house: any = realm
+          .objects('FUBUBIVIV')
+          .filtered(`ID = ${item.ID}`)
+          .sorted('ID', true)[0];
+        if (house) {
+          realm.write(() => {
+            house.CODIGO = item.CODIGO;
+            house.DIRECCION = item.DIRECCION;
+            house.COORDENADA_X = item.COORDENADA_X;
+            house.COORDENADA_Y = item.COORDENADA_Y;
+            house.FUCBARVER_ID = item.FUCBARVER_ID;
+            house.FECHA_ACTIVIDAD = new Date();
+          });
+        }
+      })
+      .catch((error) => {
+        return error;
+      });
+    return result;
+  }
+  async getLastEntityID(entity: string) {
+    const result = await Realm.open({
+      schema: [FUBUBIVIVSCHEMA, FNBNUCVIVSCHEMA],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        let increment = 1;
+        let item: any = realm.objects(entity).sorted('ID', true)[0];
+        if (item) {
+          increment = item.ID + 1;
+        }
+        return increment;
+      })
+      .catch((error) => {
+        return error;
+      });
+    return result;
+  }
+  async SaveFNBNUCVIV(item: FNBNUCVIV) {
+    let FNBNUCVIV_ID = await this.getLastEntityID(
+      DataBaseSchemas.FNBNUCVIVSCHEMA,
+    );
+    item.ID = FNBNUCVIV_ID;
+    const result = await Realm.open({
+      schema: [FNBNUCVIVSCHEMA],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        realm.write(() => {
+          let result = realm.create('FNBNUCVIV', item);
+          //console.error('INSERT ITEM ', result);
+          return result;
+        });
+      })
+      .catch((error) => {
+        //console.error('error FNBNUCVIV ', error);
+        return error;
+      });
+    return result;
+  }
+  async SaveFNBNUCVIVPropiety(
+    FNBNUCVIVID: number,
+    propiety: string,
+    value: any,
+  ) {
+    const result = await Realm.open({
+      schema: [FNBNUCVIVSCHEMA],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        realm.write(() => {
+          let item: any = realm
+            .objects(DataBaseSchemas.FNBNUCVIVSCHEMA)
+            .filtered(`ID = ${FNBNUCVIVID}`)
+            .sorted('ID', true)[0];
+          if (item) {
+            console.error('result[propiety] ', propiety, value);
+            item[propiety] = value;
+            return true;
+          } else {
+            return false;
+          }
+        });
+      })
+      .catch((error) => {
+        console.error('error FNBNUCVIV ', error);
+        return error;
+      });
+    return result;
+  }
+  async getLasHouseCode(code: string) {
+    const result = await Realm.open({
+      schema: [FUBUBIVIVSCHEMA],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        let increment = '';
+        let item: any = realm
+          .objects('FUBUBIVIV')
+          .filtered(`CODIGO BEGINSWITH "${code}"`)
+          .sorted('CODIGO', true)[0];
+        if (item) {
+          let values = item.CODIGO.split('-');
+          increment = this.incrementNumber(values[1]);
+          console.log('incrementincrement ', increment);
+        } else {
+          increment = this.incrementNumber('0');
+        }
+        return increment;
+      })
+      .catch((error) => {
+        return error;
+      });
+    return result;
+  }
+  async getLastNucleoCode(code: string) {
+    const result = await Realm.open({
+      schema: [FNBNUCVIVSCHEMA],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        let increment = '';
+        let item: any = realm
+          .objects(DataBaseSchemas.FNBNUCVIVSCHEMA)
+          .filtered(`CODIGO BEGINSWITH "${code}"`)
+          .sorted('CODIGO', true)[0];
+        if (item) {
+          let values = item.CODIGO.split('-');
+          //console.error('values' , values);
+          increment = '' + (parseInt(values[2], 10) + 1);
+        } else {
+          increment = '1';
+        }
+        return increment;
+      })
+      .catch((error) => {
+        return error;
+      });
+    return result;
+  }
+  incrementNumber(numberstring) {
+    let number = parseInt(numberstring, 10) + 1;
+    let initial = HOUSECODE_INCREMENT.substring(
+      0,
+      HOUSECODE_INCREMENT.length - number.toString().length,
+    );
+    let code = initial + number;
+    return code;
+  }
+  async getUbicationEntity(
+    name: string,
+    _columnFilter: any = null,
+    _value: any = null,
+    _columnFilter2: any = null,
+    _value2: any = null,
+    first: boolean = false,
+  ) {
+    const result = await Realm.open({
+      schema: [
+        FUCDEPARTSCHEMA,
+        FUCMUNICISCHEMA,
+        FUCTIPTERSCHEMA,
+        FUCRESGUASCHEMA,
+        FUCBARVERSCHEMA,
+        FUCZONASCHEMA,
+        FUCUNICUISCHEMA,
+        FUCZONCUISCHEMA,
+      ],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        let items = realm.objects(name);
+        let query = '';
+        if (_columnFilter && _value) {
+          query = `${_columnFilter} = ${_value}`;
+        }
+        if (_columnFilter2 && _value2) {
+          query = query + ` AND ${_columnFilter2} = ${_value2}`;
+        }
+        if (query.length > 0) {
+          console.log(`${_columnFilter} = ${_value}`);
+          items = items.filtered(query);
+        }
+        if (first) {
+          return items[0];
+        }
+        return items;
+      })
+      .catch((error) => {
+        return error;
+      });
     return result;
   }
   async getPersons() {
     const result = await Realm.open({
       schema: [FNCPERSONSCHEMA],
       schemaVersion: schemaVersion,
-    }).then((realm) => {
-      let items = realm
-        .objects('FNCPERSON');
+    })
+      .then((realm) => {
+        let items = realm.objects('FNCPERSON');
         console.log('persona items', items);
         for (let i of items) {
           console.log('persona items for', i);
-          }
-      return items;
-    }).catch((error) => {
-      return error;
-    });
+        }
+        return items;
+      })
+      .catch((error) => {
+        return error;
+      });
     return result;
   }
   async getQuestionWithOptions(questionsQuery?: any[]) {
@@ -158,7 +393,7 @@ export default class HousingService {
           .filtered(
             `FNBNUCVIV_ID = ${FNBNUCVIV_ID} AND FVCELEVIV_ID = ${FVCELEVIV_ID}`,
           );
-        console.log('borrar ', options.length);
+        console.log('borrar respuestas', options.length);
         realm.write(() => {
           realm.delete(options);
         });
@@ -169,7 +404,7 @@ export default class HousingService {
       });
   }
   getItemsForQuestionSelect(code: string, questions: HousingQuestion[]) {
-    let item: SelectSchema = { name: '', id: 0, children: [] };
+    let item: SelectSchema = {name: '', id: 0, children: []};
     for (let i = 0; i < questions.length; i++) {
       if (questions[i].CODIGO === code) {
         item.id = questions[i].ID;
@@ -178,22 +413,26 @@ export default class HousingService {
           item.children.push({
             value: option.ID.toString(),
             label: option.NOMBRE,
+            item: option,
           });
         }
-        item.children.unshift({ value: '-1', label: 'Seleccione' });
+        item.children.unshift({value: '-1', label: 'Seleccione', item: null});
       }
     }
-    console.log('ddddd ', item);
     return item;
   }
   getItemsForQuestionMultiSelect(code: string, questions: HousingQuestion[]) {
-    let item: MultiSelectSchema = { name: '', id: 0, children: [] };
+    let item: MultiSelectSchema = {name: '', id: 0, children: []};
     for (let i = 0; i < questions.length; i++) {
       if (questions[i].CODIGO === code) {
         item.id = questions[i].ID;
         item.name = capitalizeFirstLetter(questions[i].NOMBRE);
         for (let option of questions[i].OPTIONS) {
-          item.children.push({ id: option.ID, name: option.NOMBRE });
+          item.children.push({
+            id: option.ID,
+            name: option.NOMBRE,
+            item: option,
+          });
         }
       }
     }
@@ -213,7 +452,9 @@ export default class HousingService {
       schemaVersion: schemaVersion,
     })
       .then((realm) => {
-        console.log(`FNBNUCVIV_ID = ${FNBNUCVIV_ID} AND FVCELEVIV_ID = ${FVCELEVIV_ID}`);
+        console.log(
+          `FNBNUCVIV_ID = ${FNBNUCVIV_ID} AND FVCELEVIV_ID = ${FVCELEVIV_ID}`,
+        );
         let items = realm
           .objects(DataBaseSchemas.FNBNUCVIV_FVCCONVIVSCHEMA)
           .filtered(
@@ -235,7 +476,6 @@ export default class HousingService {
       schemaVersion: schemaVersion,
     })
       .then((realm) => {
-        console.log(`aaaaaaaaaaa FNBNUCVIV_ID = ${FNBNUCVIV_ID} AND FVCELEVIV_ID = ${FVCELEVIV_ID}`);
         let items = realm
           .objects(DataBaseSchemas.FNBNUCVIV_FVCCONVIVSCHEMA)
           .filtered(

@@ -8,7 +8,6 @@ import BError from './BError';
 interface Props {
   label?: string;
   prompt?: string;
-  value?: string;
   selectedValue?: string;
   items?: {label: string; value: string; item?: any}[];
   errorText?: string;
@@ -82,7 +81,7 @@ class BPicker extends Component<Props, any> {
             {this.renderItems()}
           </Picker>
         </View>
-        <BError text="Campo Invalido" error={this.props.error} />
+        <BError text="El campo es requerido" error={this.props.error} />
       </View>
     );
   }

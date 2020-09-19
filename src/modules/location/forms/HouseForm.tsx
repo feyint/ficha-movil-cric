@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {View, StyleSheet, Text} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {yupResolver} from '@hookform/resolvers';
@@ -8,7 +8,6 @@ import {
   BButton,
   BTextInput,
   BPicker,
-  BMultiSelect,
   BRadioButton,
 } from '../../../core/components';
 import {useNavigation} from '@react-navigation/native';
@@ -23,6 +22,8 @@ import {
   saveAnswerLocal,
   getQuestionAnswer,
   getQuestionWithOptions,
+  saveFNBNUCVIV,
+  saveFNBNUCVIVPropiety,
 } from '../../../state/house/actions';
 import {connect} from 'react-redux';
 const schemaForm = yup.object().shape({
@@ -32,7 +33,7 @@ const schemaForm = yup.object().shape({
   MaterialPared: yup.string().required(),
   Tenenciavivienda: yup.string().required(),
   kitchenislocated: yup.string().required(),
-  smokeinsidehouse: yup.string().required().oneOf(['SI', 'NO']),
+  smokeinsidehouse: yup.string().required(),
   Cocinacon: yup.string().required(),
   Numerodepersonaspordormitorio: yup.string().required(),
   Habitacionesenlavivienda: yup.string().required(),
@@ -54,14 +55,11 @@ const listCocinaseEncuentra = [
   {value: '1', label: 'ADENTRO'},
   {value: '2', label: 'AFUERA'},
 ];
-const listAccesoInternet = [
-  {value: '-1', label: 'Seleccione...'},
-  {value: 'SI', label: 'Si'},
-  {value: 'NO', label: 'No'},
-];
+
 const _HouseForm = (props: any) => {
   const navigation = useNavigation();
   const syncCatalogService = new HousingService();
+  const [internetaccess, setInternetaccess] = useState<boolean>();
   const [state, setState] = useState({
     questions: [] as HousingQuestion[],
   });
@@ -80,10 +78,22 @@ const _HouseForm = (props: any) => {
       });
     }
     setValue('housecode', props.FNBNUCVIV.CODIGO);
+    getAnswersFNBNUCVIV();
   };
   async function getAnswers(type: number, code: string, prop: string) {
     let question = await props.getQuestionAnswer(type, code);
     setValue(prop, question);
+  }
+  async function getAnswersFNBNUCVIV() {
+    setValue('smokeinsidehouse', props.FNBNUCVIV.HUMO_CASA);
+    setValue('kitchenislocated', props.FNBNUCVIV.LUGAR_COCINA);
+    setValue('internetaccess', props.FNBNUCVIV.ACCESO_INTERNET);
+    setInternetaccess(props.FNBNUCVIV.ACCESO_INTERNET);
+    // if (answer) {
+    //   setValue('smokeinsidehouse', answer);
+    //   return answer;
+    // }
+    // return null;
   }
   const getItemsForQuestionSelect = (code: string) => {
     return syncCatalogService.getItemsForQuestionSelect(code, state.questions);
@@ -111,7 +121,7 @@ const _HouseForm = (props: any) => {
           control={control}
           render={({onChange, onBlur, value}) => (
             <BTextInput
-              label="Código vivienda"
+              label="Código nucleo familiar"
               disabled={true}
               onBlur={onBlur}
               error={errors.housecode}
@@ -136,11 +146,13 @@ const _HouseForm = (props: any) => {
               error={errors.MaterialTecho}
               onChange={(vlue: any) => {
                 onChange(vlue);
-                props.saveAnswerLocal(
-                  QuestionTypes.selectOne,
-                  QuestionFamilyCodes.MaterialTecho,
-                  vlue,
-                );
+                if (vlue) {
+                  props.saveAnswerLocal(
+                    QuestionTypes.selectOne,
+                    QuestionFamilyCodes.MaterialTecho,
+                    vlue,
+                  );
+                }
               }}
               onLoad={() => {
                 getAnswers(
@@ -149,7 +161,6 @@ const _HouseForm = (props: any) => {
                   'MaterialTecho',
                 );
               }}
-              value={value}
               selectedValue={value}
               items={
                 getItemsForQuestionSelect(QuestionFamilyCodes.MaterialTecho)
@@ -170,11 +181,13 @@ const _HouseForm = (props: any) => {
               error={errors.MaterialPiso}
               onChange={(vlue: any) => {
                 onChange(vlue);
-                props.saveAnswerLocal(
-                  QuestionTypes.selectOne,
-                  QuestionFamilyCodes.MaterialPiso,
-                  vlue,
-                );
+                if (vlue) {
+                  props.saveAnswerLocal(
+                    QuestionTypes.selectOne,
+                    QuestionFamilyCodes.MaterialPiso,
+                    vlue,
+                  );
+                }
               }}
               onLoad={() => {
                 getAnswers(
@@ -183,7 +196,6 @@ const _HouseForm = (props: any) => {
                   'MaterialPiso',
                 );
               }}
-              value={value}
               selectedValue={value}
               items={
                 getItemsForQuestionSelect(QuestionFamilyCodes.MaterialPiso)
@@ -205,11 +217,13 @@ const _HouseForm = (props: any) => {
               error={errors.MaterialPared}
               onChange={(vlue: any) => {
                 onChange(vlue);
-                props.saveAnswerLocal(
-                  QuestionTypes.selectOne,
-                  QuestionFamilyCodes.MaterialPared,
-                  vlue,
-                );
+                if (vlue) {
+                  props.saveAnswerLocal(
+                    QuestionTypes.selectOne,
+                    QuestionFamilyCodes.MaterialPared,
+                    vlue,
+                  );
+                }
               }}
               onLoad={() => {
                 getAnswers(
@@ -218,7 +232,6 @@ const _HouseForm = (props: any) => {
                   'MaterialPared',
                 );
               }}
-              value={value}
               selectedValue={value}
               items={
                 getItemsForQuestionSelect(QuestionFamilyCodes.MaterialPared)
@@ -240,11 +253,13 @@ const _HouseForm = (props: any) => {
               error={errors.Tenenciavivienda}
               onChange={(vlue: any) => {
                 onChange(vlue);
-                props.saveAnswerLocal(
-                  QuestionTypes.selectOne,
-                  QuestionFamilyCodes.Tenenciavivienda,
-                  vlue,
-                );
+                if (vlue) {
+                  props.saveAnswerLocal(
+                    QuestionTypes.selectOne,
+                    QuestionFamilyCodes.Tenenciavivienda,
+                    vlue,
+                  );
+                }
               }}
               onLoad={() => {
                 getAnswers(
@@ -253,7 +268,6 @@ const _HouseForm = (props: any) => {
                   'Tenenciavivienda',
                 );
               }}
-              value={value}
               selectedValue={value}
               items={
                 getItemsForQuestionSelect(QuestionFamilyCodes.Tenenciavivienda)
@@ -272,9 +286,11 @@ const _HouseForm = (props: any) => {
               onBlur={onBlur}
               error={errors.kitchenislocated}
               onChange={(value: any) => {
-                onChange(value);
+                if (value) {
+                  onChange(value);
+                  props.saveFNBNUCVIVPropiety('LUGAR_COCINA', value);
+                }
               }}
-              value={value}
               selectedValue={value}
               items={listCocinaseEncuentra}
             />
@@ -290,8 +306,11 @@ const _HouseForm = (props: any) => {
               error={errors.smokeinsidehouse}
               items={logicOption}
               onChange={(value: any) => {
-                onChange(value);
-                console.log('Selected Item: ', value);
+                if (value) {
+                  onChange(value);
+                  console.log('Selected Item: ', value);
+                  props.saveFNBNUCVIVPropiety('HUMO_CASA', JSON.parse(value));
+                }
               }}
             />
           )}
@@ -308,11 +327,13 @@ const _HouseForm = (props: any) => {
               error={errors.Cocinacon}
               onChange={(vlue: any) => {
                 onChange(vlue);
-                props.saveAnswerLocal(
-                  QuestionTypes.selectOne,
-                  QuestionFamilyCodes.Cocinacon,
-                  vlue,
-                );
+                if (vlue) {
+                  props.saveAnswerLocal(
+                    QuestionTypes.selectOne,
+                    QuestionFamilyCodes.Cocinacon,
+                    vlue,
+                  );
+                }
               }}
               onLoad={() => {
                 getAnswers(
@@ -321,7 +342,6 @@ const _HouseForm = (props: any) => {
                   'Cocinacon',
                 );
               }}
-              value={value}
               selectedValue={value}
               items={
                 getItemsForQuestionSelect(QuestionFamilyCodes.Cocinacon)
@@ -344,11 +364,13 @@ const _HouseForm = (props: any) => {
               error={errors.Numerodepersonaspordormitorio}
               onChange={(vlue: any) => {
                 onChange(vlue);
-                props.saveAnswerLocal(
-                  QuestionTypes.selectOne,
-                  QuestionFamilyCodes.Numerodepersonaspordormitorio,
-                  vlue,
-                );
+                if (vlue) {
+                  props.saveAnswerLocal(
+                    QuestionTypes.selectOne,
+                    QuestionFamilyCodes.Numerodepersonaspordormitorio,
+                    vlue,
+                  );
+                }
               }}
               onLoad={() => {
                 getAnswers(
@@ -357,7 +379,6 @@ const _HouseForm = (props: any) => {
                   'Numerodepersonaspordormitorio',
                 );
               }}
-              value={value}
               selectedValue={value}
               items={
                 getItemsForQuestionSelect(
@@ -381,11 +402,13 @@ const _HouseForm = (props: any) => {
               error={errors.Habitacionesenlavivienda}
               onChange={(vlue: any) => {
                 onChange(vlue);
-                props.saveAnswerLocal(
-                  QuestionTypes.selectOne,
-                  QuestionFamilyCodes.Habitacionesenlavivienda,
-                  vlue,
-                );
+                if (vlue) {
+                  props.saveAnswerLocal(
+                    QuestionTypes.selectOne,
+                    QuestionFamilyCodes.Habitacionesenlavivienda,
+                    vlue,
+                  );
+                }
               }}
               onLoad={() => {
                 getAnswers(
@@ -394,7 +417,6 @@ const _HouseForm = (props: any) => {
                   'Habitacionesenlavivienda',
                 );
               }}
-              value={value}
               selectedValue={value}
               items={
                 getItemsForQuestionSelect(
@@ -417,11 +439,13 @@ const _HouseForm = (props: any) => {
               error={errors.TipodeAlumbrado}
               onChange={(vlue: any) => {
                 onChange(vlue);
-                props.saveAnswerLocal(
-                  QuestionTypes.selectOne,
-                  QuestionFamilyCodes.TipodeAlumbrado,
-                  vlue,
-                );
+                if (vlue) {
+                  props.saveAnswerLocal(
+                    QuestionTypes.selectOne,
+                    QuestionFamilyCodes.TipodeAlumbrado,
+                    vlue,
+                  );
+                }
               }}
               onLoad={() => {
                 getAnswers(
@@ -430,7 +454,6 @@ const _HouseForm = (props: any) => {
                   'TipodeAlumbrado',
                 );
               }}
-              value={value}
               selectedValue={value}
               items={
                 getItemsForQuestionSelect(QuestionFamilyCodes.TipodeAlumbrado)
@@ -442,18 +465,20 @@ const _HouseForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
-            <BPicker
+          render={({onChange, value}) => (
+            <BRadioButton
               label="Acceso a Internet"
-              enabled={true}
-              onBlur={onBlur}
+              value={internetaccess}
               error={errors.internetaccess}
+              items={logicOption}
               onChange={(value: any) => {
                 onChange(value);
+                props.saveFNBNUCVIVPropiety(
+                  'ACCESO_INTERNET',
+                  JSON.parse(value),
+                );
+                setInternetaccess(value);
               }}
-              value={value}
-              selectedValue={value}
-              items={listAccesoInternet}
             />
           )}
           name="internetaccess"
@@ -488,10 +513,13 @@ const mapDispatchToProps = {
   saveAnswerLocal,
   getQuestionAnswer,
   getQuestionWithOptions,
+  saveFNBNUCVIV,
+  saveFNBNUCVIVPropiety,
 };
 const mapStateToProps = (housing: any) => {
   return {
     FNBNUCVIV: housing.housing.FNBNUCVIV,
+    FUBUBIVIV: housing.housing.FUBUBIVIV,
   };
 };
 export default connect(mapStateToProps, mapDispatchToProps)(_HouseForm);
