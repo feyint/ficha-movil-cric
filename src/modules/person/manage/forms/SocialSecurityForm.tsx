@@ -177,11 +177,11 @@ const _SocialSecurityForm = (props: any) => {
               error={errors.ProgramaDeSalud}
               onChange={(values: any) => {
                 onChange(values);
-                console.log('save', value);
+                console.log('save', values);
                 props.saveAnswerLocal(
                   QuestionTypes.multiSelect,
                   QuestionConditionPersonCodes.ProgramaDeSalud,
-                  value,
+                  values,
                 );
               }}
               onLoad={() => {
