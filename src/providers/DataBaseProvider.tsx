@@ -411,15 +411,15 @@ export default class DataBaseProvider {
           identificationType: 1,
           identification: '1061809552',
         });
-        // realm.create('FUCBARVER', {
-        //   ID: 2,
-        //   CODIGO: 'CODBV_2',
-        //   NOMBRE: 'Barrio vereda 2',
-        //   ESTADO: 1,
-        //   FUCRESGUA_ID: 1925,
-        //   FUCZONCUI_ID: 1,
-        //   FUCZONA_ID: 1,
-        // });
+        realm.create('FUCBARVER', {
+          ID: 2,
+          CODIGO: 'CODBV_2',
+          NOMBRE: 'Barrio vereda 2',
+          ESTADO: 1,
+          FUCRESGUA_ID: 1925,
+          FUCZONCUI_ID: 1,
+          FUCZONA_ID: 1,
+        });
         // realm.create(DataBaseSchemas.FUBUBIVIVSCHEMA, {
         //   ID: 123,
         //   CODIGO: 'CODVIVI1',
@@ -436,32 +436,34 @@ export default class DataBaseProvider {
         //   RESIDUO_BOR: 'string',
         // });
         //****************************************************************** */
-        realm.create(DataBaseSchemas.FNCPERSONSCHEMA, {
-          ID: 12345,
-          CODIGO: 'PERSON001',
-          IDENTIFICACION: 1061729337,
-          PRIMER_NOMBRE: 'ANDRES',
-          SEGUNDO_NOMBRE: 'FELIPE',
-          PRIMER_APELLIDO: 'GUTIERREZ',
-          SEGUNDO_APELLIDO: 'VIVAS',
-          FECHA_NACIMIENTO: new Date(),
-          EDAD: 30,
-          EDAD_VISITA: 30,
-          TEL_CEDULAR: 3192424333,
-          TEL_ALTERNO: 8342595,
-          CORREO_ELECTRONICO: 'LINKON90@GMAIL.COM',
-          FECHA_ACTIVIDAD: new Date(),
-          USUARIO_DATA: 'string',
-          FECHA_CREACION: new Date(),
-          ORIGEN_DATA: new Date(),
-          FNCTIPIDE_ID: 1,
-          FNCORGANI_ID: 1,
-          FNCLUNIND_ID: 1,
-          FNCOCUPAC_ID: 1,
-          FUCMUNICI_ID: 1,
-          FNCPAREN_ID: 1,
-          FNCGENERO_ID: 1,
-        });
+        try {
+          realm.create(DataBaseSchemas.FNCPERSONSCHEMA, {
+            ID: 12345,
+            CODIGO: 'PERSON001',
+            IDENTIFICACION: 1061729337,
+            PRIMER_NOMBRE: 'ANDRES',
+            SEGUNDO_NOMBRE: 'FELIPE',
+            PRIMER_APELLIDO: 'GUTIERREZ',
+            SEGUNDO_APELLIDO: 'VIVAS',
+            FECHA_NACIMIENTO: new Date(),
+            EDAD: 30,
+            EDAD_VISITA: 30,
+            TEL_CEDULAR: 3192424333,
+            TEL_ALTERNO: 8342595,
+            CORREO_ELECTRONICO: 'LINKON90@GMAIL.COM',
+            FECHA_ACTIVIDAD: new Date(),
+            USUARIO_DATA: 'string',
+            FECHA_CREACION: new Date(),
+            ORIGEN_DATA: new Date(),
+            FNCTIPIDE_ID: 1,
+            FNCORGANI_ID: 1,
+            FNCLUNIND_ID: 1,
+            FNCOCUPAC_ID: 1,
+            FUCMUNICI_ID: 1,
+            FNCPAREN_ID: 1,
+            FNCGENERO_ID: 1,
+          });
+        } catch (error) {}
         //****************************************************************** */
         // realm.create(DataBaseSchemas.FNBNUCVIVSCHEMA, {
         //   ID: 1,
