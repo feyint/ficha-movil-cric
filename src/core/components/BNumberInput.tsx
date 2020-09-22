@@ -24,7 +24,9 @@ export default class BNumberInput extends Component<Props, State> {
           label={this.props.label}
           mode="outlined"
           keyboardType="numeric"
-          onChangeText={(text) => this.onChanged(text)}
+          onChangeText={(text) => {
+            this.onChanged(text);
+          }}
           value={this.props.value}
         />
         <HelperText type="error" visible={this.hasErrors()}>
@@ -34,7 +36,7 @@ export default class BNumberInput extends Component<Props, State> {
     );
   }
 
-  onChanged(text: any) {
+  onChanged(text: string) {
     let newText = '';
     let numbers = '0123456789';
     for (var i = 0; i < text.length; i++) {
@@ -44,7 +46,11 @@ export default class BNumberInput extends Component<Props, State> {
         //Alert.alert('Porfavor ingrese solo caracteres numericos');
       }
     }
-    this.props.onChange(text);
+    if (text.length > 0) {
+      this.props.onChange(Number(text));
+    } else {
+      this.props.onChange(text);
+    }
   }
 
   changetext(text: string) {

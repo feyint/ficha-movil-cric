@@ -24,6 +24,7 @@ import {
   saveAnswerLocal,
   getQuestionAnswer,
   getQuestionWithOptions,
+  saveFNBNUCVIVPropiety,
 } from '../../../state/house/actions';
 import BNumberInput from '../../../core/components/BNumberInput';
 const questions = [
@@ -72,7 +73,7 @@ const schemaForm = yup.object().shape({
   FamiliaPracticasCulturales: yup.array().required(),
   RiesgoVivienda: yup.string().required().oneOf(['SI', 'NO']),
   NumeroAnimales: yup.number().required(),
-  NumeriAnimalesnoVacunados: yup.number().required(),
+  NumeroAnimalesnoVacunados: yup.number().required(),
   Observaciones: yup.string().optional(),
 });
 const ResiduosViviendaOption = [
@@ -84,6 +85,8 @@ const _HouseConditionForm = (props: any) => {
   const [state, setState] = useState({
     questions: [] as HousingQuestion[],
   });
+  const [numeroAnimales, setNumeroAnimales] = useState('');
+  const [numeroAnimalesnoVacunados, setNumeroAnimalesnoVacunados] = useState('');
   const navigation = useNavigation();
   const {handleSubmit, control, errors, setValue} = useForm({
     resolver: yupResolver(schemaForm),
@@ -95,10 +98,37 @@ const _HouseConditionForm = (props: any) => {
     let result = await props.getQuestionWithOptions(questions);
     if (result) {
       setState({
-        ...state,
         questions: result,
       });
     }
+
+    //getAnswersFNBNUCVIV();
+    // console.error(
+    //   'props.FNBNUCVIV.ANIMAL_VACUNADO',
+    //   props.FNBNUCVIV.ANIMAL_VACUNADO,
+    // );
+    getAnswersFNBNUCVIV();
+  }
+  async function getAnswersFNBNUCVIV() {
+    if (
+      props.FNBNUCVIV.ANIMAL_VACUNADO &&
+      props.FNBNUCVIV.ANIMAL_VACUNADO !== 'null'
+    ) {
+      setValue('NumeroAnimales', '' + props.FNBNUCVIV.ANIMAL_VACUNADO);
+      setNumeroAnimales('' + props.FNBNUCVIV.ANIMAL_VACUNADO);
+    }
+    if (
+      props.FNBNUCVIV.ANIMAL_NOVACUNADO &&
+      props.FNBNUCVIV.ANIMAL_NOVACUNADO !== 'null'
+    ) {
+      setValue(
+        'NumeroAnimalesnoVacunados',
+        '' + props.FNBNUCVIV.ANIMAL_NOVACUNADO,
+      );
+    }
+    setValue('ResiduosGeneranenVivienda', props.FNBNUCVIV.RESIDUO_BOR);
+    setValue('setNumeroAnimalesnoVacunados', props.FNBNUCVIV.RIESGO);
+    setValue('Observaciones', props.FNBNUCVIV.OBSERVACION);
   }
   async function getAnswers(type: number, code: string, prop: string) {
     let question = await props.getQuestionAnswer(type, code);
@@ -260,8 +290,10 @@ const _HouseConditionForm = (props: any) => {
               items={ResiduosViviendaOption}
               error={errors.ResiduosGeneranenVivienda}
               onChange={(value: any) => {
-                onChange(value);
-                console.log('Selected Item: ', value);
+                if (value) {
+                  onChange(value);
+                  props.saveFNBNUCVIVPropiety('RESIDUO_BOR', value);
+                }
               }}
             />
           )}
@@ -504,8 +536,14 @@ const _HouseConditionForm = (props: any) => {
             <BNumberInput
               label="Número de animales vacunados"
               error={errors.NumeroAnimales}
-              onChange={(vlue: any) => onChange(vlue)}
-              value={value}
+              onChange={(vlue: any) => {
+                onChange(vlue);
+                setNumeroAnimales('' + vlue);
+                if (vlue) {
+                  props.saveFNBNUCVIVPropiety('ANIMAL_VACUNADO', vlue);
+                }
+              }}
+              value={numeroAnimales}
             />
           )}
           name="NumeroAnimales"
@@ -515,12 +553,15 @@ const _HouseConditionForm = (props: any) => {
           render={({onChange, onBlur, value}) => (
             <BNumberInput
               label="Número de animales no vacunados"
-              error={errors.NumeriAnimalesnoVacunados}
-              onChange={(vlue: any) => onChange(vlue)}
+              error={errors.NumeroAnimalesnoVacunados}
+              onChange={(vlue: number) => {
+                onChange(vlue);
+                props.saveFNBNUCVIVPropiety('ANIMAL_NOVACUNADO', vlue);
+              }}
               value={value}
             />
           )}
-          name="NumeriAnimalesnoVacunados"
+          name="NumeroAnimalesnoVacunados"
         />
         <Controller
           control={control}
@@ -564,8 +605,10 @@ const _HouseConditionForm = (props: any) => {
               items={logicOption}
               error={errors.RiesgoVivienda}
               onChange={(value: any) => {
-                onChange(value);
-                console.log('Selected Item: ', value);
+                if (value) {
+                  onChange(value);
+                  props.saveFNBNUCVIVPropiety('RIESGO', JSON.parse(value));
+                }
               }}
             />
           )}
@@ -778,7 +821,12 @@ const _HouseConditionForm = (props: any) => {
               numberOfLines={3}
               onBlur={onBlur}
               error={errors.Observaciones}
-              onChange={(value) => onChange(value)}
+              onChange={(value: any) => {
+                onChange(value);
+                if (value) {
+                  props.saveFNBNUCVIVPropiety('OBSERVACION', value);
+                }
+              }}
               value={value}
             />
           )}
@@ -817,10 +865,12 @@ const mapDispatchToProps = {
   saveAnswerLocal,
   getQuestionAnswer,
   getQuestionWithOptions,
+  saveFNBNUCVIVPropiety,
 };
-const mapStateToProps = (session) => {
+const mapStateToProps = (housing: any) => {
   return {
-    user: session.session.user,
+    FNBNUCVIV: housing.housing.FNBNUCVIV,
+    FUBUBIVIV: housing.housing.FUBUBIVIV,
   };
 };
 export default connect(

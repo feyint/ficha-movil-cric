@@ -1,31 +1,12 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import {View, StyleSheet} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {HousingService} from '../../../services';
 import {ListItem} from 'react-native-elements';
-import {FUBUBIVIV} from '../../../state/house/types';
 const _HouseList = (props: any) => {
-  const syncCatalogService = new HousingService();
-  const [state, setState] = useState({
-    houses: [] as FUBUBIVIV[],
-  });
-
-  useEffect(() => {
-    fetchHouses();
-  }, []);
-  const fetchHouses = async () => {
-    let result = await syncCatalogService.getHouses();
-    if (result) {
-      setState({
-        ...state,
-        houses: result,
-      });
-    }
-  };
   return (
     <KeyboardAwareScrollView>
       <View style={styles.container}>
-        {state.houses.map((house, i) => (
+        {props.houses.map((house: any, i: number) => (
           <ListItem onPress={() => props.onSelect(house)} key={i} bottomDivider>
             <ListItem.Content>
               <ListItem.Title>{house.CODIGO}</ListItem.Title>

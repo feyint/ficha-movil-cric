@@ -57,7 +57,7 @@ class BMultiSelect extends Component<Props, State> {
   }
   render() {
     return (
-      <View>
+      <View style={styles.spacer}>
         <View>
           <SectionedMultiSelect
             single={this.props.single ? this.props.single : false}
@@ -112,6 +112,9 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderWidth: 1,
     borderColor: 'black',
+  },
+  spacer: {
+    paddingBottom: 10,
   },
   containerError: {
     padding: 10,

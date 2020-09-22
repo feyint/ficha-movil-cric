@@ -136,7 +136,6 @@ export default class HousingService {
       .then((realm) => {
         realm.write(() => {
           let result = realm.create('FNBNUCVIV', item);
-          //console.error('INSERT ITEM ', result);
           return result;
         });
       })
@@ -144,13 +143,15 @@ export default class HousingService {
         //console.error('error FNBNUCVIV ', error);
         return error;
       });
-    return result;
+    //console.error('INSERT ITEM ', item);
+    return item;
   }
   async SaveFNBNUCVIVPropiety(
     FNBNUCVIVID: number,
     propiety: string,
     value: any,
   ) {
+    // console.error(JSON.stringify(value));
     const result = await Realm.open({
       schema: [FNBNUCVIVSCHEMA],
       schemaVersion: schemaVersion,
@@ -162,7 +163,7 @@ export default class HousingService {
             .filtered(`ID = ${FNBNUCVIVID}`)
             .sorted('ID', true)[0];
           if (item) {
-            console.error('result[propiety] ', propiety, value);
+            // console.error('result[propiety] ', propiety, value);
             item[propiety] = value;
             return true;
           } else {

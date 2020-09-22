@@ -35,7 +35,7 @@ export const clearFNBNUCVIV = () => (dispatch: any) => {
   let FNBNUCVIV: any = {
     ID: null,
     CODIGO: '',
-    HUMO_CASA: false,
+    HUMO_CASA: null,
     FECHA_ACTIVIDAD: null,
     FECHA_CREACION: null,
     ORIGEN_DATA: '',
@@ -45,11 +45,11 @@ export const clearFNBNUCVIV = () => (dispatch: any) => {
     RESIDUO_PELIGROSO: '',
     ANIMAL_VACUNADO: null,
     ANIMAL_NOVACUNADO: null,
-    RIESGO: false,
+    RIESGO: null,
     OBSERVACION: '',
     LUGAR_COCINA: '',
     HUMO_DENTRO: '',
-    ACCESO_INTERNET: false,
+    ACCESO_INTERNET: null,
     TOTAL_ANIMAL: null,
     FUBUBIVIV_ID: null,
     FUBUBIVIV_CODE: '',
@@ -61,11 +61,22 @@ export const saveFUBUBIVIV = (data: any) => async (dispatch: any) => {
   await houseServie.SaveHouse(data);
   dispatch(_setFUBUBIVIV(data));
 };
-export const saveFNBNUCVIV = (data: any) => async (dispatch: any) => {
+export const saveFNBNUCVIV = (data: any) => async (
+  dispatch: any,
+  getState: any,
+) => {
+  const store = getState();
+  let family: FNBNUCVIV = store.housing.FNBNUCVIV;
   let houseServie: HousingService = new HousingService();
-  let insert = await houseServie.SaveFNBNUCVIV(data);
-  dispatch(_setFNBNUCVIV(data));
-  return insert;
+  let result = await houseServie.SaveFNBNUCVIV(data);
+  // console.error(result);
+  if (result) {
+    family.CODIGO = result.CODIGO;
+    family.FUBUBIVIV_ID = result.FUBUBIVIV_ID;
+    family.ID = result.ID;
+  }
+  dispatch(_setFNBNUCVIV(family));
+  return family;
 };
 export const saveFNBNUCVIVPropiety = (propiety: any, value: any) => async (
   dispatch: any,

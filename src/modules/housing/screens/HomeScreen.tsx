@@ -7,16 +7,43 @@ import {Appbar} from 'react-native-paper';
 import {connect} from 'react-redux';
 import {setFUBUBIVIV, clearFUBUBIVIV} from '../../../state/house/actions';
 import {HouseList} from '../forms';
+import {HousingService} from '../../../services';
+import {FUBUBIVIV} from '../../../state/house/types';
 
 interface FormData {
   navigation: NavigationProp<any>;
 }
+interface State {
+  houses: FUBUBIVIV[];
+}
 
-class HomeScreen extends Component<any, any> {
+class HomeScreen extends Component<FormData, State> {
+  public _unsubscribe: any;
   constructor(props: any) {
     super(props);
+    this.state = {
+      houses: [],
+    };
   }
-  UNSAFE_componentWillMount() {}
+  componentDidMount() {
+    this._unsubscribe = this.props.navigation.addListener('focus', () => {
+      this.fetchHouses();
+    });
+  }
+  componentWillMount() {
+    if (this._unsubscribe) {
+      this._unsubscribe();
+    }
+  }
+  async fetchHouses() {
+    let syncCatalogService = new HousingService();
+    let result = await syncCatalogService.getHouses();
+    if (result) {
+      this.setState({
+        houses: result,
+      });
+    }
+  }
   render() {
     return (
       <View>
@@ -30,6 +57,7 @@ class HomeScreen extends Component<any, any> {
           onPress={() => this.createNew()}
         />
         <HouseList
+          houses={this.state.houses}
           onSelect={(value: any) => {
             this.goToHouse(value);
           }}

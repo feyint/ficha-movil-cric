@@ -12,11 +12,20 @@ interface State {
   families: any[];
 }
 class FamilyScreen extends Component<any, State> {
+  public _unsubscribe: any;
   constructor(props: any) {
     super(props);
     this.state = {
       families: [],
     };
+  }
+  componentDidMount() {
+    this._unsubscribe = this.props.navigation.addListener('focus', () => {
+      this.fetchFamilies();
+    });
+  }
+  componentWillUnmount() {
+    this._unsubscribe();
   }
   //TODO añadir el back interceptor
   _goBack() {

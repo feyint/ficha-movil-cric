@@ -12,10 +12,16 @@ import {HousingService} from '../../../services';
 interface Props {
   navigation: NavigationProp<any>;
 }
-class HouseMenuScreen extends Component<any, any> {
-  // constructor(props: any) {
-  //   super(props);
-  // }
+interface State {
+  CODIGO: string;
+}
+class HouseMenuScreen extends Component<any, State> {
+  constructor(props: any) {
+    super(props);
+    this.state = {
+      CODIGO: this.props.FUBUBIVIV.CODIGO,
+    };
+  }
   async UNSAFE_componentWillMount() {
     if (this.props.FNBNUCVIV.CODIGO == '') {
       const syncCatalogService = new HousingService();
@@ -27,8 +33,13 @@ class HouseMenuScreen extends Component<any, any> {
         FUBUBIVIV_ID: this.props.FUBUBIVIV.ID,
       };
       let insert = await this.props.saveFNBNUCVIV(fNBNUCVIV);
-      //console.error('nuevo insert ', insert);
+      this.setState({
+        CODIGO: insert.CODIGO,
+      });
     } else {
+      this.setState({
+        CODIGO: this.props.FNBNUCVIV.CODIGO,
+      });
     }
   }
   _goBack() {
@@ -39,9 +50,7 @@ class HouseMenuScreen extends Component<any, any> {
       <View>
         <Appbar.Header>
           <Appbar.BackAction onPress={() => this._goBack()} />
-          <Appbar.Content
-            title="Vivienda"
-            subtitle={this.props.FNBNUCVIV.CODIGO}/>
+          <Appbar.Content title="Vivienda" subtitle={this.state.CODIGO} />
         </Appbar.Header>
         <List.Section>
           <List.Item

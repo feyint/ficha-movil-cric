@@ -33,17 +33,20 @@ class BRadioButton extends Component<Props, any> {
             onValueChange={(selectedValue) => {
               this.props.onChange(selectedValue);
             }}>
-            {this.props.items?.map((item) => {
-              return (
-                <View>
-                  <RadioButton.Item
-                    style={styles.flexDirection}
-                    label={item.label}
-                    value={'' + item.value}
-                  />
-                </View>
-              );
-            })}
+            {this.props.items && this.props.items.length > 0
+              ? this.props.items.map((item) => {
+                  return (
+                    <View>
+                      <RadioButton.Item
+                        key={'' + item.value}
+                        style={styles.flexDirection}
+                        label={item.label}
+                        value={'' + item.value}
+                      />
+                    </View>
+                  );
+                })
+              : null}
           </RadioButton.Group>
         </View>
         <BError text="El campo es requerido" error={this.props.error} />
