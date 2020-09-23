@@ -16,6 +16,8 @@ import DataBaseProvider, {
   FNCELEPERSCHEMA,
   FNCCONPERSCHEMA,
   FNCDESARMSCHEMA,
+  FNCELEREPSCHEMA,
+  FNCCONREPSCHEMA,
 } from '../providers/DataBaseProvider';
 import Realm from 'realm';
 import {HttpProvider} from '../providers';
@@ -51,6 +53,8 @@ export default class SyncCatalogService {
         FNCELEPERSCHEMA,
         FNCCONPERSCHEMA,
         FNCDESARMSCHEMA,
+        FNCELEREPSCHEMA,
+        FNCCONREPSCHEMA,
       ],
       schemaVersion: schemaVersion,
     }).then((realm) => {
@@ -79,6 +83,8 @@ export default class SyncCatalogService {
         let itemFNCCONSAL = realm.objects('FNCCONSAL');
         let itemFNCELEPER = realm.objects('FNCELEPER');
         let itemFNCCONPER = realm.objects('FNCCONPER');
+        let itemFNCELEREP = realm.objects('FNCELEREP');
+        let itemFNCCONREP = realm.objects('FNCCONREP');
         let itemFNCDESARM = realm.objects('FNCDESARM');
         realm.delete(itemsFVCCONVIV);
         realm.delete(itemFVCELEVIV);
@@ -87,6 +93,8 @@ export default class SyncCatalogService {
         realm.delete(itemFNCELEPER);
         realm.delete(itemFNCCONPER);
         realm.delete(itemFNCDESARM);
+        realm.delete(itemFNCELEREP);
+        realm.delete(itemFNCCONREP);
       });
     });
   }
@@ -179,6 +187,20 @@ export default class SyncCatalogService {
       FNCELEPERSCHEMA,
       FNCELEPERSchema,
     );
+    let itemFNCELEREP: any = await this.getEntity({entityName: 'FNCELEREP'});
+    const FNCELEREPSchema = itemFNCELEREP.data.map((item: any) => {
+      return {
+        ID: item.id,
+        CODIGO: item.codigo,
+        NOMBRE: item.nombre,
+        ESTADO: item.estado === 1 ? true : false,
+      };
+    });
+    await this.syncSaveEntities(
+      DataBaseSchemas.FNCELEREPSCHEMA,
+      FNCELEREPSCHEMA,
+      FNCELEREPSchema,
+    );
     let itemFNCCONPER: any = await this.getEntity({entityName: 'FNCCONPER'});
     const FNCCONPERSchema = itemFNCCONPER.data.map((item: any) => {
       return {
@@ -193,6 +215,21 @@ export default class SyncCatalogService {
       DataBaseSchemas.FNCCONPERSCHEMA,
       FNCCONPERSCHEMA,
       FNCCONPERSchema,
+    );
+    let itemFNCCONREP: any = await this.getEntity({entityName: 'FNCCONREP'});
+    const FNCCONREPSchema = itemFNCCONREP.data.map((item: any) => {
+      return {
+        ID: item.id,
+        CODIGO: item.codigo,
+        NOMBRE: item.nombre,
+        ESTADO: item.estado,
+        FNCELEREP_ID: item.fncelerepId.id,
+      };
+    });
+    await this.syncSaveEntities(
+      DataBaseSchemas.FNCCONREPSCHEMA,
+      FNCCONREPSCHEMA,
+      FNCCONREPSchema,
     );
 
     //------------------------------------------------------------------------------------

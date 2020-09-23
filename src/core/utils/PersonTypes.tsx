@@ -46,3 +46,18 @@ export const QuestionConditionPersonCodes = {
   LactanciaMaterna: '17',
   OcupacionGranGrupo: '19',
 };
+
+export const QuestionSexAndRepHealthPersonCodes = {
+  acompanamientoDeGestacion: '1',
+  AutoexamenDeMama: '2',
+  CitologiaCervicoUterina: '3',
+  ComplicacionAtencionUltimoParto: '4',
+  ExamenDeProstata: '5',
+  FactoresDeRiesgoGestante: '6',
+  LugarAtencionUltimoParto: '7',
+  MetodoDelPlaneacionFamiliar: '8',
+  PersonaQueAtendioUltimoParto: '9',
+  PracticasCulturalesDuranteLaGestacion: '10',
+  SaludSexual: '11',
+  TerminacionGestacion: '12',
+};

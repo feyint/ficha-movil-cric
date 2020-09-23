@@ -1,23 +1,26 @@
-import {ConditionPersonService} from '../../services';
-import {ConditionPersonQuestion} from '../../modules/person/manage/state/types';
-import {FNCPERSON, FNCPERSON_FNCCONPER} from './types';
+import {SexAndRepHealthPersonService} from '../../services';
+import {SexAndRepHealthPersonQuestion} from '../../modules/person/manage/state/types';
+import {FNCSALREP, FNCSALREP_FNCCONREP} from './types';
 
 export const ActionType = {
-  SET_CONDITIONPERSON_QUESTION_LIST: 'SET_CONDITIONPERSON_QUESTION_LIST',
+  SET_SEXANDREPHEALTHPERSON_QUESTION_LIST:
+    'SET_SEXANDREPHEALTHPERSON_QUESTION_LIST',
 };
 
-const setCONDITIONPERSON_QUESTION_LIST = (data: ConditionPersonQuestion[]) => {
-  return {type: ActionType.SET_CONDITIONPERSON_QUESTION_LIST, data};
+const setSEXANDREPHEALTHPERSON_QUESTION_LIST = (
+  data: SexAndRepHealthPersonQuestion[],
+) => {
+  return {type: ActionType.SET_SEXANDREPHEALTHPERSON_QUESTION_LIST, data};
 };
 
 /**
  *
  */
-export const setConditionQuestionWithOptions = () => async (dispatch: any) => {
-  let questionItems: ConditionPersonQuestion[] = [];
-  let personServie: ConditionPersonService = new ConditionPersonService();
+export const setSexAndRepHealthQuestionWithOptions = () => async (dispatch: any) => {
+  let questionItems: SexAndRepHealthPersonQuestion[] = [];
+  let personServie: SexAndRepHealthPersonService = new SexAndRepHealthPersonService();
   questionItems = await personServie.getQuestionWithOptions();
-  dispatch(setCONDITIONPERSON_QUESTION_LIST(questionItems));
+  dispatch(setSEXANDREPHEALTHPERSON_QUESTION_LIST(questionItems));
 };
 
 /**
@@ -29,10 +32,10 @@ export const getQuestionWithOptions = (questionsQuery?: any[]) => async (
   getState: any,
 ) => {
   const store = getState();
-  let questionItems: ConditionPersonQuestion[] =
-    store.conditionperson.CONDITIONPERSONQUESTIONLIST;
+  let questionItems: SexAndRepHealthPersonQuestion[] =
+    store.sarhealthperson.SEXANDREPHEALTHPERSONQUESTIONLIST;
   if (questionItems.length === 0) {
-    setConditionQuestionWithOptions();
+    setSexAndRepHealthQuestionWithOptions();
   }
   if (questionsQuery) {
     questionItems = questionItems.filter((item) => {
@@ -55,22 +58,22 @@ export const saveAnswerLocal = (
 ) => async (_dispatch: any, getState: any) => {
   if (questionCode) {
     const store = getState();
-    let questionItems: ConditionPersonQuestion[] =
-      store.conditionperson.CONDITIONPERSONQUESTIONLIST;
+    let questionItems: SexAndRepHealthPersonQuestion[] =
+      store.sarhealthperson.SEXANDREPHEALTHPERSONQUESTIONLIST;
     let item: any = getQuestionByCode(questionCode, questionItems);
     if (item) {
-      let family: FNCPERSON = store.conditionperson.FNCPERSON;
-      let personServie: ConditionPersonService = new ConditionPersonService();
+      let family: FNCSALREP = store.sarhealthperson.FNCSALREP;
+      let personServie: SexAndRepHealthPersonService = new SexAndRepHealthPersonService();
       switch (type) {
         case 1: // oneOption
           let option = getOption(item.ID, JSON.parse(answer), family.ID);
-          if (option.FNCCONPER_ID) {
+          if (option.FNCCONREP_ID) {
             await personServie.saveQuestionOption([option]);
           } else {
             await personServie.deleteAnswerForQuestion(family.ID, item.ID);
           }
           break;
-          case 2: // multiSelect
+        case 2: // multiSelect
           let options = [];
           for (let i = 0; i < answer.length; i++) {
             let opt = getOption(item.ID, answer[i], family.ID);
@@ -99,10 +102,10 @@ export const getQuestionAnswer = (type: number, questionCode: string) => async (
   getState: any,
 ) => {
   const store = getState();
-  let family: FNCPERSON = store.conditionperson.FNCPERSON;
-  let personServie: ConditionPersonService = new ConditionPersonService();
-  let questionItems: ConditionPersonQuestion[] =
-    store.conditionperson.CONDITIONPERSONQUESTIONLIST;
+  let family: FNCSALREP = store.sarhealthperson.FNCSALREP;
+  let personServie: SexAndRepHealthPersonService = new SexAndRepHealthPersonService();
+  let questionItems: SexAndRepHealthPersonQuestion[] =
+    store.sarhealthperson.SEXANDREPHEALTHPERSONQUESTIONLIST;
   let question = getQuestionByCode(questionCode, questionItems);
   console.log('answer query ', question);
   switch (type) {
@@ -128,28 +131,28 @@ export const getQuestionAnswer = (type: number, questionCode: string) => async (
  */
 export function getQuestionByCode(
   questionCode: string,
-  questionItems: ConditionPersonQuestion[],
+  questionItems: SexAndRepHealthPersonQuestion[],
 ) {
   if (questionItems.length === 0) {
-    setConditionQuestionWithOptions();
+    setSexAndRepHealthQuestionWithOptions();
   }
   let item = questionItems.find(item => {
     return item.CODIGO === questionCode;
   });
-  return item as ConditionPersonQuestion;
+  return item as SexAndRepHealthPersonQuestion;
 }
 
 /**
  *
  * @param questionID
  * @param answerID
- * @param fncpersonID
+ * @param fncsalrepID
  */
-function getOption(questionID: number, answerID: number, fncpersonID: number) {
-  let object: FNCPERSON_FNCCONPER = {
-    FNCCONPER_ID: answerID,
-    FNCPERSON_ID: fncpersonID,
-    FNCELEPER_ID: questionID,
+function getOption(questionID: number, answerID: number, fncsalrepID: number) {
+  let object: FNCSALREP_FNCCONREP = {
+    FNCCONREP_ID: answerID,
+    FNCSALREP_ID: fncsalrepID,
+    FNCELEREP_ID: questionID,
     SYNCSTATE: 0,
   };
   return object;

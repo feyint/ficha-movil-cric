@@ -24,3 +24,16 @@ export type ConditionPersonQuestionOption = {
   NOMBRE: string;
   FNCELEPER_ID: number;
 };
+export type SexAndRepHealthPersonQuestion = {
+  ID: number;
+  CODIGO: string;
+  NOMBRE: string;
+  ESTADO: number;
+  OPTIONS: SexAndRepHealthPersonQuestionOption[];
+};
+export type SexAndRepHealthPersonQuestionOption = {
+  ID: number;
+  CODIGO: string;
+  NOMBRE: string;
+  FNCELEPER_ID: number;
+};
