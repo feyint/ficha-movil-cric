@@ -70,12 +70,12 @@ class ViewPersonScreen extends Component<any, any> {
             <List.Item
               title="10. Salud sexual y reproductiva - Antecedentes gineco obstétricos"
               left={() => <List.Icon icon="map-marker" />}
-              //onPress={() => this.goHomeLocation()}
+              //onPress={() => this.goLastPregnancyScreen()}
             />
             <List.Item
               title="11. Finalización de la última gestación"
               left={() => <List.Icon icon="map-marker" />}
-              //onPress={() => this.goHomeLocation()}
+              onPress={() => this.goLastPregnancyScreen()}
             />
             <List.Item
               title="12. Gestación actual"
@@ -117,6 +117,9 @@ class ViewPersonScreen extends Component<any, any> {
   }
   goUnhealthyHabitsScreen() {
     this.props.navigation.navigate('UnhealthyHabitsScreen');
+  }
+  goLastPregnancyScreen() {
+    this.props.navigation.navigate('LastPregnancyScreen');
   }
 }
 

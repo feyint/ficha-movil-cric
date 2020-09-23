@@ -7,6 +7,9 @@ import {connect} from 'react-redux';
 import {setFNBNUCVIV, clearFNBNUCVIV} from '../../../state/house/actions';
 import {NavigationProp} from '@react-navigation/native';
 import {HousingService} from '../../../services';
+import {setConditionQuestionWithOptions} from '../../../state/ConditionPerson/actions';
+import {setQuestionWithOptions} from '../../../state/person/actions';
+import {setSexAndRepHealthQuestionWithOptions} from '../../../state/SexAndRepHealthPerson/actions';
 
 interface State {
   families: any[];
@@ -32,6 +35,9 @@ class FamilyScreen extends Component<any, State> {
     this.props.navigation.goBack();
   }
   async UNSAFE_componentWillMount() {
+    this.props.setQuestionWithOptions();
+    this.props.setConditionQuestionWithOptions();
+    this.props.setSexAndRepHealthQuestionWithOptions();
     await this.fetchFamilies();
   }
   render() {
@@ -81,6 +87,9 @@ class FamilyScreen extends Component<any, State> {
 const mapDispatchToProps = {
   setFNBNUCVIV,
   clearFNBNUCVIV,
+  setQuestionWithOptions,
+  setConditionQuestionWithOptions,
+  setSexAndRepHealthQuestionWithOptions,
 };
 const mapStateToProps = (housing: any) => {
   return {
