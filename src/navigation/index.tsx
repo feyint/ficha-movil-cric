@@ -25,6 +25,7 @@ import {
   ViewPersonScreen,
   SocialSecurityScreen,
   UnhealthyHabitsScreen,
+  LastPregnancyScreen,
 } from '../modules/person/manage/screens';
 import {FamilyScreen} from '../modules/families/screens';
 
@@ -127,6 +128,14 @@ export const Dashboard = () => {
         options={{
           headerShown: false,
           title: 'Habitos no saludables',
+        }}
+      />
+      <DashboardStack.Screen
+        component={LastPregnancyScreen}
+        name="LastPregnancyScreen"
+        options={{
+          headerShown: false,
+          title: 'Finalizacion de la ultima gestacion',
         }}
       />
     </DashboardStack.Navigator>
