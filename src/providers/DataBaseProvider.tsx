@@ -1,15 +1,15 @@
 import Realm from 'realm';
 export enum DataBaseSchemas {
   UserSchema = 'User',
-  FNCTIPIDENSCHEMA = 'FNCTIPIDEN',
+  FNCTIPIDENSCHEMA = 'FNCTIPIDEN', // tipo de identificacion
   FVBENCUESSCHEMA = 'FVBENCUESSCHEMA',
   FVCCONVIVSCHEMA = 'FVCCONVIV', //respuestas housing
   FVCELEVIVSCHEMA = 'FVCELEVIV', //preguntas housing
-  FUBUBIVIVSCHEMA = 'FUBUBIVIV',
-  FNBNUCVIV_FVCCONVIVSCHEMA = 'FNBNUCVIV_FVCCONVIV',
-  FNBNUCVIVSCHEMA = 'FNBNUCVIV',
-  FNCPERSONSCHEMA = 'FNCPERSON',
-  FNBNUCVIV_FNCPERSONSCHEMA = 'FNBNUCVIV_FNCPERSON',
+  FUBUBIVIVSCHEMA = 'FUBUBIVIV', //ubicacion vivienda
+  FNBNUCVIV_FVCCONVIVSCHEMA = 'FNBNUCVIV_FVCCONVIV', // respuestas nucleo familiar
+  FNBNUCVIVSCHEMA = 'FNBNUCVIV', // nucleo familiar
+  FNCPERSONSCHEMA = 'FNCPERSON', // persona
+  FNBNUCVIV_FNCPERSONSCHEMA = 'FNBNUCVIV_FNCPERSON', // relacion entre persona y nucleo familiar
   FUCDEPARTSCHEMA = 'FUCDEPART', // departamento
   FUCMUNICISCHEMA = 'FUCMUNICI', // municipios
   FUCTIPTERSCHEMA = 'FUCTIPTER', // tipo territorio
@@ -85,12 +85,12 @@ export const FNBNUCVIV_FNCPERSONSCHEMA = {
   properties: {
     FNBNUCVIV_ID: 'int',
     FNCPERSON_ID: 'int',
-    ID: 'int',
-    SELECCION: 'string',
+    ID: 'int?',
+    SELECCION: 'string?',
     FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
-    USUARIO_DATA: 'string',
+    USUARIO_DATA: 'string?',
     FECHA_CREACION: {type: 'date', default: new Date()},
-    ORIGEN_DATA: 'string',
+    ORIGEN_DATA: 'string?',
   },
 };
 export const FNCELESALSCHEMA = {
@@ -436,7 +436,7 @@ export default class DataBaseProvider {
         //   RESIDUO_BOR: 'string',
         // });
         //****************************************************************** */
-        try {
+        /*try {
           realm.create(DataBaseSchemas.FNCPERSONSCHEMA, {
             ID: 12345,
             CODIGO: 'PERSON001',
@@ -464,6 +464,7 @@ export default class DataBaseProvider {
             FNCGENERO_ID: 1,
           });
         } catch (error) {}
+        */
         //****************************************************************** */
         // realm.create(DataBaseSchemas.FNBNUCVIVSCHEMA, {
         //   ID: 1,
