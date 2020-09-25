@@ -71,6 +71,7 @@ export type FNCSALREP = {
   USUARIO_DATA: string;
   FECHA_CREACION: Date;
   ORIGEN_DATA: string;
+  FNCPERSON_ID: number;
 };
 export type FNCSALREP_FNCCONREP = {
   ID?: number;

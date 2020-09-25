@@ -1,4 +1,5 @@
 import {
+  FNCSALREPSCHEMA,
   FNCELEREPSCHEMA,
   FNCCONREPSCHEMA,
   schemaVersion,
@@ -13,7 +14,10 @@ import {
 } from '../modules/person/manage/state/types';
 import {SelectSchema, MultiSelectSchema} from '../core/utils/types';
 import {capitalizeFirstLetter} from '../core/utils/utils';
-import {FNCSALREP_FNCCONREP} from '../state/SexAndRepHealthPerson/types';
+import {
+  FNCSALREP_FNCCONREP,
+  FNCSALREP,
+} from '../state/SexAndRepHealthPerson/types';
 
 export default class SexAndRepHealthPersonService {
   /**
@@ -33,6 +37,80 @@ export default class SexAndRepHealthPersonService {
         return items;
       })
       .catch((error) => {
+        return error;
+      });
+    return result;
+  }
+
+  async getLastEntityID(entity: string) {
+    const result = await Realm.open({
+      schema: [FNCSALREPSCHEMA],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        let increment = 1;
+        let item: any = realm.objects(entity).sorted('ID', true)[0];
+        if (item) {
+          increment = item.ID + 1;
+        }
+        return increment;
+      })
+      .catch((error) => {
+        return error;
+      });
+    return result;
+  }
+
+  async SaveFNCSALREP(item: FNCSALREP) {
+    let FNCSALREP_ID = await this.getLastEntityID(
+      DataBaseSchemas.FNCSALREPSCHEMA,
+    );
+    item.ID = FNCSALREP_ID;
+    const result = await Realm.open({
+      schema: [FNCSALREPSCHEMA],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        realm.write(() => {
+          let result = realm.create('FNCSALREP', item);
+          return result;
+        });
+      })
+      .catch((error) => {
+        //console.error('error FNCSALREP ', error);
+        return error;
+      });
+    //console.error('INSERT ITEM ', item);
+    return item;
+  }
+
+  async SaveFNCSALREPPropiety(
+    FNCSALREPID: number,
+    propiety: string,
+    value: any,
+  ) {
+    // console.error(JSON.stringify(value));
+    const result = await Realm.open({
+      schema: [FNCSALREPSCHEMA],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        realm.write(() => {
+          let item: any = realm
+            .objects(DataBaseSchemas.FNCSALREPSCHEMA)
+            .filtered(`ID = ${FNCSALREPID}`)
+            .sorted('ID', true)[0];
+          if (item) {
+            // console.error('result[propiety] ', propiety, value);
+            item[propiety] = value;
+            return true;
+          } else {
+            return false;
+          }
+        });
+      })
+      .catch((error) => {
+        console.error('error FNCSALREP ', error);
         return error;
       });
     return result;

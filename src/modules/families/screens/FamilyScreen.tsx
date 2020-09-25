@@ -5,6 +5,7 @@ import {FamilyList} from '../form';
 import {BButton} from '../../../core/components';
 import {connect} from 'react-redux';
 import {setFNBNUCVIV, clearFNBNUCVIV} from '../../../state/house/actions';
+import {setFNCSALREP, clearFNCSALREP} from '../../../state/SexAndRepHealthPerson/actions';
 import {NavigationProp} from '@react-navigation/native';
 import {HousingService} from '../../../services';
 import {setConditionQuestionWithOptions} from '../../../state/ConditionPerson/actions';
@@ -73,6 +74,7 @@ class FamilyScreen extends Component<any, State> {
   }
   createNewNF() {
     this.props.clearFNBNUCVIV();
+    this.props.clearFNCSALREP();
     this.props.navigation.navigate('HouseMenuScreen', {
       onGoBack: async () => {
         await this.fetchFamilies();
@@ -81,12 +83,15 @@ class FamilyScreen extends Component<any, State> {
   }
   goHouseMenuScreen(family: any) {
     this.props.setFNBNUCVIV(family);
+    this.props.setFNCSALREP(family);
     this.props.navigation.navigate('HouseMenuScreen');
   }
 }
 const mapDispatchToProps = {
   setFNBNUCVIV,
   clearFNBNUCVIV,
+  setFNCSALREP,
+  clearFNCSALREP,
   setQuestionWithOptions,
   setConditionQuestionWithOptions,
   setSexAndRepHealthQuestionWithOptions,
@@ -94,6 +99,7 @@ const mapDispatchToProps = {
 const mapStateToProps = (housing: any) => {
   return {
     FUBUBIVIV: housing.housing.FUBUBIVIV,
+    FNCSALREP: housing.housing.FNCSALREP,
   };
 };
 

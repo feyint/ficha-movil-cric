@@ -28,6 +28,7 @@ export enum DataBaseSchemas {
   FNCELEREPSCHEMA = 'FNCELEREP',
   FNCCONREPSCHEMA = 'FNCCONREP',
   FNCSALREP_FNCCONREPSCHEMA = 'FNCSALREP_FNCCONREP',
+  FNCSALREPSCHEMA = 'FNCSALREP',
 }
 export const schemaVersion = 4;
 export const UserSchema = {
@@ -244,6 +245,35 @@ export const FNBNUCVIVSCHEMA = {
     FUBUBIVIV_ID: 'int',
   },
 };
+export const FNCSALREPSCHEMA = {
+  name: DataBaseSchemas.FNCSALREPSCHEMA,
+  properties: {
+    ID: 'int',
+    EDAD_PRIMERA_REGLA: 'int?',
+    GRAVIDEZ: 'int?',
+    PARIDEZ: 'int?',
+    ABORTO: 'int?',
+    CESAREA: 'string?',
+    NACIDOS_VIVOS: 'int?',
+    NACIDOS_MUERTOS: 'int?',
+    PARTO_ULTIMO: {type: 'date', default: new Date()},
+    ULTIMA_REGLA: {type: 'date', default: new Date()},
+    EDAD_GESTACION: 'string?',
+    PARTO_ESTIMADO: {type: 'date', default: new Date()},
+    PRESENCIA_FAM: 'int?',
+    SEROLOGIA: 'int?',
+    VIH: 'int?',
+    RESUL_CITOLOGIA: 'string?',
+    ACCION_CITOLOGIA: 'int?',
+    RESUL_PROSTATA: 'string?',
+    ACCION_PROSTATA: 'int?',
+    FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
+    USUARIO_DATA: 'string?',
+    FECHA_CREACION: {type: 'date', default: new Date()},
+    ORIGEN_DATA: 'string?',
+    FNCPERSON_ID: 'int',
+  },
+};
 export const FUCDEPARTSCHEMA = {
   name: DataBaseSchemas.FUCDEPARTSCHEMA,
   properties: {
@@ -434,6 +464,7 @@ export default class DataBaseProvider {
         FNCELEREPSCHEMA,
         FNCCONREPSCHEMA,
         FNCSALREP_FNCCONREPSCHEMA,
+        FNCSALREPSCHEMA,
       ],
     }).then((realm) => {
       realm.write(() => {

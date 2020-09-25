@@ -35,7 +35,7 @@ class ViewPersonScreen extends Component<any, any> {
             <List.Item
               title="3. Datos de nacimiento"
               left={() => <List.Icon icon="baby-face" />}
-              //onPress={() => this.goHomeLocation()}
+              onPress={() => this.goBirthDataScreen()}
             />
             <List.Item
               title="4. Seguridad social"
@@ -120,6 +120,9 @@ class ViewPersonScreen extends Component<any, any> {
   }
   goLastPregnancyScreen() {
     this.props.navigation.navigate('LastPregnancyScreen');
+  }
+  goBirthDataScreen() {
+    this.props.navigation.navigate('BirthDataScreen');
   }
 }
 

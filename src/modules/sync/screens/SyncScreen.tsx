@@ -30,6 +30,8 @@ interface State {
   FNCELEPER: number;
   FNCCONPER: number;
   FNCDESARM: number;
+  FNCELEREP: number;
+  FNCCONREP: number;
   /* /-------------------- */
 }
 
@@ -53,6 +55,8 @@ class SyncScreen extends Component<Props, State> {
       FNCELEPER: 0,
       FNCCONPER: 0,
       FNCDESARM: 0,
+      FNCELEREP: 0,
+      FNCCONREP: 0,
     };
     this.countEntity();
   }
@@ -102,6 +106,12 @@ class SyncScreen extends Component<Props, State> {
             </Paragraph>
             <Paragraph>
               FNCDESARM (respuestas desarmonia): {this.state.FNCDESARM}
+            </Paragraph>
+            <Paragraph>
+              FNCELEREP (preguntas salud sexual y rep): {this.state.FNCELEREP}
+            </Paragraph>
+            <Paragraph>
+              FNCCONREP (respuestas salud sexual y rep): {this.state.FNCCONREP}
             </Paragraph>
             {/* ------------------------------------------ */}
             <Paragraph>
@@ -159,6 +169,12 @@ class SyncScreen extends Component<Props, State> {
     let countFNCDESARM = await this.syncCatalogService.countEntities(
       'FNCDESARM',
     );
+    let countFNCELEREP = await this.syncCatalogService.countEntities(
+      'FNCELEREP',
+    );
+    let countFNCCONREP = await this.syncCatalogService.countEntities(
+      'FNCCONREP',
+    );
     //----------------------------------------------------------------------
     let countFUCDEPART = await this.syncCatalogService.countEntities(
       'FUCDEPART',
@@ -200,6 +216,8 @@ class SyncScreen extends Component<Props, State> {
       FUCZONA: countFUCZONA,
       FUCUNICUI: countFUCUNICUI,
       FUCZONCUI: countFUCZONCUI,
+      FNCELEREP: countFNCELEREP,
+      FNCCONREP: countFNCCONREP,
     });
   }
   async clearPollEntities() {
