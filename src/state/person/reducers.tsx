@@ -18,19 +18,46 @@ const FNBINFSAL = {
   FECHA_CREACION: new Date(),
   ORIGEN_DATA: 'SYSTEM_USER_CTL'
 };
+const FNCPERSON = {
+  ID: null,
+  CODIGO: null,
+  IDENTIFICACION: null,
+  PRIMER_NOMBRE: null,
+  SEGUNDO_NOMBRE: null,
+  PRIMER_APELLIDO: null,
+  SEGUNDO_APELLIDO: null,
+  FECHA_NACIMIENTO: null,
+  EDAD: null,
+  EDAD_VISITA: null,
+  TEL_CEDULAR: null,
+  TEL_ALTERNO: null,
+  CORREO_ELECTRONICO: null,
+  FNCTIPIDE_ID: null,
+  FNCORGANI_ID: null,
+  FNCLUNIND_ID: null,
+  FNCOCUPAC_ID: null,
+  FUCMUNICI_ID: null,
+  FNCPAREN_ID: null,
+  FNCGENERO_ID: null,
+};
 
 const initialState = {
+  FNCPERSON: FNCPERSON,
   FNBINFSAL: FNBINFSAL,
   PERSONQUESTIONLIST: [] as HousingQuestion[],
 };
 
 export default (state = initialState, action: any) => {
-  console.log('Action Person: ', action);
   switch (action.type) {
     case ActionType.SET_PERSON_QUESTION_LIST:
       return {
         ...state,
         PERSONQUESTIONLIST: action.data,
+      };
+    case ActionType.SET_FNCPERSON:
+      return {
+        ...state,
+        FNCPERSON: action.data,
       };
     default:
       return state;

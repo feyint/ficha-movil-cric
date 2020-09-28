@@ -65,7 +65,7 @@ export default class SyncCatalogService {
         let itemFUCMUNICI = realm.objects('FUCMUNICI');
         let itemFUCTIPTER = realm.objects('FUCTIPTER');
         let itemFUCRESGUA = realm.objects('FUCRESGUA');
-        let itemFUCBARVER = realm.objects('FUCBARVER');
+       // let itemFUCBARVER = realm.objects('FUCBARVER');
         let itemFUCZONA = realm.objects('FUCZONA');
         let itemFUCZONCUI = realm.objects('FUCZONCUI');
         let itemFUCUNICUI = realm.objects('FUCUNICUI');
@@ -75,7 +75,7 @@ export default class SyncCatalogService {
         realm.delete(itemFUCMUNICI);
         realm.delete(itemFUCTIPTER);
         realm.delete(itemFUCRESGUA);
-        realm.delete(itemFUCBARVER);
+      //  realm.delete(itemFUCBARVER);
         realm.delete(itemFUCZONA);
         realm.delete(itemFUCZONCUI);
         realm.delete(itemFUCUNICUI);

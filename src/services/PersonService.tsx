@@ -2,22 +2,115 @@ import {
   FNCELESALSCHEMA,
   FNCCONSALSCHEMA,
   schemaVersion,
-  FNCPERSONSCHEMA, FNBINFSAL_FNCCONSALSCHEMA, DataBaseSchemas
+  FNCPERSONSCHEMA,
+  FNBINFSAL_FNCCONSALSCHEMA,
+  DataBaseSchemas,
+  FNCGENEROSCHEMA,
 } from '../providers/DataBaseProvider';
 import Realm from 'realm';
 import {
   PersonQuestion,
   PersonQuestionOption,
 } from '../modules/person/manage/state/types';
-import { SelectSchema, MultiSelectSchema } from '../core/utils/types';
-import { capitalizeFirstLetter } from '../core/utils/utils';
-import { FNBINFSAL_FNCCONSAL } from '../state/person/types';
+import {SelectSchema, MultiSelectSchema} from '../core/utils/types';
+import {capitalizeFirstLetter} from '../core/utils/utils';
+import {FNBINFSAL_FNCCONSAL, FNCPERSON} from '../state/person/types';
+import {UtilsService} from '.';
 
 export default class PersonService {
-
-  /**
-   * 
-   */
+  async SaveFNCPERSON(item: FNCPERSON) {
+    let utils = new UtilsService();
+    let FNCPERSON_ID = await utils.getLastEntityID(
+      DataBaseSchemas.FNCPERSONSCHEMA,
+    );
+    let FNCPERSON_CODIGO = await this.getLasPersonCode();
+    item.ID = FNCPERSON_ID;
+    item.FECHA_CREACION = new Date();
+    item.CODIGO = FNCPERSON_CODIGO;
+    const result = await Realm.open({
+      schema: [FNCPERSONSCHEMA],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        realm.write(() => {
+          let inserted = realm.create('FNCPERSON', item);
+          console.error('CREATED ', inserted);
+          return inserted;
+        });
+      })
+      .catch((error) => {
+        console.error('error FNCPERSON ', error);
+        return error;
+      });
+    console.error('INSERT ITEM ', result);
+    return item;
+  }
+  async UpdateFNCPERSON(item: FNCPERSON) {
+    console.error('llega a ctualizar');
+    const result = await Realm.open({
+      schema: [FNCPERSONSCHEMA],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        let person: any = realm
+          .objects(DataBaseSchemas.FNCPERSONSCHEMA)
+          .filtered(`ID = ${item.ID}`)
+          .sorted('ID', true)[0];
+        console.log('person ', person);
+        if (person) {
+          realm.write(() => {
+            console.error('person ', person);
+            console.error('item ', item);
+            // person.CODIGO = item.CODIGO;
+            // person.IDENTIFICACION = item.IDENTIFICACION;
+            // person.PRIMER_NOMBRE = item.PRIMER_NOMBRE;
+            // person.SEGUNDO_NOMBRE = item.SEGUNDO_NOMBRE;
+            // person.PRIMER_APELLIDO = item.PRIMER_APELLIDO;
+            // person.SEGUNDO_APELLIDO = item.SEGUNDO_APELLIDO;
+            // person.FECHA_NACIMIENTO = item.FECHA_NACIMIENTO;
+            // person.EDAD = item.EDAD;
+            // person.EDAD_VISITA = item.EDAD_VISITA;
+            // person.TEL_CELULAR = item.TEL_CELULAR;
+            // person.TEL_ALTERNO = item.TEL_ALTERNO;
+            // person.CORREO_ELECTRONICO = item.CORREO_ELECTRONICO;
+            // person.FECHA_ACTIVIDAD = new Date();
+            // person.FNCTIPIDE_ID = item.FNCTIPIDE_ID;
+            // person.FNCORGANI_ID = item.FNCORGANI_ID;
+            // person.FNCLUNIND_ID = item.FNCLUNIND_ID;
+            // person.FNCOCUPAC_ID = item.FNCOCUPAC_ID;
+            // person.FUCMUNICI_ID = item.FUCMUNICI_ID;
+            // person.FNCPAREN_ID = item.FNCPAREN_ID;
+            // person.FNCGENERO_ID = item.FNCGENERO_ID;
+          });
+        }
+      })
+      .catch((error) => {
+        console.error('error FNCPERSON ', error);
+        return error;
+      });
+    return item;
+  }
+  async getLasPersonCode() {
+    const result = await Realm.open({
+      schema: [FNCPERSONSCHEMA],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        let increment = 1;
+        let item: any = realm
+          .objects(DataBaseSchemas.FNCPERSONSCHEMA)
+          .sorted('CODIGO', true)[0];
+        if (item) {
+          increment = parseInt(item.ID, 10) + 1;
+        }
+        return JSON.stringify(increment);
+      })
+      .catch((error) => {
+        console.error('errrorrr ', error);
+        return error;
+      });
+    return result;
+  }
   async getPersons() {
     const result = await Realm.open({
       schema: [FNCPERSONSCHEMA],
@@ -38,8 +131,8 @@ export default class PersonService {
   }
 
   /**
-   * 
-   * @param questionsQuery 
+   *
+   * @param questionsQuery
    */
   async getQuestionWithOptions(questionsQuery?: any[]) {
     let questionItems: PersonQuestion[] = [];
@@ -80,7 +173,7 @@ export default class PersonService {
   }
 
   /**
-   * 
+   *
    * @param QuestionID
    */
   async getQuestionOptions(QuestionID: number) {
@@ -101,12 +194,12 @@ export default class PersonService {
   }
 
   /**
-   * 
-   * @param code 
-   * @param questions 
+   *
+   * @param code
+   * @param questions
    */
   getItemsForQuestionSelect(code: string, questions: PersonQuestion[]) {
-    let item: SelectSchema = { name: '', id: 0, children: [] };
+    let item: SelectSchema = {name: '', id: 0, children: []};
     for (let i = 0; i < questions.length; i++) {
       if (questions[i].CODIGO === code) {
         item.id = questions[i].ID;
@@ -115,27 +208,32 @@ export default class PersonService {
           item.children.push({
             value: option.ID.toString(),
             label: option.NOMBRE,
+            item: option,
           });
         }
-        item.children.unshift({ value: '-1', label: 'Seleccione' });
+        item.children.unshift({value: '-1', label: 'Seleccione', item: null});
       }
     }
     return item;
   }
 
   /**
-   * 
-   * @param code 
-   * @param questions 
+   *
+   * @param code
+   * @param questions
    */
   getItemsForQuestionMultiSelect(code: string, questions: PersonQuestion[]) {
-    let item: MultiSelectSchema = { name: '', id: 0, children: [] };
+    let item: MultiSelectSchema = {name: '', id: 0, children: []};
     for (let i = 0; i < questions.length; i++) {
       if (questions[i].CODIGO === code) {
         item.id = questions[i].ID;
         item.name = capitalizeFirstLetter(questions[i].NOMBRE);
         for (let option of questions[i].OPTIONS) {
-          item.children.push({ id: option.ID, name: option.NOMBRE });
+          item.children.push({
+            id: option.ID,
+            name: option.NOMBRE,
+            item: option,
+          });
         }
       }
     }
@@ -143,9 +241,9 @@ export default class PersonService {
   }
 
   /**
-   * 
-   * @param code 
-   * @param questions 
+   *
+   * @param code
+   * @param questions
    */
   getQuestionlabel(code: string, questions: PersonQuestion[]) {
     for (let i = 0; i < questions.length; i++) {
@@ -156,8 +254,8 @@ export default class PersonService {
   }
 
   /**
-   * 
-   * @param answeroption 
+   *
+   * @param answeroption
    */
   async saveQuestionOption(answeroption: FNBINFSAL_FNCCONSAL[]) {
     //TODO consultar si ya existe
@@ -192,9 +290,9 @@ export default class PersonService {
   }
 
   /**
-   * 
-   * @param FNBINFSAL_ID 
-   * @param FNCELESAL_ID 
+   *
+   * @param FNBINFSAL_ID
+   * @param FNCELESAL_ID
    */
   async getAnswerOneOption(FNBINFSAL_ID: any, FNCELESAL_ID: any) {
     const result = await Realm.open({
@@ -202,8 +300,10 @@ export default class PersonService {
       schemaVersion: schemaVersion,
     })
       .then((realm) => {
-        console.log(`FNBINFSAL_ID = ${FNBINFSAL_ID} AND FNCELESAL_ID = ${FNCELESAL_ID}`);
-        let items = realm
+        console.log(
+          `FNBINFSAL_ID = ${FNBINFSAL_ID} AND FNCELESAL_ID = ${FNCELESAL_ID}`,
+        );
+        let items: any = realm
           .objects(DataBaseSchemas.FNBINFSAL_FNCCONSALSCHEMA)
           .filtered(
             `FNBINFSAL_ID = ${FNBINFSAL_ID} AND FNCELESAL_ID = ${FNCELESAL_ID}`,
@@ -222,9 +322,9 @@ export default class PersonService {
   }
 
   /**
-   * 
-   * @param FNBINFSAL_ID 
-   * @param FNCELESAL_ID 
+   *
+   * @param FNBINFSAL_ID
+   * @param FNCELESAL_ID
    */
   async deleteAnswerForQuestion(FNBINFSAL_ID: number, FNCELESAL_ID: number) {
     //TODO consultar si ya existe
@@ -249,11 +349,10 @@ export default class PersonService {
       });
   }
 
-
   /**
-   * 
-   * @param FNBINFSAL_ID 
-   * @param FNCELESAL_ID 
+   *
+   * @param FNBINFSAL_ID
+   * @param FNCELESAL_ID
    */
   async getAnswerMultiSelect(FNBINFSAL_ID: any, FNCELESAL_ID: any) {
     const result = await Realm.open({
@@ -261,7 +360,9 @@ export default class PersonService {
       schemaVersion: schemaVersion,
     })
       .then((realm) => {
-        console.log(`FNBINFSAL_ID = ${FNBINFSAL_ID} AND FNCELESAL_ID = ${FNCELESAL_ID}`);
+        console.log(
+          `FNBINFSAL_ID = ${FNBINFSAL_ID} AND FNCELESAL_ID = ${FNCELESAL_ID}`,
+        );
         let items = realm
           .objects(DataBaseSchemas.FNBINFSAL_FNCCONSALSCHEMA)
           .filtered(
@@ -277,7 +378,27 @@ export default class PersonService {
       });
     return result;
   }
-
-
-
+  async getGenderList() {
+    const result = await Realm.open({
+      schema: [FNCGENEROSCHEMA],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        let itemsSelect: {label: any; value: any}[] = [];
+        let items = realm.objects('FNCGENERO');
+        for (let item of items) {
+          itemsSelect.push({
+            label: item.NOMBRE,
+            value: item.ID,
+          });
+        }
+        itemsSelect.unshift({label: 'Seleccione', value: '-1'});
+        return itemsSelect;
+      })
+      .catch((error) => {
+        console.error(error);
+        return error;
+      });
+    return result;
+  }
 }

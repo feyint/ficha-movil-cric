@@ -540,7 +540,10 @@ const _HouseConditionForm = (props: any) => {
                 onChange(vlue);
                 setNumeroAnimales('' + vlue);
                 if (vlue) {
-                  props.saveFNBNUCVIVPropiety('ANIMAL_VACUNADO', vlue);
+                  props.saveFNBNUCVIVPropiety(
+                    'ANIMAL_VACUNADO',
+                    parseInt(vlue, 10),
+                  );
                 }
               }}
               value={numeroAnimales}
@@ -554,9 +557,14 @@ const _HouseConditionForm = (props: any) => {
             <BNumberInput
               label="Número de animales no vacunados"
               error={errors.NumeroAnimalesnoVacunados}
-              onChange={(vlue: number) => {
+              onChange={(vlue: any) => {
                 onChange(vlue);
-                props.saveFNBNUCVIVPropiety('ANIMAL_NOVACUNADO', vlue);
+                if (vlue) {
+                  props.saveFNBNUCVIVPropiety(
+                    'ANIMAL_NOVACUNADO',
+                    parseInt(vlue, 10),
+                  );
+                }
               }}
               value={value}
             />

@@ -25,7 +25,7 @@ export default class BTextInput extends Component<Props, State> {
     return (
       <View>
         <TextInput
-          {...this.props}
+          error={this.props.error}
           mode={this.props.mode ? this.props.mode : 'outlined'}
           label={this.props.label}
           onBlur={this.props.onBlur}
@@ -37,7 +37,9 @@ export default class BTextInput extends Component<Props, State> {
         />
         {this.props.error ? (
           <HelperText type="error">
-            {this.props.errorText ? this.props.errorText : 'El campo es requerido'}
+            {this.props.errorText
+              ? this.props.errorText
+              : 'El campo es requerido'}
           </HelperText>
         ) : null}
       </View>

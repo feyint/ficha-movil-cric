@@ -59,7 +59,7 @@ export const saveAnswerLocal = (
       store.conditionperson.CONDITIONPERSONQUESTIONLIST;
     let item: any = getQuestionByCode(questionCode, questionItems);
     if (item) {
-      let family: FNCPERSON = store.conditionperson.FNCPERSON;
+      let family: FNCPERSON = store.person.FNCPERSON;
       let personServie: ConditionPersonService = new ConditionPersonService();
       switch (type) {
         case 1: // oneOption
@@ -70,7 +70,7 @@ export const saveAnswerLocal = (
             await personServie.deleteAnswerForQuestion(family.ID, item.ID);
           }
           break;
-          case 2: // multiSelect
+        case 2: // multiSelect
           let options = [];
           for (let i = 0; i < answer.length; i++) {
             let opt = getOption(item.ID, answer[i], family.ID);
