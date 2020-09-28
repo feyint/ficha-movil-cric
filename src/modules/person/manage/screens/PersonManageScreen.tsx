@@ -1,16 +1,55 @@
 import React, {Component} from 'react';
-import {BHeader, BButton} from '../../../../core/components';
+import {BButton} from '../../../../core/components';
 import {View} from 'react-native';
-import {Appbar} from 'react-native-paper';
+import {Appbar, Text} from 'react-native-paper';
 import {NavigationProp} from '@react-navigation/native';
 import PersonManageList from '../forms/PersonManageList';
-//import {PersonManageForm} from '../forms';
-// import HomeLocationForm from '../forms/HomeLocationForm';
+import {connect} from 'react-redux';
+import {clearFNCPERSON, setFNCPERSON} from '../../../../state/person/actions';
+import {FNBNUCVIV} from '../../../../state/house/types';
+import {HousingService} from '../../../../services';
+import {FNCPERSON} from '../../../../state/person/types';
 
 interface Props {
   navigation: NavigationProp<any>;
+  clearFNCPERSON: any;
+  setFNCPERSON: any;
+  FNBNUCVIV: FNBNUCVIV;
 }
-class PersonManageScreen extends Component<Props, any> {
+interface State {
+  persons: FNCPERSON[];
+}
+class PersonManageScreen extends Component<Props, State> {
+  private _unsubscribe: any;
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      persons: [],
+    };
+  }
+
+  componentDidMount() {
+    this._unsubscribe = this.props.navigation.addListener('focus', () => {
+      this.fetchPersons();
+    });
+  }
+  componentWillUnmount() {
+    if (this._unsubscribe) {
+      this._unsubscribe();
+    }
+  }
+  async fetchPersons() {
+    let syncCatalogService = new HousingService();
+    let result = await syncCatalogService.getFNBNUCVIVPersons(
+      this.props.FNBNUCVIV.ID,
+    );
+    console.log(`listando personas ${result}`);
+    if (result) {
+      this.setState({
+        persons: result,
+      });
+    }
+  }
   _goBack() {
     this.props.navigation.goBack();
   }
@@ -19,27 +58,46 @@ class PersonManageScreen extends Component<Props, any> {
       <View>
         <Appbar.Header>
           <Appbar.BackAction onPress={() => this._goBack()} />
-          <Appbar.Content title="Persona" />
+          <Appbar.Content title="Identificacion nucleo familiar" />
         </Appbar.Header>
-        <BHeader>Administrar persona</BHeader>
-        {/* por si no esta la persona */}
+        <Text>
+          Personas relacionadas con el nucleo familiar{' '}
+          {this.props.FNBNUCVIV.CODIGO}
+        </Text>
         <BButton
           color="primary"
           value="Nueva persona"
           mode="contained"
-          onPress={() => this.goViewPersonScreen()}
+          onPress={() => this.createNewPerson()}
         />
         <PersonManageList
+          persons={this.state.persons}
           onSelect={(value: any) => {
             console.log('Selected Item: ', value);
-            this.goViewPersonScreen();
+            this.goViewPersonScreen(value);
           }}
         />
       </View>
     );
   }
-  goViewPersonScreen() {
+  goViewPersonScreen(data: FNCPERSON) {
+    this.props.setFNCPERSON(data);
+    this.props.navigation.navigate('ViewPersonScreen');
+  }
+  createNewPerson() {
+    this.props.clearFNCPERSON();
     this.props.navigation.navigate('ViewPersonScreen');
   }
 }
-export default PersonManageScreen;
+
+const mapDispatchToProps = {
+  clearFNCPERSON,
+  setFNCPERSON,
+};
+const mapStateToProps = (housing: any) => {
+  return {
+    FNBNUCVIV: housing.housing.FNBNUCVIV,
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(PersonManageScreen);

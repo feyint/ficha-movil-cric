@@ -1,15 +1,91 @@
 import {PersonService} from '../../services';
 import {PersonQuestion} from '../../modules/person/manage/state/types';
-import {FNBINFSAL, FNBINFSAL_FNCCONSAL} from './types';
+import {
+  FNBINFSAL,
+  FNBINFSAL_FNCCONSAL,
+  FNBNUCVIV_FNCPERSON,
+  FNCPERSON,
+} from './types';
+import PersonRelationService from '../../services/PersonRelationService';
+import { FNBNUCVIV } from '../house/types';
 
 export const ActionType = {
+  SET_FNCPERSON: 'SET_FNCPERSON',
   SET_PERSON_QUESTION_LIST: 'SET_PERSON_QUESTION_LIST',
 };
 
 const setPERSON_QUESTION_LIST = (data: PersonQuestion[]) => {
   return {type: ActionType.SET_PERSON_QUESTION_LIST, data};
 };
+const _setPERSON = (data: any) => {
+  return {type: ActionType.SET_FNCPERSON, data};
+};
 
+export const clearFNCPERSON = () => (dispatch: any) => {
+  let person = {
+    ID: null,
+    CODIGO: null,
+    IDENTIFICACION: null,
+    PRIMER_NOMBRE: null,
+    SEGUNDO_NOMBRE: null,
+    PRIMER_APELLIDO: null,
+    SEGUNDO_APELLIDO: null,
+    FECHA_NACIMIENTO: null,
+    EDAD: null,
+    EDAD_VISITA: null,
+    TEL_CEDULAR: null,
+    TEL_ALTERNO: null,
+    CORREO_ELECTRONICO: null,
+    FNCTIPIDE_ID: null,
+    FNCORGANI_ID: null,
+    FNCLUNIND_ID: null,
+    FNCOCUPAC_ID: null,
+    FUCMUNICI_ID: null,
+    FNCPAREN_ID: null,
+    FNCGENERO_ID: null,
+  };
+  dispatch(_setPERSON(person));
+};
+
+export const setFNCPERSON = (data: FNCPERSON) => async (dispatch: any) => {
+  dispatch(_setPERSON(data));
+};
+export const saveFNCPERSON = (data: FNCPERSON) => async (
+  dispatch: any,
+  getState: any,
+) => {
+  const store = getState();
+  let family: FNBNUCVIV = store.housing.FNBNUCVIV;
+  let person: FNCPERSON = store.person.FNCPERSON;
+  let personServie: PersonService = new PersonService();
+  let personRelation: PersonRelationService = new PersonRelationService();
+  if (person.ID != null) {
+    let item = person;
+    item.FNCTIPIDE_ID = data.FNCTIPIDE_ID;
+    item.FNCGENERO_ID = data.FNCGENERO_ID;
+    item.PRIMER_NOMBRE = data.PRIMER_NOMBRE;
+    item.SEGUNDO_NOMBRE = data.SEGUNDO_NOMBRE;
+    item.PRIMER_APELLIDO = data.PRIMER_APELLIDO;
+    item.SEGUNDO_APELLIDO = data.SEGUNDO_APELLIDO;
+    item.IDENTIFICACION = data.IDENTIFICACION;
+    let result = await personServie.UpdateFNCPERSON(item);
+    dispatch(_setPERSON(person));
+  } else {
+    console.error('UPDATE ', data);
+    let result = await personServie.SaveFNCPERSON(data);
+    if (result) {
+      let nucleoPersona: FNBNUCVIV_FNCPERSON = {
+        FNBNUCVIV_ID: family.ID,
+        FNCPERSON_ID: result.ID,
+        ID: -1,
+      };
+      personRelation.SaveFNBNUCVIV_FNCPERSON(nucleoPersona);
+      data.CODIGO = result.CODIGO;
+      data.ID = result.ID;
+    }
+    dispatch(_setPERSON(data));
+  }
+};
 /**
  *
  */
@@ -130,7 +206,7 @@ export function getQuestionByCode(
   if (questionItems.length === 0) {
     setQuestionWithOptions();
   }
-  let item = questionItems.find(item => {
+  let item = questionItems.find((item) => {
     return item.CODIGO === questionCode;
   });
   return item as PersonQuestion;

@@ -6,3 +6,4 @@ export {default as UnhealthyHabitsForm} from './UnhealthyHabitsForm';
 export {default as LastPregnancyForm} from './LastPregnancyForm';
 export {default as BirthDataForm} from './BirthDataForm';
 export {default as OtherIdentificationDataForm} from './OtherIdentificationDataForm';
+export {default as PersonalInformationForm} from './PersonalInformationForm';

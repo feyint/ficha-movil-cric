@@ -24,7 +24,7 @@ export type FNBINFSAL_FNCCONSAL = {
 export type FNCPERSON = {
   ID: number;
   CODIGO: number;
-  IDENTIFICACION: number;
+  IDENTIFICACION: string;
   PRIMER_NOMBRE: string;
   SEGUNDO_NOMBRE: string;
   PRIMER_APELLIDO: string;
@@ -39,6 +39,13 @@ export type FNCPERSON = {
   USUARIO_DATA: string;
   FECHA_CREACION: Date;
   ORIGEN_DATA: string;
+  FNCTIPIDE_ID: number;
+  FNCORGANI_ID: number;
+  FNCLUNIND_ID: number;
+  FNCOCUPAC_ID: number;
+  FUCMUNICI_ID: number;
+  FNCPAREN_ID: number;
+  FNCGENERO_ID: number;
 };
 export type FNCPERSON_FNCCONPER = {
   ID?: number;
@@ -46,4 +53,9 @@ export type FNCPERSON_FNCCONPER = {
   FNCPERSON_ID: number;
   FNCELEPER_ID: number;
   SYNCSTATE: number;
+};
+export type FNBNUCVIV_FNCPERSON = {
+  ID?: number;
+  FNBNUCVIV_ID: number;
+  FNCPERSON_ID: number;
 };

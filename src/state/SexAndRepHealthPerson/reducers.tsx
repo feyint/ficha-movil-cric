@@ -53,7 +53,7 @@ const FNCSALREP = {
 const initialState = {
   FNCSALREP: FNCSALREP,
   SEXANDREPHEALTHPERSONQUESTIONLIST: [] as SexAndRepHealthPersonQuestion[],
-};
+}
 
 export default (state = initialState, action: any) => {
   //console.log('Action Status Person: ', action);

@@ -15,6 +15,7 @@ import {
   FUCZONASCHEMA,
   FUCUNICUISCHEMA,
   FUCZONCUISCHEMA,
+  FNBNUCVIV_FNCPERSONSCHEMA,
 } from '../providers/DataBaseProvider';
 import Realm from 'realm';
 import {
@@ -24,6 +25,8 @@ import {
 import {FNBNUCVIV_FVCCONVIV, FUBUBIVIV, FNBNUCVIV} from '../state/house/types';
 import {SelectSchema, MultiSelectSchema} from '../core/utils/types';
 import {capitalizeFirstLetter} from '../core/utils/utils';
+import { UtilsService } from '.';
+import { FNCPERSON } from '../state/person/types';
 const HOUSECODE_INCREMENT = '0000';
 export default class HousingService {
   async getFamilies(HouseID: number) {
@@ -60,7 +63,8 @@ export default class HousingService {
     return result;
   }
   async SaveHouse(item: FUBUBIVIV) {
-    let FUBUBIVIV_ID = await this.getLastEntityID(
+    let utils = new UtilsService();
+    let FUBUBIVIV_ID = await utils.getLastEntityID(
       DataBaseSchemas.FUBUBIVIVSCHEMA,
     );
     item.ID = FUBUBIVIV_ID;
@@ -106,26 +110,9 @@ export default class HousingService {
       });
     return result;
   }
-  async getLastEntityID(entity: string) {
-    const result = await Realm.open({
-      schema: [FUBUBIVIVSCHEMA, FNBNUCVIVSCHEMA],
-      schemaVersion: schemaVersion,
-    })
-      .then((realm) => {
-        let increment = 1;
-        let item: any = realm.objects(entity).sorted('ID', true)[0];
-        if (item) {
-          increment = item.ID + 1;
-        }
-        return increment;
-      })
-      .catch((error) => {
-        return error;
-      });
-    return result;
-  }
   async SaveFNBNUCVIV(item: FNBNUCVIV) {
-    let FNBNUCVIV_ID = await this.getLastEntityID(
+    let utils = new UtilsService();
+    let FNBNUCVIV_ID = await utils.getLastEntityID(
       DataBaseSchemas.FNBNUCVIVSCHEMA,
     );
     item.ID = FNBNUCVIV_ID;
@@ -274,6 +261,33 @@ export default class HousingService {
           return items[0];
         }
         return items;
+      })
+      .catch((error) => {
+        return error;
+      });
+    return result;
+  }
+  async getFNBNUCVIVPersons(FNBNUCVIV_ID: number) {
+    const result = await Realm.open({
+      schema: [FNBNUCVIV_FNCPERSONSCHEMA, FNCPERSONSCHEMA],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        let persons: FNCPERSON[] = [];
+        let items: any = realm
+          .objects(DataBaseSchemas.FNBNUCVIV_FNCPERSONSCHEMA)
+          .filtered(`FNBNUCVIV_ID = ${FNBNUCVIV_ID}`);
+        console.log('FNBNUCVIV_FNCPERSONSCHEMA items', items);
+        for (let i of items) {
+          let person: any = realm
+            .objects(DataBaseSchemas.FNCPERSONSCHEMA)
+            .filtered(`ID = ${i.FNCPERSON_ID}`)[0];
+          console.log('person ', person);
+          if (person) {
+            persons.push(person);
+          }
+        }
+        return persons;
       })
       .catch((error) => {
         return error;

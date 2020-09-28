@@ -1,15 +1,15 @@
 import Realm from 'realm';
 export enum DataBaseSchemas {
   UserSchema = 'User',
-  FNCTIPIDENSCHEMA = 'FNCTIPIDEN',
+  FNCTIPIDENSCHEMA = 'FNCTIPIDEN', // tipo de identificacion
   FVBENCUESSCHEMA = 'FVBENCUESSCHEMA',
   FVCCONVIVSCHEMA = 'FVCCONVIV', //respuestas housing
   FVCELEVIVSCHEMA = 'FVCELEVIV', //preguntas housing
-  FUBUBIVIVSCHEMA = 'FUBUBIVIV',
-  FNBNUCVIV_FVCCONVIVSCHEMA = 'FNBNUCVIV_FVCCONVIV',
-  FNBNUCVIVSCHEMA = 'FNBNUCVIV',
-  FNCPERSONSCHEMA = 'FNCPERSON',
-  FNBNUCVIV_FNCPERSONSCHEMA = 'FNBNUCVIV_FNCPERSON',
+  FUBUBIVIVSCHEMA = 'FUBUBIVIV', //ubicacion vivienda
+  FNBNUCVIV_FVCCONVIVSCHEMA = 'FNBNUCVIV_FVCCONVIV', // respuestas nucleo familiar
+  FNBNUCVIVSCHEMA = 'FNBNUCVIV', // nucleo familiar
+  FNCPERSONSCHEMA = 'FNCPERSON', // persona
+  FNBNUCVIV_FNCPERSONSCHEMA = 'FNBNUCVIV_FNCPERSON', // relacion entre persona y nucleo familiar
   FUCDEPARTSCHEMA = 'FUCDEPART', // departamento
   FUCMUNICISCHEMA = 'FUCMUNICI', // municipios
   FUCTIPTERSCHEMA = 'FUCTIPTER', // tipo territorio
@@ -23,6 +23,7 @@ export enum DataBaseSchemas {
   FNCELEPERSCHEMA = 'FNCELEPER', //preguntas
   FNCCONPERSCHEMA = 'FNCCONPER', //respuestas
   FNCDESARMSCHEMA = 'FNCDESARM',
+  FNCGENEROSCHEMA = 'FNCGENERO',
   FNBINFSAL_FNCCONSALSCHEMA = 'FNBINFSAL_FNCCONSAL',
   FNCPERSON_FNCCONPERSCHEMA = 'FNCPERSON_FNCCONPER',
   FNCELEREPSCHEMA = 'FNCELEREP',
@@ -60,28 +61,28 @@ export const FNCPERSONSCHEMA = {
   properties: {
     ID: 'int',
     CODIGO: 'string',
-    IDENTIFICACION: 'int',
+    IDENTIFICACION: 'string',
     PRIMER_NOMBRE: 'string',
     SEGUNDO_NOMBRE: 'string',
     PRIMER_APELLIDO: 'string',
     SEGUNDO_APELLIDO: 'string',
-    FECHA_NACIMIENTO: 'date',
-    EDAD: 'int',
-    EDAD_VISITA: 'int',
-    TEL_CEDULAR: 'int',
-    TEL_ALTERNO: 'int',
-    CORREO_ELECTRONICO: 'string',
+    FECHA_NACIMIENTO: 'date?',
+    EDAD: 'int?',
+    EDAD_VISITA: 'int?',
+    TEL_CELULAR: 'int?',
+    TEL_ALTERNO: 'int?',
+    CORREO_ELECTRONICO: 'string?',
     FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
-    USUARIO_DATA: 'string',
+    USUARIO_DATA: 'string?',
     FECHA_CREACION: {type: 'date', default: new Date()},
-    ORIGEN_DATA: 'date',
-    FNCTIPIDE_ID: 'int',
-    FNCORGANI_ID: 'int',
-    FNCLUNIND_ID: 'int',
-    FNCOCUPAC_ID: 'int',
-    FUCMUNICI_ID: 'int',
-    FNCPAREN_ID: 'int',
-    FNCGENERO_ID: 'int',
+    ORIGEN_DATA: 'date?',
+    FNCTIPIDE_ID: 'int?',
+    FNCORGANI_ID: 'int?',
+    FNCLUNIND_ID: 'int?',
+    FNCOCUPAC_ID: 'int?',
+    FUCMUNICI_ID: 'int?',
+    FNCPAREN_ID: 'int?',
+    FNCGENERO_ID: 'int?',
   },
 };
 export const FNBNUCVIV_FNCPERSONSCHEMA = {
@@ -89,12 +90,12 @@ export const FNBNUCVIV_FNCPERSONSCHEMA = {
   properties: {
     FNBNUCVIV_ID: 'int',
     FNCPERSON_ID: 'int',
-    ID: 'int',
-    SELECCION: 'string',
+    ID: 'int?',
+    SELECCION: 'string?',
     FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
-    USUARIO_DATA: 'string',
+    USUARIO_DATA: 'string?',
     FECHA_CREACION: {type: 'date', default: new Date()},
-    ORIGEN_DATA: 'string',
+    ORIGEN_DATA: 'string?',
   },
 };
 export const FNCELESALSCHEMA = {
@@ -415,6 +416,21 @@ export const FNCSALREP_FNCCONREPSCHEMA = {
     SYNCSTATE: 'int',
   },
 };
+export const FNCGENEROSCHEMA = {
+  name: DataBaseSchemas.FNCGENEROSCHEMA,
+  primaryKey: 'ID',
+  properties: {
+    ID: 'int',
+    CODIGO: 'string',
+    NOMBRE: 'string',
+    COD_FF: 'string',
+    ESTADO: 'int?',
+    USUARIO_DATA: 'string?',
+    FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
+    FECHA_CREACION: {type: 'date', default: new Date()},
+    ORIGEN_DATA: 'string?',
+  },
+};
 export const allCatalogs = () =>
   new Promise((resolve, reject) => {
     Realm.open({
@@ -465,6 +481,8 @@ export default class DataBaseProvider {
         FNCCONREPSCHEMA,
         FNCSALREP_FNCCONREPSCHEMA,
         FNCSALREPSCHEMA,
+        FNCGENEROSCHEMA,
+        FNBNUCVIV_FNCPERSONSCHEMA,
       ],
     }).then((realm) => {
       realm.write(() => {
@@ -486,6 +504,20 @@ export default class DataBaseProvider {
           FUCZONCUI_ID: 1,
           FUCZONA_ID: 1,
         });
+        realm.create('FNCGENERO', {
+          ID: 1,
+          CODIGO: 'F',
+          NOMBRE: 'Femenino',
+          COD_FF: '1',
+          ESTADO: 1,
+        });
+        realm.create('FNCGENERO', {
+          ID: 2,
+          CODIGO: 'M',
+          NOMBRE: 'Masculino',
+          COD_FF: '2',
+          ESTADO: 1,
+        });
         // realm.create(DataBaseSchemas.FUBUBIVIVSCHEMA, {
         //   ID: 123,
         //   CODIGO: 'CODVIVI1',
@@ -502,7 +534,7 @@ export default class DataBaseProvider {
         //   RESIDUO_BOR: 'string',
         // });
         //****************************************************************** */
-        try {
+        /*try {
           realm.create(DataBaseSchemas.FNCPERSONSCHEMA, {
             ID: 12345,
             CODIGO: 'PERSON001',
@@ -530,6 +562,7 @@ export default class DataBaseProvider {
             FNCGENERO_ID: 1,
           });
         } catch (error) {}
+        */
         //****************************************************************** */
         // realm.create(DataBaseSchemas.FNBNUCVIVSCHEMA, {
         //   ID: 1,

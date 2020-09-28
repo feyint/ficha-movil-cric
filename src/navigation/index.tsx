@@ -28,6 +28,7 @@ import {
   LastPregnancyScreen,
   BirthDataScreen,
   OtherIdentificationDataScreen,
+  PersonalInformationScreen,
 } from '../modules/person/manage/screens';
 import {FamilyScreen} from '../modules/families/screens';
 
@@ -99,6 +100,14 @@ export const Dashboard = () => {
         component={ViewPersonScreen}
         name="ViewPersonScreen"
         options={{headerShown: false, title: 'Ver persona'}}
+      />
+      <DashboardStack.Screen
+        component={PersonalInformationScreen}
+        name="PersonalInformationScreen"
+        options={{
+          headerShown: false,
+          title: 'Datos personales',
+        }}
       />
       <DashboardStack.Screen
         component={HealthStatusVisitScreen}

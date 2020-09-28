@@ -2,9 +2,7 @@ import React, {Component} from 'react';
 import {HelperText, TextInput} from 'react-native-paper';
 import {View} from 'react-native';
 
-interface State {
-  value: string;
-}
+
 interface Props {
   label?: string;
   value?: string;
@@ -15,50 +13,28 @@ interface Props {
   secureTextEntry?: any;
 }
 
-export default class BNumberInput extends Component<Props, State> {
+export default class BNumberInput extends Component<Props, any> {
   render() {
     return (
       <View>
         <TextInput
-          {...this.props}
+          error={this.props.error}
           label={this.props.label}
           mode="outlined"
           keyboardType="numeric"
           onChangeText={(text) => {
-            this.onChanged(text);
+            this.props.onChange(text);
           }}
           value={this.props.value}
         />
-        <HelperText type="error" visible={this.hasErrors()}>
-          {this.props.errorText}
-        </HelperText>
+        {this.props.error ? (
+          <HelperText type="error">
+            {this.props.errorText
+              ? this.props.errorText
+              : 'El campo es requerido'}
+          </HelperText>
+        ) : null}
       </View>
     );
-  }
-
-  onChanged(text: string) {
-    let newText = '';
-    let numbers = '0123456789';
-    for (var i = 0; i < text.length; i++) {
-      if (numbers.indexOf(text[i]) > -1) {
-        newText = newText + text[i];
-      } else {
-        //Alert.alert('Porfavor ingrese solo caracteres numericos');
-      }
-    }
-    if (text.length > 0) {
-      this.props.onChange(Number(text));
-    } else {
-      this.props.onChange(text);
-    }
-  }
-
-  changetext(text: string) {
-    //No me acepta numericos
-    this.setState({value: text});
-    this.props.onChange(this.state.value);
-  }
-  hasErrors() {
-    return this.props.error === true;
   }
 }

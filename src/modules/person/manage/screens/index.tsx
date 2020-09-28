@@ -7,3 +7,4 @@ export {default as UnhealthyHabitsScreen} from './UnhealthyHabitsScreen';
 export {default as LastPregnancyScreen} from './LastPregnancyScreen';
 export {default as BirthDataScreen} from './BirthDataScreen';
 export {default as OtherIdentificationDataScreen} from './OtherIdentificationDataScreen';
+export {default as PersonalInformationScreen} from './PersonalInformationScreen';
