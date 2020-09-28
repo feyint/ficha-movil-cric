@@ -50,7 +50,7 @@ class ViewPersonScreen extends Component<any, any> {
             <List.Item
               title="6. Otros datos de identificación"
               left={() => <List.Icon icon="card-account-mail" />}
-              //onPress={() => this.goHomeLocation()}
+              onPress={() => this.goOtherDataIdentificationScreen()}
             />
             <List.Item
               title="7. Informacion de salud"
@@ -123,6 +123,9 @@ class ViewPersonScreen extends Component<any, any> {
   }
   goBirthDataScreen() {
     this.props.navigation.navigate('BirthDataScreen');
+  }
+  goOtherDataIdentificationScreen() {
+    this.props.navigation.navigate('OtherIdentificationDataScreen');
   }
 }
 

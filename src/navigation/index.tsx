@@ -27,6 +27,7 @@ import {
   UnhealthyHabitsScreen,
   LastPregnancyScreen,
   BirthDataScreen,
+  OtherIdentificationDataScreen,
 } from '../modules/person/manage/screens';
 import {FamilyScreen} from '../modules/families/screens';
 
@@ -145,6 +146,14 @@ export const Dashboard = () => {
         options={{
           headerShown: false,
           title: 'Datos de nacimiento',
+        }}
+      />
+      <DashboardStack.Screen
+        component={OtherIdentificationDataScreen}
+        name="OtherIdentificationDataScreen"
+        options={{
+          headerShown: false,
+          title: 'Otros datos de identificacion',
         }}
       />
     </DashboardStack.Navigator>
