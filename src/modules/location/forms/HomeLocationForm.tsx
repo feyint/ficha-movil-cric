@@ -13,6 +13,7 @@ import Geolocation from '@react-native-community/geolocation';
 import {saveFUBUBIVIV, updateFUBUBIVIV} from '../../../state/house/actions';
 import {FUBUBIVIV} from '../../../state/house/types';
 import {HousingService} from '../../../services';
+import {FUCZONCUI} from '../state/types';
 
 interface GeolocationData {
   latitude: string;
@@ -23,7 +24,8 @@ const schemaForm = yup.object().shape({
   municipality: yup.string().required(),
   territoryType: yup.string().required(),
   shelterOrCouncil: yup.string().required(),
-  sidewalk: yup.string().required(),
+  sidewalk: yup.string().required('Barrio o vereda requerido').nullable(),
+  carezone: yup.string().required('Zona de cuidado requerido'),
   latitude: yup.string().required(),
   longitude: yup.string().required(),
   address: yup.string().required(),
@@ -48,7 +50,13 @@ const _HomeLocationForm = (props: any) => {
   const [centropoblado, setCentropoblado] = useState('');
   const [tipoterritorioLabel, setTipoterritorioLabel] = useState('');
   const [barrioVereda, setBarrioVereda] = useState('');
+  const [zonacuidado, setZonacuidado] = useState('');
   const [address, setAddress] = useState('');
+  const [FUCZONCUIItems, setFUCZONCUIItems] = useState<{
+      value: string;
+      label: string;
+    }[]
+  >([]);
   const [municipioSelect, setMunicipioSelect] = useState<SelectSchema>({
     id: 0,
     name: '',
@@ -163,6 +171,9 @@ const _HomeLocationForm = (props: any) => {
       );
       setBarrioVeredaSelect(FUCBARVER);
       setBarrioVereda('' + barver.ID);
+      onChangeBarrioVereda(barver.ID);
+      setZonacuidado('' + props.FUBUBIVIV.FUCZONCUI_ID);
+      setValue('carezone', '' + props.FUBUBIVIV.FUCZONCUI_ID);
       setValue('department', '' + dept.ID);
       setValue('municipality', '' + munici.ID);
       setValue('territoryType', '' + cenpoblado.FUCTIPRES_ID);
@@ -249,6 +260,28 @@ const _HomeLocationForm = (props: any) => {
       }
     }
   }
+  async function onChangeBarrioVereda(FUCBARVER_ID: string) {
+    let items: {label: string; value: string}[] = [];
+    if (FUCBARVER_ID) {
+      let service: HousingService = new HousingService();
+      let FUCZONCUIitems: FUCZONCUI[] = await service.getFUCZONCUI(
+        parseInt(FUCBARVER_ID, 10),
+      );
+      for (let option of FUCZONCUIitems) {
+        items.push({
+          value: option.ID.toString(),
+          label: option.CODIGO_FF,
+        });
+      }
+      items.unshift({value: '-1', label: 'Seleccione...'});
+      setFUCZONCUIItems(items);
+    } else {
+      items.unshift({value: '-1', label: 'Seleccione...'});
+      setZonacuidado('-1');
+      setValue('carezone', '');
+      setFUCZONCUIItems(items);
+    }
+  }
   const onSubmit = async (data: any) => {
     if (props.FUBUBIVIV.CODIGO !== '') {
       console.log(data);
@@ -259,6 +292,7 @@ const _HomeLocationForm = (props: any) => {
         COORDENADA_Y: position.longitude,
         DIRECCION: data.address,
         FUCBARVER_ID: JSON.parse(data.sidewalk),
+        FUCZONCUI_ID: JSON.parse(data.carezone),
       };
       let result = await props.updateFUBUBIVIV(item, originalhouseCode);
       navigation.goBack();
@@ -270,6 +304,7 @@ const _HomeLocationForm = (props: any) => {
         COORDENADA_Y: position.longitude,
         DIRECCION: data.address,
         FUCBARVER_ID: JSON.parse(data.sidewalk),
+        FUCZONCUI_ID: JSON.parse(data.carezone),
       };
       let result = await props.saveFUBUBIVIV(item);
       navigation.goBack();
@@ -395,12 +430,32 @@ const _HomeLocationForm = (props: any) => {
               onChange={(value) => {
                 onChange(value);
                 setBarrioVereda(value);
+                onChangeBarrioVereda(value);
               }}
               selectedValue={barrioVereda}
               items={barrioVeredaSelect.children}
             />
           )}
           name="sidewalk"
+        />
+        <Controller
+          control={control}
+          render={({onChange, onBlur, value}) => (
+            <BPicker
+              label="Zona de cuidado"
+              prompt="Seleccione una opción"
+              enabled={true}
+              onBlur={onBlur}
+              error={errors.carezone}
+              onChange={(value) => {
+                onChange(value);
+                setZonacuidado(value);
+              }}
+              selectedValue={zonacuidado}
+              items={FUCZONCUIItems}
+            />
+          )}
+          name="carezone"
         />
         <Controller
           control={control}

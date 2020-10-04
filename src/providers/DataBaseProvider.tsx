@@ -17,6 +17,7 @@ export enum DataBaseSchemas {
   FUCBARVERSCHEMA = 'FUCBARVER', // barrio vereda
   FUCZONASCHEMA = 'FUCZONA', // barrio vereda
   FUCUNICUISCHEMA = 'FUCUNICUI', // unidad de cuidado
+  FUCZONCUI_FUCBARVERSCHEMA = 'FUCZONCUI_FUCBARVER', // unidad de cuidado
   FUCZONCUISCHEMA = 'FUCZONCUI', // Zona de cuidado
   FNCELESALSCHEMA = 'FNCELESAL', //Preguntas salud
   FNCCONSALSCHEMA = 'FNCCONSAL', //respuestas salud
@@ -30,7 +31,7 @@ export enum DataBaseSchemas {
   FNCCONREPSCHEMA = 'FNCCONREP',
   FNCSALREP_FNCCONREPSCHEMA = 'FNCSALREP_FNCCONREP',
 }
-export const schemaVersion = 6;
+export const schemaVersion = 11;
 export const UserSchema = {
   name: DataBaseSchemas.UserSchema,
   properties: {
@@ -218,6 +219,7 @@ export const FUBUBIVIVSCHEMA = {
     ORIGEN_DATA: 'string?',
     USUARIO_DATA: 'string?',
     FUCBARVER_ID: 'int',
+    FUCZONCUI_ID: 'int?',
   },
 };
 export const FNBNUCVIVSCHEMA = {
@@ -354,6 +356,20 @@ export const FUCZONCUISCHEMA = {
     FUCSEDCUI_ID: 'int',
   },
 };
+export const FUCZONCUI_FUCBARVERSCHEMA = {
+  name: DataBaseSchemas.FUCZONCUI_FUCBARVERSCHEMA,
+  primaryKey: 'ID',
+  properties: {
+    ID: 'int',
+    FUCZONCUI_ID: 'int',
+    FUCBARVER_ID: 'int',
+    SELECCION: 'string?',
+    USUARIO_DATA: 'string?',
+    FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
+    FECHA_CREACION: {type: 'date', default: new Date()},
+    ORIGEN_DATA: 'string?',
+  },
+};
 export const FNBINFSAL_FNCCONSALSCHEMA = {
   name: DataBaseSchemas.FNBINFSAL_FNCCONSALSCHEMA,
   properties: {
@@ -450,9 +466,15 @@ export default class DataBaseProvider {
         FNCSALREP_FNCCONREPSCHEMA,
         FNCGENEROSCHEMA,
         FNBNUCVIV_FNCPERSONSCHEMA,
+        FUCZONCUI_FUCBARVERSCHEMA,
       ],
     }).then((realm) => {
       realm.write(() => {
+        realm.create('FUCZONCUI_FUCBARVER', {
+          ID: 1,
+          FUCZONCUI_ID: 1,
+          FUCBARVER_ID: 2,
+        });
         realm.create('User', {
           userid: 1,
           firstName: 'Luis',
@@ -485,6 +507,7 @@ export default class DataBaseProvider {
           COD_FF: '2',
           ESTADO: 1,
         });
+
         // realm.create(DataBaseSchemas.FUBUBIVIVSCHEMA, {
         //   ID: 123,
         //   CODIGO: 'CODVIVI1',
