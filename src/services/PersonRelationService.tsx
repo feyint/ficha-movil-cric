@@ -24,12 +24,11 @@ export default class PersonRelationService {
             DataBaseSchemas.FNBNUCVIV_FNCPERSONSCHEMA,
             item,
           );
-          console.error('CREATED ', inserted);
           return inserted;
         });
       })
       .catch((error) => {
-        console.error('error FNBNUCVIV_FNCPERSON ', error);
+        console.error(error);
         return error;
       });
     return result;

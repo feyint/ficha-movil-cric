@@ -85,7 +85,6 @@ const _HouseForm = (props: any) => {
     setValue(prop, question);
   }
   async function getAnswersFNBNUCVIV() {
-    console.error(props.FNBNUCVIV);
     setValue('smokeinsidehouse', props.FNBNUCVIV.HUMO_CASA);
     setValue('kitchenislocated', props.FNBNUCVIV.LUGAR_COCINA);
     setValue('internetaccess', props.FNBNUCVIV.ACCESO_INTERNET);

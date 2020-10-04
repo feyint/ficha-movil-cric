@@ -30,7 +30,7 @@ export enum DataBaseSchemas {
   FNCCONREPSCHEMA = 'FNCCONREP',
   FNCSALREP_FNCCONREPSCHEMA = 'FNCSALREP_FNCCONREP',
 }
-export const schemaVersion = 4;
+export const schemaVersion = 6;
 export const UserSchema = {
   name: DataBaseSchemas.UserSchema,
   properties: {
@@ -49,8 +49,8 @@ export const FNCTIPIDENSCHEMA = {
     ID: 'int',
     CODIGO: 'string',
     NOMBRE: 'string',
-    FECHA_ACTIVIDAD: 'date',
-    FECHA_CREACION: 'date',
+    FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
+    FECHA_CREACION: {type: 'date', default: new Date()},
   },
 };
 //-----------------------------------------------------------
@@ -66,10 +66,8 @@ export const FNCPERSONSCHEMA = {
     PRIMER_APELLIDO: 'string',
     SEGUNDO_APELLIDO: 'string',
     FECHA_NACIMIENTO: 'date?',
-    EDAD: 'int?',
-    EDAD_VISITA: 'int?',
-    TEL_CELULAR: 'int?',
-    TEL_ALTERNO: 'int?',
+    TEL_CELULAR: 'string?',
+    TEL_ALTERNO: 'string?',
     CORREO_ELECTRONICO: 'string?',
     FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
     USUARIO_DATA: 'string?',

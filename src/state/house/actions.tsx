@@ -69,7 +69,6 @@ export const saveFNBNUCVIV = (data: any) => async (
   let family: FNBNUCVIV = store.housing.FNBNUCVIV;
   let houseServie: HousingService = new HousingService();
   let result = await houseServie.SaveFNBNUCVIV(data);
-  // console.error(result);
   if (result) {
     family.CODIGO = result.CODIGO;
     family.FUBUBIVIV_ID = result.FUBUBIVIV_ID;

@@ -97,7 +97,6 @@ const _HomeLocationForm = (props: any) => {
   }
 
   async function getDefaultValues() {
-    //console.error(props.FUBUBIVIV);
     if (props.FUBUBIVIV.CODIGO !== '') {
       setoriginalHouseCode(props.FUBUBIVIV.CODIGO);
       setPosition({
@@ -172,10 +171,6 @@ const _HomeLocationForm = (props: any) => {
       setValue('latitude', '' + props.FUBUBIVIV.COORDENADA_X);
       setValue('longitude', '' + props.FUBUBIVIV.COORDENADA_Y);
       setValue('address', '' + props.FUBUBIVIV.DIRECCION);
-      // console.error(barver);
-      // console.error(cenpoblado);
-      // console.error(munici);
-      // console.error(dept);
     } else {
       await getCurrentPosition();
     }
@@ -211,7 +206,6 @@ const _HomeLocationForm = (props: any) => {
       'FUCTIPRES_ID',
       typeid,
     );
-    //console.error('FUCRESGUA', FUCRESGUA);
     setrescentropSelect(FUCRESGUA);
     setValue('shelterOrCouncil', '');
     setCentropoblado('');
@@ -240,14 +234,10 @@ const _HomeLocationForm = (props: any) => {
         resguaId,
       );
       setBarrioVeredaSelect(FUCBARVER);
-      //console.error('length ', FUCBARVER.children.length);
-      //console.error('resguaId  ', resguaId);
       for (let i = 0; i < rescentropSelect.children.length; i++) {
         const item: any = rescentropSelect.children[i];
-        //console.warn('item.item ', item.item);
         if (item.item && item.item.ID == resguaId) {
           let ress = await props.getLasHouseCode(item.item.CODIGO);
-          //console.error('ress  ', `${item.item.CODIGO}-${ress}`);
           setHouseCode(`${item.item.CODIGO}-${ress}`);
           setValue('housingCode', `${item.item.CODIGO}-${ress}`);
           if (FUCBARVER.children.length == 1) {
@@ -403,7 +393,6 @@ const _HomeLocationForm = (props: any) => {
               onBlur={onBlur}
               error={errors.sidewalk}
               onChange={(value) => {
-                //console.error(value);
                 onChange(value);
                 setBarrioVereda(value);
               }}

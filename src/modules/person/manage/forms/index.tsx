@@ -5,3 +5,4 @@ export {default as SocialSecurityForm} from './SocialSecurityForm';
 export {default as UnhealthyHabitsForm} from './UnhealthyHabitsForm';
 export {default as LastPregnancyForm} from './LastPregnancyForm';
 export {default as PersonalInformationForm} from './PersonalInformationForm';
+export {default as ContactInformationForm} from './ContactInformationForm';

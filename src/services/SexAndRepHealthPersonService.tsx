@@ -18,28 +18,6 @@ import {FNCSALREP_FNCCONREP} from '../state/SexAndRepHealthPerson/types';
 export default class SexAndRepHealthPersonService {
   /**
    *
-   */
-  async getPersons() {
-    const result = await Realm.open({
-      schema: [FNCPERSONSCHEMA],
-      schemaVersion: schemaVersion,
-    })
-      .then((realm) => {
-        let items = realm.objects('FNCPERSON');
-        console.log('persona items', items);
-        for (let i of items) {
-          console.log('persona items for', i);
-        }
-        return items;
-      })
-      .catch((error) => {
-        return error;
-      });
-    return result;
-  }
-
-  /**
-   *
    * @param questionsQuery
    */
   async getQuestionWithOptions(questionsQuery?: any[]) {

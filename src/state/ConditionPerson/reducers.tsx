@@ -1,8 +1,7 @@
 import {ActionType} from './actions';
-import {HousingQuestion} from '../../modules/housing/state/types';
 
 const initialState = {
-  CONDITIONPERSONQUESTIONLIST: [] as HousingQuestion[],
+  CONDITIONPERSONQUESTIONLIST: [],
 };
 
 export default (state = initialState, action: any) => {

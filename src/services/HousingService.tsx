@@ -127,10 +127,9 @@ export default class HousingService {
         });
       })
       .catch((error) => {
-        //console.error('error FNBNUCVIV ', error);
+        console.error(error);
         return error;
       });
-    //console.error('INSERT ITEM ', item);
     return item;
   }
   async SaveFNBNUCVIVPropiety(
@@ -138,7 +137,6 @@ export default class HousingService {
     propiety: string,
     value: any,
   ) {
-    // console.error(JSON.stringify(value));
     const result = await Realm.open({
       schema: [FNBNUCVIVSCHEMA],
       schemaVersion: schemaVersion,
@@ -150,7 +148,6 @@ export default class HousingService {
             .filtered(`ID = ${FNBNUCVIVID}`)
             .sorted('ID', true)[0];
           if (item) {
-            // console.error('result[propiety] ', propiety, value);
             item[propiety] = value;
             return true;
           } else {
@@ -159,7 +156,7 @@ export default class HousingService {
         });
       })
       .catch((error) => {
-        console.error('error FNBNUCVIV ', error);
+        console.error(error);
         return error;
       });
     return result;
@@ -202,7 +199,6 @@ export default class HousingService {
           .sorted('CODIGO', true)[0];
         if (item) {
           let values = item.CODIGO.split('-');
-          //console.error('values' , values);
           increment = '' + (parseInt(values[2], 10) + 1);
         } else {
           increment = '1';
@@ -288,24 +284,6 @@ export default class HousingService {
           }
         }
         return persons;
-      })
-      .catch((error) => {
-        return error;
-      });
-    return result;
-  }
-  async getPersons() {
-    const result = await Realm.open({
-      schema: [FNCPERSONSCHEMA],
-      schemaVersion: schemaVersion,
-    })
-      .then((realm) => {
-        let items = realm.objects('FNCPERSON');
-        console.log('persona items', items);
-        for (let i of items) {
-          console.log('persona items for', i);
-        }
-        return items;
       })
       .catch((error) => {
         return error;
