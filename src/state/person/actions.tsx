@@ -7,7 +7,7 @@ import {
   FNCPERSON,
 } from './types';
 import PersonRelationService from '../../services/PersonRelationService';
-import { FNBNUCVIV } from '../house/types';
+import {FNBNUCVIV} from '../house/types';
 
 export const ActionType = {
   SET_FNCPERSON: 'SET_FNCPERSON',
@@ -56,35 +56,55 @@ export const saveFNCPERSON = (data: FNCPERSON) => async (
 ) => {
   const store = getState();
   let family: FNBNUCVIV = store.housing.FNBNUCVIV;
-  let person: FNCPERSON = store.person.FNCPERSON;
   let personServie: PersonService = new PersonService();
   let personRelation: PersonRelationService = new PersonRelationService();
-  if (person.ID != null) {
-    let item = person;
-    item.FNCTIPIDE_ID = data.FNCTIPIDE_ID;
-    item.FNCGENERO_ID = data.FNCGENERO_ID;
-    item.PRIMER_NOMBRE = data.PRIMER_NOMBRE;
-    item.SEGUNDO_NOMBRE = data.SEGUNDO_NOMBRE;
-    item.PRIMER_APELLIDO = data.PRIMER_APELLIDO;
-    item.SEGUNDO_APELLIDO = data.SEGUNDO_APELLIDO;
-    item.IDENTIFICACION = data.IDENTIFICACION;
-    let result = await personServie.UpdateFNCPERSON(item);
-    dispatch(_setPERSON(person));
-  } else {
-    console.error('UPDATE ', data);
-    let result = await personServie.SaveFNCPERSON(data);
-    if (result) {
-      let nucleoPersona: FNBNUCVIV_FNCPERSON = {
-        FNBNUCVIV_ID: family.ID,
-        FNCPERSON_ID: result.ID,
-        ID: -1,
-      };
-      personRelation.SaveFNBNUCVIV_FNCPERSON(nucleoPersona);
-      data.CODIGO = result.CODIGO;
-      data.ID = result.ID;
-    }
-    dispatch(_setPERSON(data));
+  let result = await personServie.SaveFNCPERSON(data);
+  if (result) {
+    let nucleoPersona: FNBNUCVIV_FNCPERSON = {
+      FNBNUCVIV_ID: family.ID,
+      FNCPERSON_ID: result.ID,
+      ID: -1,
+    };
+    personRelation.SaveFNBNUCVIV_FNCPERSON(nucleoPersona);
+    data.CODIGO = result.CODIGO;
+    data.ID = result.ID;
   }
+  dispatch(_setPERSON(data));
+};
+export const updateFNCPERSON = (data: any) => async (
+  dispatch: any,
+  getState: any,
+) => {
+  const store = getState();
+  let person = store.person.FNCPERSON;
+  let item = {
+    ID: person.ID,
+    CODIGO: person.CODIGO,
+    IDENTIFICACION: person.IDENTIFICACION,
+    PRIMER_NOMBRE: person.PRIMER_NOMBRE,
+    SEGUNDO_NOMBRE: person.SEGUNDO_NOMBRE,
+    PRIMER_APELLIDO: person.PRIMER_APELLIDO,
+    SEGUNDO_APELLIDO: person.SEGUNDO_APELLIDO,
+    FECHA_NACIMIENTO: person.FECHA_NACIMIENTO,
+    TEL_CELULAR: person.TEL_CELULAR,
+    TEL_ALTERNO: person.TEL_ALTERNO,
+    CORREO_ELECTRONICO: person.CORREO_ELECTRONICO,
+    FNCTIPIDE_ID: person.FNCTIPIDE_ID,
+    FNCORGANI_ID: person.FNCORGANI_ID,
+    FNCLUNIND_ID: person.FNCLUNIND_ID,
+    FNCOCUPAC_ID: person.FNCOCUPAC_ID,
+    FUCMUNICI_ID: person.FUCMUNICI_ID,
+    FNCPAREN_ID: person.FNCPAREN_ID,
+    FNCGENERO_ID: person.FNCGENERO_ID,
+  };
+  let personServie: PersonService = new PersonService();
+  await personServie.UpdateFNCPERSON(data);
+  for (const key of Object.keys(data)) {
+    if (key in item && key !== 'ID') {
+      item[key] = data[key];
+    }
+  }
+  dispatch(_setPERSON(item));
 };
 /**
  *

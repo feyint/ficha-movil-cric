@@ -17,6 +17,7 @@ import {
   FUCUNICUISCHEMA,
   FUCZONCUISCHEMA,
   FNBNUCVIV_FNCPERSONSCHEMA,
+  FUCZONCUI_FUCBARVERSCHEMA,
 } from '../providers/DataBaseProvider';
 import Realm from 'realm';
 import {
@@ -26,8 +27,9 @@ import {
 import {FNBNUCVIV_FVCCONVIV, FUBUBIVIV, FNBNUCVIV} from '../state/house/types';
 import {SelectSchema, MultiSelectSchema} from '../core/utils/types';
 import {capitalizeFirstLetter} from '../core/utils/utils';
-import { UtilsService } from '.';
-import { FNCPERSON } from '../state/person/types';
+import {UtilsService} from '.';
+import {FNCPERSON} from '../state/person/types';
+import {FUCZONCUI} from '../modules/location/state/types';
 const HOUSECODE_INCREMENT = '0000';
 export default class HousingService {
   async getFamilies(HouseID: number) {
@@ -75,7 +77,7 @@ export default class HousingService {
     })
       .then((realm) => {
         realm.write(() => {
-          let result = realm.create('FUBUBIVIV', item);
+          let result = realm.create(DataBaseSchemas.FUBUBIVIVSCHEMA, item);
           console.log('INSERT ITEM ', result);
         });
       })
@@ -102,6 +104,7 @@ export default class HousingService {
             house.COORDENADA_X = item.COORDENADA_X;
             house.COORDENADA_Y = item.COORDENADA_Y;
             house.FUCBARVER_ID = item.FUCBARVER_ID;
+            house.FUCZONCUI_ID = item.FUCZONCUI_ID;
             house.FECHA_ACTIVIDAD = new Date();
           });
         }
@@ -128,10 +131,9 @@ export default class HousingService {
         });
       })
       .catch((error) => {
-        //console.error('error FNBNUCVIV ', error);
+        console.error(error);
         return error;
       });
-    //console.error('INSERT ITEM ', item);
     return item;
   }
   async SaveFNBNUCVIVPropiety(
@@ -139,7 +141,6 @@ export default class HousingService {
     propiety: string,
     value: any,
   ) {
-    // console.error(JSON.stringify(value));
     const result = await Realm.open({
       schema: [FNBNUCVIVSCHEMA],
       schemaVersion: schemaVersion,
@@ -151,7 +152,6 @@ export default class HousingService {
             .filtered(`ID = ${FNBNUCVIVID}`)
             .sorted('ID', true)[0];
           if (item) {
-            // console.error('result[propiety] ', propiety, value);
             item[propiety] = value;
             return true;
           } else {
@@ -160,7 +160,7 @@ export default class HousingService {
         });
       })
       .catch((error) => {
-        console.error('error FNBNUCVIV ', error);
+        console.error(error);
         return error;
       });
     return result;
@@ -203,7 +203,6 @@ export default class HousingService {
           .sorted('CODIGO', true)[0];
         if (item) {
           let values = item.CODIGO.split('-');
-          //console.error('values' , values);
           increment = '' + (parseInt(values[2], 10) + 1);
         } else {
           increment = '1';
@@ -330,19 +329,28 @@ export default class HousingService {
     return result;
   }
   async getPersons() {
+  async getFUCZONCUI(FUCBARVER_ID: number) {
     const result = await Realm.open({
-      schema: [FNCPERSONSCHEMA],
+      schema: [FUCZONCUI_FUCBARVERSCHEMA, FUCZONCUISCHEMA],
       schemaVersion: schemaVersion,
     })
       .then((realm) => {
-        let items = realm.objects('FNCPERSON');
-        console.log('persona items', items);
+        let zonacuidados: FUCZONCUI[] = [];
+        let items: any = realm
+          .objects(DataBaseSchemas.FUCZONCUI_FUCBARVERSCHEMA)
+          .filtered(`FUCBARVER_ID = ${FUCBARVER_ID}`);
         for (let i of items) {
-          console.log('persona items for', i);
+          let zonacuidado: any = realm
+            .objects(DataBaseSchemas.FUCZONCUISCHEMA)
+            .filtered(`ID = ${i.FUCZONCUI_ID}`)[0];
+          if (zonacuidado) {
+            zonacuidados.push(zonacuidado);
+          }
         }
-        return items;
+        return zonacuidados;
       })
       .catch((error) => {
+        console.error(error);
         return error;
       });
     return result;

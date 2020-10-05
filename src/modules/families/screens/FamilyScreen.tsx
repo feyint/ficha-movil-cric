@@ -67,7 +67,6 @@ class FamilyScreen extends Component<any, State> {
   async fetchFamilies() {
     let syncHousingService = new HousingService();
     let result = await syncHousingService.getFamilies(this.props.FUBUBIVIV.ID);
-    // console.error('result ', result);
     if (result) {
       this.setState({families: result});
     }

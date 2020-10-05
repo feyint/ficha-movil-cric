@@ -18,28 +18,6 @@ import {FNCPERSON_FNCCONPER} from '../state/person/types';
 export default class ConditionPersonService {
   /**
    *
-   */
-  async getPersons() {
-    const result = await Realm.open({
-      schema: [FNCPERSONSCHEMA],
-      schemaVersion: schemaVersion,
-    })
-      .then((realm) => {
-        let items = realm.objects('FNCPERSON');
-        console.log('persona items', items);
-        for (let i of items) {
-          console.log('persona items for', i);
-        }
-        return items;
-      })
-      .catch((error) => {
-        return error;
-      });
-    return result;
-  }
-
-  /**
-   *
    * @param questionsQuery
    */
   async getQuestionWithOptions(questionsQuery?: any[]) {
@@ -119,9 +97,10 @@ export default class ConditionPersonService {
           item.children.push({
             value: option.ID.toString(),
             label: option.NOMBRE,
+            item: null,
           });
         }
-        item.children.unshift({value: '-1', label: 'Seleccione'});
+        item.children.unshift({value: '-1', label: 'Seleccione', item: null});
       }
     }
     return item;
@@ -175,22 +154,24 @@ export default class ConditionPersonService {
           .filtered(
             `FNCPERSON_ID = ${answeroption[0].FNCPERSON_ID} AND FNCELEPER_ID = ${answeroption[0].FNCELEPER_ID}`,
           );
-        console.log('registros ya en base de datos', options.length);
         realm.write(() => {
           realm.delete(options);
           for (let i = 0; i < answeroption.length; i++) {
             console.log('option ', answeroption[i]);
-            realm.create(DataBaseSchemas.FNCPERSON_FNCCONPERSCHEMA, {
-              FNCCONPER_ID: answeroption[i].FNCCONPER_ID,
-              FNCPERSON_ID: answeroption[i].FNCPERSON_ID,
-              FNCELEPER_ID: answeroption[i].FNCELEPER_ID,
-              SYNCSTATE: answeroption[i].SYNCSTATE,
-            });
+            let result = realm.create(
+              DataBaseSchemas.FNCPERSON_FNCCONPERSCHEMA,
+              {
+                FNCCONPER_ID: answeroption[i].FNCCONPER_ID,
+                FNCPERSON_ID: answeroption[i].FNCPERSON_ID,
+                FNCELEPER_ID: answeroption[i].FNCELEPER_ID,
+                SYNCSTATE: answeroption[i].SYNCSTATE,
+              },
+            );
           }
         });
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
         return error;
       });
   }
@@ -206,15 +187,11 @@ export default class ConditionPersonService {
       schemaVersion: schemaVersion,
     })
       .then((realm) => {
-        console.log(
-          `FNCPERSON_ID = ${FNCPERSON_ID} AND FNCELEPER_ID = ${FNCELEPER_ID}`,
-        );
         let items = realm
           .objects(DataBaseSchemas.FNCPERSON_FNCCONPERSCHEMA)
           .filtered(
             `FNCPERSON_ID = ${FNCPERSON_ID} AND FNCELEPER_ID = ${FNCELEPER_ID}`,
           );
-        console.warn('items getAnswerOneOption ', items.length);
         if (items.length > 0) {
           return items[0].FNCCONPER_ID;
         } else {

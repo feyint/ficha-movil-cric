@@ -29,6 +29,7 @@ import {
   BirthDataScreen,
   OtherIdentificationDataScreen,
   PersonalInformationScreen,
+  ContactInformationScreen,
 } from '../modules/person/manage/screens';
 import {FamilyScreen} from '../modules/families/screens';
 
@@ -107,6 +108,13 @@ export const Dashboard = () => {
         options={{
           headerShown: false,
           title: 'Datos personales',
+        }}
+      />
+      <DashboardStack.Screen
+        component={ContactInformationScreen}
+        name="ContactInformationScreen"
+        options={{
+          headerShown: false,
         }}
       />
       <DashboardStack.Screen

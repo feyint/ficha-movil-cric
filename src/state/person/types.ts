@@ -30,10 +30,8 @@ export type FNCPERSON = {
   PRIMER_APELLIDO: string;
   SEGUNDO_APELLIDO: string;
   FECHA_NACIMIENTO: Date;
-  EDAD: number;
-  EDAD_VISITA: number;
-  TEL_CELULAR: number;
-  TEL_ALTERNO: number;
+  TEL_CELULAR: string;
+  TEL_ALTERNO: string;
   CORREO_ELECTRONICO: string;
   FECHA_ACTIVIDAD: Date;
   USUARIO_DATA: string;
