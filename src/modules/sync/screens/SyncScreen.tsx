@@ -32,6 +32,7 @@ interface State {
   FNCDESARM: number;
   FNCELEREP: number;
   FNCCONREP: number;
+  FNCPAREN: number;
   /* /-------------------- */
 }
 
@@ -48,6 +49,7 @@ class SyncScreen extends Component<Props, State> {
       FUCRESGUA: 0,
       FUCBARVER: 0,
       FUCZONA: 0,
+      FNCPAREN: 0,
       FUCUNICUI: 0,
       FUCZONCUI: 0,
       FNCELESAL: 0,
@@ -130,6 +132,7 @@ class SyncScreen extends Component<Props, State> {
               FUCBARVER (barrio vereda) : {this.state.FUCBARVER}
             </Paragraph>
             <Paragraph>FUCZONA (Zona) : {this.state.FUCZONA}</Paragraph>
+            <Paragraph>FNCPAREN (Parentezco) : {this.state.FNCPAREN}</Paragraph>
             <Paragraph>
               FUCUNICUI (Unidad de cuidado) : {this.state.FUCUNICUI}
             </Paragraph>
@@ -192,6 +195,7 @@ class SyncScreen extends Component<Props, State> {
       'FUCBARVER',
     );
     let countFUCZONA = await this.syncCatalogService.countEntities('FUCZONA');
+    let countFNCPAREN = await this.syncCatalogService.countEntities('FNCPAREN');
     let countFUCUNICUI = await this.syncCatalogService.countEntities(
       'FUCUNICUI',
     );
@@ -214,6 +218,7 @@ class SyncScreen extends Component<Props, State> {
       FUCRESGUA: countFUCRESGUA,
       FUCBARVER: countFUCBARVER,
       FUCZONA: countFUCZONA,
+      FNCPAREN: countFNCPAREN,
       FUCUNICUI: countFUCUNICUI,
       FUCZONCUI: countFUCZONCUI,
       FNCELEREP: countFNCELEREP,

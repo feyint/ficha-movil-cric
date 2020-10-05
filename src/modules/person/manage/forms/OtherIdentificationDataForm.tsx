@@ -19,6 +19,7 @@ import {
   getQuestionAnswer,
 } from '../../../../state/ConditionPerson/actions';
 import {ConditionPersonQuestion} from '../state/types';
+import {SelectSchema} from '../../../../core/utils/types';
 
 const questions = [
   QuestionConditionPersonCodes.EstadoCivil,
@@ -36,6 +37,7 @@ const questions = [
 ];
 
 const schemaForm = yup.object().shape({
+  ParentezcoGrupoFamiliar: yup.string().notRequired(), //cambiar a required por que no hay donde guardar
   EstadoCivil: yup.number().required(),
   GrupoEtnico: yup.number().required(),
   Casta: yup.array().notRequired(),
@@ -59,7 +61,7 @@ const _OtherIdentificationDataForm = (props: any) => {
     questions: [] as ConditionPersonQuestion[],
   });
 
-  const [castaPikerEnable, setCastaPikerEnable] = useState(false);
+  //const [castaPikerEnable, setCastaPikerEnable] = useState(false);
 
   const navigation = useNavigation();
 
@@ -69,6 +71,16 @@ const _OtherIdentificationDataForm = (props: any) => {
 
   const {handleSubmit, control, errors, setValue} = useForm({
     resolver: yupResolver(schemaForm),
+  });
+
+  const [parentezcoGrupoFamiliar, setParentezcoGrupoFamiliar] = useState('');
+  const [
+    parentezcoGrupoFamiliarSelect,
+    setParentezcoGrupoFamiliarSelect,
+  ] = useState<SelectSchema>({
+    id: 0,
+    name: '',
+    children: [],
   });
 
   useEffect(() => {
@@ -83,6 +95,8 @@ const _OtherIdentificationDataForm = (props: any) => {
         questions: result,
       });
     }
+    let FNCPAREN = await props.getEntitySelect('FNCPAREN');
+    setParentezcoGrupoFamiliarSelect(FNCPAREN);
   }
 
   async function getAnswers(type: number, code: string, prop: string) {
@@ -109,6 +123,24 @@ const _OtherIdentificationDataForm = (props: any) => {
   return (
     <KeyboardAwareScrollView>
       <View style={styles.container}>
+      <Controller
+          control={control}
+          render={({onChange, onBlur, value}) => (
+            <BPicker
+              label="Parentezco en el grupo familiar"
+              prompt="Selecione una opcion"
+              onBlur={onBlur}
+              error={errors.ParentezcoGrupoFamiliar}
+              onChange={(value: any) => {
+                onChange(value);
+                setParentezcoGrupoFamiliar(value);
+              }}
+              selectedValue={parentezcoGrupoFamiliar}
+              items={parentezcoGrupoFamiliarSelect.children}
+            />
+          )}
+          name="ParentezcoGrupoFamiliar"
+        />
         <Controller
           control={control}
           render={({onChange, onBlur, value}) => (
@@ -131,7 +163,7 @@ const _OtherIdentificationDataForm = (props: any) => {
                   'EstadoCivil',
                 );
               }}
-              value={value}
+              //value={value}
               selectedValue={value}
               items={
                 getItemsForQuestionSelect(

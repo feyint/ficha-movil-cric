@@ -295,7 +295,7 @@ export default class HousingService {
       });
     return result;
   }
-  async getUnidadesCuidado(FUCZONCUI_ID: number) {
+  /* async getUnidadesCuidado(FUCZONCUI_ID: number) {
     const result = await Realm.open({
       schema: [FUCZONCUISCHEMA, FNCPERSONSCHEMA, ULTIMA],
       schemaVersion: schemaVersion,
@@ -327,8 +327,7 @@ export default class HousingService {
         return error;
       });
     return result;
-  }
-  async getPersons() {
+  } */
   async getFUCZONCUI(FUCBARVER_ID: number) {
     const result = await Realm.open({
       schema: [FUCZONCUI_FUCBARVERSCHEMA, FUCZONCUISCHEMA],

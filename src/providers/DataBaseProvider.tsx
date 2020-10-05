@@ -31,6 +31,7 @@ export enum DataBaseSchemas {
   FNCCONREPSCHEMA = 'FNCCONREP',
   FNCSALREP_FNCCONREPSCHEMA = 'FNCSALREP_FNCCONREP',
   FNCSALREPSCHEMA = 'FNCSALREP',
+  FNCPARENSCHEMA = 'FNCPAREN',
 }
 export const schemaVersion = 11;
 export const UserSchema = {
@@ -56,6 +57,17 @@ export const FNCTIPIDENSCHEMA = {
   },
 };
 //-----------------------------------------------------------
+export const FNCPARENSCHEMA = {
+  name: DataBaseSchemas.FNCPARENSCHEMA,
+  properties: {
+    ID: 'int',
+    CODIGO: 'string',
+    NOMBRE: 'string',
+    ESTADO: 'int',
+    FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
+    FECHA_CREACION: {type: 'date', default: new Date()},
+  },
+};
 export const FNCPERSONSCHEMA = {
   name: DataBaseSchemas.FNCPERSONSCHEMA,
   primaryKey: 'ID',
@@ -481,6 +493,7 @@ export default class DataBaseProvider {
         FUCRESGUASCHEMA,
         FUCBARVERSCHEMA,
         FUCZONASCHEMA,
+        FNCPARENSCHEMA,
         FUCUNICUISCHEMA,
         FUCZONCUISCHEMA,
         FNCPERSONSCHEMA,
@@ -624,6 +637,7 @@ export default class DataBaseProvider {
         FUCRESGUASCHEMA,
         FUCBARVERSCHEMA,
         FUCZONASCHEMA,
+        FNCPARENSCHEMA,
         FUCUNICUISCHEMA,
         FUCZONCUISCHEMA,
         FNCELESALSCHEMA,
