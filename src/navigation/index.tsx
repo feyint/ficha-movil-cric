@@ -28,6 +28,7 @@ import {
   LastPregnancyScreen,
   PersonalInformationScreen,
   ContactInformationScreen,
+  ReproductiveSexualHealtScreen,
 } from '../modules/person/manage/screens';
 import {FamilyScreen} from '../modules/families/screens';
 
@@ -111,6 +112,13 @@ export const Dashboard = () => {
       <DashboardStack.Screen
         component={ContactInformationScreen}
         name="ContactInformationScreen"
+        options={{
+          headerShown: false,
+        }}
+      />
+      <DashboardStack.Screen
+        component={ReproductiveSexualHealtScreen}
+        name="ReproductiveSexualHealtScreen"
         options={{
           headerShown: false,
         }}

@@ -3,8 +3,83 @@ import {SexAndRepHealthPersonQuestion} from '../../modules/person/manage/state/t
 import {FNCSALREP, FNCSALREP_FNCCONREP} from './types';
 
 export const ActionType = {
+  SET_FNCSALREP: 'SET_FNCSALREP',
   SET_SEXANDREPHEALTHPERSON_QUESTION_LIST:
     'SET_SEXANDREPHEALTHPERSON_QUESTION_LIST',
+};
+const _setFNCSALREP = (data: any) => {
+  return {type: ActionType.SET_FNCSALREP, data};
+};
+
+export const clearFNCNCSALREP = () => (dispatch: any) => {
+  let NCSALREP = {
+    ID: null,
+    FNCPERSON_ID: null,
+    EDAD_PRIMERA_REGLA: null,
+    GRAVIDEZ: null,
+    PARIDEZ: null,
+    ABORTO: null,
+    CESAREA: null,
+    NACIDOS_VIVOS: null,
+    NACIDOS_MUERTOS: null,
+    PARTO_ULTIMO: null,
+    ULTIMA_REGLA: null,
+    EDAD_GESTACION: null,
+    PARTO_ESTIMADO: null,
+    PRESENCIA_FAM: null,
+    SEROLOGIA: null,
+    VIH: null,
+    RESUL_CITOLOGIA: null,
+    ACCION_CITOLOGIA: null,
+    RESUL_PROSTATA: null,
+    ACCION_PROSTATA: null,
+    USUARIO_DATA: null,
+    FECHA_ACTIVIDAD: null,
+    FECHA_CREACION: null,
+    ORIGEN_DATA: null,
+  };
+  dispatch(_setFNCSALREP(NCSALREP));
+};
+
+export const setFNCNCSALREP = (data: FNCSALREP) => async (dispatch: any) => {
+  dispatch(_setFNCSALREP(data));
+};
+export const updateFNCSALREP = (data: any) => async (
+  dispatch: any,
+  getState: any,
+) => {
+  const store = getState();
+  let FNCSALREPitem = store.sarhealthperson.FNCSALREP;
+  let service: SexAndRepHealthPersonService = new SexAndRepHealthPersonService();
+  let item = {
+    ID: FNCSALREPitem.ID,
+    FNCPERSON_ID: FNCSALREPitem.FNCPERSON_ID,
+    EDAD_PRIMERA_REGLA: FNCSALREPitem.EDAD_PRIMERA_REGLA,
+    GRAVIDEZ: FNCSALREPitem.GRAVIDEZ,
+    PARIDEZ: FNCSALREPitem.PARIDEZ,
+    ABORTO: FNCSALREPitem.ABORTO,
+    CESAREA: FNCSALREPitem.CESAREA,
+    NACIDOS_VIVOS: FNCSALREPitem.NACIDOS_VIVOS,
+    NACIDOS_MUERTOS: FNCSALREPitem.NACIDOS_MUERTOS,
+    PARTO_ULTIMO: FNCSALREPitem.PARTO_ULTIMO,
+    ULTIMA_REGLA: FNCSALREPitem.ULTIMA_REGLA,
+    EDAD_GESTACION: FNCSALREPitem.EDAD_GESTACION,
+    PARTO_ESTIMADO: FNCSALREPitem.PARTO_ESTIMADO,
+    PRESENCIA_FAM: FNCSALREPitem.PRESENCIA_FAM,
+    SEROLOGIA: FNCSALREPitem.SEROLOGIA,
+    VIH: FNCSALREPitem.VIH,
+    RESUL_CITOLOGIA: FNCSALREPitem.RESUL_CITOLOGIA,
+    ACCION_CITOLOGIA: FNCSALREPitem.ACCION_CITOLOGIA,
+    RESUL_PROSTATA: FNCSALREPitem.RESUL_PROSTATA,
+    ACCION_PROSTATA: FNCSALREPitem.ACCION_PROSTATA,
+  };
+  await service.UpdateFNCSALREP(data);
+  for (const key of Object.keys(data)) {
+    if (key in item && key !== 'ID') {
+      item[key] = data[key];
+    }
+  }
+  dispatch(_setFNCSALREP(item));
 };
 
 const setSEXANDREPHEALTHPERSON_QUESTION_LIST = (
@@ -13,16 +88,12 @@ const setSEXANDREPHEALTHPERSON_QUESTION_LIST = (
   return {type: ActionType.SET_SEXANDREPHEALTHPERSON_QUESTION_LIST, data};
 };
 
-/**
- *
- */
 export const setSexAndRepHealthQuestionWithOptions = () => async (dispatch: any) => {
   let questionItems: SexAndRepHealthPersonQuestion[] = [];
   let personServie: SexAndRepHealthPersonService = new SexAndRepHealthPersonService();
   questionItems = await personServie.getQuestionWithOptions();
   dispatch(setSEXANDREPHEALTHPERSON_QUESTION_LIST(questionItems));
 };
-
 /**
  *
  * @param questionsQuery

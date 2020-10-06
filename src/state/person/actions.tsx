@@ -1,4 +1,4 @@
-import {PersonService} from '../../services';
+import {PersonService, SexAndRepHealthPersonService} from '../../services';
 import {PersonQuestion} from '../../modules/person/manage/state/types';
 import {
   FNBINFSAL,
@@ -58,6 +58,7 @@ export const saveFNCPERSON = (data: FNCPERSON) => async (
   let family: FNBNUCVIV = store.housing.FNBNUCVIV;
   let personServie: PersonService = new PersonService();
   let personRelation: PersonRelationService = new PersonRelationService();
+  let sexhealtService: SexAndRepHealthPersonService = new SexAndRepHealthPersonService();
   let result = await personServie.SaveFNCPERSON(data);
   if (result) {
     let nucleoPersona: FNBNUCVIV_FNCPERSON = {
@@ -65,9 +66,10 @@ export const saveFNCPERSON = (data: FNCPERSON) => async (
       FNCPERSON_ID: result.ID,
       ID: -1,
     };
-    personRelation.SaveFNBNUCVIV_FNCPERSON(nucleoPersona);
     data.CODIGO = result.CODIGO;
     data.ID = result.ID;
+    personRelation.SaveFNBNUCVIV_FNCPERSON(nucleoPersona);
+    sexhealtService.SaveFNCSALREP({FNCPERSON_ID: result.ID});
   }
   dispatch(_setPERSON(data));
 };

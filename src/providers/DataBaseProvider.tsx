@@ -27,11 +27,12 @@ export enum DataBaseSchemas {
   FNCGENEROSCHEMA = 'FNCGENERO',
   FNBINFSAL_FNCCONSALSCHEMA = 'FNBINFSAL_FNCCONSAL',
   FNCPERSON_FNCCONPERSCHEMA = 'FNCPERSON_FNCCONPER',
-  FNCELEREPSCHEMA = 'FNCELEREP',
-  FNCCONREPSCHEMA = 'FNCCONREP',
+  FNCELEREPSCHEMA = 'FNCELEREP', // preguntas salud sexual reproductiva
+  FNCCONREPSCHEMA = 'FNCCONREP', // respuestas salud sexual reproductiva
   FNCSALREP_FNCCONREPSCHEMA = 'FNCSALREP_FNCCONREP',
+  FNCSALREPSCHEMA = 'FNCSALREP', // Salud sexual y reproductiva
 }
-export const schemaVersion = 11;
+export const schemaVersion = 14;
 export const UserSchema = {
   name: DataBaseSchemas.UserSchema,
   properties: {
@@ -400,6 +401,35 @@ export const FNCSALREP_FNCCONREPSCHEMA = {
     SYNCSTATE: 'int',
   },
 };
+export const FNCSALREPSCHEMA = {
+  name: DataBaseSchemas.FNCSALREPSCHEMA,
+  properties: {
+    ID: 'int',
+    FNCPERSON_ID: 'int',
+    EDAD_PRIMERA_REGLA: 'int?',
+    GRAVIDEZ: 'int?',
+    PARIDEZ: 'int?',
+    ABORTO: 'int?',
+    CESAREA: 'int?',
+    NACIDOS_VIVOS: 'int?',
+    NACIDOS_MUERTOS: 'int?',
+    PARTO_ULTIMO: 'date?',
+    ULTIMA_REGLA: 'date?',
+    EDAD_GESTACION: 'string?',
+    PARTO_ESTIMADO: 'date?',
+    PRESENCIA_FAM: 'int?',
+    SEROLOGIA: 'int?',
+    VIH: 'int?',
+    RESUL_CITOLOGIA: 'string?',
+    ACCION_CITOLOGIA: 'int?',
+    RESUL_PROSTATA: 'string?',
+    ACCION_PROSTATA: 'int?',
+    USUARIO_DATA: 'string?',
+    FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
+    FECHA_CREACION: {type: 'date', default: new Date()},
+    ORIGEN_DATA: 'string?',
+  },
+};
 export const FNCGENEROSCHEMA = {
   name: DataBaseSchemas.FNCGENEROSCHEMA,
   primaryKey: 'ID',
@@ -467,6 +497,7 @@ export default class DataBaseProvider {
         FNCGENEROSCHEMA,
         FNBNUCVIV_FNCPERSONSCHEMA,
         FUCZONCUI_FUCBARVERSCHEMA,
+        FNCSALREPSCHEMA,
       ],
     }).then((realm) => {
       realm.write(() => {

@@ -28,7 +28,7 @@ class ViewPersonScreen extends Component<Props, State> {
   async UNSAFE_componentWillMount() {}
   componentDidMount() {
     if (!this.props.FNCPERSON.ID) {
-      this.goPersonalInformation();
+      this.navigate('PersonalInformationScreen');
       this._unsubscribe = this.props.navigation.addListener('focus', () => {
         if (this.state.created) {
           if (!this.props.FNCPERSON.ID) {
@@ -62,7 +62,7 @@ class ViewPersonScreen extends Component<Props, State> {
           <Text>Nucleo al que pertenece: {this.props.FNBNUCVIV.CODIGO}</Text>
           <List.Section>
             <List.Item
-              onPress={() => this.goPersonalInformation()}
+              onPress={() => this.navigate('PersonalInformationScreen')}
               title="Datos personales"
               left={() => <List.Icon icon="account-box" />}
             />
@@ -74,12 +74,12 @@ class ViewPersonScreen extends Component<Props, State> {
             <List.Item
               title="Seguridad social"
               left={() => <List.Icon icon="bottle-tonic-plus" />}
-              onPress={() => this.goSocialSecurityScreen()}
+              onPress={() => this.navigate('SocialSecurityScreen')}
             />
             <List.Item
               title="Datos de contacto"
               left={() => <List.Icon icon="card-account-phone" />}
-              onPress={() => this.goContactInformation()}
+              onPress={() => this.navigate('ContactInformationScreen')}
             />
             <List.Item
               title="Otros datos de identificación"
@@ -94,22 +94,22 @@ class ViewPersonScreen extends Component<Props, State> {
             <List.Item
               title="Estado de salud en la visita"
               left={() => <List.Icon icon="map-marker" />}
-              onPress={() => this.goHealthStatusVisitScreen()}
+              onPress={() => this.navigate('HealthStatusVisitScreen')}
             />
             <List.Item
               title="Hábitos no saludables"
               left={() => <List.Icon icon="map-marker" />}
-              onPress={() => this.goUnhealthyHabitsScreen()}
+              onPress={() => this.navigate('UnhealthyHabitsScreen')}
             />
             <List.Item
-              title="Salud sexual y reproductiva - Antecedentes gineco obstétricos"
+              title="Salud sexual y reproductiva"
               left={() => <List.Icon icon="map-marker" />}
-              //onPress={() => this.goLastPregnancyScreen()}
+              onPress={() => this.navigate('ReproductiveSexualHealtScreen')}
             />
             <List.Item
               title="Finalización de la última gestación"
               left={() => <List.Icon icon="map-marker" />}
-              onPress={() => this.goLastPregnancyScreen()}
+              onPress={() => this.navigate('LastPregnancyScreen')}
             />
             <List.Item
               title="Gestación actual"
@@ -124,33 +124,15 @@ class ViewPersonScreen extends Component<Props, State> {
             <List.Item
               title="Mortalidad en los últimos 12 meses"
               left={() => <List.Icon icon="emoticon-dead" />}
-              onPress={() => this.goMortalityLast12MonthsScreen()}
+              onPress={() => this.navigate('MortalityLast12MonthsScreen')}
             />
           </List.Section>
         </KeyboardAwareScrollView>
       </View>
     );
   }
-  goPersonalInformation() {
-    this.props.navigation.navigate('PersonalInformationScreen');
-  }
-  goContactInformation() {
-    this.props.navigation.navigate('ContactInformationScreen');
-  }
-  goHealthStatusVisitScreen() {
-    this.props.navigation.navigate('HealthStatusVisitScreen');
-  }
-  goMortalityLast12MonthsScreen() {
-    this.props.navigation.navigate('MortalityLast12MonthsScreen');
-  }
-  goSocialSecurityScreen() {
-    this.props.navigation.navigate('SocialSecurityScreen');
-  }
-  goUnhealthyHabitsScreen() {
-    this.props.navigation.navigate('UnhealthyHabitsScreen');
-  }
-  goLastPregnancyScreen() {
-    this.props.navigation.navigate('LastPregnancyScreen');
+  navigate(screen: string) {
+    this.props.navigation.navigate(screen);
   }
 }
 

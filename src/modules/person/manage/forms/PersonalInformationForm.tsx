@@ -33,9 +33,9 @@ const _PersonalInformationForm = (props: any) => {
     {label: 'Registro civil', value: '3'},
   ];
   const [genders, setGenders] = useState<{label: any; value: any}[]>([]);
-  const [gender, setGender] = useState('');
-  const [identification, setIdentification] = useState('');
-  const [identificationType, setIdentificationType] = useState('');
+  const [gender, setGender] = useState();
+  const [identification, setIdentification] = useState();
+  const [identificationType, setIdentificationType] = useState();
   useEffect(() => {
     fetchQuestions();
   }, []);

@@ -22,9 +22,9 @@ const _ContactInformationForm = (props: any) => {
   const {handleSubmit, control, errors, setValue} = useForm({
     resolver: yupResolver(schemaForm),
   });
-  const [phonenumber, setphonenumber] = useState('');
-  const [phonenumber2, setphonenumber2] = useState('');
-  const [email, setEmail] = useState('');
+  const [phonenumber, setphonenumber] = useState();
+  const [phonenumber2, setphonenumber2] = useState();
+  const [email, setEmail] = useState();
   useEffect(() => {
     fetchQuestions();
   }, []);

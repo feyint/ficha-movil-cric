@@ -108,8 +108,8 @@ const _SocialSecurityForm = (props: any) => {
               )}
               error={errors.SeguridadSocial}
               onChange={(value: any) => {
-                onChange(value);
                 if (value) {
+                  onChange(value);
                   props.saveAnswerLocal(
                     QuestionTypes.selectOne,
                     QuestionConditionPersonCodes.SeguridadSocial,
@@ -145,8 +145,8 @@ const _SocialSecurityForm = (props: any) => {
                 onBlur={onBlur}
                 error={errors.EPS}
                 onChange={(value: any) => {
-                  onChange(value);
                   if (value) {
+                    onChange(value);
                     props.saveAnswerLocal(
                       QuestionTypes.selectOne,
                       QuestionConditionPersonCodes.EPS,
@@ -181,13 +181,15 @@ const _SocialSecurityForm = (props: any) => {
               onBlur={onBlur}
               error={errors.ProgramaDeSalud}
               onChange={(values: any) => {
-                onChange(values);
-                console.log('save', values);
-                props.saveAnswerLocal(
-                  QuestionTypes.multiSelect,
-                  QuestionConditionPersonCodes.ProgramaDeSalud,
-                  values,
-                );
+                if (values) {
+                  onChange(values);
+                  console.log('save', values);
+                  props.saveAnswerLocal(
+                    QuestionTypes.multiSelect,
+                    QuestionConditionPersonCodes.ProgramaDeSalud,
+                    values,
+                  );
+                  }
               }}
               onLoad={() => {
                 console.log('onLoad');
