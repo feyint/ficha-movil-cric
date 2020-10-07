@@ -25,8 +25,6 @@ export default class SexAndRepHealthPersonService {
     let FNCSALREP_ID = await utils.getLastEntityID(
       DataBaseSchemas.FNCSALREPSCHEMA,
     );
-    console.error(FNCSALREP_ID);
-    
     item.ID = FNCSALREP_ID;
     item.FECHA_CREACION = new Date();
     const result = await Realm.open({
@@ -43,7 +41,7 @@ export default class SexAndRepHealthPersonService {
         console.error(error);
         return error;
       });
-    return item;
+    return result;
   }
   async UpdateFNCSALREP(item: any) {
     await Realm.open({
@@ -69,6 +67,24 @@ export default class SexAndRepHealthPersonService {
       .catch((error) => {
         console.error(error);
         return error;
+      });
+    return item;
+  }
+  async getFNCSALREP(FNCPERSON_ID: number) {
+    let item = await Realm.open({
+      schema: [FNCSALREPSCHEMA],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        let entity: any = realm
+          .objects(DataBaseSchemas.FNCSALREPSCHEMA)
+          .filtered(`FNCPERSON_ID = ${FNCPERSON_ID}`)
+          .sorted('FNCPERSON_ID', true)[0];
+        return entity;
+      })
+      .catch((error) => {
+        console.error(error);
+        return null;
       });
     return item;
   }

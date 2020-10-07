@@ -69,7 +69,9 @@ export const saveFNCPERSON = (data: FNCPERSON) => async (
     data.CODIGO = result.CODIGO;
     data.ID = result.ID;
     personRelation.SaveFNBNUCVIV_FNCPERSON(nucleoPersona);
-    sexhealtService.SaveFNCSALREP({FNCPERSON_ID: result.ID});
+    sexhealtService.SaveFNCSALREP({
+      FNCPERSON_ID: result.ID,
+    });
   }
   dispatch(_setPERSON(data));
 };

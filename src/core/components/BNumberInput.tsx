@@ -6,10 +6,10 @@ import {View} from 'react-native';
 interface Props {
   label?: string;
   value?: string;
-  errorText?: number;
-  error?: boolean;
+  error?: any;
   onChange?: any;
   keyboardType?: any;
+  disabled?: boolean;
   secureTextEntry?: any;
 }
 
@@ -21,6 +21,7 @@ export default class BNumberInput extends Component<Props, any> {
           error={this.props.error}
           label={this.props.label}
           mode="outlined"
+          disabled={this.props.disabled}
           keyboardType="numeric"
           onChangeText={(text) => {
             this.props.onChange(text);
@@ -29,8 +30,8 @@ export default class BNumberInput extends Component<Props, any> {
         />
         {this.props.error ? (
           <HelperText type="error">
-            {this.props.errorText
-              ? this.props.errorText
+            {this.props.error.type
+              ? this.props.error.type
               : 'El campo es requerido'}
           </HelperText>
         ) : null}

@@ -6,31 +6,31 @@ import {yupResolver} from '@hookform/resolvers';
 import * as yup from 'yup';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
-import {BButton, BTextInput} from '../../../../core/components';
+import {BButton} from '../../../../core/components';
 import BNumberInput from '../../../../core/components/BNumberInput';
 import {FNCPERSON} from '../../../../state/person/types';
 import {saveFNCPERSON, updateFNCPERSON} from '../../../../state/person/actions';
 const schemaForm = yup.object().shape({
-  agemenstruation: yup.number().required(),
-  pregnancynumber: yup.number().required(),
-  parideznumber: yup.number().required(),
-  abortionnumber: yup.number().required(),
-  cesariannumber: yup.number().required(),
-  bornnumber: yup.number().required(),
-  bornnumberdeath: yup.number().required(),
+  agemenstruation: yup.number().integer().min(1),
+  pregnancynumber: yup.number().integer(),
+  parideznumber: yup.number().integer(),
+  abortionnumber: yup.number().integer(),
+  cesariannumber: yup.number().integer(),
+  bornnumber: yup.number().integer(),
+  bornnumberdeath: yup.number().integer(),
 });
 const _ReproductiveSexualHealtForm = (props: any) => {
   const navigation = useNavigation();
   const {handleSubmit, control, errors, setValue} = useForm({
     resolver: yupResolver(schemaForm),
   });
-  const [agemenstruation, setagemenstruation] = useState();
-  const [pregnancynumber, setpregnancynumber] = useState();
-  const [parideznumber, setparideznumber] = useState();
-  const [abortionnumber, setabortionnumber] = useState();
-  const [cesariannumber, setcesariannumber] = useState();
-  const [bornnumber, setbornnumber] = useState();
-  const [bornnumberdeath, setbornnumberdeath] = useState();
+  const [agemenstruation, setagemenstruation] = useState<number>();
+  const [pregnancynumber, setpregnancynumber] = useState<number>(0);
+  const [parideznumber, setparideznumber] = useState<number>(0);
+  const [abortionnumber, setabortionnumber] = useState<number>(0);
+  const [cesariannumber, setcesariannumber] = useState<number>(0);
+  const [bornnumber, setbornnumber] = useState<number>(0);
+  const [bornnumberdeath, setbornnumberdeath] = useState<number>(0);
   useEffect(() => {
     fetchQuestions();
   }, []);
@@ -39,14 +39,26 @@ const _ReproductiveSexualHealtForm = (props: any) => {
     }
   };
   const onSubmit = async (data: any) => {
-    let person: FNCPERSON = props.FNCPERSON;
-    let item: any = {};
-    item.ID = person.ID;
-    item.TEL_CELULAR = data.phonenumber;
-    item.TEL_ALTERNO = data.phonenumber2;
-    item.CORREO_ELECTRONICO = data.email;
-    let inserted = await props.updateFNCPERSON(item);
-    navigation.goBack();
+    // let person: FNCPERSON = props.FNCPERSON;
+    // let item: any = {};
+    // item.TEL_CELULAR = data.phonenumber;
+    // item.TEL_ALTERNO = data.phonenumber2;
+    // item.CORREO_ELECTRONICO = data.email;
+    // let inserted = await props.updateFNCPERSON(item);
+    // navigation.goBack();
+  };
+  const validatepregnancynumber = () => {
+    let isValid = false;
+    console.error(typeof(pregnancynumber));
+    if (pregnancynumber > 0) {
+      if (parideznumber && abortionnumber && cesariannumber) {
+        let sum = parideznumber + abortionnumber + cesariannumber;
+        if (sum <= pregnancynumber) {
+          return true;
+        }
+      }
+    }
+    return isValid;
   };
   return (
     <KeyboardAwareScrollView>
@@ -59,9 +71,9 @@ const _ReproductiveSexualHealtForm = (props: any) => {
               error={errors.agemenstruation}
               onChange={(value) => {
                 onChange(value);
-                setagemenstruation(value);
+                setagemenstruation(parseInt(value, 10));
               }}
-              value={agemenstruation}
+              value={agemenstruation ? '' + agemenstruation : ''}
             />
           )}
           name="agemenstruation"
@@ -70,13 +82,16 @@ const _ReproductiveSexualHealtForm = (props: any) => {
           control={control}
           render={({onChange, value}) => (
             <BNumberInput
+              disabled={agemenstruation && agemenstruation > 0 ? false : true}
               label="Número de gravidez"
               error={errors.pregnancynumber}
               onChange={(value) => {
                 onChange(value);
-                setpregnancynumber(value);
+                if (!isNaN(value)) {
+                  setpregnancynumber(parseInt(value, 10));
+                }
               }}
-              value={pregnancynumber}
+              value={!isNaN(pregnancynumber) ? '' + pregnancynumber : ''}
             />
           )}
           name="pregnancynumber"
@@ -86,12 +101,15 @@ const _ReproductiveSexualHealtForm = (props: any) => {
           render={({onChange, value}) => (
             <BNumberInput
               label="Número paridez"
+              disabled={!pregnancynumber || pregnancynumber == 0}
               error={errors.parideznumber}
               onChange={(value) => {
                 onChange(value);
-                setparideznumber(value);
+                if (validatepregnancynumber()) {
+                  setparideznumber(value);
+                }
               }}
-              value={parideznumber}
+              value={'' + parideznumber}
             />
           )}
           name="parideznumber"
@@ -100,13 +118,14 @@ const _ReproductiveSexualHealtForm = (props: any) => {
           control={control}
           render={({onChange, value}) => (
             <BNumberInput
+              disabled={!pregnancynumber || pregnancynumber == 0}
               label="Número de abortos"
               error={errors.abortionnumber}
               onChange={(value) => {
                 onChange(value);
                 setabortionnumber(value);
               }}
-              value={abortionnumber}
+              value={'' + abortionnumber}
             />
           )}
           name="abortionnumber"
@@ -115,13 +134,14 @@ const _ReproductiveSexualHealtForm = (props: any) => {
           control={control}
           render={({onChange, value}) => (
             <BNumberInput
+              disabled={!pregnancynumber || pregnancynumber == 0}
               label="Número cesárea"
               error={errors.cesariannumber}
               onChange={(value) => {
                 onChange(value);
                 setcesariannumber(value);
               }}
-              value={cesariannumber}
+              value={'' + cesariannumber}
             />
           )}
           name="cesariannumber"
@@ -130,13 +150,14 @@ const _ReproductiveSexualHealtForm = (props: any) => {
           control={control}
           render={({onChange, value}) => (
             <BNumberInput
+              disabled={!pregnancynumber || pregnancynumber == 0}
               label="Número de nacidos vivos"
               error={errors.bornnumber}
               onChange={(value) => {
                 onChange(value);
                 setbornnumber(value);
               }}
-              value={bornnumber}
+              value={'' + bornnumber}
             />
           )}
           name="bornnumber"
@@ -145,13 +166,14 @@ const _ReproductiveSexualHealtForm = (props: any) => {
           control={control}
           render={({onChange, value}) => (
             <BNumberInput
+              disabled={!pregnancynumber || pregnancynumber == 0}
               label="Número de nacidos muertos"
               error={errors.bornnumberdeath}
               onChange={(value) => {
                 onChange(value);
                 setbornnumberdeath(value);
               }}
-              value={bornnumberdeath}
+              value={'' + bornnumberdeath}
             />
           )}
           name="bornnumberdeath"

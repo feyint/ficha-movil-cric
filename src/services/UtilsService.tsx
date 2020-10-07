@@ -4,6 +4,7 @@ import {
   FUBUBIVIVSCHEMA,
   FNBNUCVIVSCHEMA,
   FNBNUCVIV_FNCPERSONSCHEMA,
+  FNCSALREPSCHEMA,
 } from '../providers/DataBaseProvider';
 import Realm from 'realm';
 
@@ -15,6 +16,7 @@ export default class UtilsService {
         FUBUBIVIVSCHEMA,
         FNBNUCVIVSCHEMA,
         FNBNUCVIV_FNCPERSONSCHEMA,
+        FNCSALREPSCHEMA,
       ],
       schemaVersion: schemaVersion,
     })

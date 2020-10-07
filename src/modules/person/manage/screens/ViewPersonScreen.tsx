@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View} from 'react-native';
+import {Alert, View} from 'react-native';
 import {Appbar, Text} from 'react-native-paper';
 import {List} from 'react-native-paper';
 import {NavigationProp} from '@react-navigation/native';
@@ -7,26 +7,31 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {connect} from 'react-redux';
 import {FNCPERSON} from '../../../../state/person/types';
 import {FNBNUCVIV} from '../../../../state/house/types';
+import {GenreService, SexAndRepHealthPersonService} from '../../../../services';
+import {setFNCNCSALREP} from '../../../../state/SexAndRepHealthPerson/actions';
 
 interface Props {
   navigation: NavigationProp<any>;
   FNCPERSON: FNCPERSON;
   FNBNUCVIV: FNBNUCVIV;
+  setFNCNCSALREP: any;
 }
 interface State {
   created: boolean;
+  enableSexReproductionHealt: boolean;
 }
 
 class ViewPersonScreen extends Component<Props, State> {
   state = {
     created: false,
+    enableSexReproductionHealt: false,
   };
   private _unsubscribe: any;
   _goBack() {
     this.props.navigation.goBack();
   }
   async UNSAFE_componentWillMount() {}
-  componentDidMount() {
+  async componentDidMount() {
     if (!this.props.FNCPERSON.ID) {
       this.navigate('PersonalInformationScreen');
       this._unsubscribe = this.props.navigation.addListener('focus', () => {
@@ -40,6 +45,19 @@ class ViewPersonScreen extends Component<Props, State> {
           });
         }
       });
+    } else {
+      let genreService = new GenreService();
+      let Genre = await genreService.get(this.props.FNCPERSON.FNCGENERO_ID);
+      if (Genre && Genre.CODIGO == 'F') {
+        this.setState({
+          enableSexReproductionHealt: true,
+        });
+      }
+      let sxhealtservice = new SexAndRepHealthPersonService();
+      let item = await sxhealtservice.getFNCSALREP(this.props.FNCPERSON.ID);
+      if (item) {
+        this.props.setFNCNCSALREP(item);
+      }
     }
   }
   componentWillUnmount() {
@@ -104,7 +122,14 @@ class ViewPersonScreen extends Component<Props, State> {
             <List.Item
               title="Salud sexual y reproductiva"
               left={() => <List.Icon icon="map-marker" />}
-              onPress={() => this.navigate('ReproductiveSexualHealtScreen')}
+              onPress={() => {
+                this.state.enableSexReproductionHealt
+                  ? this.navigate('ReproductiveSexualHealtScreen')
+                  : Alert.alert(
+                      'Acción no permitida',
+                      'solo aplica para genero "Femenino"',
+                    );
+              }}
             />
             <List.Item
               title="Finalización de la última gestación"
@@ -135,11 +160,13 @@ class ViewPersonScreen extends Component<Props, State> {
     this.props.navigation.navigate(screen);
   }
 }
-
+const mapDispatchToProps = {
+  setFNCNCSALREP,
+};
 const mapStateToProps = (reducer: any) => {
   return {
     FNCPERSON: reducer.person.FNCPERSON,
     FNBNUCVIV: reducer.housing.FNBNUCVIV,
   };
 };
-export default connect(mapStateToProps, null)(ViewPersonScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(ViewPersonScreen);
