@@ -149,7 +149,7 @@ const _OtherIdentificationDataForm = (props: any) => {
         questions: result,
       });
       console.log(result);
-      console.log(resulsegundaLengua);
+      //console.log(resulsegundaLengua);
     }
     //getAnswersFNCPERSON();
   }
