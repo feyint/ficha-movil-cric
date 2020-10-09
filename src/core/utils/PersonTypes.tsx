@@ -44,7 +44,9 @@ export const QuestionConditionPersonCodes = {
   ProgramaDeSalud: '15',
   LunaOccidental: '16',
   LactanciaMaterna: '17',
-  OcupacionGranGrupo: '19',
+  SegundaLenguaMaterna: '18',
+  //OcupacionGranGrupo: '19',
+  DominioSegundaLenguaMaterna: '19',
 };
 
 export const QuestionSexAndRepHealthPersonCodes = {

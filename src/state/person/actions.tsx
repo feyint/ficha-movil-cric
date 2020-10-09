@@ -21,6 +21,10 @@ const _setPERSON = (data: any) => {
   return {type: ActionType.SET_FNCPERSON, data};
 };
 
+/* const _setFNCPERSON = (data: FNCPERSON) => {
+  return {type: ActionType.SET_FNCPERSON, data};
+}; */
+
 export const clearFNCPERSON = () => (dispatch: any) => {
   let person = {
     ID: null,
@@ -247,3 +251,20 @@ function getOption(questionID: number, answerID: number, fnbinfsalID: number) {
   };
   return object;
 }
+export const saveFNCPERSONPropiety = (propiety: any, value: any) => async (
+  dispatch: any,
+  getState: any,
+) => {
+  const store = getState();
+  let family: any = store.person.FNCPERSON;
+  let personServie: PersonService = new PersonService();
+  let updatedProp = await personServie.SaveFNCPERSONPropiety(
+    family.ID,
+    propiety,
+    value,
+  );
+  if (updatedProp == true) {
+    family[propiety] = value;
+    dispatch(_setPERSON(family));
+  }
+};
