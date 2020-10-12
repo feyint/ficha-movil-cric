@@ -16,6 +16,7 @@ import DataBaseProvider, {
   FNCELEPERSCHEMA,
   FNCCONPERSCHEMA,
   FNCDESARMSCHEMA,
+  FNCOCUPACSCHEMA,
   FNCELEREPSCHEMA,
   FNCCONREPSCHEMA,
   FNCPUEINDSCHEMA,
@@ -55,6 +56,7 @@ export default class SyncCatalogService {
         FNCELEPERSCHEMA,
         FNCCONPERSCHEMA,
         FNCDESARMSCHEMA,
+        FNCOCUPACSCHEMA,
         FNCELEREPSCHEMA,
         FNCCONREPSCHEMA,
         FNCPUEINDSCHEMA,
@@ -90,6 +92,7 @@ export default class SyncCatalogService {
         let itemFNCCONREP = realm.objects('FNCCONREP');
         let itemFNCDESARM = realm.objects('FNCDESARM');
         let itemFNCPUEIND = realm.objects('FNCPUEIND');
+        let itemFNCOCUPAC = realm.objects('FNCOCUPAC');
         realm.delete(itemsFVCCONVIV);
         realm.delete(itemFVCELEVIV);
         realm.delete(itemFNCELESAL);
@@ -100,6 +103,7 @@ export default class SyncCatalogService {
         realm.delete(itemFNCELEREP);
         realm.delete(itemFNCCONREP);
         realm.delete(itemFNCPUEIND);
+        realm.delete(itemFNCOCUPAC);
       });
     });
   }
@@ -148,6 +152,22 @@ export default class SyncCatalogService {
       DataBaseSchemas.FNCDESARMSCHEMA,
       FNCDESARMSCHEMA,
       FNCDESARMSchema,
+    );
+    let itemFNCOCUPAC: any = await this.getEntity({entityName: 'FNCOCUPAC'});
+    const FNCOCUPACSchema = itemFNCOCUPAC.data.map((item: any) => {
+      return {
+        ID: item.id,
+        CODIGO: item.codigo,
+        NOMBRE: item.nombre,
+        ESTADO: item.estado === 1 ? true : false,
+        FNCOCUSUB_ID: item.fncocusubId.id,
+        //CODIGO_FF: item.codigoff,     //Error: Missing value for property 'FNCOCUPAC.CODIGO_FF'
+      };
+    });
+    await this.syncSaveEntities(
+      DataBaseSchemas.FNCOCUPACSCHEMA,
+      FNCOCUPACSCHEMA,
+      FNCOCUPACSchema,
     );
     let itemFNCELESAL: any = await this.getEntity({entityName: 'FNCELESAL'});
     const FNCELESALSchema = itemFNCELESAL.data.map((item: any) => {

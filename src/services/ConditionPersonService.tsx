@@ -94,7 +94,7 @@ export default class ConditionPersonService {
   ) {
     let item: SelectSchema = {name: '', id: 0, children: []};
     for (let i = 0; i < questions.length; i++) {
-      if (questions[i].CODIGO) {
+      if (questions[i].CODIGO === code) {
         item.id = questions[i].ID;
         item.name = capitalizeFirstLetter(questions[i].NOMBRE);
         for (let option of questions[i].OPTIONS) {
@@ -152,7 +152,7 @@ export default class ConditionPersonService {
         item.id = questions[i].ID;
         item.name = capitalizeFirstLetter(questions[i].NOMBRE);
         for (let option of questions[i].OPTIONS) {
-          item.children.push({id: option.ID, name: option.NOMBRE});
+          item.children.push({id: option.ID, name: option.NOMBRE, item: null});
         }
       }
     }

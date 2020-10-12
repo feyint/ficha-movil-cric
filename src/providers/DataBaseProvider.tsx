@@ -99,11 +99,11 @@ export const FNCOCUPACSCHEMA = {
     ID: 'int',
     CODIGO: 'string',
     NOMBRE: 'string',
-    ESTADO: 'int',
+    ESTADO: 'bool',
     FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
     FECHA_CREACION: {type: 'date', default: new Date()},
     FNCOCUSUB_ID: 'int',
-    CODIGO_FF: 'string',
+    //CODIGO_FF: 'string',
   },
 };
 export const FNCPERSONSCHEMA = {
@@ -620,15 +620,6 @@ export default class DataBaseProvider {
           FNCOCUSUB_ID: 76,
           CODIGO_FF: '258',
         }); */
-        realm.create('FNCOCUPAC', {
-          ID: 259,
-          CODIGO: '5221',
-          NOMBRE: 'Comerciantes de tiendas',
-          ESTADO: 1,
-          FNCOCUSUB_ID: 77,
-          CODIGO_FF: '259',
-        });
-
         // realm.create(DataBaseSchemas.FUBUBIVIVSCHEMA, {
         //   ID: 123,
         //   CODIGO: 'CODVIVI1',

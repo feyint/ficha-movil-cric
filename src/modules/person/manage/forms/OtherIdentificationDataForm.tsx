@@ -23,7 +23,7 @@ import {ConditionPersonQuestion} from '../state/types';
 import {SelectSchema} from '../../../../core/utils/types';
 import {saveFNCPERSON, updateFNCPERSON} from '../../../../state/person/actions';
 
-const questions = [
+const questionscodes = [
   QuestionConditionPersonCodes.EstadoCivil,
   QuestionConditionPersonCodes.GrupoEtnico,
   QuestionConditionPersonCodes.Casta,
@@ -64,19 +64,30 @@ const _OtherIdentificationDataForm = (props: any) => {
   const syncCatalogService = new ConditionPersonService();
 
   const [state, setState] = useState({
-    questions: [] as ConditionPersonQuestion[],
+    questionscodesMultiselect: [] as ConditionPersonQuestion[],
   });
-  const [lengua, setLengua] = useState('');
+
+  const [questions, setQuestions] = useState<ConditionPersonQuestion[]>([]);
+
+  const [lenguaMaternaSelect, setlenguaMaternaSelect] = useState<
+    {label: any; value: any}[]
+  >([]);
+  const [segundaLenguaSelect, setsegundaLenguaSelect] = useState<
+    {label: any; value: any}[]
+  >([]);
+  const [segundaLenguaFiltered, setsegundaLenguaFiltered] = useState<
+    {label: any; value: any}[]
+  >([]);
+  const [lenguaMaterna, setLenguaMaterna] = useState('');
+  const [leng, setLeng] = useState('');
+
   //const [castaPikerEnable, setCastaPikerEnable] = useState(false);
   const [enableLenguaMaterna, setEnableLenguaMaterna] = useState(false);
   const [enableSegundaLengua, setEnableSegundaLengua] = useState(false);
+  const [enableTipoTrabajo, setEnableTipoTrabajo] = useState(false);
   const navigation = useNavigation();
 
-  const getItemsForQuestionSelect = (code: string) => {
-    return syncCatalogService.getItemsForQuestionSelect(code, state.questions);
-  };
-
-  const getItemsForQuestionSelectLanguaje = async () => {
+  /* const getItemsForQuestionSelectLanguaje = async () => {
     console.log(
       '***************************** segunda lengua *****************************',
     );
@@ -85,8 +96,8 @@ const _OtherIdentificationDataForm = (props: any) => {
     ).children;
     console.log('vamo a calmarno', resulsegundaLengua);
     setsegundaLenguaMaterna(resulsegundaLengua);
-    //let resulsegundaLengua = await syncCatalogService.getOrganiList();    
-  };
+    //let resulsegundaLengua = await syncCatalogService.getOrganiList();
+  }; */
 
   const {handleSubmit, control, errors, setValue} = useForm({
     resolver: yupResolver(schemaForm),
@@ -98,9 +109,9 @@ const _OtherIdentificationDataForm = (props: any) => {
   >([]);
 
   //TODO: JAL
-  const [segundaLenguaMaterna, setsegundaLenguaMaterna] = useState<
+  /* const [segundaLenguaMaterna, setsegundaLenguaMaterna] = useState<
     {label: any; value: any}[]
-  >([]);
+  >([]); */
 
   const [ocupacionPrincipal, setOcupacionPrincipal] = useState('');
   const [ocupacionPrincipales, setOcupacionPrincipales] = useState<
@@ -111,6 +122,8 @@ const _OtherIdentificationDataForm = (props: any) => {
   const [organizaciones, setOrganizaciones] = useState<
     {label: any; value: any}[]
   >([]);
+
+  const [list, setlist] = useState(0);
 
   /* const [
     parentezcoGrupoFamiliarSelect,
@@ -126,11 +139,28 @@ const _OtherIdentificationDataForm = (props: any) => {
   }, []);
 
   async function fetchQuestions() {
-    let result = await props.getQuestionWithOptions(questions);
+    let resultMultiselect = await props.getQuestionWithOptions(questionscodes);
+    if (resultMultiselect) {
+      setState({
+        ...state,
+        questionscodesMultiselect: resultMultiselect,
+      });
+    }
+    let result = await props.getQuestionWithOptions(questionscodes);
     let resultparen = await syncCatalogService.getParentList();
     let resultocupac = await syncCatalogService.getOcupacList();
     let resultorgani = await syncCatalogService.getOrganiList();
-
+    let lenguas = syncCatalogService.getItemsForQuestionSelect(
+      QuestionConditionPersonCodes.LenguaMaterna,
+      result,
+    );
+    let segundalengua = syncCatalogService.getItemsForQuestionSelect(
+      QuestionConditionPersonCodes.SegundaLenguaMaterna,
+      result,
+    );
+    setQuestions(result);
+    setlenguaMaternaSelect(lenguas.children);
+    setsegundaLenguaSelect(segundalengua.children);
     setParentezcoGrupoFamiliares(resultparen);
     setOcupacionPrincipales(resultocupac);
     setOrganizaciones(resultorgani);
@@ -142,14 +172,6 @@ const _OtherIdentificationDataForm = (props: any) => {
       setOcupacionPrincipal(props.FNCPERSON.FNCOCUPAC_ID);
       setValue('organizacion', props.FNCPERSON.FNCORGANI_ID);
       setOrganizacion(props.FNCPERSON.FNCORGANI_ID);
-    }
-    if (result) {
-      setState({
-        ...state,
-        questions: result,
-      });
-      console.log(result);
-      //console.log(resulsegundaLengua);
     }
     //getAnswersFNCPERSON();
   }
@@ -181,32 +203,63 @@ const _OtherIdentificationDataForm = (props: any) => {
     let question = await props.getQuestionAnswer(type, code);
     setValue(prop, question);
     if (prop == 'LenguaMaterna') {
-      setEnableLenguaMaterna(question !== '160' || question !== null);
+      setEnableLenguaMaterna(question !== '167' || question !== null);
     }
     if (prop == 'SegundaLengua') {
-      setEnableLenguaMaterna(question !== '160' || question !== null);
+      setEnableLenguaMaterna(question !== '302' || question !== null);
     }
   }
+  async function getAnswersMultiselect(
+    type: number,
+    code: string,
+    prop: string,
+  ) {
+    let questionscodesMultiselect = await props.getQuestionAnswer(type, code);
+    setValue(prop, questionscodesMultiselect);
+  }
+  const onChangeLengua = (value: string) => {
+    setLenguaMaterna(value);
+    let item = lenguaMaternaSelect.find((i) => i.value === value);
+    console.error('item', item);
+    let segundalengua: any = [];
+    segundaLenguaSelect.forEach((lengua) => {
+      if (lengua.label != item.label) {
+        segundalengua.push(lengua);
+      }
+    });
+    setsegundaLenguaFiltered(segundalengua);
+  };
   const validateLenguaMaterna = (value: string) => {
     //setEnableLenguaMaterna(value != '160' || value != null);
     if (value == '160' || value == null) {
       setEnableLenguaMaterna(false);
+      setEnableSegundaLengua(false);
       props.saveAnswerLocal(
         QuestionTypes.selectOne,
         QuestionConditionPersonCodes.DominioLenguaMaterna,
-        '160',
+        '167',
+      );
+      props.saveAnswerLocal(
+        QuestionTypes.selectOne,
+        QuestionConditionPersonCodes.SegundaLenguaMaterna,
+        '295',
+      );
+      props.saveAnswerLocal(
+        QuestionTypes.selectOne,
+        QuestionConditionPersonCodes.DominioSegundaLenguaMaterna,
+        '302',
       );
     } else {
       setEnableLenguaMaterna(true);
     }
   };
   const validateSegundaLengua = (value: string) => {
-    if (value == '160' || value == null) {
+    if (value == '295' || value == null) {
       setEnableSegundaLengua(false);
       props.saveAnswerLocal(
         QuestionTypes.selectOne,
         QuestionConditionPersonCodes.DominioSegundaLenguaMaterna,
-        '160',
+        '302',
       );
     } else {
       setEnableSegundaLengua(true);
@@ -214,38 +267,33 @@ const _OtherIdentificationDataForm = (props: any) => {
   };
 
   const getQuestionlabel = (code: string) => {
-    return syncCatalogService.getQuestionlabel(code, state.questions);
+    return syncCatalogService.getQuestionlabel(code, questions);
   };
-
+  const getQuestionlabelMultiselect = (code: string) => {
+    return syncCatalogService.getQuestionlabel(
+      code,
+      state.questionscodesMultiselect,
+    );
+  };
+  const getItemsForQuestionSelect = (code: string) => {
+    return syncCatalogService.getItemsForQuestionSelect(code, questions);
+  };
   const getItemsForQuestionMultiSelect = (code: string) => {
-    console.log('state.questions: ', state.questions);
+    console.log('state.questions: ', state.questionscodesMultiselect);
     return syncCatalogService.getItemsForQuestionMultiSelect(
       code,
-      state.questions,
+      state.questionscodesMultiselect,
     );
   };
 
-  const onSubmit = async (data: any) => {
-    let person: FNCPERSON = props.FNCPERSON;
-    if (person.ID != null) {
-      try {
-        let inserted = await props.updateFNCPERSON({
-          FNCPAREN_ID: JSON.parse(data.parentezcoGrupoFamiliar),
-        });
-      } catch (error) {
-        console.error(error);
-      }
-    } else {
-      let item: any = {};
-      item.FNCPAREN_ID = JSON.parse(data.parentezcoGrupoFamiliar);
-      let inserted = await props.saveFNCPERSON(item);
-    }
+  function onSubmit(data: any) {
     navigation.goBack();
-  };
+  }
+
   return (
     <KeyboardAwareScrollView>
       <View style={styles.container}>
-        <Controller
+        <Controller //Organizacion
           control={control}
           render={({onChange, onBlur, value}) => (
             <BPicker
@@ -277,7 +325,7 @@ const _OtherIdentificationDataForm = (props: any) => {
           )}
           name="organizacion"
         />
-        <Controller
+        <Controller //Ocupacion principal
           control={control}
           render={({onChange, onBlur, value}) => (
             <BPicker
@@ -288,6 +336,7 @@ const _OtherIdentificationDataForm = (props: any) => {
               onChange={(value: any) => {
                 onChange(value);
                 if (value) {
+                  console.warn(enableTipoTrabajo);
                   onChange(value);
                   props.saveFNCPERSONPropiety('FNCOCUPAC_ID', value);
                   setOcupacionPrincipal(value);
@@ -297,6 +346,24 @@ const _OtherIdentificationDataForm = (props: any) => {
                   console.log(
                     `props.FNCPERSON.FNCOCUPAC_ID tiene ${props.FNCPERSON.FNCOCUPAC_ID}`,
                   );
+                  console.warn(value);
+                  console.warn(value);
+                  if (value == 485) {
+                    setEnableTipoTrabajo(true)
+                  } else {
+                    setEnableTipoTrabajo(false);
+                    props.saveAnswerLocal(
+                      QuestionTypes.selectOne,
+                      QuestionConditionPersonCodes.TipoTrabajo,
+                      190,
+                    );
+                  }
+                  /* props.saveAnswerLocal(
+                      QuestionTypes.selectOne,
+                      QuestionConditionPersonCodes.TipoTrabajo,
+                      value,
+                    ); */
+                  console.warn(enableTipoTrabajo);
                 }
               }}
               selectedValue={ocupacionPrincipal}
@@ -306,7 +373,7 @@ const _OtherIdentificationDataForm = (props: any) => {
           )}
           name="ocupacionPrincipal"
         />
-        <Controller
+        <Controller //Parentezco en el grupo familiar
           control={control}
           render={({onChange, onBlur, value}) => (
             <BPicker
@@ -341,7 +408,7 @@ const _OtherIdentificationDataForm = (props: any) => {
           )}
           name="parentezcoGrupoFamiliar"
         />
-        <Controller
+        <Controller //Estado civil
           control={control}
           render={({onChange, onBlur, value}) => (
             <BPicker
@@ -374,7 +441,7 @@ const _OtherIdentificationDataForm = (props: any) => {
           )}
           name="EstadoCivil"
         />
-        <Controller
+        <Controller //GrupoEtnico
           control={control}
           render={({onChange, onBlur, value}) => (
             <BPicker
@@ -407,7 +474,7 @@ const _OtherIdentificationDataForm = (props: any) => {
           )}
           name="GrupoEtnico"
         />
-        <Controller
+        <Controller //Casta
           control={control}
           render={({onChange, onBlur, value}) => (
             <BPicker
@@ -450,17 +517,19 @@ const _OtherIdentificationDataForm = (props: any) => {
               error={errors.LenguaMaterna}
               onChange={(value: any) => {
                 onChange(value);
-                props.saveAnswerLocal(
-                  QuestionTypes.selectOne,
-                  QuestionConditionPersonCodes.LenguaMaterna,
-                  value,
-                );
-                //fillSecondLanguaje(value);
-                setLengua(value);
-                console.log(`el valor de lengua materna es ${value} `);
-                validateLenguaMaterna(value);
+                if (value) {
+                  onChangeLengua(value);
+                  setLeng(value);
+                  props.saveAnswerLocal(
+                    QuestionTypes.selectOne,
+                    QuestionConditionPersonCodes.LenguaMaterna,
+                    value,
+                  );
+                  validateLenguaMaterna(value);
+                }
               }}
               onLoad={() => {
+                onChangeLengua(value);
                 getAnswers(
                   QuestionTypes.selectOne,
                   QuestionConditionPersonCodes.LenguaMaterna,
@@ -469,11 +538,7 @@ const _OtherIdentificationDataForm = (props: any) => {
               }}
               //value={value}
               selectedValue={value}
-              items={
-                getItemsForQuestionSelect(
-                  QuestionConditionPersonCodes.LenguaMaterna,
-                ).children
-              }
+              items={lenguaMaternaSelect}
             />
           )}
           name="LenguaMaterna"
@@ -491,18 +556,20 @@ const _OtherIdentificationDataForm = (props: any) => {
                 error={errors.DominioLenguaMaterna}
                 onChange={(value: any) => {
                   onChange(value);
-                  props.saveAnswerLocal(
-                    QuestionTypes.selectOne,
-                    QuestionConditionPersonCodes.DominioLenguaMaterna,
-                    value,
-                  );
+                  if (value) {
+                    setlist(1);
+                    props.saveAnswerLocal(
+                      QuestionTypes.selectOne,
+                      QuestionConditionPersonCodes.DominioLenguaMaterna,
+                      value,
+                    );
+                  }
                 }}
                 onLoad={() => {
                   getAnswers(
                     QuestionTypes.selectOne,
                     QuestionConditionPersonCodes.DominioLenguaMaterna,
                     'DominioLenguaMaterna',
-                    '',
                   );
                 }}
                 //value={value}
@@ -523,26 +590,34 @@ const _OtherIdentificationDataForm = (props: any) => {
             render={({onChange, onBlur, value}) => (
               <BPicker
                 label="Segunda lengua"
+                prompt="seleccione"
                 onBlur={onBlur}
                 error={errors.SegundaLengua}
                 onChange={(value: any) => {
                   onChange(value);
-                  props.saveAnswerLocal(
+                  if (value) {
+                    props.saveAnswerLocal(
+                      QuestionTypes.selectOne,
+                      QuestionConditionPersonCodes.SegundaLenguaMaterna,
+                      value,
+                    );
+                    validateSegundaLengua(value);
+                  }
+
+                  console.log(`valor en sleng es ${value}`);
+                }}
+                onLoad={async () => {
+                  onChangeLengua(leng);
+                  getAnswers(
                     QuestionTypes.selectOne,
                     QuestionConditionPersonCodes.SegundaLenguaMaterna,
-                    value,
+                    'SegundaLenguaMaterna',
                   );
-                  //--------------------------
-                  //------------------------------
-                  console.log(`el valor de segunda lengua es ${value}`);
-                  validateSegundaLengua(value);
-                }}
-                onLoad={ async () => {
-                  await getItemsForQuestionSelectLanguaje();
                 }}
                 //value={value}
                 selectedValue={value}
-                items={segundaLenguaMaterna}
+                items={segundaLenguaFiltered}
+                //items={list === 0 ? lenguaMaternaSelect : segundaLenguaFiltered}
               />
             )}
             name="SegundaLenguaMaterna"
@@ -558,11 +633,13 @@ const _OtherIdentificationDataForm = (props: any) => {
                 error={errors.DominioSegundaLengua}
                 onChange={(value: any) => {
                   onChange(value);
-                  props.saveAnswerLocal(
-                    QuestionTypes.selectOne,
-                    QuestionConditionPersonCodes.DominioSegundaLenguaMaterna,
-                    value,
-                  );
+                  if (value) {
+                    props.saveAnswerLocal(
+                      QuestionTypes.selectOne,
+                      QuestionConditionPersonCodes.DominioSegundaLenguaMaterna,
+                      value,
+                    );
+                  }
                 }}
                 onLoad={() => {
                   getAnswers(
@@ -583,11 +660,11 @@ const _OtherIdentificationDataForm = (props: any) => {
             name="DominioSegundaLenguaMaterna"
           />
         ) : null}
-        <Controller
+        <Controller //CapacidadDiversa
           control={control}
           render={({onChange, onBlur, value}) => (
             <BMultiSelect
-              label={getQuestionlabel(
+              label={getQuestionlabelMultiselect(
                 QuestionConditionPersonCodes.CapacidadDiversa,
               )}
               onBlur={onBlur}
@@ -603,7 +680,7 @@ const _OtherIdentificationDataForm = (props: any) => {
               }}
               onLoad={() => {
                 console.log('onLoad');
-                getAnswers(
+                getAnswersMultiselect(
                   QuestionTypes.multiSelect,
                   QuestionConditionPersonCodes.CapacidadDiversa,
                   'CapacidadDiversa',
@@ -617,7 +694,7 @@ const _OtherIdentificationDataForm = (props: any) => {
           )}
           name="CapacidadDiversa"
         />
-        <Controller
+        <Controller //NivelEstudio
           control={control}
           render={({onChange, onBlur, value}) => (
             <BPicker
@@ -652,15 +729,17 @@ const _OtherIdentificationDataForm = (props: any) => {
           )}
           name="NivelEstudio"
         />
-        <Controller
+        <Controller //TipoTrabajo
           control={control}
           render={({onChange, onBlur, value}) => (
             <BPicker
+              enabled={enableTipoTrabajo}
               label={getQuestionlabel(QuestionConditionPersonCodes.TipoTrabajo)}
               onBlur={onBlur}
               error={errors.TipoTrabajo}
               onChange={(value: any) => {
                 onChange(value);
+                console.log('no aplica en tipo trabajo vale', value);
                 props.saveAnswerLocal(
                   QuestionTypes.selectOne,
                   QuestionConditionPersonCodes.TipoTrabajo,
@@ -685,7 +764,7 @@ const _OtherIdentificationDataForm = (props: any) => {
           )}
           name="TipoTrabajo"
         />
-        <Controller
+        <Controller //PoblacionPensionada
           control={control}
           render={({onChange, onBlur, value}) => (
             <BPicker
@@ -720,11 +799,11 @@ const _OtherIdentificationDataForm = (props: any) => {
           )}
           name="PoblacionPensionada"
         />
-        <Controller
+        <Controller //OtrosSaberesAnsestrales
           control={control}
           render={({onChange, onBlur, value}) => (
             <BMultiSelect
-              label={getQuestionlabel(
+              label={getQuestionlabelMultiselect(
                 QuestionConditionPersonCodes.OtrosSaberesAnsestrales,
               )}
               onBlur={onBlur}
@@ -740,7 +819,7 @@ const _OtherIdentificationDataForm = (props: any) => {
               }}
               onLoad={() => {
                 console.log('onLoad');
-                getAnswers(
+                getAnswersMultiselect(
                   QuestionTypes.multiSelect,
                   QuestionConditionPersonCodes.OtrosSaberesAnsestrales,
                   'OtrosSaberesAnsestrales',
@@ -754,7 +833,7 @@ const _OtherIdentificationDataForm = (props: any) => {
           )}
           name="OtrosSaberesAnsestrales"
         />
-        <Controller
+        <Controller //Religion
           control={control}
           render={({onChange, onBlur, value}) => (
             <BPicker
@@ -786,11 +865,11 @@ const _OtherIdentificationDataForm = (props: any) => {
           )}
           name="Religion"
         />
-        <Controller
+        <Controller //TipoDeCuidadosCulturalesQueRealiza
           control={control}
           render={({onChange, onBlur, value}) => (
             <BMultiSelect
-              label={getQuestionlabel(
+              label={getQuestionlabelMultiselect(
                 QuestionConditionPersonCodes.TipoDeCuidadosCulturalesQueRealiza,
               )}
               onBlur={onBlur}
@@ -806,7 +885,7 @@ const _OtherIdentificationDataForm = (props: any) => {
               }}
               onLoad={() => {
                 console.log('onLoad');
-                getAnswers(
+                getAnswersMultiselect(
                   QuestionTypes.multiSelect,
                   QuestionConditionPersonCodes.TipoDeCuidadosCulturalesQueRealiza,
                   'TipoDeCuidadosCulturalesQueRealiza',
