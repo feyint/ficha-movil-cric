@@ -23,11 +23,12 @@ export type FNBINFSAL_FNCCONSAL = {
 };
 export type FNCSALREP = {
   ID: number;
+  FNCPERSON_ID: number;
   EDAD_PRIMERA_REGLA: number;
   GRAVIDEZ: number;
   PARIDEZ: number;
   ABORTO: number;
-  CESAREA: string;
+  CESAREA: number;
   NACIDOS_VIVOS: number;
   NACIDOS_MUERTOS: number;
   PARTO_ULTIMO: Date;
@@ -41,8 +42,8 @@ export type FNCSALREP = {
   ACCION_CITOLOGIA: number;
   RESUL_PROSTATA: string;
   ACCION_PROSTATA: number;
-  FECHA_ACTIVIDAD: Date;
   USUARIO_DATA: string;
+  FECHA_ACTIVIDAD: Date;
   FECHA_CREACION: Date;
   ORIGEN_DATA: string;
   FNCPERSON_ID: number;

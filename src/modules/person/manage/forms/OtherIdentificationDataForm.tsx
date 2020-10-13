@@ -58,17 +58,16 @@ const schemaForm = yup.object().shape({
   TipoDeCuidadosCulturalesQueRealiza: yup.number().required(),
   ocupacionPrincipal: yup.number().required(),
   organizacion: yup.number().required(),
+  
 });
 
 const _OtherIdentificationDataForm = (props: any) => {
   const syncCatalogService = new ConditionPersonService();
 
+  const [questions, setQuestions] = useState<ConditionPersonQuestion[]>([]);
   const [state, setState] = useState({
     questionscodesMultiselect: [] as ConditionPersonQuestion[],
   });
-
-  const [questions, setQuestions] = useState<ConditionPersonQuestion[]>([]);
-
   const [lenguaMaternaSelect, setlenguaMaternaSelect] = useState<
     {label: any; value: any}[]
   >([]);
@@ -79,13 +78,15 @@ const _OtherIdentificationDataForm = (props: any) => {
     {label: any; value: any}[]
   >([]);
   const [lenguaMaterna, setLenguaMaterna] = useState('');
+  //const [castaPikerEnable, setCastaPikerEnable] = useState(false);
+  const navigation = useNavigation();
+  const [parentezcoGrupoFamiliar, setParentezcoGrupoFamiliar] = useState('');
   const [leng, setLeng] = useState('');
 
   //const [castaPikerEnable, setCastaPikerEnable] = useState(false);
   const [enableLenguaMaterna, setEnableLenguaMaterna] = useState(false);
   const [enableSegundaLengua, setEnableSegundaLengua] = useState(false);
   const [enableTipoTrabajo, setEnableTipoTrabajo] = useState(false);
-  const navigation = useNavigation();
 
   /* const getItemsForQuestionSelectLanguaje = async () => {
     console.log(
@@ -103,7 +104,6 @@ const _OtherIdentificationDataForm = (props: any) => {
     resolver: yupResolver(schemaForm),
   });
 
-  const [parentezcoGrupoFamiliar, setParentezcoGrupoFamiliar] = useState('');
   const [parentezcoGrupoFamiliares, setParentezcoGrupoFamiliares] = useState<
     {label: any; value: any}[]
   >([]);

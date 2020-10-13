@@ -1,13 +1,13 @@
 import React, {Component} from 'react';
 import {View} from 'react-native';
 import {Appbar} from 'react-native-paper';
-import {SocialSecurityForm} from '../forms';
 import {NavigationProp} from '@react-navigation/native';
+import {BirthInformationForm} from '../forms';
 
 interface Props {
   navigation: NavigationProp<any>;
 }
-class SocialSecurityScreen extends Component<Props, any> {
+class BirthInformationScreen extends Component<Props, any> {
   //TODO añadir el back interceptor
   _goBack() {
     this.props.navigation.goBack();
@@ -17,11 +17,11 @@ class SocialSecurityScreen extends Component<Props, any> {
       <View>
         <Appbar.Header>
           <Appbar.BackAction onPress={() => this._goBack()} />
-          <Appbar.Content title="Seguridad social" />
+          <Appbar.Content title="Datos de nacimiento" />
         </Appbar.Header>
-        <SocialSecurityForm />
+        <BirthInformationForm />
       </View>
     );
   }
 }
-export default SocialSecurityScreen;
+export default BirthInformationScreen;

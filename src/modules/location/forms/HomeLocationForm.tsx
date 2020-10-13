@@ -12,8 +12,17 @@ import {SelectSchema} from '../../../core/utils/types';
 import Geolocation from '@react-native-community/geolocation';
 import {saveFUBUBIVIV, updateFUBUBIVIV} from '../../../state/house/actions';
 import {FUBUBIVIV} from '../../../state/house/types';
-import {HousingService} from '../../../services';
+import {HousingService, UtilsService} from '../../../services';
 import {FUCZONCUI} from '../state/types';
+import {
+  DataBaseSchemas,
+  FUCBARVERSCHEMA,
+  FUCDEPARTSCHEMA,
+  FUCMUNICISCHEMA,
+  FUCRESGUASCHEMA,
+  FUCTIPTERSCHEMA,
+  FUCZONASCHEMA,
+} from '../../../providers/DataBaseProvider';
 
 interface GeolocationData {
   latitude: string;
@@ -46,7 +55,7 @@ const _HomeLocationForm = (props: any) => {
   });
   const [department, setDepartment] = useState('');
   const [municipio, setMunicipio] = useState('');
-  //const [zonacuidado, setZonacuidado] = useState('');                           //-------------------
+  //const [zonacuidado, setZonacuidado] = useState('');
   const [originalhouseCode, setoriginalHouseCode] = useState('');
   const [houseCode, setHouseCode] = useState('');
   const [tipoterritorio, setTipoterritorio] = useState('-1');
@@ -55,7 +64,7 @@ const _HomeLocationForm = (props: any) => {
   const [barrioVereda, setBarrioVereda] = useState('');
   const [zonacuidado, setZonacuidado] = useState('');
   const [address, setAddress] = useState('');
-  const [zonacuidadoSelect, setZonacuidadoSelect] = useState<SelectSchema>({//-------------------------
+  const [zonacuidadoSelect, setZonacuidadoSelect] = useState<SelectSchema>({
     id: 0,
     name: '',
     children: [],
@@ -99,11 +108,12 @@ const _HomeLocationForm = (props: any) => {
     // useMunicipio();
   }, [municipio]);
   async function fetchQuestions() {
-    let FUCDEPART = await props.getEntitySelect('FUCDEPART');
-    let FUCZONA = await props.getEntitySelect('FUCZONA');
-    let FUCTIPTER = await props.getEntitySelect('FUCTIPTER');
+    let FUCDEPART = await props.getEntitySelect('FUCDEPART', FUCDEPARTSCHEMA);
+    let FUCTIPTER = await props.getEntitySelect('FUCTIPTER', FUCTIPTERSCHEMA);
+    let FUCZONA = await props.getEntitySelect('FUCZONA', FUCZONASCHEMA);
     let FUCMUNICI = await props.getEntitySelect(
       'FUCMUNICI',
+      FUCMUNICISCHEMA,
       'FUCDEPART_ID',
       getValues().department,
     );
@@ -124,33 +134,37 @@ const _HomeLocationForm = (props: any) => {
       setAddress(props.FUBUBIVIV.DIRECCION);
       setHouseCode(props.FUBUBIVIV.CODIGO);
       let FUCBARVER_ID = props.FUBUBIVIV.FUCBARVER_ID;
-      let service: HousingService = new HousingService();
-      let barver = await service.getUbicationEntity(
-        'FUCBARVER',
+      let service: UtilsService = new UtilsService();
+      let barver = await service.getFilterEntity(
+        DataBaseSchemas.FUCBARVERSCHEMA,
+        FUCBARVERSCHEMA,
         'ID',
         FUCBARVER_ID,
         null,
         null,
         true,
       );
-      let cenpoblado = await service.getUbicationEntity(
-        'FUCRESGUA',
+      let cenpoblado = await service.getFilterEntity(
+        DataBaseSchemas.FUCRESGUASCHEMA,
+        FUCRESGUASCHEMA,
         'ID',
         barver.FUCRESGUA_ID,
         null,
         null,
         true,
       );
-      let munici = await service.getUbicationEntity(
-        'FUCMUNICI',
+      let munici = await service.getFilterEntity(
+        DataBaseSchemas.FUCMUNICISCHEMA,
+        FUCMUNICISCHEMA,
         'ID',
         cenpoblado.FUCMUNICI_ID,
         null,
         null,
         true,
       );
-      let dept = await service.getUbicationEntity(
-        'FUCDEPART',
+      let dept = await service.getFilterEntity(
+        DataBaseSchemas.FUCDEPARTSCHEMA,
+        FUCDEPARTSCHEMA,
         'ID',
         munici.FUCDEPART_ID,
         null,
@@ -167,6 +181,7 @@ const _HomeLocationForm = (props: any) => {
       }
       let FUCRESGUA = await props.getEntitySelect(
         'FUCRESGUA',
+        FUCRESGUASCHEMA,
         'FUCMUNICI_ID',
         munici.ID,
         'FUCTIPRES_ID',
@@ -176,6 +191,7 @@ const _HomeLocationForm = (props: any) => {
       setCentropoblado('' + cenpoblado.ID);
       let FUCBARVER = await props.getEntitySelect(
         'FUCBARVER',
+        FUCBARVERSCHEMA,
         'FUCRESGUA_ID',
         cenpoblado.ID,
       );
@@ -212,6 +228,7 @@ const _HomeLocationForm = (props: any) => {
   async function onChangeDept(idDept: any) {
     let FUCMUNICI = await props.getEntitySelect(
       'FUCMUNICI',
+      FUCMUNICISCHEMA,
       'FUCDEPART_ID',
       idDept,
     );
@@ -222,6 +239,7 @@ const _HomeLocationForm = (props: any) => {
   async function onChangeMuni(munid: string, typeid: string) {
     let FUCRESGUA = await props.getEntitySelect(
       'FUCRESGUA',
+      FUCRESGUASCHEMA,
       'FUCMUNICI_ID',
       munid,
       'FUCTIPRES_ID',
@@ -251,6 +269,7 @@ const _HomeLocationForm = (props: any) => {
     if (resguaId) {
       let FUCBARVER = await props.getEntitySelect(
         'FUCBARVER',
+        FUCBARVERSCHEMA,
         'FUCRESGUA_ID',
         resguaId,
       );

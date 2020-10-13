@@ -3,7 +3,6 @@ import {
   FNCELEREPSCHEMA,
   FNCCONREPSCHEMA,
   schemaVersion,
-  FNCPERSONSCHEMA,
   FNCSALREP_FNCCONREPSCHEMA,
   DataBaseSchemas,
 } from '../providers/DataBaseProvider';
@@ -15,11 +14,80 @@ import {
 import {SelectSchema, MultiSelectSchema} from '../core/utils/types';
 import {capitalizeFirstLetter} from '../core/utils/utils';
 import {
-  FNCSALREP_FNCCONREP,
   FNCSALREP,
+  FNCSALREP_FNCCONREP,
 } from '../state/SexAndRepHealthPerson/types';
+import {UtilsService} from '.';
 
 export default class SexAndRepHealthPersonService {
+  async SaveFNCSALREP(item: any) {
+    let utils = new UtilsService();
+    let FNCSALREP_ID = await utils.getLastEntityID(
+      DataBaseSchemas.FNCSALREPSCHEMA,
+    );
+    item.ID = FNCSALREP_ID;
+    item.FECHA_CREACION = new Date();
+    const result = await Realm.open({
+      schema: [FNCSALREPSCHEMA],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        realm.write(() => {
+          let inserted = realm.create(DataBaseSchemas.FNCSALREPSCHEMA, item);
+          return inserted;
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+        return error;
+      });
+    return result;
+  }
+  async UpdateFNCSALREP(item: any) {
+    await Realm.open({
+      schema: [FNCSALREPSCHEMA],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        let entity: any = realm
+          .objects(DataBaseSchemas.FNCSALREPSCHEMA)
+          .filtered(`FNCPERSON_ID = ${item.FNCPERSON_ID}`)
+          .sorted('FNCPERSON_ID', true)[0];
+        if (entity) {
+          realm.write(() => {
+            for (const key of Object.keys(item)) {
+              if (key in entity && key !== 'ID' && key !== 'FNCPERSON_ID') {
+                // or obj1.hasOwnProperty(key)
+                entity[key] = item[key];
+              }
+            }
+          });
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        return error;
+      });
+    return item;
+  }
+  async getFNCSALREP(FNCPERSON_ID: number) {
+    let item = await Realm.open({
+      schema: [FNCSALREPSCHEMA],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        let entity: any = realm
+          .objects(DataBaseSchemas.FNCSALREPSCHEMA)
+          .filtered(`FNCPERSON_ID = ${FNCPERSON_ID}`)
+          .sorted('FNCPERSON_ID', true)[0];
+        return entity;
+      })
+      .catch((error) => {
+        console.error(error);
+        return null;
+      });
+    return item;
+  }
   /**
    *
    * @param questionsQuery
@@ -103,9 +171,10 @@ export default class SexAndRepHealthPersonService {
           item.children.push({
             value: option.ID.toString(),
             label: option.NOMBRE,
+            item: null,
           });
         }
-        item.children.unshift({value: '-1', label: 'Seleccione'});
+        item.children.unshift({value: '-1', label: 'Seleccione', item: null});
       }
     }
     return item;
@@ -126,7 +195,7 @@ export default class SexAndRepHealthPersonService {
         item.id = questions[i].ID;
         item.name = capitalizeFirstLetter(questions[i].NOMBRE);
         for (let option of questions[i].OPTIONS) {
-          item.children.push({id: option.ID, name: option.NOMBRE});
+          item.children.push({id: option.ID, name: option.NOMBRE, item: null});
         }
       }
     }

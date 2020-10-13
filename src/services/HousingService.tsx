@@ -224,52 +224,6 @@ export default class HousingService {
     let code = initial + number;
     return code;
   }
-  async getUbicationEntity(
-    name: string,
-    _columnFilter: any = null,
-    _value: any = null,
-    _columnFilter2: any = null,
-    _value2: any = null,
-    first: boolean = false,
-  ) {
-    const result = await Realm.open({
-      schema: [
-        FUCDEPARTSCHEMA,
-        FUCMUNICISCHEMA,
-        FUCTIPTERSCHEMA,
-        FUCRESGUASCHEMA,
-        FUCBARVERSCHEMA,
-        FUCZONASCHEMA,
-        FNCDESARMSCHEMA,
-        FNCOCUPACSCHEMA,
-        FUCUNICUISCHEMA,
-        FUCZONCUISCHEMA,
-      ],
-      schemaVersion: schemaVersion,
-    })
-      .then((realm) => {
-        let items = realm.objects(name);
-        let query = '';
-        if (_columnFilter && _value) {
-          query = `${_columnFilter} = ${_value}`;
-        }
-        if (_columnFilter2 && _value2) {
-          query = query + ` AND ${_columnFilter2} = ${_value2}`;
-        }
-        if (query.length > 0) {
-          console.log(`${_columnFilter} = ${_value}`);
-          items = items.filtered(query);
-        }
-        if (first) {
-          return items[0];
-        }
-        return items;
-      })
-      .catch((error) => {
-        return error;
-      });
-    return result;
-  }
   async getFNBNUCVIVPersons(FNBNUCVIV_ID: number) {
     const result = await Realm.open({
       schema: [FNBNUCVIV_FNCPERSONSCHEMA, FNCPERSONSCHEMA],

@@ -16,6 +16,7 @@ interface Props {
 interface State {
   FVCCONVIV: number;
   FVCELEVIV: number;
+  FUCPAIS: number;
   FUCDEPART: number;
   FUCMUNICI: number;
   FUCTIPTER: number;
@@ -30,6 +31,7 @@ interface State {
   FNCELEPER: number;
   FNCCONPER: number;
   FNCDESARM: number;
+  FNCLUNIND: number;
   FNCELEREP: number;
   FNCCONREP: number;
   FNCPAREN: number;
@@ -63,6 +65,8 @@ class SyncScreen extends Component<Props, State> {
       FNCELEPER: 0,
       FNCCONPER: 0,
       FNCDESARM: 0,
+      FUCPAIS: 0,
+      FNCLUNIND: 0,
       FNCELEREP: 0,
       FNCCONREP: 0,
     };
@@ -126,12 +130,16 @@ class SyncScreen extends Component<Props, State> {
               FNCDESARM (respuestas desarmonia): {this.state.FNCDESARM}
             </Paragraph>
             <Paragraph>
+              FNCLUNIND (pueblo indigena): {this.state.FNCLUNIND}
+            </Paragraph>
+             <Paragraph>
               FNCELEREP (preguntas salud sexual y rep): {this.state.FNCELEREP}
             </Paragraph>
             <Paragraph>
               FNCCONREP (respuestas salud sexual y rep): {this.state.FNCCONREP}
             </Paragraph>
             {/* ------------------------------------------ */}
+            <Paragraph>FUCPAIS (Pais) : {this.state.FUCPAIS}</Paragraph>
             <Paragraph>
               FUCDEPART (Departamentos) : {this.state.FUCDEPART}
             </Paragraph>
@@ -204,6 +212,7 @@ class SyncScreen extends Component<Props, State> {
     let countFUCDEPART = await this.syncCatalogService.countEntities(
       'FUCDEPART',
     );
+    let countPais = await this.syncCatalogService.countEntities('FUCPAIS');
     let countFUCMUNICI = await this.syncCatalogService.countEntities(
       'FUCMUNICI',
     );
@@ -227,6 +236,9 @@ class SyncScreen extends Component<Props, State> {
     let countFUCZONCUI = await this.syncCatalogService.countEntities(
       'FUCZONCUI',
     );
+    let countFNCLUNIND = await this.syncCatalogService.countEntities(
+      'FNCLUNIND',
+    );
     this.setState({
       FVCCONVIV: countFVCCONVIV,
       FVCELEVIV: countFVCELEVIV,
@@ -249,6 +261,8 @@ class SyncScreen extends Component<Props, State> {
       FNCORGANI: countFNCORGANI,
       FUCUNICUI: countFUCUNICUI,
       FUCZONCUI: countFUCZONCUI,
+      FUCPAIS: countPais,
+      FNCLUNIND: countFNCLUNIND,
       FNCELEREP: countFNCELEREP,
       FNCCONREP: countFNCCONREP,
     });

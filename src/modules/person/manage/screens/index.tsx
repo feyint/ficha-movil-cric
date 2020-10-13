@@ -9,3 +9,5 @@ export {default as BirthDataScreen} from './BirthDataScreen';
 export {default as OtherIdentificationDataScreen} from './OtherIdentificationDataScreen';
 export {default as PersonalInformationScreen} from './PersonalInformationScreen';
 export {default as ContactInformationScreen} from './ContactInformationScreen';
+export {default as ReproductiveSexualHealtScreen} from './ReproductiveSexualHealtScreen';
+export {default as BirthInformationScreen} from './BirthInformationScreen';

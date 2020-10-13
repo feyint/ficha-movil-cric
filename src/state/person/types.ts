@@ -57,3 +57,14 @@ export type FNBNUCVIV_FNCPERSON = {
   FNBNUCVIV_ID: number;
   FNCPERSON_ID: number;
 };
+export type FNCGENERO = {
+  ID: number;
+  CODIGO: string;
+  NOMBRE: string;
+  COD_FF: string;
+  ESTADO: number;
+  USUARIO_DATA: string;
+  FECHA_ACTIVIDAD: Date;
+  FECHA_CREACION: Date;
+  ORIGEN_DATA: string;
+};

@@ -1,6 +1,6 @@
 import {FUBUBIVIV} from '../../../state/house/types';
 import {allCatalogs} from '../../../providers/DataBaseProvider';
-import {HousingService} from '../../../services';
+import {HousingService, UtilsService} from '../../../services';
 import {Catalog} from './types';
 import {SelectSchema} from '../../../core/utils/types';
 
@@ -11,6 +11,7 @@ export const ActionType = {
 };
 export const getEntitySelect = (
   entity: string,
+  schema: any,
   _columnFilter = null,
   _value = null,
   _columnFilter2 = null,
@@ -18,9 +19,10 @@ export const getEntitySelect = (
 ) => {
   return async (_dispatch: any, getState: any) => {
     let item: SelectSchema = {name: '', id: 0, children: []};
-    let houseServie: HousingService = new HousingService();
-    let items = await houseServie.getUbicationEntity(
+    let utils: UtilsService = new UtilsService();
+    let items = await utils.getFilterEntity(
       entity,
+      schema,
       _columnFilter,
       _value,
       _columnFilter2,
