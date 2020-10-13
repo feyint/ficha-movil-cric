@@ -340,6 +340,35 @@ export default class PersonService {
       });
     return result;
   }
+  async SaveFNCPERSONPropiety(
+    FNCPERSONID: number,
+    propiety: string,
+    value: any,
+  ) {
+    const result = await Realm.open({
+      schema: [FNCPERSONSCHEMA],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        realm.write(() => {
+          let item: any = realm
+            .objects(DataBaseSchemas.FNCPERSONSCHEMA)
+            .filtered(`ID = ${FNCPERSONID}`)
+            .sorted('ID', true)[0];
+          if (item) {
+            item[propiety] = value;
+            return true;
+          } else {
+            return false;
+          }
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+        return error;
+      });
+    return result;
+  }
   async getGenderList() {
     const result = await Realm.open({
       schema: [FNCGENEROSCHEMA],

@@ -7,3 +7,4 @@ export {default as LastPregnancyForm} from './LastPregnancyForm';
 export {default as PersonalInformationForm} from './PersonalInformationForm';
 export {default as ContactInformationForm} from './ContactInformationForm';
 export {default as ReproductiveSexualHealtForm} from './ReproductiveSexualHealtForm';
+export {default as BirthInformationForm} from './BirthInformationForm';

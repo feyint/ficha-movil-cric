@@ -31,8 +31,10 @@ export enum DataBaseSchemas {
   FNCCONREPSCHEMA = 'FNCCONREP', // respuestas salud sexual reproductiva
   FNCSALREP_FNCCONREPSCHEMA = 'FNCSALREP_FNCCONREP',
   FNCSALREPSCHEMA = 'FNCSALREP', // Salud sexual y reproductiva
+  FUCPAISSCHEMA = 'FUCPAIS', // Pais
+  FNCLUNINDSCHEMA = 'FNCLUNIND', // Pais
 }
-export const schemaVersion = 14;
+export const schemaVersion = 2;
 export const UserSchema = {
   name: DataBaseSchemas.UserSchema,
   properties: {
@@ -246,8 +248,23 @@ export const FNBNUCVIVSCHEMA = {
     FUBUBIVIV_ID: 'int',
   },
 };
+export const FUCPAISSCHEMA = {
+  name: DataBaseSchemas.FUCPAISSCHEMA,
+  primaryKey: 'ID',
+  properties: {
+    ID: 'int',
+    CODIGO: 'string',
+    NOMBRE: 'string',
+    CODIGO_POSTAL: 'string?',
+    ESTADO: 'int?',
+    USUARIO_DATA: 'string?',
+    FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
+    FECHA_CREACION: {type: 'date', default: new Date()},
+  },
+};
 export const FUCDEPARTSCHEMA = {
   name: DataBaseSchemas.FUCDEPARTSCHEMA,
+  primaryKey: 'ID',
   properties: {
     ID: 'int',
     CODIGO: 'string',
@@ -261,6 +278,7 @@ export const FUCDEPARTSCHEMA = {
 };
 export const FUCMUNICISCHEMA = {
   name: DataBaseSchemas.FUCMUNICISCHEMA,
+  primaryKey: 'ID',
   properties: {
     ID: 'int',
     CODIGO: 'string',
@@ -269,12 +287,13 @@ export const FUCMUNICISCHEMA = {
     USUARIO_DATA: 'string?',
     FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
     FECHA_CREACION: {type: 'date', default: new Date()},
-    FUCTIPMUN_ID: 'int',
+    FUCTIPMUN_ID: 'int?',
     FUCDEPART_ID: 'int',
   },
 };
 export const FUCTIPTERSCHEMA = {
   name: DataBaseSchemas.FUCTIPTERSCHEMA,
+  primaryKey: 'ID',
   properties: {
     ID: 'int',
     CODIGO: 'string',
@@ -287,6 +306,7 @@ export const FUCTIPTERSCHEMA = {
 };
 export const FUCRESGUASCHEMA = {
   name: DataBaseSchemas.FUCRESGUASCHEMA,
+  primaryKey: 'ID',
   properties: {
     ID: 'int',
     CODIGO: 'string',
@@ -318,6 +338,7 @@ export const FUCBARVERSCHEMA = {
 };
 export const FUCZONASCHEMA = {
   name: DataBaseSchemas.FUCZONASCHEMA,
+  primaryKey: 'ID',
   properties: {
     ID: 'int',
     CODIGO: 'string',
@@ -344,6 +365,7 @@ export const FUCUNICUISCHEMA = {
 };
 export const FUCZONCUISCHEMA = {
   name: DataBaseSchemas.FUCZONCUISCHEMA,
+  primaryKey: 'ID',
   properties: {
     ID: 'int',
     CODIGO: 'string',
@@ -369,6 +391,21 @@ export const FUCZONCUI_FUCBARVERSCHEMA = {
     FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
     FECHA_CREACION: {type: 'date', default: new Date()},
     ORIGEN_DATA: 'string?',
+  },
+};
+export const FNCLUNINDSCHEMA = {
+  name: DataBaseSchemas.FNCLUNINDSCHEMA,
+  primaryKey: 'ID',
+  properties: {
+    ID: 'int',
+    CODIGO: 'string',
+    NOMBRE: 'string',
+    ESTADO: 'bool?',
+    USUARIO_DATA: 'string?',
+    FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
+    FECHA_CREACION: {type: 'date', default: new Date()},
+    ORIGEN_DATA: 'string?',
+    FNCPUEIND_ID: 'int?',
   },
 };
 export const FNBINFSAL_FNCCONSALSCHEMA = {
@@ -498,6 +535,7 @@ export default class DataBaseProvider {
         FNBNUCVIV_FNCPERSONSCHEMA,
         FUCZONCUI_FUCBARVERSCHEMA,
         FNCSALREPSCHEMA,
+        FNCLUNINDSCHEMA,
       ],
     }).then((realm) => {
       realm.write(() => {
@@ -633,6 +671,8 @@ export default class DataBaseProvider {
         FNCDESARMSCHEMA,
         FNCELEREPSCHEMA,
         FNCCONREPSCHEMA,
+        FUCPAISSCHEMA,
+        FNCLUNINDSCHEMA,
       ],
     }).then((realm) => {
       let count = realm.objects(entity).length;

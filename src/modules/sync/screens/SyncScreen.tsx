@@ -16,6 +16,7 @@ interface Props {
 interface State {
   FVCCONVIV: number;
   FVCELEVIV: number;
+  FUCPAIS: number;
   FUCDEPART: number;
   FUCMUNICI: number;
   FUCTIPTER: number;
@@ -30,6 +31,7 @@ interface State {
   FNCELEPER: number;
   FNCCONPER: number;
   FNCDESARM: number;
+  FNCLUNIND: number;
   /* /-------------------- */
 }
 
@@ -53,6 +55,8 @@ class SyncScreen extends Component<Props, State> {
       FNCELEPER: 0,
       FNCCONPER: 0,
       FNCDESARM: 0,
+      FUCPAIS: 0,
+      FNCLUNIND: 0,
     };
     this.countEntity();
   }
@@ -103,7 +107,11 @@ class SyncScreen extends Component<Props, State> {
             <Paragraph>
               FNCDESARM (respuestas desarmonia): {this.state.FNCDESARM}
             </Paragraph>
+            <Paragraph>
+              FNCLUNIND (pueblo indigena): {this.state.FNCLUNIND}
+            </Paragraph>
             {/* ------------------------------------------ */}
+            <Paragraph>FUCPAIS (Pais) : {this.state.FUCPAIS}</Paragraph>
             <Paragraph>
               FUCDEPART (Departamentos) : {this.state.FUCDEPART}
             </Paragraph>
@@ -163,6 +171,7 @@ class SyncScreen extends Component<Props, State> {
     let countFUCDEPART = await this.syncCatalogService.countEntities(
       'FUCDEPART',
     );
+    let countPais = await this.syncCatalogService.countEntities('FUCPAIS');
     let countFUCMUNICI = await this.syncCatalogService.countEntities(
       'FUCMUNICI',
     );
@@ -182,6 +191,9 @@ class SyncScreen extends Component<Props, State> {
     let countFUCZONCUI = await this.syncCatalogService.countEntities(
       'FUCZONCUI',
     );
+    let countFNCLUNIND = await this.syncCatalogService.countEntities(
+      'FNCLUNIND',
+    );
     this.setState({
       FVCCONVIV: countFVCCONVIV,
       FVCELEVIV: countFVCELEVIV,
@@ -200,6 +212,8 @@ class SyncScreen extends Component<Props, State> {
       FUCZONA: countFUCZONA,
       FUCUNICUI: countFUCUNICUI,
       FUCZONCUI: countFUCZONCUI,
+      FUCPAIS: countPais,
+      FNCLUNIND: countFNCLUNIND,
     });
   }
   async clearPollEntities() {

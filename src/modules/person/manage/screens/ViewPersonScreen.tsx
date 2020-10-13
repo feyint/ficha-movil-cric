@@ -87,7 +87,7 @@ class ViewPersonScreen extends Component<Props, State> {
             <List.Item
               title="Datos de nacimiento"
               left={() => <List.Icon icon="baby-face" />}
-              //onPress={() => this.goHomeLocation()}
+              onPress={() => this.navigate('BirthInformationScreen')}
             />
             <List.Item
               title="Seguridad social"

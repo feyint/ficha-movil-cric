@@ -35,7 +35,7 @@ const _PersonalInformationForm = (props: any) => {
   const [genders, setGenders] = useState<{label: any; value: any}[]>([]);
   const [gender, setGender] = useState();
   const [identification, setIdentification] = useState();
-  const [identificationType, setIdentificationType] = useState();
+  const [identificationType, setIdentificationType] = useState<any>();
   useEffect(() => {
     fetchQuestions();
   }, []);

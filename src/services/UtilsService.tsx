@@ -33,4 +33,40 @@ export default class UtilsService {
       });
     return result;
   }
+  async getFilterEntity(
+    name: string,
+    schema: any,
+    _columnFilter: any = null,
+    _value: any = null,
+    _columnFilter2: any = null,
+    _value2: any = null,
+    first: boolean = false,
+  ) {
+    const result = await Realm.open({
+      schema: [schema],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        let items = realm.objects(name);
+        let query = '';
+        if (_columnFilter && _value) {
+          query = `${_columnFilter} = ${_value}`;
+        }
+        if (_columnFilter2 && _value2) {
+          query = query + ` AND ${_columnFilter2} = ${_value2}`;
+        }
+        if (query.length > 0) {
+          console.log(`${_columnFilter} = ${_value}`);
+          items = items.filtered(query);
+        }
+        if (first) {
+          return items[0];
+        }
+        return items;
+      })
+      .catch((error) => {
+        return error;
+      });
+    return result;
+  }
 }
