@@ -87,7 +87,7 @@ class ViewPersonScreen extends Component<Props, State> {
             <List.Item
               title="Datos de nacimiento"
               left={() => <List.Icon icon="baby-face" />}
-              //onPress={() => this.goHomeLocation()}
+              onPress={() => this.goBirthDataScreen()}
             />
             <List.Item
               title="Seguridad social"
@@ -102,7 +102,7 @@ class ViewPersonScreen extends Component<Props, State> {
             <List.Item
               title="Otros datos de identificación"
               left={() => <List.Icon icon="card-account-mail" />}
-              //onPress={() => this.goHomeLocation()}
+              onPress={() => this.goOtherDataIdentificationScreen()}
             />
             <List.Item
               title="Informacion de salud"
@@ -158,6 +158,12 @@ class ViewPersonScreen extends Component<Props, State> {
   }
   navigate(screen: string) {
     this.props.navigation.navigate(screen);
+  }
+  goBirthDataScreen() {
+    this.props.navigation.navigate('BirthDataScreen');
+  }
+  goOtherDataIdentificationScreen() {
+    this.props.navigation.navigate('OtherIdentificationDataScreen');
   }
 }
 const mapDispatchToProps = {

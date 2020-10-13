@@ -4,7 +4,12 @@ import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {yupResolver} from '@hookform/resolvers';
 import * as yup from 'yup';
-import {BButton, BMultiSelect, BPicker} from '../../../../core/components';
+import {
+  BButton,
+  BDatePickerModal,
+  BMultiSelect,
+  BPicker,
+} from '../../../../core/components';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {SexAndRepHealthPersonService} from '../../../../services';
@@ -17,7 +22,8 @@ import {
   getQuestionWithOptions,
   saveAnswerLocal,
   getQuestionAnswer,
-} from '../../../../state/ConditionPerson/actions';
+  saveFNCSALREPPropiety,
+} from '../../../../state/SexAndRepHealthPerson/actions';
 import {SexAndRepHealthPersonQuestion} from '../state/types';
 
 const questions = [
@@ -29,7 +35,7 @@ const questions = [
 
 const schemaForm = yup.object().shape({
   TerminacionGestacion: yup.number().positive().required(),
-  FechaTerminacionDeLaGestacion: yup.string().required(),
+  FechaTerminacionDeLaGestacion: yup.date().notRequired(),
   PersonaQueAtendioUltimoParto: yup.number().required(),
   LugarAtencionUltimoParto: yup.number().required(),
   ComplicacionAtencionUltimoParto: yup.array().required(),
@@ -66,6 +72,29 @@ const _LastPregnancyForm = (props: any) => {
         questions: result,
       });
     }
+    getAnswersFNCSALREP();
+  }
+  async function getAnswersFNCSALREP() {
+    /* if (
+      props.FNBNUCVIV.ANIMAL_VACUNADO &&
+      props.FNBNUCVIV.ANIMAL_VACUNADO !== 'null'
+    ) {
+      setValue('NumeroAnimales', '' + props.FNBNUCVIV.ANIMAL_VACUNADO);
+      setNumeroAnimales('' + props.FNBNUCVIV.ANIMAL_VACUNADO);
+    } */
+    /* if (
+      props.FNBNUCVIV.ANIMAL_NOVACUNADO &&
+      props.FNBNUCVIV.ANIMAL_NOVACUNADO !== 'null'
+    ) {
+      setValue(
+        'NumeroAnimalesnoVacunados',
+        '' + props.FNBNUCVIV.ANIMAL_NOVACUNADO,
+      );
+    } */
+    /* setValue('ResiduosGeneranenVivienda', props.FNBNUCVIV.RESIDUO_BOR);
+    setValue('setNumeroAnimalesnoVacunados', props.FNBNUCVIV.RIESGO);
+    setValue('Observaciones', props.FNBNUCVIV.OBSERVACION); */
+    setValue('FechaTerminacionDeLaGestacion', props.FNCSALREP.PARTO_ULTIMO);
   }
 
   async function getAnswers(type: number, code: string, prop: string) {
@@ -88,7 +117,6 @@ const _LastPregnancyForm = (props: any) => {
   function onSubmit(data: any) {
     navigation.goBack();
   }
-
   return (
     <KeyboardAwareScrollView>
       <View style={styles.container}>
@@ -96,6 +124,7 @@ const _LastPregnancyForm = (props: any) => {
           control={control}
           render={({onChange, onBlur, value}) => (
             <BPicker
+              enabled={false}
               label={getQuestionlabel(
                 QuestionSexAndRepHealthPersonCodes.TerminacionGestacion,
               )}
@@ -107,75 +136,137 @@ const _LastPregnancyForm = (props: any) => {
                   'save finalizacion de la ultima gestacion value es: ',
                   value,
                 );
-                /* props.saveAnswerLocal(
-                  QuestionTypes.selectOne,
-                  QuestionSexAndRepHealthPersonCodes.TerminacionGestacion,
-                  value,
-                ); */
-              }}
-              onLoad={() => {
-                /* getAnswers(
-                  QuestionTypes.selectOne,
-                  QuestionSexAndRepHealthPersonCodes.TerminacionGestacion,
-                  'TerminacionGestacion',
-                ); */
-              }}
-              value={value}
-              selectedValue={value}
-              items={[
-                {label: 'seleccine', value: '-1'},
-                {label: 'hola', value: '1'},
-                {label: 'chao', value: '2'},
-                {label: 'quiza', value: '3'},
-                /* getItemsForQuestionSelect(
-                  QuestionSexAndRepHealthPersonCodes.TerminacionGestacion,
-                ).children */
-                ]
-              }
-            />
-          )}
-          name="TerminacionGestacion"
-        />
-        {/* <Controller
-          control={control}
-          render={({onChange, onBlur, value}) => (
-            <BPicker
-              enabled={pikerEnable}
-              label={getQuestionlabel(QuestionConditionPersonCodes.EPS)}
-              onBlur={onBlur}
-              error={errors.EPS}
-              onChange={(value: any) => {
-                onChange(value);
-                console.log('save: ', value);
                 props.saveAnswerLocal(
                   QuestionTypes.selectOne,
-                  QuestionConditionPersonCodes.EPS,
+                  QuestionSexAndRepHealthPersonCodes.TerminacionGestacion,
                   value,
                 );
               }}
               onLoad={() => {
                 getAnswers(
                   QuestionTypes.selectOne,
-                  QuestionConditionPersonCodes.EPS,
-                  'EPS',
+                  QuestionSexAndRepHealthPersonCodes.TerminacionGestacion,
+                  'TerminacionGestacion',
                 );
               }}
               value={value}
               selectedValue={value}
               items={
-                getItemsForQuestionSelect(QuestionConditionPersonCodes.EPS)
-                  .children
+                getItemsForQuestionSelect(
+                  QuestionSexAndRepHealthPersonCodes.TerminacionGestacion,
+                ).children
               }
             />
           )}
-          name="EPS"
+          name="TerminacionGestacion"
         />
+        <Controller
+          control={control}
+          render={({onChange, onBlur, value}) => (
+            <BDatePickerModal
+              label="Fecha Terminacion De La Gestacion"
+              //isVisible={false}
+              onBlur={onBlur}
+              error={errors.FechaTerminacionDeLaGestacion}
+              onChange={(value: any) => {
+                onChange(value);
+                console.log('Selected Item in date piker: ', value);
+                if (value) {
+                  props.saveFNCSALREPPropiety(
+                    'PARTO_ULTIMO',
+                    value,
+                    //JSON.parse(value),
+                  );
+                }
+              }}
+              /* onLoad={() => {
+                console.log('OnLoad BDatePickerModal');
+              }} */
+              value={value}
+            />
+          )}
+          name="FechaTerminacionDeLaGestacion"
+        />
+        <Controller
+          control={control}
+          render={({onChange, onBlur, value}) => (
+            <BPicker
+              enabled={false}
+              label={getQuestionlabel(
+                QuestionSexAndRepHealthPersonCodes.PersonaQueAtendioUltimoParto,
+              )}
+              onBlur={onBlur}
+              error={errors.TerminacionGestacion}
+              onChange={(value: any) => {
+                onChange(value);
+                console.log('Persona que atendió el último parto es: ', value);
+                props.saveAnswerLocal(
+                  QuestionTypes.selectOne,
+                  QuestionSexAndRepHealthPersonCodes.PersonaQueAtendioUltimoParto,
+                  value,
+                );
+              }}
+              onLoad={() => {
+                getAnswers(
+                  QuestionTypes.selectOne,
+                  QuestionSexAndRepHealthPersonCodes.PersonaQueAtendioUltimoParto,
+                  'PersonaQueAtendioUltimoParto',
+                );
+              }}
+              value={value}
+              selectedValue={value}
+              items={
+                getItemsForQuestionSelect(
+                  QuestionSexAndRepHealthPersonCodes.PersonaQueAtendioUltimoParto,
+                ).children
+              }
+            />
+          )}
+          name="PersonaQueAtendioUltimoParto"
+        />
+        <Controller
+          control={control}
+          render={({onChange, onBlur, value}) => (
+            <BPicker
+              label={getQuestionlabel(
+                QuestionSexAndRepHealthPersonCodes.LugarAtencionUltimoParto,
+              )}
+              onBlur={onBlur}
+              error={errors.TerminacionGestacion}
+              onChange={(value: any) => {
+                onChange(value);
+                console.log('lugar atencion ultimo parto value es: ', value);
+                props.saveAnswerLocal(
+                  QuestionTypes.selectOne,
+                  QuestionSexAndRepHealthPersonCodes.LugarAtencionUltimoParto,
+                  value,
+                );
+              }}
+              onLoad={() => {
+                getAnswers(
+                  QuestionTypes.selectOne,
+                  QuestionSexAndRepHealthPersonCodes.LugarAtencionUltimoParto,
+                  'LugarAtencionUltimoParto',
+                );
+              }}
+              value={value}
+              selectedValue={value}
+              items={
+                getItemsForQuestionSelect(
+                  QuestionSexAndRepHealthPersonCodes.LugarAtencionUltimoParto,
+                ).children
+              }
+            />
+          )}
+          name="LugarAtencionUltimoParto"
+        />
+
         <Controller
           control={control}
           render={({onChange, onBlur, value}) => (
             <BMultiSelect
               label={getQuestionlabel(
-                QuestionConditionPersonCodes.ProgramaDeSalud,
+                QuestionSexAndRepHealthPersonCodes.ComplicacionAtencionUltimoParto,
               )}
               onBlur={onBlur}
               error={errors.ProgramaDeSalud}
@@ -184,7 +275,7 @@ const _LastPregnancyForm = (props: any) => {
                 console.log('save', values);
                 props.saveAnswerLocal(
                   QuestionTypes.multiSelect,
-                  QuestionConditionPersonCodes.ProgramaDeSalud,
+                  QuestionSexAndRepHealthPersonCodes.ComplicacionAtencionUltimoParto,
                   values,
                 );
               }}
@@ -192,18 +283,18 @@ const _LastPregnancyForm = (props: any) => {
                 console.log('onLoad');
                 getAnswers(
                   QuestionTypes.multiSelect,
-                  QuestionConditionPersonCodes.ProgramaDeSalud,
-                  'ProgramaDeSalud',
+                  QuestionSexAndRepHealthPersonCodes.ComplicacionAtencionUltimoParto,
+                  'ComplicacionAtencionUltimoParto',
                 );
               }}
               selectedItems={value}
               items={getItemsForQuestionMultiSelect(
-                QuestionConditionPersonCodes.ProgramaDeSalud,
+                QuestionSexAndRepHealthPersonCodes.ComplicacionAtencionUltimoParto,
               )}
             />
           )}
-          name="ProgramaDeSalud"
-        /> */}
+          name="ComplicacionAtencionUltimoParto"
+        />
         <View>
           <BButton
             color="secondary"
@@ -237,10 +328,11 @@ const mapDispatchToProps = {
   getQuestionWithOptions,
   saveAnswerLocal,
   getQuestionAnswer,
+  saveFNCSALREPPropiety,
 };
-const mapStateToProps = (session: any) => {
+const mapStateToProps = (sarhealthperson: any) => {
   return {
-    user: session.session.user,
+    FNCSALREP: sarhealthperson.sarhealthperson.FNCSALREP,
   };
 };
 export default connect(mapStateToProps, mapDispatchToProps)(_LastPregnancyForm);

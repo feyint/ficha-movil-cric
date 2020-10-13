@@ -4,6 +4,8 @@ export {default as MortalityLast12MonthsForm} from './MortalityLast12MonthsForm'
 export {default as SocialSecurityForm} from './SocialSecurityForm';
 export {default as UnhealthyHabitsForm} from './UnhealthyHabitsForm';
 export {default as LastPregnancyForm} from './LastPregnancyForm';
+export {default as BirthDataForm} from './BirthDataForm';
+export {default as OtherIdentificationDataForm} from './OtherIdentificationDataForm';
 export {default as PersonalInformationForm} from './PersonalInformationForm';
 export {default as ContactInformationForm} from './ContactInformationForm';
 export {default as ReproductiveSexualHealtForm} from './ReproductiveSexualHealtForm';
