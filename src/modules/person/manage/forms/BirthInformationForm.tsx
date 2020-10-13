@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {View, StyleSheet, Text} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {yupResolver} from '@hookform/resolvers';
@@ -7,11 +7,15 @@ import * as yup from 'yup';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {BButton, BDatePickerModal, BPicker} from '../../../../core/components';
-import {ConditionPersonService, PersonService, UtilsService} from '../../../../services';
+import {ConditionPersonService, UtilsService} from '../../../../services';
 import {FNCPERSON} from '../../../../state/person/types';
-import {getQuestionWithOptions, saveFNCPERSON, updateFNCPERSON} from '../../../../state/person/actions';
 import {
-    FNCLUNINDSCHEMA,
+  getQuestionWithOptions,
+  saveFNCPERSON,
+  updateFNCPERSON,
+} from '../../../../state/person/actions';
+import {
+  FNCLUNINDSCHEMA,
   FUCDEPARTSCHEMA,
   FUCMUNICISCHEMA,
   FUCPAISSCHEMA,
@@ -34,7 +38,6 @@ const questions = [
 ];
 const _BirthInformationForm = (props: any) => {
   const navigation = useNavigation();
-  const service = new UtilsService();
   const {handleSubmit, control, errors, setValue} = useForm({
     resolver: yupResolver(schemaForm),
   });
@@ -79,16 +82,6 @@ const _BirthInformationForm = (props: any) => {
     let person: FNCPERSON = props.FNCPERSON;
     if (person.ID != null) {
       try {
-        let inserted = await props.updateFNCPERSON({
-          ID: person.ID,
-          PRIMER_NOMBRE: data.firstname,
-          SEGUNDO_NOMBRE: data.middlename ? data.middlename : '',
-          PRIMER_APELLIDO: data.lastname,
-          SEGUNDO_APELLIDO: data.secondlastname ? data.secondlastname : '',
-          IDENTIFICACION: data.identification,
-          FNCTIPIDE_ID: JSON.parse(data.identificationType),
-          FNCGENERO_ID: JSON.parse(data.gender),
-        });
       } catch (error) {
         console.error(error);
       }
@@ -101,7 +94,6 @@ const _BirthInformationForm = (props: any) => {
       item.IDENTIFICACION = data.identification;
       item.FNCTIPIDE_ID = JSON.parse(data.identificationType);
       item.FNCGENERO_ID = JSON.parse(data.gender);
-      let inserted = await props.saveFNCPERSON(item);
     }
     navigation.goBack();
   };
@@ -148,7 +140,7 @@ const _BirthInformationForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({onChange, value}) => (
+          render={({onChange}) => (
             <BPicker
               label="País"
               error={errors.fucpais}
@@ -168,7 +160,7 @@ const _BirthInformationForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({onChange, value}) => (
+          render={({onChange}) => (
             <BPicker
               label="Departamento"
               error={errors.fucdepat}
@@ -188,7 +180,7 @@ const _BirthInformationForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({onChange, value}) => (
+          render={({onChange}) => (
             <BPicker
               label="Municipio"
               error={errors.fucdepat}
@@ -205,7 +197,7 @@ const _BirthInformationForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({onChange, value}) => (
+          render={({onChange}) => (
             <BPicker
               label="Luna occidental en la que nació"
               error={errors.fnclunocci}
@@ -226,7 +218,7 @@ const _BirthInformationForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({onChange, value}) => (
+          render={({onChange}) => (
             <BPicker
               label="Luna indígena en la que nació"
               error={errors.fnclunind}
@@ -243,7 +235,7 @@ const _BirthInformationForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({onChange, value}) => (
+          render={({onChange}) => (
             <BPicker
               label="Lactancia materna"
               error={errors.lacmaterna}
