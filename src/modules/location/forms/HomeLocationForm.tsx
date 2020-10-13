@@ -14,7 +14,15 @@ import {saveFUBUBIVIV, updateFUBUBIVIV} from '../../../state/house/actions';
 import {FUBUBIVIV} from '../../../state/house/types';
 import {HousingService, UtilsService} from '../../../services';
 import {FUCZONCUI} from '../state/types';
-import { DataBaseSchemas, FUCBARVERSCHEMA, FUCDEPARTSCHEMA, FUCMUNICISCHEMA, FUCRESGUASCHEMA, FUCTIPTERSCHEMA } from '../../../providers/DataBaseProvider';
+import {
+  DataBaseSchemas,
+  FUCBARVERSCHEMA,
+  FUCDEPARTSCHEMA,
+  FUCMUNICISCHEMA,
+  FUCRESGUASCHEMA,
+  FUCTIPTERSCHEMA,
+  FUCZONASCHEMA,
+} from '../../../providers/DataBaseProvider';
 
 interface GeolocationData {
   latitude: string;
@@ -25,6 +33,8 @@ const schemaForm = yup.object().shape({
   municipality: yup.string().required(),
   territoryType: yup.string().required(),
   shelterOrCouncil: yup.string().required(),
+  /* sidewalk: yup.string().required(),
+  carezone: yup.string().required(), */
   sidewalk: yup.string().required('Barrio o vereda requerido').nullable(),
   carezone: yup.string().required('Zona de cuidado requerido'),
   latitude: yup.string().required(),
@@ -45,6 +55,7 @@ const _HomeLocationForm = (props: any) => {
   });
   const [department, setDepartment] = useState('');
   const [municipio, setMunicipio] = useState('');
+  //const [zonacuidado, setZonacuidado] = useState('');
   const [originalhouseCode, setoriginalHouseCode] = useState('');
   const [houseCode, setHouseCode] = useState('');
   const [tipoterritorio, setTipoterritorio] = useState('-1');
@@ -53,6 +64,11 @@ const _HomeLocationForm = (props: any) => {
   const [barrioVereda, setBarrioVereda] = useState('');
   const [zonacuidado, setZonacuidado] = useState('');
   const [address, setAddress] = useState('');
+  const [zonacuidadoSelect, setZonacuidadoSelect] = useState<SelectSchema>({
+    id: 0,
+    name: '',
+    children: [],
+  });
   const [FUCZONCUIItems, setFUCZONCUIItems] = useState<{
       value: string;
       label: string;
@@ -94,12 +110,14 @@ const _HomeLocationForm = (props: any) => {
   async function fetchQuestions() {
     let FUCDEPART = await props.getEntitySelect('FUCDEPART', FUCDEPARTSCHEMA);
     let FUCTIPTER = await props.getEntitySelect('FUCTIPTER', FUCTIPTERSCHEMA);
+    let FUCZONA = await props.getEntitySelect('FUCZONA', FUCZONASCHEMA);
     let FUCMUNICI = await props.getEntitySelect(
       'FUCMUNICI',
       FUCMUNICISCHEMA,
       'FUCDEPART_ID',
       getValues().department,
     );
+    setZonacuidadoSelect(FUCZONA);
     setDepartamentoSelect(FUCDEPART);
     setTipoterritorioSelect(FUCTIPTER);
     setMunicipioSelect(FUCMUNICI);
@@ -153,7 +171,7 @@ const _HomeLocationForm = (props: any) => {
         null,
         true,
       );
-      setDepartment('' + dept.ID);
+      //setZonacuidado('' + zonacuidado.ID)
       setMunicipio('' + munici.ID);
       setTipoterritorio('' + cenpoblado.FUCTIPRES_ID);
       if (cenpoblado.FUCTIPRES_ID == '1') {
@@ -429,6 +447,28 @@ const _HomeLocationForm = (props: any) => {
           )}
           name="shelterOrCouncil"
         />
+        {/* ----------------------------------------------------------------- */}
+        {/* <Controller
+          control={control}
+          render={({onChange, onBlur, value}) => (
+            <BPicker
+              label="Zona"
+              prompt="Seleccione una opción"
+              enabled={true}
+              onBlur={onBlur}
+              error={errors.carezone}
+              onChange={(value) => {
+                //console.error(value);
+                onChange(value);
+                setZonacuidado(value);
+              }}
+              selectedValue={zonacuidado}
+              items={zonacuidadoSelect.children}
+            />
+          )}
+          name="carezone"
+        /> */}
+        {/* ----------------------------------------------------------------- */}
         <Controller
           control={control}
           render={({onChange, onBlur, value}) => (

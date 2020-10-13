@@ -1,10 +1,10 @@
 import {
+  FNCSALREPSCHEMA,
   FNCELEREPSCHEMA,
   FNCCONREPSCHEMA,
   schemaVersion,
   FNCSALREP_FNCCONREPSCHEMA,
   DataBaseSchemas,
-  FNCSALREPSCHEMA,
 } from '../providers/DataBaseProvider';
 import Realm from 'realm';
 import {

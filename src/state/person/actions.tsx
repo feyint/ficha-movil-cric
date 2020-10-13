@@ -21,6 +21,10 @@ const _setPERSON = (data: any) => {
   return {type: ActionType.SET_FNCPERSON, data};
 };
 
+/* const _setFNCPERSON = (data: FNCPERSON) => {
+  return {type: ActionType.SET_FNCPERSON, data};
+}; */
+
 export const clearFNCPERSON = () => (dispatch: any) => {
   let person = {
     ID: null,

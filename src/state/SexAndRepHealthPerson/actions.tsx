@@ -7,9 +7,6 @@ export const ActionType = {
   SET_SEXANDREPHEALTHPERSON_QUESTION_LIST:
     'SET_SEXANDREPHEALTHPERSON_QUESTION_LIST',
 };
-const _setFNCSALREP = (data: any) => {
-  return {type: ActionType.SET_FNCSALREP, data};
-};
 
 export const clearFNCNCSALREP = () => (dispatch: any) => {
   let NCSALREP = {
@@ -82,13 +79,92 @@ export const updateFNCSALREP = (data: any) => async (
   dispatch(_setFNCSALREP(item));
 };
 
+const _setFNCSALREP = (data: FNCSALREP) => {
+  return {type: ActionType.SET_FNCSALREP, data};
+};
+
+export const clearFNCSALREP = () => (dispatch: any) => {
+  // eslint-disable-next-line no-shadow
+  let FNCSALREP: any = {
+    ID: null,
+    EDAD_PRIMERA_REGLA: null,
+    GRAVIDEZ: null,
+    PARIDEZ: null,
+    ABORTO: null,
+    CESAREA: '',
+    NACIDOS_VIVOS: null,
+    NACIDOS_MUERTOS: null,
+    PARTO_ULTIMO: new Date(),
+    ULTIMA_REGLA: new Date(),
+    EDAD_GESTACION: '',
+    PARTO_ESTIMADO: new Date(),
+    PRESENCIA_FAM: null,
+    SEROLOGIA: null,
+    VIH: null,
+    RESUL_CITOLOGIA: '',
+    ACCION_CITOLOGIA: null,
+    RESUL_PROSTATA: '',
+    ACCION_PROSTATA: null,
+    FECHA_ACTIVIDAD: new Date(),
+    USUARIO_DATA: '',
+    FECHA_CREACION: new Date(),
+    ORIGEN_DATA: '',
+    FNCPERSON_ID: null,
+  };
+  dispatch(_setFNCSALREP(FNCSALREP));
+};
+
 const setSEXANDREPHEALTHPERSON_QUESTION_LIST = (
   data: SexAndRepHealthPersonQuestion[],
 ) => {
   return {type: ActionType.SET_SEXANDREPHEALTHPERSON_QUESTION_LIST, data};
 };
 
-export const setSexAndRepHealthQuestionWithOptions = () => async (dispatch: any) => {
+export const saveFNCSALREP = (data: any) => async (
+  dispatch: any,
+  getState: any,
+) => {
+  const store = getState();
+  let family: FNCSALREP = store.sarhealthperson.FNCSALREP;
+  let personServie: SexAndRepHealthPersonService = new SexAndRepHealthPersonService();
+  let result = await personServie.SaveFNCSALREP(data);
+  // console.error(result);
+  if (result) {
+    //family.CODIGO = result.CODIGO;
+    family.FNCPERSON_ID = result.FNCPERSON_ID;
+    family.ID = result.ID;
+  }
+  dispatch(_setFNCSALREP(family));
+  return family;
+};
+
+export const saveFNCSALREPPropiety = (propiety: any, value: any) => async (
+  dispatch: any,
+  getState: any,
+) => {
+  const store = getState();
+  let family: any = store.sarhealthperson.FNCSALREP;
+  let personServie: SexAndRepHealthPersonService = new SexAndRepHealthPersonService();
+  let updatedProp = await personServie.SaveFNCSALREPPropiety(
+    family.ID,
+    propiety,
+    value,
+  );
+  if (updatedProp == true) {
+    family[propiety] = value;
+    dispatch(_setFNCSALREP(family));
+  }
+};
+export const setFNCSALREP = (data: any) => (dispatch: any) => {
+  dispatch(_setFNCSALREP(data));
+};
+
+/**
+ *
+ */
+export const setSexAndRepHealthQuestionWithOptions = () => async (
+  dispatch: any,
+) => {
   let questionItems: SexAndRepHealthPersonQuestion[] = [];
   let personServie: SexAndRepHealthPersonService = new SexAndRepHealthPersonService();
   questionItems = await personServie.getQuestionWithOptions();

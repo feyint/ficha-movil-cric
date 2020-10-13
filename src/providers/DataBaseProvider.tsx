@@ -33,8 +33,12 @@ export enum DataBaseSchemas {
   FNCSALREPSCHEMA = 'FNCSALREP', // Salud sexual y reproductiva
   FUCPAISSCHEMA = 'FUCPAIS', // Pais
   FNCLUNINDSCHEMA = 'FNCLUNIND', // Pais
+  FNCPARENSCHEMA = 'FNCPAREN',
+  FNCOCUPACSCHEMA = 'FNCOCUPAC',
+  FNCPUEINDSCHEMA = 'FNCPUEIND',
+  FNCORGANISCHEMA = 'FNCORGANI',
 }
-export const schemaVersion = 2;
+export const schemaVersion = 1;
 export const UserSchema = {
   name: DataBaseSchemas.UserSchema,
   properties: {
@@ -58,6 +62,52 @@ export const FNCTIPIDENSCHEMA = {
   },
 };
 //-----------------------------------------------------------
+export const FNCPARENSCHEMA = {
+  name: DataBaseSchemas.FNCPARENSCHEMA,
+  primaryKey: 'ID',
+  properties: {
+    ID: 'int',
+    CODIGO: 'string',
+    NOMBRE: 'string',
+    ESTADO: 'int',
+    FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
+    FECHA_CREACION: {type: 'date', default: new Date()},
+  },
+};
+export const FNCPUEINDSCHEMA = {
+  name: DataBaseSchemas.FNCPUEINDSCHEMA,
+  primaryKey: 'ID',
+  properties: {
+    ID: 'int',
+    CODIGO: 'string',
+    NOMBRE: 'string',
+    ESTADO: 'bool',
+  },
+};
+export const FNCORGANISCHEMA = {
+  name: DataBaseSchemas.FNCORGANISCHEMA,
+  properties: {
+    ID: 'int',
+    CODIGO: 'string',
+    NOMBRE: 'string',
+    ESTADO: 'bool',
+    FNCREGION_ID: 'int?',
+  },
+};
+export const FNCOCUPACSCHEMA = {
+  name: DataBaseSchemas.FNCOCUPACSCHEMA,
+  primaryKey: 'ID',
+  properties: {
+    ID: 'int',
+    CODIGO: 'string',
+    NOMBRE: 'string',
+    ESTADO: 'bool',
+    FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
+    FECHA_CREACION: {type: 'date', default: new Date()},
+    FNCOCUSUB_ID: 'int',
+    //CODIGO_FF: 'string',
+  },
+};
 export const FNCPERSONSCHEMA = {
   name: DataBaseSchemas.FNCPERSONSCHEMA,
   primaryKey: 'ID',
@@ -262,6 +312,35 @@ export const FUCPAISSCHEMA = {
     FECHA_CREACION: {type: 'date', default: new Date()},
   },
 };
+export const FNCSALREPSCHEMA = {
+  name: DataBaseSchemas.FNCSALREPSCHEMA,
+  properties: {
+    ID: 'int',
+    EDAD_PRIMERA_REGLA: 'int?',
+    GRAVIDEZ: 'int?',
+    PARIDEZ: 'int?',
+    ABORTO: 'int?',
+    CESAREA: 'string?',
+    NACIDOS_VIVOS: 'int?',
+    NACIDOS_MUERTOS: 'int?',
+    PARTO_ULTIMO: {type: 'date', default: new Date()},
+    ULTIMA_REGLA: {type: 'date', default: new Date()},
+    EDAD_GESTACION: 'string?',
+    PARTO_ESTIMADO: {type: 'date', default: new Date()},
+    PRESENCIA_FAM: 'int?',
+    SEROLOGIA: 'int?',
+    VIH: 'int?',
+    RESUL_CITOLOGIA: 'string?',
+    ACCION_CITOLOGIA: 'int?',
+    RESUL_PROSTATA: 'string?',
+    ACCION_PROSTATA: 'int?',
+    FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
+    USUARIO_DATA: 'string?',
+    FECHA_CREACION: {type: 'date', default: new Date()},
+    ORIGEN_DATA: 'string?',
+    FNCPERSON_ID: 'int',
+  },
+};
 export const FUCDEPARTSCHEMA = {
   name: DataBaseSchemas.FUCDEPARTSCHEMA,
   primaryKey: 'ID',
@@ -438,35 +517,6 @@ export const FNCSALREP_FNCCONREPSCHEMA = {
     SYNCSTATE: 'int',
   },
 };
-export const FNCSALREPSCHEMA = {
-  name: DataBaseSchemas.FNCSALREPSCHEMA,
-  properties: {
-    ID: 'int',
-    FNCPERSON_ID: 'int',
-    EDAD_PRIMERA_REGLA: 'int?',
-    GRAVIDEZ: 'int?',
-    PARIDEZ: 'int?',
-    ABORTO: 'int?',
-    CESAREA: 'int?',
-    NACIDOS_VIVOS: 'int?',
-    NACIDOS_MUERTOS: 'int?',
-    PARTO_ULTIMO: 'date?',
-    ULTIMA_REGLA: 'date?',
-    EDAD_GESTACION: 'string?',
-    PARTO_ESTIMADO: 'date?',
-    PRESENCIA_FAM: 'int?',
-    SEROLOGIA: 'int?',
-    VIH: 'int?',
-    RESUL_CITOLOGIA: 'string?',
-    ACCION_CITOLOGIA: 'int?',
-    RESUL_PROSTATA: 'string?',
-    ACCION_PROSTATA: 'int?',
-    USUARIO_DATA: 'string?',
-    FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
-    FECHA_CREACION: {type: 'date', default: new Date()},
-    ORIGEN_DATA: 'string?',
-  },
-};
 export const FNCGENEROSCHEMA = {
   name: DataBaseSchemas.FNCGENEROSCHEMA,
   primaryKey: 'ID',
@@ -518,6 +568,10 @@ export default class DataBaseProvider {
         FUCRESGUASCHEMA,
         FUCBARVERSCHEMA,
         FUCZONASCHEMA,
+        FNCPARENSCHEMA,
+        FNCOCUPACSCHEMA,
+        FNCPUEINDSCHEMA,
+        FNCORGANISCHEMA,
         FUCUNICUISCHEMA,
         FUCZONCUISCHEMA,
         FNCPERSONSCHEMA,
@@ -576,7 +630,34 @@ export default class DataBaseProvider {
           COD_FF: '2',
           ESTADO: 1,
         });
-
+        //-------------------------------------------------------------
+        realm.create('FNCPAREN', {
+          ID: 7,
+          CODIGO: '1',
+          NOMBRE: 'CABEZA DE NÚCLEO',
+          ESTADO: 1,
+        });
+        realm.create('FNCPAREN', {
+          ID: 8,
+          CODIGO: '2',
+          NOMBRE: 'CÓNYUGE',
+          ESTADO: 1,
+        });
+        realm.create('FNCPAREN', {
+          ID: 9,
+          CODIGO: '3',
+          NOMBRE: 'prueba',
+          ESTADO: 1,
+        });
+        /*  realm.create('FNCOCUPAC', {
+          ID: 258,
+          CODIGO: '5212',
+          NOMBRE:
+            'Vendedores ambulantes de alimentos preparados para consumo inmediato',
+          ESTADO: 1,
+          FNCOCUSUB_ID: 76,
+          CODIGO_FF: '258',
+        }); */
         // realm.create(DataBaseSchemas.FUBUBIVIVSCHEMA, {
         //   ID: 123,
         //   CODIGO: 'CODVIVI1',
@@ -662,6 +743,10 @@ export default class DataBaseProvider {
         FUCRESGUASCHEMA,
         FUCBARVERSCHEMA,
         FUCZONASCHEMA,
+        FNCPARENSCHEMA,
+        FNCOCUPACSCHEMA,
+        FNCPUEINDSCHEMA,
+        FNCORGANISCHEMA,
         FUCUNICUISCHEMA,
         FUCZONCUISCHEMA,
         FNCELESALSCHEMA,

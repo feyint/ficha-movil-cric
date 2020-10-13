@@ -5,6 +5,9 @@ import {
   FNCPERSONSCHEMA,
   FNCPERSON_FNCCONPERSCHEMA,
   DataBaseSchemas,
+  FNCPARENSCHEMA,
+  FNCOCUPACSCHEMA,
+  FNCORGANISCHEMA,
 } from '../providers/DataBaseProvider';
 import Realm from 'realm';
 import {
@@ -87,10 +90,35 @@ export default class ConditionPersonService {
   getItemsForQuestionSelect(
     code: string,
     questions: ConditionPersonQuestion[],
+    //key: string,
   ) {
     let item: SelectSchema = {name: '', id: 0, children: []};
     for (let i = 0; i < questions.length; i++) {
       if (questions[i].CODIGO === code) {
+        item.id = questions[i].ID;
+        item.name = capitalizeFirstLetter(questions[i].NOMBRE);
+        for (let option of questions[i].OPTIONS) {
+          let itemChild = {
+            value: option.ID.toString(),
+            label: option.NOMBRE,
+            item: null,
+          };
+          item.children.push(itemChild);
+          //console.log(itemChild);
+        }
+        item.children.unshift({value: '-1', label: 'Seleccione', item: null});
+      }
+    }
+    return item;
+  }
+  getItemsForQuestionSelectLanguaje(
+    code: string,
+    questions: ConditionPersonQuestion[],
+    selectedLanguaje: string,
+  ) {
+    let item: SelectSchema = {name: '', id: 0, children: []};
+    for (let i = 0; i < questions.length; i++) {
+      if (questions[i].CODIGO === code && questions[i].NOMBRE !== 'ESPAÑOL') {
         item.id = questions[i].ID;
         item.name = capitalizeFirstLetter(questions[i].NOMBRE);
         for (let option of questions[i].OPTIONS) {
@@ -99,6 +127,9 @@ export default class ConditionPersonService {
             label: option.NOMBRE,
             item: null,
           });
+          if (option.NOMBRE == 'ESPAÑOL') {
+            item.children.pop();
+          }
         }
         item.children.unshift({value: '-1', label: 'Seleccione', item: null});
       }
@@ -111,14 +142,17 @@ export default class ConditionPersonService {
    * @param code
    * @param questions
    */
-  getItemsForQuestionMultiSelect(code: string, questions: ConditionPersonQuestion[]) {
-    let item: MultiSelectSchema = { name: '', id: 0, children: [] };
+  getItemsForQuestionMultiSelect(
+    code: string,
+    questions: ConditionPersonQuestion[],
+  ) {
+    let item: MultiSelectSchema = {name: '', id: 0, children: []};
     for (let i = 0; i < questions.length; i++) {
       if (questions[i].CODIGO === code) {
         item.id = questions[i].ID;
         item.name = capitalizeFirstLetter(questions[i].NOMBRE);
         for (let option of questions[i].OPTIONS) {
-          item.children.push({ id: option.ID, name: option.NOMBRE });
+          item.children.push({id: option.ID, name: option.NOMBRE, item: null});
         }
       }
     }
@@ -157,7 +191,7 @@ export default class ConditionPersonService {
         realm.write(() => {
           realm.delete(options);
           for (let i = 0; i < answeroption.length; i++) {
-            console.log('option ', answeroption[i]);
+            //console.log('option ', answeroption[i]);
             let result = realm.create(
               DataBaseSchemas.FNCPERSON_FNCCONPERSCHEMA,
               {
@@ -221,7 +255,7 @@ export default class ConditionPersonService {
           .filtered(
             `FNCPERSON_ID = ${FNCPERSON_ID} AND FNCELEPER_ID = ${FNCELEPER_ID}`,
           );
-        console.log('borrar ', options.length);
+        //console.log('borrar ', options.length);
         realm.write(() => {
           realm.delete(options);
         });
@@ -243,19 +277,89 @@ export default class ConditionPersonService {
       schemaVersion: schemaVersion,
     })
       .then((realm) => {
-        console.log(
-          `FNCPERSON_ID = ${FNCPERSON_ID} AND FNCELEPER_ID = ${FNCELEPER_ID}`);
+        /* console.log(
+          `FNCPERSON_ID = ${FNCPERSON_ID} AND FNCELEPER_ID = ${FNCELEPER_ID}`,
+        ); */
         let items = realm
           .objects(DataBaseSchemas.FNCPERSON_FNCCONPERSCHEMA)
           .filtered(
             `FNCPERSON_ID = ${FNCPERSON_ID} AND FNCELEPER_ID = ${FNCELEPER_ID}`,
           );
-        console.warn('items getAnswerMultiSelect ', items.length);
+        //console.warn('items getAnswerMultiSelect ', items.length);
         return items.map((item: any) => {
           return item.FNCCONPER_ID;
         });
       })
       .catch((error) => {
+        return error;
+      });
+    return result;
+  }
+  async getOrganiList() {
+    const result = await Realm.open({
+      schema: [FNCORGANISCHEMA],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        let itemsSelect: {label: any; value: any}[] = [];
+        let items = realm.objects('FNCORGANI');
+        for (let item of items) {
+          itemsSelect.push({
+            label: item.NOMBRE,
+            value: item.ID,
+          });
+        }
+        itemsSelect.unshift({label: 'Seleccione', value: '-1'});
+        return itemsSelect;
+      })
+      .catch((error) => {
+        console.error(error);
+        return error;
+      });
+    return result;
+  }
+  async getOcupacList() {
+    const result = await Realm.open({
+      schema: [FNCOCUPACSCHEMA],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        let itemsSelect: {label: any; value: any}[] = [];
+        let items = realm.objects('FNCOCUPAC');
+        for (let item of items) {
+          itemsSelect.push({
+            label: item.NOMBRE,
+            value: item.ID,
+          });
+        }
+        itemsSelect.unshift({label: 'Seleccione', value: '-1'});
+        return itemsSelect;
+      })
+      .catch((error) => {
+        console.error(error);
+        return error;
+      });
+    return result;
+  }
+  async getParentList() {
+    const result = await Realm.open({
+      schema: [FNCPARENSCHEMA],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        let itemsSelect: {label: any; value: any}[] = [];
+        let items = realm.objects('FNCPAREN');
+        for (let item of items) {
+          itemsSelect.push({
+            label: item.NOMBRE,
+            value: item.ID,
+          });
+        }
+        itemsSelect.unshift({label: 'Seleccione', value: '-1'});
+        return itemsSelect;
+      })
+      .catch((error) => {
+        console.error(error);
         return error;
       });
     return result;

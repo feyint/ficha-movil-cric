@@ -102,7 +102,7 @@ class ViewPersonScreen extends Component<Props, State> {
             <List.Item
               title="Otros datos de identificación"
               left={() => <List.Icon icon="card-account-mail" />}
-              //onPress={() => this.goHomeLocation()}
+              onPress={() => this.goOtherDataIdentificationScreen()}
             />
             <List.Item
               title="Informacion de salud"
@@ -158,6 +158,9 @@ class ViewPersonScreen extends Component<Props, State> {
   }
   navigate(screen: string) {
     this.props.navigation.navigate(screen);
+  }
+  goOtherDataIdentificationScreen() {
+    this.props.navigation.navigate('OtherIdentificationDataScreen');
   }
 }
 const mapDispatchToProps = {
