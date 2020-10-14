@@ -30,10 +30,8 @@ export type FNCPERSON = {
   PRIMER_APELLIDO: string;
   SEGUNDO_APELLIDO: string;
   FECHA_NACIMIENTO: Date;
-  EDAD: number;
-  EDAD_VISITA: number;
-  TEL_CELULAR: number;
-  TEL_ALTERNO: number;
+  TEL_CELULAR: string;
+  TEL_ALTERNO: string;
   CORREO_ELECTRONICO: string;
   FECHA_ACTIVIDAD: Date;
   USUARIO_DATA: string;
@@ -58,4 +56,15 @@ export type FNBNUCVIV_FNCPERSON = {
   ID?: number;
   FNBNUCVIV_ID: number;
   FNCPERSON_ID: number;
+};
+export type FNCGENERO = {
+  ID: number;
+  CODIGO: string;
+  NOMBRE: string;
+  COD_FF: string;
+  ESTADO: number;
+  USUARIO_DATA: string;
+  FECHA_ACTIVIDAD: Date;
+  FECHA_CREACION: Date;
+  ORIGEN_DATA: string;
 };

@@ -34,20 +34,17 @@ export default class PersonService {
       .then((realm) => {
         realm.write(() => {
           let inserted = realm.create('FNCPERSON', item);
-          console.error('CREATED ', inserted);
           return inserted;
         });
       })
       .catch((error) => {
-        console.error('error FNCPERSON ', error);
+        console.error(error);
         return error;
       });
-    console.error('INSERT ITEM ', result);
     return item;
   }
-  async UpdateFNCPERSON(item: FNCPERSON) {
-    console.error('llega a ctualizar');
-    const result = await Realm.open({
+  async UpdateFNCPERSON(item: any) {
+    await Realm.open({
       schema: [FNCPERSONSCHEMA],
       schemaVersion: schemaVersion,
     })
@@ -56,36 +53,19 @@ export default class PersonService {
           .objects(DataBaseSchemas.FNCPERSONSCHEMA)
           .filtered(`ID = ${item.ID}`)
           .sorted('ID', true)[0];
-        console.log('person ', person);
         if (person) {
           realm.write(() => {
-            console.error('person ', person);
-            console.error('item ', item);
-            // person.CODIGO = item.CODIGO;
-            // person.IDENTIFICACION = item.IDENTIFICACION;
-            // person.PRIMER_NOMBRE = item.PRIMER_NOMBRE;
-            // person.SEGUNDO_NOMBRE = item.SEGUNDO_NOMBRE;
-            // person.PRIMER_APELLIDO = item.PRIMER_APELLIDO;
-            // person.SEGUNDO_APELLIDO = item.SEGUNDO_APELLIDO;
-            // person.FECHA_NACIMIENTO = item.FECHA_NACIMIENTO;
-            // person.EDAD = item.EDAD;
-            // person.EDAD_VISITA = item.EDAD_VISITA;
-            // person.TEL_CELULAR = item.TEL_CELULAR;
-            // person.TEL_ALTERNO = item.TEL_ALTERNO;
-            // person.CORREO_ELECTRONICO = item.CORREO_ELECTRONICO;
-            // person.FECHA_ACTIVIDAD = new Date();
-            // person.FNCTIPIDE_ID = item.FNCTIPIDE_ID;
-            // person.FNCORGANI_ID = item.FNCORGANI_ID;
-            // person.FNCLUNIND_ID = item.FNCLUNIND_ID;
-            // person.FNCOCUPAC_ID = item.FNCOCUPAC_ID;
-            // person.FUCMUNICI_ID = item.FUCMUNICI_ID;
-            // person.FNCPAREN_ID = item.FNCPAREN_ID;
-            // person.FNCGENERO_ID = item.FNCGENERO_ID;
+            for (const key of Object.keys(item)) {
+              if (key in person && key !== 'ID') {
+                // or obj1.hasOwnProperty(key)
+                person[key] = item[key];
+              }
+            }
           });
         }
       })
       .catch((error) => {
-        console.error('error FNCPERSON ', error);
+        console.error(error);
         return error;
       });
     return item;
@@ -106,25 +86,7 @@ export default class PersonService {
         return JSON.stringify(increment);
       })
       .catch((error) => {
-        console.error('errrorrr ', error);
-        return error;
-      });
-    return result;
-  }
-  async getPersons() {
-    const result = await Realm.open({
-      schema: [FNCPERSONSCHEMA],
-      schemaVersion: schemaVersion,
-    })
-      .then((realm) => {
-        let items = realm.objects('FNCPERSON');
-        console.log('persona items', items);
-        for (let i of items) {
-          console.log('persona items for', i);
-        }
-        return items;
-      })
-      .catch((error) => {
+        console.error(error);
         return error;
       });
     return result;
@@ -374,6 +336,35 @@ export default class PersonService {
         });
       })
       .catch((error) => {
+        return error;
+      });
+    return result;
+  }
+  async SaveFNCPERSONPropiety(
+    FNCPERSONID: number,
+    propiety: string,
+    value: any,
+  ) {
+    const result = await Realm.open({
+      schema: [FNCPERSONSCHEMA],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        realm.write(() => {
+          let item: any = realm
+            .objects(DataBaseSchemas.FNCPERSONSCHEMA)
+            .filtered(`ID = ${FNCPERSONID}`)
+            .sorted('ID', true)[0];
+          if (item) {
+            item[propiety] = value;
+            return true;
+          } else {
+            return false;
+          }
+        });
+      })
+      .catch((error) => {
+        console.error(error);
         return error;
       });
     return result;

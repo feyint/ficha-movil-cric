@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {View} from 'react-native';
 import {Appbar} from 'react-native-paper';
-import {SocialSecurityForm} from '../forms';
+import {BirthDataForm} from '../forms';
 import {NavigationProp} from '@react-navigation/native';
 
 interface Props {
@@ -17,9 +17,9 @@ class SocialSecurityScreen extends Component<Props, any> {
       <View>
         <Appbar.Header>
           <Appbar.BackAction onPress={() => this._goBack()} />
-          <Appbar.Content title="Seguridad social" />
+          <Appbar.Content title="Datos de nacimiento" />
         </Appbar.Header>
-        <SocialSecurityForm />
+        <BirthDataForm />
       </View>
     );
   }

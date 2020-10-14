@@ -26,7 +26,12 @@ import {
   SocialSecurityScreen,
   UnhealthyHabitsScreen,
   LastPregnancyScreen,
+  BirthDataScreen,
+  OtherIdentificationDataScreen,
   PersonalInformationScreen,
+  ContactInformationScreen,
+  ReproductiveSexualHealtScreen,
+  BirthInformationScreen,
 } from '../modules/person/manage/screens';
 import {FamilyScreen} from '../modules/families/screens';
 
@@ -108,6 +113,27 @@ export const Dashboard = () => {
         }}
       />
       <DashboardStack.Screen
+        component={ContactInformationScreen}
+        name="ContactInformationScreen"
+        options={{
+          headerShown: false,
+        }}
+      />
+      <DashboardStack.Screen
+        component={BirthInformationScreen}
+        name="BirthInformationScreen"
+        options={{
+          headerShown: false,
+        }}
+      />
+      <DashboardStack.Screen
+        component={ReproductiveSexualHealtScreen}
+        name="ReproductiveSexualHealtScreen"
+        options={{
+          headerShown: false,
+        }}
+      />
+      <DashboardStack.Screen
         component={HealthStatusVisitScreen}
         name="HealthStatusVisitScreen"
         options={{
@@ -145,6 +171,22 @@ export const Dashboard = () => {
         options={{
           headerShown: false,
           title: 'Finalizacion de la ultima gestacion',
+        }}
+      />
+      <DashboardStack.Screen
+        component={BirthDataScreen}
+        name="BirthDataScreen"
+        options={{
+          headerShown: false,
+          title: 'Datos de nacimiento',
+        }}
+      />
+      <DashboardStack.Screen
+        component={OtherIdentificationDataScreen}
+        name="OtherIdentificationDataScreen"
+        options={{
+          headerShown: false,
+          title: 'Otros datos de identificacion',
         }}
       />
     </DashboardStack.Navigator>

@@ -9,6 +9,7 @@ export type FUBUBIVIV = {
   ORIGEN_DATA: string;
   USUARIO_DATA: string;
   FUCBARVER_ID: number;
+  FUCZONCUI_ID: number;
 };
 export type FNBNUCVIV = {
   ID: number;

@@ -66,7 +66,11 @@ class BPicker extends Component<Props, any> {
             enabled={this.props.enabled}
             selectedValue={this.props.selectedValue}
             onValueChange={(itemValue, itemIndex) => {
-              if (itemValue === '-1') {
+              if (
+                itemValue === '-1' ||
+                itemValue === '' ||
+                itemValue === null
+              ) {
                 this.props.onChange(null);
               } else {
                 this.props.onChange(itemValue);
@@ -76,12 +80,17 @@ class BPicker extends Component<Props, any> {
               this.props.enabled && !this.props.enabled
                 ? styles.pickerdisabled
                 : styles.picker
-            }
-            onBlur={this.props.onBlur}>
+            }>
             {this.renderItems()}
           </Picker>
         </View>
-        <BError text="El campo es requerido" error={this.props.error} />
+        {this.props.error ? (
+          <HelperText type="error">
+            {this.props.error
+              ? this.props.error.message
+              : 'El campo es requerido'}
+          </HelperText>
+        ) : null}
       </View>
     );
   }

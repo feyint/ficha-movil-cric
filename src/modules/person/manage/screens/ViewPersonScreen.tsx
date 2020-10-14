@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View} from 'react-native';
+import {Alert, View} from 'react-native';
 import {Appbar, Text} from 'react-native-paper';
 import {List} from 'react-native-paper';
 import {NavigationProp} from '@react-navigation/native';
@@ -7,28 +7,33 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {connect} from 'react-redux';
 import {FNCPERSON} from '../../../../state/person/types';
 import {FNBNUCVIV} from '../../../../state/house/types';
+import {GenreService, SexAndRepHealthPersonService} from '../../../../services';
+import {setFNCNCSALREP} from '../../../../state/SexAndRepHealthPerson/actions';
 
 interface Props {
   navigation: NavigationProp<any>;
   FNCPERSON: FNCPERSON;
   FNBNUCVIV: FNBNUCVIV;
+  setFNCNCSALREP: any;
 }
 interface State {
   created: boolean;
+  enableSexReproductionHealt: boolean;
 }
 
 class ViewPersonScreen extends Component<Props, State> {
   state = {
     created: false,
+    enableSexReproductionHealt: false,
   };
   private _unsubscribe: any;
   _goBack() {
     this.props.navigation.goBack();
   }
   async UNSAFE_componentWillMount() {}
-  componentDidMount() {
+  async componentDidMount() {
     if (!this.props.FNCPERSON.ID) {
-      this.goPersonalInformation();
+      this.navigate('PersonalInformationScreen');
       this._unsubscribe = this.props.navigation.addListener('focus', () => {
         if (this.state.created) {
           if (!this.props.FNCPERSON.ID) {
@@ -40,6 +45,19 @@ class ViewPersonScreen extends Component<Props, State> {
           });
         }
       });
+    } else {
+      let genreService = new GenreService();
+      let Genre = await genreService.get(this.props.FNCPERSON.FNCGENERO_ID);
+      if (Genre && Genre.CODIGO == 'F') {
+        this.setState({
+          enableSexReproductionHealt: true,
+        });
+      }
+      let sxhealtservice = new SexAndRepHealthPersonService();
+      let item = await sxhealtservice.getFNCSALREP(this.props.FNCPERSON.ID);
+      if (item) {
+        this.props.setFNCNCSALREP(item);
+      }
     }
   }
   componentWillUnmount() {
@@ -62,29 +80,29 @@ class ViewPersonScreen extends Component<Props, State> {
           <Text>Nucleo al que pertenece: {this.props.FNBNUCVIV.CODIGO}</Text>
           <List.Section>
             <List.Item
-              onPress={() => this.goPersonalInformation()}
+              onPress={() => this.navigate('PersonalInformationScreen')}
               title="Datos personales"
               left={() => <List.Icon icon="account-box" />}
             />
             <List.Item
               title="Datos de nacimiento"
               left={() => <List.Icon icon="baby-face" />}
-              //onPress={() => this.goHomeLocation()}
+              onPress={() => this.navigate('BirthInformationScreen')}
             />
             <List.Item
               title="Seguridad social"
               left={() => <List.Icon icon="bottle-tonic-plus" />}
-              onPress={() => this.goSocialSecurityScreen()}
+              onPress={() => this.navigate('SocialSecurityScreen')}
             />
             <List.Item
               title="Datos de contacto"
               left={() => <List.Icon icon="card-account-phone" />}
-              //onPress={() => this.goHomeLocation()}
+              onPress={() => this.navigate('ContactInformationScreen')}
             />
             <List.Item
               title="Otros datos de identificación"
               left={() => <List.Icon icon="card-account-mail" />}
-              //onPress={() => this.goHomeLocation()}
+              onPress={() => this.goOtherDataIdentificationScreen()}
             />
             <List.Item
               title="Informacion de salud"
@@ -94,22 +112,29 @@ class ViewPersonScreen extends Component<Props, State> {
             <List.Item
               title="Estado de salud en la visita"
               left={() => <List.Icon icon="map-marker" />}
-              onPress={() => this.goHealthStatusVisitScreen()}
+              onPress={() => this.navigate('HealthStatusVisitScreen')}
             />
             <List.Item
               title="Hábitos no saludables"
               left={() => <List.Icon icon="map-marker" />}
-              onPress={() => this.goUnhealthyHabitsScreen()}
+              onPress={() => this.navigate('UnhealthyHabitsScreen')}
             />
             <List.Item
-              title="Salud sexual y reproductiva - Antecedentes gineco obstétricos"
+              title="Salud sexual y reproductiva"
               left={() => <List.Icon icon="map-marker" />}
-              //onPress={() => this.goLastPregnancyScreen()}
+              onPress={() => {
+                this.state.enableSexReproductionHealt
+                  ? this.navigate('ReproductiveSexualHealtScreen')
+                  : Alert.alert(
+                      'Acción no permitida',
+                      'solo aplica para genero "Femenino"',
+                    );
+              }}
             />
             <List.Item
               title="Finalización de la última gestación"
               left={() => <List.Icon icon="map-marker" />}
-              onPress={() => this.goLastPregnancyScreen()}
+              onPress={() => this.navigate('LastPregnancyScreen')}
             />
             <List.Item
               title="Gestación actual"
@@ -124,37 +149,27 @@ class ViewPersonScreen extends Component<Props, State> {
             <List.Item
               title="Mortalidad en los últimos 12 meses"
               left={() => <List.Icon icon="emoticon-dead" />}
-              onPress={() => this.goMortalityLast12MonthsScreen()}
+              onPress={() => this.navigate('MortalityLast12MonthsScreen')}
             />
           </List.Section>
         </KeyboardAwareScrollView>
       </View>
     );
   }
-  goPersonalInformation() {
-    this.props.navigation.navigate('PersonalInformationScreen');
+  navigate(screen: string) {
+    this.props.navigation.navigate(screen);
   }
-  goHealthStatusVisitScreen() {
-    this.props.navigation.navigate('HealthStatusVisitScreen');
-  }
-  goMortalityLast12MonthsScreen() {
-    this.props.navigation.navigate('MortalityLast12MonthsScreen');
-  }
-  goSocialSecurityScreen() {
-    this.props.navigation.navigate('SocialSecurityScreen');
-  }
-  goUnhealthyHabitsScreen() {
-    this.props.navigation.navigate('UnhealthyHabitsScreen');
-  }
-  goLastPregnancyScreen() {
-    this.props.navigation.navigate('LastPregnancyScreen');
+  goOtherDataIdentificationScreen() {
+    this.props.navigation.navigate('OtherIdentificationDataScreen');
   }
 }
-
+const mapDispatchToProps = {
+  setFNCNCSALREP,
+};
 const mapStateToProps = (reducer: any) => {
   return {
     FNCPERSON: reducer.person.FNCPERSON,
     FNBNUCVIV: reducer.housing.FNBNUCVIV,
   };
 };
-export default connect(mapStateToProps, null)(ViewPersonScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(ViewPersonScreen);

@@ -8,7 +8,6 @@ import {BButton, BMultiSelect, BPicker} from '../../../../core/components';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {ConditionPersonService} from '../../../../services';
-
 import {
   QuestionConditionPersonCodes,
   QuestionTypes,
@@ -28,7 +27,7 @@ const questions = [
 
 const schemaForm = yup.object().shape({
   SeguridadSocial: yup.number().required(),
-  EPS: yup.number().required(),
+  EPS: yup.number().optional(),
   ProgramaDeSalud: yup.array().required(),
 });
 
@@ -39,7 +38,7 @@ const _SocialSecurityForm = (props: any) => {
     questions: [] as ConditionPersonQuestion[],
   });
 
-  const [pikerEnable, setPikerEnable] = useState(false);
+  const [enableEPS, setEnableEPS] = useState(false);
 
   const navigation = useNavigation();
 
@@ -64,14 +63,26 @@ const _SocialSecurityForm = (props: any) => {
       });
     }
   }
-
   async function getAnswers(type: number, code: string, prop: string) {
     let question = await props.getQuestionAnswer(type, code);
     setValue(prop, question);
+    if (prop == 'SeguridadSocial') {
+      setEnableEPS(question !== '91');
+    }
   }
 
   const getQuestionlabel = (code: string) => {
     return syncCatalogService.getQuestionlabel(code, state.questions);
+  };
+  const validateSocialSecurity = (value: string) => {
+    setEnableEPS(value !== '91');
+    if (value == '91') {
+      props.saveAnswerLocal(
+        QuestionTypes.selectOne,
+        QuestionConditionPersonCodes.EPS,
+        null,
+      );
+    }
   };
 
   const getItemsForQuestionMultiSelect = (code: string) => {
@@ -81,7 +92,6 @@ const _SocialSecurityForm = (props: any) => {
       state.questions,
     );
   };
-
   function onSubmit(data: any) {
     navigation.goBack();
   }
@@ -91,27 +101,21 @@ const _SocialSecurityForm = (props: any) => {
       <View style={styles.container}>
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BPicker
               label={getQuestionlabel(
                 QuestionConditionPersonCodes.SeguridadSocial,
               )}
-              onBlur={onBlur}
               error={errors.SeguridadSocial}
               onChange={(value: any) => {
-                onChange(value);
-                console.log('save seguridad social value es: ', value);
-                props.saveAnswerLocal(
-                  QuestionTypes.selectOne,
-                  QuestionConditionPersonCodes.SeguridadSocial,
-                  value,
-                );
-                if (value == 93 || value == 94 || value == 92) {
-                  console.log('verdadero');
-                  setPikerEnable(true);
-                } else {
-                  console.log('falso');
-                  setPikerEnable(false);
+                if (value) {
+                  onChange(value);
+                  props.saveAnswerLocal(
+                    QuestionTypes.selectOne,
+                    QuestionConditionPersonCodes.SeguridadSocial,
+                    value,
+                  );
+                  validateSocialSecurity(value);
                 }
               }}
               onLoad={() => {
@@ -121,7 +125,6 @@ const _SocialSecurityForm = (props: any) => {
                   'SeguridadSocial',
                 );
               }}
-              value={value}
               selectedValue={value}
               items={
                 getItemsForQuestionSelect(
@@ -132,40 +135,42 @@ const _SocialSecurityForm = (props: any) => {
           )}
           name="SeguridadSocial"
         />
-        <Controller
-          control={control}
-          render={({onChange, onBlur, value}) => (
-            <BPicker
-              enabled={pikerEnable}
-              label={getQuestionlabel(QuestionConditionPersonCodes.EPS)}
-              onBlur={onBlur}
-              error={errors.EPS}
-              onChange={(value: any) => {
-                onChange(value);
-                console.log('save: ', value);
-                props.saveAnswerLocal(
-                  QuestionTypes.selectOne,
-                  QuestionConditionPersonCodes.EPS,
-                  value,
-                );
-              }}
-              onLoad={() => {
-                getAnswers(
-                  QuestionTypes.selectOne,
-                  QuestionConditionPersonCodes.EPS,
-                  'EPS',
-                );
-              }}
-              value={value}
-              selectedValue={value}
-              items={
-                getItemsForQuestionSelect(QuestionConditionPersonCodes.EPS)
-                  .children
-              }
-            />
-          )}
-          name="EPS"
-        />
+        {enableEPS ? (
+          <Controller
+            control={control}
+            render={({onChange, onBlur, value}) => (
+              <BPicker
+                enabled={enableEPS}
+                label={'Empresa afiliado'}
+                onBlur={onBlur}
+                error={errors.EPS}
+                onChange={(value: any) => {
+                  if (value) {
+                    onChange(value);
+                    props.saveAnswerLocal(
+                      QuestionTypes.selectOne,
+                      QuestionConditionPersonCodes.EPS,
+                      value,
+                    );
+                  }
+                }}
+                onLoad={() => {
+                  getAnswers(
+                    QuestionTypes.selectOne,
+                    QuestionConditionPersonCodes.EPS,
+                    'EPS',
+                  );
+                }}
+                selectedValue={value}
+                items={
+                  getItemsForQuestionSelect(QuestionConditionPersonCodes.EPS)
+                    .children
+                }
+              />
+            )}
+            name="EPS"
+          />
+        ) : null}
         <Controller
           control={control}
           render={({onChange, onBlur, value}) => (
@@ -176,13 +181,15 @@ const _SocialSecurityForm = (props: any) => {
               onBlur={onBlur}
               error={errors.ProgramaDeSalud}
               onChange={(values: any) => {
-                onChange(values);
-                console.log('save', values);
-                props.saveAnswerLocal(
-                  QuestionTypes.multiSelect,
-                  QuestionConditionPersonCodes.ProgramaDeSalud,
-                  values,
-                );
+                if (values) {
+                  onChange(values);
+                  console.log('save', values);
+                  props.saveAnswerLocal(
+                    QuestionTypes.multiSelect,
+                    QuestionConditionPersonCodes.ProgramaDeSalud,
+                    values,
+                  );
+                  }
               }}
               onLoad={() => {
                 console.log('onLoad');

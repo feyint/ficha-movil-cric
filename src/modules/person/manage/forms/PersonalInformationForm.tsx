@@ -10,7 +10,7 @@ import {BButton, BPicker, BTextInput} from '../../../../core/components';
 import BNumberInput from '../../../../core/components/BNumberInput';
 import {PersonService} from '../../../../services';
 import {FNCPERSON} from '../../../../state/person/types';
-import {saveFNCPERSON} from '../../../../state/person/actions';
+import {saveFNCPERSON, updateFNCPERSON} from '../../../../state/person/actions';
 const schemaForm = yup.object().shape({
   firstname: yup.string().required(),
   middlename: yup.string().optional(),
@@ -33,9 +33,9 @@ const _PersonalInformationForm = (props: any) => {
     {label: 'Registro civil', value: '3'},
   ];
   const [genders, setGenders] = useState<{label: any; value: any}[]>([]);
-  const [gender, setGender] = useState('');
-  const [identification, setIdentification] = useState('');
-  const [identificationType, setIdentificationType] = useState('');
+  const [gender, setGender] = useState();
+  const [identification, setIdentification] = useState();
+  const [identificationType, setIdentificationType] = useState<any>();
   useEffect(() => {
     fetchQuestions();
   }, []);
@@ -51,25 +51,38 @@ const _PersonalInformationForm = (props: any) => {
       setIdentification(props.FNCPERSON.IDENTIFICACION);
       setValue('identificationType', props.FNCPERSON.FNCTIPIDE_ID);
       setIdentificationType('' + props.FNCPERSON.FNCTIPIDE_ID);
-      setValue('gender', '' + props.FNCPERSON.FNCGENERO_ID);
-      setGender('' + props.FNCPERSON.FNCGENERO_ID);
+      setValue('gender', props.FNCPERSON.FNCGENERO_ID);
+      setGender(props.FNCPERSON.FNCGENERO_ID);
     }
   };
   const onSubmit = async (data: any) => {
-    await savePerson(data);
-    // navigation.goBack();
-  };
-  const savePerson = async (data: any) => {
-    // let person: FNCPERSON = props.FNCPERSON;
-    let person: any = {};
-    person.PRIMER_NOMBRE = data.firstname;
-    person.SEGUNDO_NOMBRE = data.middlename ? data.middlename : '';
-    person.PRIMER_APELLIDO = data.lastname;
-    person.SEGUNDO_APELLIDO = data.secondlastname ? data.secondlastname : '';
-    person.IDENTIFICACION = data.identification;
-    person.FNCTIPIDE_ID = JSON.parse(data.identificationType);
-    person.FNCGENERO_ID = JSON.parse(data.gender);
-    let inserted = await props.saveFNCPERSON(person);
+    let person: FNCPERSON = props.FNCPERSON;
+    if (person.ID != null) {
+      try {
+        let inserted = await props.updateFNCPERSON({
+          ID: person.ID,
+          PRIMER_NOMBRE: data.firstname,
+          SEGUNDO_NOMBRE: data.middlename ? data.middlename : '',
+          PRIMER_APELLIDO: data.lastname,
+          SEGUNDO_APELLIDO: data.secondlastname ? data.secondlastname : '',
+          IDENTIFICACION: data.identification,
+          FNCTIPIDE_ID: JSON.parse(data.identificationType),
+          FNCGENERO_ID: JSON.parse(data.gender),
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      let item: any = {};
+      item.PRIMER_NOMBRE = data.firstname;
+      item.SEGUNDO_NOMBRE = data.middlename ? data.middlename : '';
+      item.PRIMER_APELLIDO = data.lastname;
+      item.SEGUNDO_APELLIDO = data.secondlastname ? data.secondlastname : '';
+      item.IDENTIFICACION = data.identification;
+      item.FNCTIPIDE_ID = JSON.parse(data.identificationType);
+      item.FNCGENERO_ID = JSON.parse(data.gender);
+      let inserted = await props.saveFNCPERSON(item);
+    }
     navigation.goBack();
   };
   return (
@@ -181,9 +194,7 @@ const _PersonalInformationForm = (props: any) => {
           <BButton
             color="secondary"
             value="Guardar Cambios"
-            onPress={handleSubmit(onSubmit, (err) => {
-              console.error(err);
-            })}
+            onPress={handleSubmit(onSubmit)}
           />
         </View>
       </View>
@@ -211,6 +222,7 @@ const mapStateToProps = (person: any) => {
   };
 };
 const mapDispatchToProps = {
+  updateFNCPERSON,
   saveFNCPERSON,
 };
 export default connect(

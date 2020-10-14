@@ -16,6 +16,7 @@ interface Props {
 interface State {
   FVCCONVIV: number;
   FVCELEVIV: number;
+  FUCPAIS: number;
   FUCDEPART: number;
   FUCMUNICI: number;
   FUCTIPTER: number;
@@ -30,6 +31,13 @@ interface State {
   FNCELEPER: number;
   FNCCONPER: number;
   FNCDESARM: number;
+  FNCLUNIND: number;
+  FNCELEREP: number;
+  FNCCONREP: number;
+  FNCPAREN: number;
+  FNCOCUPAC: number;
+  FNCPUEIND: Number;
+  FNCORGANI: Number;
   /* /-------------------- */
 }
 
@@ -46,6 +54,10 @@ class SyncScreen extends Component<Props, State> {
       FUCRESGUA: 0,
       FUCBARVER: 0,
       FUCZONA: 0,
+      FNCPAREN: 0,
+      FNCOCUPAC: 0,
+      FNCPUEIND: 0,
+      FNCORGANI: 0,
       FUCUNICUI: 0,
       FUCZONCUI: 0,
       FNCELESAL: 0,
@@ -53,6 +65,10 @@ class SyncScreen extends Component<Props, State> {
       FNCELEPER: 0,
       FNCCONPER: 0,
       FNCDESARM: 0,
+      FUCPAIS: 0,
+      FNCLUNIND: 0,
+      FNCELEREP: 0,
+      FNCCONREP: 0,
     };
     this.countEntity();
   }
@@ -88,6 +104,16 @@ class SyncScreen extends Component<Props, State> {
               FVCELEVIV (Preguntas Nucleo familiar): {this.state.FVCELEVIV}
             </Paragraph>
             {/* ------------------------------------------ */}
+            <Paragraph>FNCPUEIND (pueblo) : {this.state.FNCPUEIND}</Paragraph>
+            <Paragraph>
+              FUCZONCUI (Zona de cuidado) : {this.state.FUCZONCUI}
+            </Paragraph>
+            <Paragraph>
+              FNCORGANI (organizacion) : {this.state.FNCORGANI}
+            </Paragraph>
+            <Paragraph>
+              FNCOCUPAC (Ocupacion) : {this.state.FNCOCUPAC}
+            </Paragraph>
             <Paragraph>
               FNCCONSAL (Opciones de Respuestas salud) : {this.state.FNCCONSAL}
             </Paragraph>
@@ -103,7 +129,17 @@ class SyncScreen extends Component<Props, State> {
             <Paragraph>
               FNCDESARM (respuestas desarmonia): {this.state.FNCDESARM}
             </Paragraph>
+            <Paragraph>
+              FNCLUNIND (pueblo indigena): {this.state.FNCLUNIND}
+            </Paragraph>
+             <Paragraph>
+              FNCELEREP (preguntas salud sexual y rep): {this.state.FNCELEREP}
+            </Paragraph>
+            <Paragraph>
+              FNCCONREP (respuestas salud sexual y rep): {this.state.FNCCONREP}
+            </Paragraph>
             {/* ------------------------------------------ */}
+            <Paragraph>FUCPAIS (Pais) : {this.state.FUCPAIS}</Paragraph>
             <Paragraph>
               FUCDEPART (Departamentos) : {this.state.FUCDEPART}
             </Paragraph>
@@ -120,6 +156,7 @@ class SyncScreen extends Component<Props, State> {
               FUCBARVER (barrio vereda) : {this.state.FUCBARVER}
             </Paragraph>
             <Paragraph>FUCZONA (Zona) : {this.state.FUCZONA}</Paragraph>
+            <Paragraph>FNCPAREN (Parentezco) : {this.state.FNCPAREN}</Paragraph>
             <Paragraph>
               FUCUNICUI (Unidad de cuidado) : {this.state.FUCUNICUI}
             </Paragraph>
@@ -144,6 +181,12 @@ class SyncScreen extends Component<Props, State> {
       'FVCELEVIV',
     );
     //----------------------------------------------------------------------
+    let countFNCPUEIND = await this.syncCatalogService.countEntities(
+      'FNCPUEIND',
+    );
+    let countFNCORGANI = await this.syncCatalogService.countEntities(
+      'FNCORGANI',
+    );
     let countFNCCONSAL = await this.syncCatalogService.countEntities(
       'FNCCONSAL',
     );
@@ -159,10 +202,17 @@ class SyncScreen extends Component<Props, State> {
     let countFNCDESARM = await this.syncCatalogService.countEntities(
       'FNCDESARM',
     );
+    let countFNCELEREP = await this.syncCatalogService.countEntities(
+      'FNCELEREP',
+    );
+    let countFNCCONREP = await this.syncCatalogService.countEntities(
+      'FNCCONREP',
+    );
     //----------------------------------------------------------------------
     let countFUCDEPART = await this.syncCatalogService.countEntities(
       'FUCDEPART',
     );
+    let countPais = await this.syncCatalogService.countEntities('FUCPAIS');
     let countFUCMUNICI = await this.syncCatalogService.countEntities(
       'FUCMUNICI',
     );
@@ -176,11 +226,18 @@ class SyncScreen extends Component<Props, State> {
       'FUCBARVER',
     );
     let countFUCZONA = await this.syncCatalogService.countEntities('FUCZONA');
+    let countFNCPAREN = await this.syncCatalogService.countEntities('FNCPAREN');
+    let countFNCOCUPAC = await this.syncCatalogService.countEntities(
+      'FNCOCUPAC',
+    );
     let countFUCUNICUI = await this.syncCatalogService.countEntities(
       'FUCUNICUI',
     );
     let countFUCZONCUI = await this.syncCatalogService.countEntities(
       'FUCZONCUI',
+    );
+    let countFNCLUNIND = await this.syncCatalogService.countEntities(
+      'FNCLUNIND',
     );
     this.setState({
       FVCCONVIV: countFVCCONVIV,
@@ -198,8 +255,16 @@ class SyncScreen extends Component<Props, State> {
       FUCRESGUA: countFUCRESGUA,
       FUCBARVER: countFUCBARVER,
       FUCZONA: countFUCZONA,
+      FNCPAREN: countFNCPAREN,
+      FNCOCUPAC: countFNCOCUPAC,
+      FNCPUEIND: countFNCPUEIND,
+      FNCORGANI: countFNCORGANI,
       FUCUNICUI: countFUCUNICUI,
       FUCZONCUI: countFUCZONCUI,
+      FUCPAIS: countPais,
+      FNCLUNIND: countFNCLUNIND,
+      FNCELEREP: countFNCELEREP,
+      FNCCONREP: countFNCCONREP,
     });
   }
   async clearPollEntities() {

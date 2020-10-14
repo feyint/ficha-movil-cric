@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {HelperText, TextInput} from 'react-native-paper';
 import {View} from 'react-native';
+import BError from './BError';
 
 interface State {
   value: string;
@@ -9,9 +10,7 @@ interface Props {
   mode?: 'flat' | 'outlined';
   label?: string;
   value?: string;
-  validators?: string | string[];
-  errorText?: string;
-  error?: boolean;
+  error?: any;
   onChange?: any;
   onBlur?: any;
   keyboardType?: any;
@@ -37,8 +36,8 @@ export default class BTextInput extends Component<Props, State> {
         />
         {this.props.error ? (
           <HelperText type="error">
-            {this.props.errorText
-              ? this.props.errorText
+            {this.props.error
+              ? this.props.error.message
               : 'El campo es requerido'}
           </HelperText>
         ) : null}

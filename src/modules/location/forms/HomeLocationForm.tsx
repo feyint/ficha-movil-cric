@@ -12,7 +12,17 @@ import {SelectSchema} from '../../../core/utils/types';
 import Geolocation from '@react-native-community/geolocation';
 import {saveFUBUBIVIV, updateFUBUBIVIV} from '../../../state/house/actions';
 import {FUBUBIVIV} from '../../../state/house/types';
-import {HousingService} from '../../../services';
+import {HousingService, UtilsService} from '../../../services';
+import {FUCZONCUI} from '../state/types';
+import {
+  DataBaseSchemas,
+  FUCBARVERSCHEMA,
+  FUCDEPARTSCHEMA,
+  FUCMUNICISCHEMA,
+  FUCRESGUASCHEMA,
+  FUCTIPTERSCHEMA,
+  FUCZONASCHEMA,
+} from '../../../providers/DataBaseProvider';
 
 interface GeolocationData {
   latitude: string;
@@ -23,7 +33,10 @@ const schemaForm = yup.object().shape({
   municipality: yup.string().required(),
   territoryType: yup.string().required(),
   shelterOrCouncil: yup.string().required(),
-  sidewalk: yup.string().required(),
+  /* sidewalk: yup.string().required(),
+  carezone: yup.string().required(), */
+  sidewalk: yup.string().required('Barrio o vereda requerido').nullable(),
+  carezone: yup.string().required('Zona de cuidado requerido'),
   latitude: yup.string().required(),
   longitude: yup.string().required(),
   address: yup.string().required(),
@@ -42,13 +55,25 @@ const _HomeLocationForm = (props: any) => {
   });
   const [department, setDepartment] = useState('');
   const [municipio, setMunicipio] = useState('');
+  //const [zonacuidado, setZonacuidado] = useState('');
   const [originalhouseCode, setoriginalHouseCode] = useState('');
   const [houseCode, setHouseCode] = useState('');
   const [tipoterritorio, setTipoterritorio] = useState('-1');
   const [centropoblado, setCentropoblado] = useState('');
   const [tipoterritorioLabel, setTipoterritorioLabel] = useState('');
   const [barrioVereda, setBarrioVereda] = useState('');
+  const [zonacuidado, setZonacuidado] = useState('');
   const [address, setAddress] = useState('');
+  const [zonacuidadoSelect, setZonacuidadoSelect] = useState<SelectSchema>({
+    id: 0,
+    name: '',
+    children: [],
+  });
+  const [FUCZONCUIItems, setFUCZONCUIItems] = useState<{
+      value: string;
+      label: string;
+    }[]
+  >([]);
   const [municipioSelect, setMunicipioSelect] = useState<SelectSchema>({
     id: 0,
     name: '',
@@ -83,13 +108,16 @@ const _HomeLocationForm = (props: any) => {
     // useMunicipio();
   }, [municipio]);
   async function fetchQuestions() {
-    let FUCDEPART = await props.getEntitySelect('FUCDEPART');
-    let FUCTIPTER = await props.getEntitySelect('FUCTIPTER');
+    let FUCDEPART = await props.getEntitySelect('FUCDEPART', FUCDEPARTSCHEMA);
+    let FUCTIPTER = await props.getEntitySelect('FUCTIPTER', FUCTIPTERSCHEMA);
+    let FUCZONA = await props.getEntitySelect('FUCZONA', FUCZONASCHEMA);
     let FUCMUNICI = await props.getEntitySelect(
       'FUCMUNICI',
+      FUCMUNICISCHEMA,
       'FUCDEPART_ID',
       getValues().department,
     );
+    setZonacuidadoSelect(FUCZONA);
     setDepartamentoSelect(FUCDEPART);
     setTipoterritorioSelect(FUCTIPTER);
     setMunicipioSelect(FUCMUNICI);
@@ -97,7 +125,6 @@ const _HomeLocationForm = (props: any) => {
   }
 
   async function getDefaultValues() {
-    //console.error(props.FUBUBIVIV);
     if (props.FUBUBIVIV.CODIGO !== '') {
       setoriginalHouseCode(props.FUBUBIVIV.CODIGO);
       setPosition({
@@ -107,40 +134,44 @@ const _HomeLocationForm = (props: any) => {
       setAddress(props.FUBUBIVIV.DIRECCION);
       setHouseCode(props.FUBUBIVIV.CODIGO);
       let FUCBARVER_ID = props.FUBUBIVIV.FUCBARVER_ID;
-      let service: HousingService = new HousingService();
-      let barver = await service.getUbicationEntity(
-        'FUCBARVER',
+      let service: UtilsService = new UtilsService();
+      let barver = await service.getFilterEntity(
+        DataBaseSchemas.FUCBARVERSCHEMA,
+        FUCBARVERSCHEMA,
         'ID',
         FUCBARVER_ID,
         null,
         null,
         true,
       );
-      let cenpoblado = await service.getUbicationEntity(
-        'FUCRESGUA',
+      let cenpoblado = await service.getFilterEntity(
+        DataBaseSchemas.FUCRESGUASCHEMA,
+        FUCRESGUASCHEMA,
         'ID',
         barver.FUCRESGUA_ID,
         null,
         null,
         true,
       );
-      let munici = await service.getUbicationEntity(
-        'FUCMUNICI',
+      let munici = await service.getFilterEntity(
+        DataBaseSchemas.FUCMUNICISCHEMA,
+        FUCMUNICISCHEMA,
         'ID',
         cenpoblado.FUCMUNICI_ID,
         null,
         null,
         true,
       );
-      let dept = await service.getUbicationEntity(
-        'FUCDEPART',
+      let dept = await service.getFilterEntity(
+        DataBaseSchemas.FUCDEPARTSCHEMA,
+        FUCDEPARTSCHEMA,
         'ID',
         munici.FUCDEPART_ID,
         null,
         null,
         true,
       );
-      setDepartment('' + dept.ID);
+      //setZonacuidado('' + zonacuidado.ID)
       setMunicipio('' + munici.ID);
       setTipoterritorio('' + cenpoblado.FUCTIPRES_ID);
       if (cenpoblado.FUCTIPRES_ID == '1') {
@@ -150,6 +181,7 @@ const _HomeLocationForm = (props: any) => {
       }
       let FUCRESGUA = await props.getEntitySelect(
         'FUCRESGUA',
+        FUCRESGUASCHEMA,
         'FUCMUNICI_ID',
         munici.ID,
         'FUCTIPRES_ID',
@@ -159,11 +191,15 @@ const _HomeLocationForm = (props: any) => {
       setCentropoblado('' + cenpoblado.ID);
       let FUCBARVER = await props.getEntitySelect(
         'FUCBARVER',
+        FUCBARVERSCHEMA,
         'FUCRESGUA_ID',
         cenpoblado.ID,
       );
       setBarrioVeredaSelect(FUCBARVER);
       setBarrioVereda('' + barver.ID);
+      onChangeBarrioVereda(barver.ID);
+      setZonacuidado('' + props.FUBUBIVIV.FUCZONCUI_ID);
+      setValue('carezone', '' + props.FUBUBIVIV.FUCZONCUI_ID);
       setValue('department', '' + dept.ID);
       setValue('municipality', '' + munici.ID);
       setValue('territoryType', '' + cenpoblado.FUCTIPRES_ID);
@@ -172,10 +208,6 @@ const _HomeLocationForm = (props: any) => {
       setValue('latitude', '' + props.FUBUBIVIV.COORDENADA_X);
       setValue('longitude', '' + props.FUBUBIVIV.COORDENADA_Y);
       setValue('address', '' + props.FUBUBIVIV.DIRECCION);
-      // console.error(barver);
-      // console.error(cenpoblado);
-      // console.error(munici);
-      // console.error(dept);
     } else {
       await getCurrentPosition();
     }
@@ -196,6 +228,7 @@ const _HomeLocationForm = (props: any) => {
   async function onChangeDept(idDept: any) {
     let FUCMUNICI = await props.getEntitySelect(
       'FUCMUNICI',
+      FUCMUNICISCHEMA,
       'FUCDEPART_ID',
       idDept,
     );
@@ -206,12 +239,12 @@ const _HomeLocationForm = (props: any) => {
   async function onChangeMuni(munid: string, typeid: string) {
     let FUCRESGUA = await props.getEntitySelect(
       'FUCRESGUA',
+      FUCRESGUASCHEMA,
       'FUCMUNICI_ID',
       munid,
       'FUCTIPRES_ID',
       typeid,
     );
-    //console.error('FUCRESGUA', FUCRESGUA);
     setrescentropSelect(FUCRESGUA);
     setValue('shelterOrCouncil', '');
     setCentropoblado('');
@@ -236,18 +269,15 @@ const _HomeLocationForm = (props: any) => {
     if (resguaId) {
       let FUCBARVER = await props.getEntitySelect(
         'FUCBARVER',
+        FUCBARVERSCHEMA,
         'FUCRESGUA_ID',
         resguaId,
       );
       setBarrioVeredaSelect(FUCBARVER);
-      //console.error('length ', FUCBARVER.children.length);
-      //console.error('resguaId  ', resguaId);
       for (let i = 0; i < rescentropSelect.children.length; i++) {
         const item: any = rescentropSelect.children[i];
-        //console.warn('item.item ', item.item);
         if (item.item && item.item.ID == resguaId) {
           let ress = await props.getLasHouseCode(item.item.CODIGO);
-          //console.error('ress  ', `${item.item.CODIGO}-${ress}`);
           setHouseCode(`${item.item.CODIGO}-${ress}`);
           setValue('housingCode', `${item.item.CODIGO}-${ress}`);
           if (FUCBARVER.children.length == 1) {
@@ -257,6 +287,28 @@ const _HomeLocationForm = (props: any) => {
           console.log('ress ', ress);
         }
       }
+    }
+  }
+  async function onChangeBarrioVereda(FUCBARVER_ID: string) {
+    let items: {label: string; value: string}[] = [];
+    if (FUCBARVER_ID) {
+      let service: HousingService = new HousingService();
+      let FUCZONCUIitems: FUCZONCUI[] = await service.getFUCZONCUI(
+        parseInt(FUCBARVER_ID, 10),
+      );
+      for (let option of FUCZONCUIitems) {
+        items.push({
+          value: option.ID.toString(),
+          label: option.CODIGO_FF,
+        });
+      }
+      items.unshift({value: '-1', label: 'Seleccione...'});
+      setFUCZONCUIItems(items);
+    } else {
+      items.unshift({value: '-1', label: 'Seleccione...'});
+      setZonacuidado('-1');
+      setValue('carezone', '');
+      setFUCZONCUIItems(items);
     }
   }
   const onSubmit = async (data: any) => {
@@ -269,6 +321,7 @@ const _HomeLocationForm = (props: any) => {
         COORDENADA_Y: position.longitude,
         DIRECCION: data.address,
         FUCBARVER_ID: JSON.parse(data.sidewalk),
+        FUCZONCUI_ID: JSON.parse(data.carezone),
       };
       let result = await props.updateFUBUBIVIV(item, originalhouseCode);
       navigation.goBack();
@@ -280,6 +333,7 @@ const _HomeLocationForm = (props: any) => {
         COORDENADA_Y: position.longitude,
         DIRECCION: data.address,
         FUCBARVER_ID: JSON.parse(data.sidewalk),
+        FUCZONCUI_ID: JSON.parse(data.carezone),
       };
       let result = await props.saveFUBUBIVIV(item);
       navigation.goBack();
@@ -393,6 +447,28 @@ const _HomeLocationForm = (props: any) => {
           )}
           name="shelterOrCouncil"
         />
+        {/* ----------------------------------------------------------------- */}
+        {/* <Controller
+          control={control}
+          render={({onChange, onBlur, value}) => (
+            <BPicker
+              label="Zona"
+              prompt="Seleccione una opción"
+              enabled={true}
+              onBlur={onBlur}
+              error={errors.carezone}
+              onChange={(value) => {
+                //console.error(value);
+                onChange(value);
+                setZonacuidado(value);
+              }}
+              selectedValue={zonacuidado}
+              items={zonacuidadoSelect.children}
+            />
+          )}
+          name="carezone"
+        /> */}
+        {/* ----------------------------------------------------------------- */}
         <Controller
           control={control}
           render={({onChange, onBlur, value}) => (
@@ -403,15 +479,34 @@ const _HomeLocationForm = (props: any) => {
               onBlur={onBlur}
               error={errors.sidewalk}
               onChange={(value) => {
-                //console.error(value);
                 onChange(value);
                 setBarrioVereda(value);
+                onChangeBarrioVereda(value);
               }}
               selectedValue={barrioVereda}
               items={barrioVeredaSelect.children}
             />
           )}
           name="sidewalk"
+        />
+        <Controller
+          control={control}
+          render={({onChange, onBlur, value}) => (
+            <BPicker
+              label="Zona de cuidado"
+              prompt="Seleccione una opción"
+              enabled={true}
+              onBlur={onBlur}
+              error={errors.carezone}
+              onChange={(value) => {
+                onChange(value);
+                setZonacuidado(value);
+              }}
+              selectedValue={zonacuidado}
+              items={FUCZONCUIItems}
+            />
+          )}
+          name="carezone"
         />
         <Controller
           control={control}

@@ -101,12 +101,6 @@ const _HouseConditionForm = (props: any) => {
         questions: result,
       });
     }
-
-    //getAnswersFNBNUCVIV();
-    // console.error(
-    //   'props.FNBNUCVIV.ANIMAL_VACUNADO',
-    //   props.FNBNUCVIV.ANIMAL_VACUNADO,
-    // );
     getAnswersFNBNUCVIV();
   }
   async function getAnswersFNBNUCVIV() {

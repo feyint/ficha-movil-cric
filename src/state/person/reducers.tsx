@@ -29,7 +29,7 @@ const FNCPERSON = {
   FECHA_NACIMIENTO: null,
   EDAD: null,
   EDAD_VISITA: null,
-  TEL_CEDULAR: null,
+  TEL_CELULAR: null,
   TEL_ALTERNO: null,
   CORREO_ELECTRONICO: null,
   FNCTIPIDE_ID: null,

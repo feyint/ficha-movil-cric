@@ -13,9 +13,12 @@ import {
   FUCRESGUASCHEMA,
   FUCBARVERSCHEMA,
   FUCZONASCHEMA,
+  FNCDESARMSCHEMA,
+  FNCOCUPACSCHEMA,
   FUCUNICUISCHEMA,
   FUCZONCUISCHEMA,
   FNBNUCVIV_FNCPERSONSCHEMA,
+  FUCZONCUI_FUCBARVERSCHEMA,
 } from '../providers/DataBaseProvider';
 import Realm from 'realm';
 import {
@@ -25,8 +28,9 @@ import {
 import {FNBNUCVIV_FVCCONVIV, FUBUBIVIV, FNBNUCVIV} from '../state/house/types';
 import {SelectSchema, MultiSelectSchema} from '../core/utils/types';
 import {capitalizeFirstLetter} from '../core/utils/utils';
-import { UtilsService } from '.';
-import { FNCPERSON } from '../state/person/types';
+import {UtilsService} from '.';
+import {FNCPERSON} from '../state/person/types';
+import {FUCZONCUI} from '../modules/location/state/types';
 const HOUSECODE_INCREMENT = '0000';
 export default class HousingService {
   async getFamilies(HouseID: number) {
@@ -74,7 +78,7 @@ export default class HousingService {
     })
       .then((realm) => {
         realm.write(() => {
-          let result = realm.create('FUBUBIVIV', item);
+          let result = realm.create(DataBaseSchemas.FUBUBIVIVSCHEMA, item);
           console.log('INSERT ITEM ', result);
         });
       })
@@ -101,6 +105,7 @@ export default class HousingService {
             house.COORDENADA_X = item.COORDENADA_X;
             house.COORDENADA_Y = item.COORDENADA_Y;
             house.FUCBARVER_ID = item.FUCBARVER_ID;
+            house.FUCZONCUI_ID = item.FUCZONCUI_ID;
             house.FECHA_ACTIVIDAD = new Date();
           });
         }
@@ -127,10 +132,9 @@ export default class HousingService {
         });
       })
       .catch((error) => {
-        //console.error('error FNBNUCVIV ', error);
+        console.error(error);
         return error;
       });
-    //console.error('INSERT ITEM ', item);
     return item;
   }
   async SaveFNBNUCVIVPropiety(
@@ -138,7 +142,6 @@ export default class HousingService {
     propiety: string,
     value: any,
   ) {
-    // console.error(JSON.stringify(value));
     const result = await Realm.open({
       schema: [FNBNUCVIVSCHEMA],
       schemaVersion: schemaVersion,
@@ -150,7 +153,6 @@ export default class HousingService {
             .filtered(`ID = ${FNBNUCVIVID}`)
             .sorted('ID', true)[0];
           if (item) {
-            // console.error('result[propiety] ', propiety, value);
             item[propiety] = value;
             return true;
           } else {
@@ -159,7 +161,7 @@ export default class HousingService {
         });
       })
       .catch((error) => {
-        console.error('error FNBNUCVIV ', error);
+        console.error(error);
         return error;
       });
     return result;
@@ -202,7 +204,6 @@ export default class HousingService {
           .sorted('CODIGO', true)[0];
         if (item) {
           let values = item.CODIGO.split('-');
-          //console.error('values' , values);
           increment = '' + (parseInt(values[2], 10) + 1);
         } else {
           increment = '1';
@@ -222,50 +223,6 @@ export default class HousingService {
     );
     let code = initial + number;
     return code;
-  }
-  async getUbicationEntity(
-    name: string,
-    _columnFilter: any = null,
-    _value: any = null,
-    _columnFilter2: any = null,
-    _value2: any = null,
-    first: boolean = false,
-  ) {
-    const result = await Realm.open({
-      schema: [
-        FUCDEPARTSCHEMA,
-        FUCMUNICISCHEMA,
-        FUCTIPTERSCHEMA,
-        FUCRESGUASCHEMA,
-        FUCBARVERSCHEMA,
-        FUCZONASCHEMA,
-        FUCUNICUISCHEMA,
-        FUCZONCUISCHEMA,
-      ],
-      schemaVersion: schemaVersion,
-    })
-      .then((realm) => {
-        let items = realm.objects(name);
-        let query = '';
-        if (_columnFilter && _value) {
-          query = `${_columnFilter} = ${_value}`;
-        }
-        if (_columnFilter2 && _value2) {
-          query = query + ` AND ${_columnFilter2} = ${_value2}`;
-        }
-        if (query.length > 0) {
-          console.log(`${_columnFilter} = ${_value}`);
-          items = items.filtered(query);
-        }
-        if (first) {
-          return items[0];
-        }
-        return items;
-      })
-      .catch((error) => {
-        return error;
-      });
-    return result;
   }
   async getFNBNUCVIVPersons(FNBNUCVIV_ID: number) {
     const result = await Realm.open({
@@ -294,20 +251,61 @@ export default class HousingService {
       });
     return result;
   }
-  async getPersons() {
+  /* async getUnidadesCuidado(FUCZONCUI_ID: number) {
     const result = await Realm.open({
-      schema: [FNCPERSONSCHEMA],
+      schema: [FUCZONCUISCHEMA, FNCPERSONSCHEMA, ULTIMA],
       schemaVersion: schemaVersion,
     })
       .then((realm) => {
-        let items = realm.objects('FNCPERSON');
-        console.log('persona items', items);
-        for (let i of items) {
-          console.log('persona items for', i);
+        let resultado = {sede: '', unidad: ''};
+        let zona: any = realm
+          .objects(DataBaseSchemas.FUCZONCUISCHEMA)
+          .filtered(`ID = ${FUCZONCUI_ID}`)[0];
+        console.log('FUCZONCUISCHEMA items', items);
+        if(zona){
+          let FUBSEDCUI_ID = zona.FUBSEDCUI_ID;
+          let sede: any = realm
+            .objects(DataBaseSchemas.FNCPERSONSCHEMA)
+            .filtered(`ID = ${FUBSEDCUI_ID}`)[0];
+            if(sede){
+              resultado.sede = sede.CAmpo1;
+              let FUCUNICUI_ID = sede[0].FUCUNICUI_ID;
+              let unidad: any = realm
+                .objects(DataBaseSchemas.ULTIMA)
+                .filtered(`ID = ${FUCUNICUI_ID}`)[0];
+                resultado.unidad = unidad.campo2;
+                return resultado;
+            }
+            return null;
         }
-        return items;
       })
       .catch((error) => {
+        return error;
+      });
+    return result;
+  } */
+  async getFUCZONCUI(FUCBARVER_ID: number) {
+    const result = await Realm.open({
+      schema: [FUCZONCUI_FUCBARVERSCHEMA, FUCZONCUISCHEMA],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        let zonacuidados: FUCZONCUI[] = [];
+        let items: any = realm
+          .objects(DataBaseSchemas.FUCZONCUI_FUCBARVERSCHEMA)
+          .filtered(`FUCBARVER_ID = ${FUCBARVER_ID}`);
+        for (let i of items) {
+          let zonacuidado: any = realm
+            .objects(DataBaseSchemas.FUCZONCUISCHEMA)
+            .filtered(`ID = ${i.FUCZONCUI_ID}`)[0];
+          if (zonacuidado) {
+            zonacuidados.push(zonacuidado);
+          }
+        }
+        return zonacuidados;
+      })
+      .catch((error) => {
+        console.error(error);
         return error;
       });
     return result;

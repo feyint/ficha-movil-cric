@@ -13,6 +13,7 @@ const FUBUBIVIV = {
   ORIGEN_DATA: '',
   USUARIO_DATA: '',
   FUCBARVER_ID: null,
+  FUCZONCUI_ID: null,
 };
 const FNBNUCVIV = {
   ID: null,

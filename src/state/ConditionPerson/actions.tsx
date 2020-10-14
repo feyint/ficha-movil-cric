@@ -1,7 +1,6 @@
 import {ConditionPersonService} from '../../services';
 import {ConditionPersonQuestion} from '../../modules/person/manage/state/types';
-import {FNCPERSON, FNCPERSON_FNCCONPER} from './types';
-
+import {FNCPERSON, FNCPERSON_FNCCONPER} from '../person/types';
 export const ActionType = {
   SET_CONDITIONPERSON_QUESTION_LIST: 'SET_CONDITIONPERSON_QUESTION_LIST',
 };
@@ -18,6 +17,7 @@ export const setConditionQuestionWithOptions = () => async (dispatch: any) => {
   let personServie: ConditionPersonService = new ConditionPersonService();
   questionItems = await personServie.getQuestionWithOptions();
   dispatch(setCONDITIONPERSON_QUESTION_LIST(questionItems));
+  return questionItems;
 };
 
 /**
@@ -32,7 +32,7 @@ export const getQuestionWithOptions = (questionsQuery?: any[]) => async (
   let questionItems: ConditionPersonQuestion[] =
     store.conditionperson.CONDITIONPERSONQUESTIONLIST;
   if (questionItems.length === 0) {
-    setConditionQuestionWithOptions();
+    questionItems = await setConditionQuestionWithOptions();
   }
   if (questionsQuery) {
     questionItems = questionItems.filter((item) => {
@@ -57,29 +57,29 @@ export const saveAnswerLocal = (
     const store = getState();
     let questionItems: ConditionPersonQuestion[] =
       store.conditionperson.CONDITIONPERSONQUESTIONLIST;
-    let item: any = getQuestionByCode(questionCode, questionItems);
-    if (item) {
-      let family: FNCPERSON = store.person.FNCPERSON;
+    let question: any = await getQuestionByCode(questionCode, questionItems);
+    if (question) {
+      let person: FNCPERSON = store.person.FNCPERSON;
       let personServie: ConditionPersonService = new ConditionPersonService();
       switch (type) {
         case 1: // oneOption
-          let option = getOption(item.ID, JSON.parse(answer), family.ID);
+          let option = getOption(question.ID, JSON.parse(answer), person.ID);
           if (option.FNCCONPER_ID) {
             await personServie.saveQuestionOption([option]);
           } else {
-            await personServie.deleteAnswerForQuestion(family.ID, item.ID);
+            await personServie.deleteAnswerForQuestion(person.ID, question.ID);
           }
           break;
         case 2: // multiSelect
           let options = [];
           for (let i = 0; i < answer.length; i++) {
-            let opt = getOption(item.ID, answer[i], family.ID);
+            let opt = getOption(question.ID, answer[i], person.ID);
             options.push(opt);
           }
           if (options.length > 0) {
             await personServie.saveQuestionOption(options);
           } else {
-            await personServie.deleteAnswerForQuestion(family.ID, item.ID);
+            await personServie.deleteAnswerForQuestion(person.ID, item.ID);
           }
           break;
         default:
@@ -99,22 +99,21 @@ export const getQuestionAnswer = (type: number, questionCode: string) => async (
   getState: any,
 ) => {
   const store = getState();
-  let family: FNCPERSON = store.conditionperson.FNCPERSON;
+  let person: FNCPERSON = store.person.FNCPERSON;
   let personServie: ConditionPersonService = new ConditionPersonService();
   let questionItems: ConditionPersonQuestion[] =
     store.conditionperson.CONDITIONPERSONQUESTIONLIST;
-  let question = getQuestionByCode(questionCode, questionItems);
-  console.log('answer query ', question);
+  let question = await getQuestionByCode(questionCode, questionItems);
   switch (type) {
     case 1: // oneOption
       let option = await personServie.getAnswerOneOption(
-        family.ID,
+        person.ID,
         question.ID,
       );
       return '' + option;
     case 2: // multiSelect
       let options = [];
-      options = await personServie.getAnswerMultiSelect(family.ID, question.ID);
+      options = await personServie.getAnswerMultiSelect(person.ID, question.ID);
       return options;
     default:
       break;
@@ -126,12 +125,12 @@ export const getQuestionAnswer = (type: number, questionCode: string) => async (
  * @param questionCode
  * @param questionItems
  */
-export function getQuestionByCode(
+export async function getQuestionByCode(
   questionCode: string,
   questionItems: ConditionPersonQuestion[],
 ) {
   if (questionItems.length === 0) {
-    setConditionQuestionWithOptions();
+    questionItems = await setConditionQuestionWithOptions();
   }
   let item = questionItems.find(item => {
     return item.CODIGO === questionCode;
