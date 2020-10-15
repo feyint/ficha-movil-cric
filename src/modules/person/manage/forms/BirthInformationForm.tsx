@@ -15,13 +15,18 @@ import {
   updateFNCPERSON,
 } from '../../../../state/person/actions';
 import {
+  DataBaseSchemas,
   FNCLUNINDSCHEMA,
   FUCDEPARTSCHEMA,
   FUCMUNICISCHEMA,
   FUCPAISSCHEMA,
 } from '../../../../providers/DataBaseProvider';
+import {
+  saveAnswerLocal,
+  getQuestionAnswer,
+} from '../../../../state/ConditionPerson/actions';
 import {getEntitySelect} from '../../../location/state/actions';
-import {QuestionConditionPersonCodes} from '../../../../core/utils/PersonTypes';
+import {QuestionConditionPersonCodes, QuestionTypes} from '../../../../core/utils/PersonTypes';
 import {ConditionPersonQuestion} from '../state/types';
 const schemaForm = yup.object().shape({
   birthdate: yup.date().required('La fecha de nacimiento es requerida'),
@@ -54,23 +59,64 @@ const _BirthInformationForm = (props: any) => {
   const [fucmuniciSelect, setfucmuniciSelect] = useState<
     {label: any; value: any}[]
   >([]);
-  const [fucmunici, setfucmunici] = useState();
-  const [fucdepat, setfucdepat] = useState();
-  const [fucpais, setfucpais] = useState();
-  const [fnclunocci, setfnclunocci] = useState();
-  const [fnclunind, setfnclunind] = useState();
-  const [lacmaterna, setlacmaterna] = useState();
+  const [fucmunici, setfucmunici] = useState<string>();
+  const [fucdepat, setfucdepat] = useState<string>();
+  const [fucpais, setfucpais] = useState<string>();
+  const [fnclunind, setfnclunind] = useState<string>();
   useEffect(() => {
     fetchQuestions();
   }, []);
   const fetchQuestions = async () => {
-    let result = await props.getEntitySelect('FUCPAIS', FUCPAISSCHEMA);
+    let paises = await props.getEntitySelect('FUCPAIS', FUCPAISSCHEMA);
     let fncluninds = await props.getEntitySelect('FNCLUNIND', FNCLUNINDSCHEMA);
     let questionitems = await props.getQuestionWithOptions(questions);
     setquestionsS(questionitems);
-    setfucpaisSelect(result.children);
+    setfucpaisSelect(paises.children);
     setfnclunindselect(fncluninds.children);
     if (props.FNCPERSON.ID) {
+      setValue('fnclunind', props.FNCPERSON.FNCLUNIND_ID);
+      setfnclunind('' + props.FNCPERSON.FNCLUNIND_ID);
+      let service: UtilsService = new UtilsService();
+      let munici = await service.getFilterEntity(
+        DataBaseSchemas.FUCMUNICISCHEMA,
+        FUCMUNICISCHEMA,
+        'ID',
+        props.FNCPERSON.FUCMUNICI_ID,
+        null,
+        null,
+        true,
+      );
+      let dept = await service.getFilterEntity(
+        DataBaseSchemas.FUCDEPARTSCHEMA,
+        FUCDEPARTSCHEMA,
+        'ID',
+        munici.FUCDEPART_ID,
+        null,
+        null,
+        true,
+      );
+      console.error(dept);
+      setValue('fucpais', dept.FUCPAIS_ID);
+      setfucpais('' + dept.FUCPAIS_ID);
+      let departsm = await props.getEntitySelect(
+        'FUCDEPART',
+        FUCDEPARTSCHEMA,
+        'FUCPAIS_ID',
+        dept.FUCPAIS_ID,
+      );
+      setfucdepatSelect(departsm.children);
+      setValue('fucdepat', dept.ID);
+      setfucdepat('' + dept.ID);
+      let municipios = await props.getEntitySelect(
+        'FUCMUNICI',
+        FUCMUNICISCHEMA,
+        'FUCDEPART_ID',
+        dept.ID,
+      );
+      setfucmuniciSelect(municipios.children);
+      setValue('fucmunici', props.FNCPERSON.FUCMUNICI_ID);
+      setfucmunici('' + props.FNCPERSON.FUCMUNICI_ID);
+      setValue('birthdate', props.FNCPERSON.FECHA_NACIMIENTO);
     }
   };
 
@@ -79,22 +125,6 @@ const _BirthInformationForm = (props: any) => {
     return syncCatalogService.getItemsForQuestionSelect(code, questionsS);
   };
   const onSubmit = async (data: any) => {
-    let person: FNCPERSON = props.FNCPERSON;
-    if (person.ID != null) {
-      try {
-      } catch (error) {
-        console.error(error);
-      }
-    } else {
-      let item: any = {};
-      item.PRIMER_NOMBRE = data.firstname;
-      item.SEGUNDO_NOMBRE = data.middlename ? data.middlename : '';
-      item.PRIMER_APELLIDO = data.lastname;
-      item.SEGUNDO_APELLIDO = data.secondlastname ? data.secondlastname : '';
-      item.IDENTIFICACION = data.identification;
-      item.FNCTIPIDE_ID = JSON.parse(data.identificationType);
-      item.FNCGENERO_ID = JSON.parse(data.gender);
-    }
     navigation.goBack();
   };
   async function onChangePais(fucpais_id: any) {
@@ -119,6 +149,10 @@ const _BirthInformationForm = (props: any) => {
     setValue('fucmunici', '');
     setfucmunici(null);
   }
+  async function getAnswers(type: number, code: string, prop: string) {
+    let question = await props.getQuestionAnswer(type, code);
+    setValue(prop, question);
+  }
   return (
     <KeyboardAwareScrollView>
       <View style={styles.container}>
@@ -131,6 +165,11 @@ const _BirthInformationForm = (props: any) => {
               error={errors.birthdate}
               onChange={(value: Date) => {
                 onChange(value);
+                if (value) {
+                  props.updateFNCPERSON({
+                    FECHA_NACIMIENTO: value,
+                  });
+                }
               }}
               onLoad={() => {}}
               value={value}
@@ -187,6 +226,11 @@ const _BirthInformationForm = (props: any) => {
               onChange={(value: any) => {
                 onChange(value);
                 setfucmunici(value);
+                if (value) {
+                  props.updateFNCPERSON({
+                    FUCMUNICI_ID: parseInt(value, 10),
+                  });
+                }
               }}
               onLoad={() => {}}
               selectedValue={fucmunici}
@@ -197,16 +241,28 @@ const _BirthInformationForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({onChange}) => (
+          render={({onChange, value}) => (
             <BPicker
               label="Luna occidental en la que nació"
               error={errors.fnclunocci}
               onChange={(value: any) => {
                 onChange(value);
-                setfnclunocci(value);
+                if (value) {
+                  props.saveAnswerLocal(
+                    QuestionTypes.selectOne,
+                    QuestionConditionPersonCodes.LunaOccidental,
+                    value,
+                  );
+                }
               }}
-              onLoad={() => {}}
-              selectedValue={fnclunocci}
+              onLoad={() => {
+                getAnswers(
+                  QuestionTypes.selectOne,
+                  QuestionConditionPersonCodes.LunaOccidental,
+                  'fnclunocci',
+                );
+              }}
+              selectedValue={value}
               items={
                 getItemsForQuestionSelect(
                   QuestionConditionPersonCodes.LunaOccidental,
@@ -225,6 +281,11 @@ const _BirthInformationForm = (props: any) => {
               onChange={(value: any) => {
                 onChange(value);
                 setfnclunind(value);
+                if (value) {
+                  props.updateFNCPERSON({
+                    FNCLUNIND_ID: parseInt(value, 10),
+                  });
+                }
               }}
               onLoad={() => {}}
               selectedValue={fnclunind}
@@ -235,21 +296,33 @@ const _BirthInformationForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({onChange}) => (
+          render={({onChange, value}) => (
             <BPicker
               label="Lactancia materna"
               error={errors.lacmaterna}
               onChange={(value: any) => {
                 onChange(value);
-                setlacmaterna(value);
+                if (value) {
+                  props.saveAnswerLocal(
+                    QuestionTypes.selectOne,
+                    QuestionConditionPersonCodes.LactanciaMaterna,
+                    value,
+                  );
+                }
               }}
-              onLoad={() => {}}
-              selectedValue={lacmaterna}
+              selectedValue={value}
               items={
                 getItemsForQuestionSelect(
                   QuestionConditionPersonCodes.LactanciaMaterna,
                 ).children
               }
+              onLoad={() => {
+                getAnswers(
+                  QuestionTypes.selectOne,
+                  QuestionConditionPersonCodes.LactanciaMaterna,
+                  'lacmaterna',
+                );
+              }}
             />
           )}
           name="lacmaterna"
@@ -290,6 +363,8 @@ const mapDispatchToProps = {
   saveFNCPERSON,
   getEntitySelect,
   getQuestionWithOptions,
+  saveAnswerLocal,
+  getQuestionAnswer,
 };
 export default connect(
   mapStateToProps,
