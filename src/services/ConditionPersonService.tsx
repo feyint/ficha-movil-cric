@@ -8,6 +8,7 @@ import {
   FNCPARENSCHEMA,
   FNCOCUPACSCHEMA,
   FNCORGANISCHEMA,
+  FNCLUNINDSCHEMA,
 } from '../providers/DataBaseProvider';
 import Realm from 'realm';
 import {
@@ -293,6 +294,29 @@ export default class ConditionPersonService {
         });
       })
       .catch((error) => {
+        return error;
+      });
+    return result;
+  }
+  async getLunindList() {
+    const result = await Realm.open({
+      schema: [FNCLUNINDSCHEMA],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        let itemsSelect: {label: any; value: any}[] = [];
+        let items = realm.objects('FNCLUNIND');
+        for (let item of items) {
+          itemsSelect.push({
+            label: item.NOMBRE,
+            value: item.ID,
+          });
+        }
+        itemsSelect.unshift({label: 'Seleccione', value: '-1'});
+        return itemsSelect;
+      })
+      .catch((error) => {
+        console.error(error);
         return error;
       });
     return result;
