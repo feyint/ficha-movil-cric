@@ -44,6 +44,7 @@ export default class PersonService {
     return item;
   }
   async UpdateFNCPERSON(item: any) {
+    console.error('person: ', item);
     await Realm.open({
       schema: [FNCPERSONSCHEMA],
       schemaVersion: schemaVersion,
@@ -53,11 +54,14 @@ export default class PersonService {
           .objects(DataBaseSchemas.FNCPERSONSCHEMA)
           .filtered(`ID = ${item.ID}`)
           .sorted('ID', true)[0];
+        console.error('person: ', person);
         if (person) {
           realm.write(() => {
             for (const key of Object.keys(item)) {
               if (key in person && key !== 'ID') {
                 // or obj1.hasOwnProperty(key)
+                console.error(person[key], item[key]);
+                
                 person[key] = item[key];
               }
             }

@@ -178,6 +178,7 @@ export default class ConditionPersonService {
    */
   async saveQuestionOption(answeroption: FNCPERSON_FNCCONPER[]) {
     //TODO consultar si ya existe
+    
     await Realm.open({
       schema: [FNCPERSON_FNCCONPERSCHEMA],
       schemaVersion: schemaVersion,
@@ -226,6 +227,7 @@ export default class ConditionPersonService {
           .filtered(
             `FNCPERSON_ID = ${FNCPERSON_ID} AND FNCELEPER_ID = ${FNCELEPER_ID}`,
           );
+        console.error(items);
         if (items.length > 0) {
           return items[0].FNCCONPER_ID;
         } else {

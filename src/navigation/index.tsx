@@ -26,7 +26,6 @@ import {
   SocialSecurityScreen,
   UnhealthyHabitsScreen,
   LastPregnancyScreen,
-  BirthDataScreen,
   OtherIdentificationDataScreen,
   PersonalInformationScreen,
   ContactInformationScreen,
@@ -171,14 +170,6 @@ export const Dashboard = () => {
         options={{
           headerShown: false,
           title: 'Finalizacion de la ultima gestacion',
-        }}
-      />
-      <DashboardStack.Screen
-        component={BirthDataScreen}
-        name="BirthDataScreen"
-        options={{
-          headerShown: false,
-          title: 'Datos de nacimiento',
         }}
       />
       <DashboardStack.Screen
