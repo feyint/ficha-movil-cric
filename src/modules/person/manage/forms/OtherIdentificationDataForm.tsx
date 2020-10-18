@@ -8,7 +8,7 @@ import {BButton, BMultiSelect, BPicker} from '../../../../core/components';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {ConditionPersonService} from '../../../../services';
-
+import {getEntitySelect} from '../../../location/state/actions';
 import {
   QuestionConditionPersonCodes,
   QuestionTypes,
@@ -21,7 +21,12 @@ import {
 import {saveFNCPERSONPropiety} from '../../../../state/person/actions';
 import {ConditionPersonQuestion} from '../state/types';
 import {SelectSchema} from '../../../../core/utils/types';
-import {saveFNCPERSON, updateFNCPERSON} from '../../../../state/person/actions';
+//import {saveFNCPERSON, updateFNCPERSON} from '../../../../state/person/actions';
+import {
+  FNCLUNINDSCHEMA,
+  FNCPUEINDSCHEMA,
+} from '../../../../providers/DataBaseProvider';
+import { createIconSetFromFontello } from 'react-native-vector-icons';
 
 const questionscodes = [
   QuestionConditionPersonCodes.EstadoCivil,
@@ -44,7 +49,7 @@ const schemaForm = yup.object().shape({
   parentezcoGrupoFamiliar: yup.string().required(),
   EstadoCivil: yup.number().required(),
   GrupoEtnico: yup.number().required(),
-  Casta: yup.array().notRequired(),
+  Casta: yup.number().notRequired(),
   LenguaMaterna: yup.number().required(),
   DominioLenguaMaterna: yup.number().notRequired(),
   SegundaLengua: yup.number().notRequired(),
@@ -53,12 +58,12 @@ const schemaForm = yup.object().shape({
   NivelEstudio: yup.number().required(),
   TipoTrabajo: yup.number().required(),
   PoblacionPensionada: yup.number().required(),
-  OtrosSaberesAnsestrales: yup.number().required(),
+  OtrosSaberesAnsestrales: yup.array().required(),
   Religion: yup.number().required(),
-  TipoDeCuidadosCulturalesQueRealiza: yup.number().required(),
+  TipoDeCuidadosCulturalesQueRealiza: yup.array().required(),
   ocupacionPrincipal: yup.number().required(),
   organizacion: yup.number().required(),
-  
+  puebloIndigena: yup.number().required(),
 });
 
 const _OtherIdentificationDataForm = (props: any) => {
@@ -87,6 +92,8 @@ const _OtherIdentificationDataForm = (props: any) => {
   const [enableLenguaMaterna, setEnableLenguaMaterna] = useState(false);
   const [enableSegundaLengua, setEnableSegundaLengua] = useState(false);
   const [enableTipoTrabajo, setEnableTipoTrabajo] = useState(false);
+  const [enableCasta, setEnableCasta] = useState(false);
+  const [enablePueblo, setEnablePueblo] = useState(false);
 
   /* const getItemsForQuestionSelectLanguaje = async () => {
     console.log(
@@ -113,6 +120,11 @@ const _OtherIdentificationDataForm = (props: any) => {
     {label: any; value: any}[]
   >([]); */
 
+  const [puebloIndigena, setPuebloIndigena] = useState('');
+  const [puebloIndigenaSelect, setPuebloIndigenaSelect] = useState<
+    {label: any; value: any}[]
+  >([]);
+
   const [ocupacionPrincipal, setOcupacionPrincipal] = useState('');
   const [ocupacionPrincipales, setOcupacionPrincipales] = useState<
     {label: any; value: any}[]
@@ -122,17 +134,6 @@ const _OtherIdentificationDataForm = (props: any) => {
   const [organizaciones, setOrganizaciones] = useState<
     {label: any; value: any}[]
   >([]);
-
-  const [list, setlist] = useState(0);
-
-  /* const [
-    parentezcoGrupoFamiliarSelect,
-    setParentezcoGrupoFamiliarSelect,
-  ] = useState<SelectSchema>({
-    id: 0,
-    name: '',
-    children: [],
-  }); */
 
   useEffect(() => {
     fetchQuestions();
@@ -164,7 +165,23 @@ const _OtherIdentificationDataForm = (props: any) => {
     setParentezcoGrupoFamiliares(resultparen);
     setOcupacionPrincipales(resultocupac);
     setOrganizaciones(resultorgani);
-
+    //------------------------------------------------------------------------
+    /* let FNCPUEIND = await props.getEntitySelect(
+      'FNCLUNIND',
+      FNCLUNINDSCHEMA,
+      'FNCPUEIND_ID',
+      props.FNCPERSON.FNCLUNIND_ID,
+    ); */
+    let FNCPUEIND = await props.getEntitySelect(
+      'FNCPUEIND',
+      FNCPUEINDSCHEMA,
+      'ID',
+      props.FNCPERSON.FNCLUNIND_ID,
+    );
+    setPuebloIndigenaSelect(FNCPUEIND.children);
+    setValue('puebloIndigena', '');
+    setPuebloIndigena(null);
+    //------------------------------------------------------------------------
     if (props.FNCPERSON.ID) {
       setValue('parentezcoGrupoFamiliar', props.FNCPERSON.FNCPAREN_ID);
       setParentezcoGrupoFamiliar(props.FNCPERSON.FNCPAREN_ID);
@@ -188,10 +205,6 @@ const _OtherIdentificationDataForm = (props: any) => {
       setValue('parentezcoGrupoFamiliar', '' + props.FNCPERSON.FNCPAREN_ID);
       setParentezcoGrupoFamiliar('' + props.FNCPERSON.FNCPAREN_ID);
     }
-    /* setValue('ResiduosGeneranenVivienda', props.FNBNUCVIV.RESIDUO_BOR);
-    setValue('setNumeroAnimalesnoVacunados', props.FNBNUCVIV.RIESGO);
-    setValue('Observaciones', props.FNBNUCVIV.OBSERVACION); */
-    //setValue('parentezcoGrupoFamiliar', props.FNCPERSON.FNCPAREN_ID);
   }
 
   async function getAnswers(
@@ -208,6 +221,12 @@ const _OtherIdentificationDataForm = (props: any) => {
     if (prop == 'SegundaLengua') {
       setEnableLenguaMaterna(question !== '302' || question !== null);
     }
+    if (prop == 'puebloIndigena') {
+      setEnableCasta(question === '23');
+    }
+    /* if (prop == 'GrupoEtnico') {
+      setEnablePueblo(question !== '99' || question !== null);
+    } */
   }
   async function getAnswersMultiselect(
     type: number,
@@ -218,6 +237,7 @@ const _OtherIdentificationDataForm = (props: any) => {
     setValue(prop, questionscodesMultiselect);
   }
   const onChangeLengua = (value: string) => {
+    console.log(`se ejecuta el onchangelengua y value tiene${value}`);
     setLenguaMaterna(value);
     let item = lenguaMaternaSelect.find((i) => i.value === value);
     console.error('item', item);
@@ -266,6 +286,14 @@ const _OtherIdentificationDataForm = (props: any) => {
     }
   };
 
+  const validateGrupoEtnico = (value: string) => {
+    if (value === '99' || value == null) {
+      setEnablePueblo(false);
+    } else {
+      setEnablePueblo(true);
+    }
+  };
+
   const getQuestionlabel = (code: string) => {
     return syncCatalogService.getQuestionlabel(code, questions);
   };
@@ -295,7 +323,7 @@ const _OtherIdentificationDataForm = (props: any) => {
       <View style={styles.container}>
         <Controller //Organizacion
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, onBlur}) => (
             <BPicker
               label="Organizacion"
               prompt="Selecione una opcion"
@@ -307,7 +335,7 @@ const _OtherIdentificationDataForm = (props: any) => {
                   onChange(value);
                   props.saveFNCPERSONPropiety('FNCORGANI_ID', value);
                   setOrganizacion(value);
-                  console.log(
+                  /* console.log(
                     `props.FNCPERSON.FNCPAREN_ID tiene ${props.FNCPERSON.FNCPAREN_ID}`,
                   );
                   console.log(
@@ -316,6 +344,9 @@ const _OtherIdentificationDataForm = (props: any) => {
                   console.log(
                     `props.FNCPERSON.FNCORGANI_ID tiene ${props.FNCPERSON.FNCORGANI_ID}`,
                   );
+                  console.log(
+                    `props.FNCPERSON.FNCLUNIND_ID tiene ${props.FNCPERSON.FNCLUNIND_ID}`,
+                  ); */
                 }
               }}
               selectedValue={organizacion}
@@ -336,26 +367,23 @@ const _OtherIdentificationDataForm = (props: any) => {
               onChange={(value: any) => {
                 onChange(value);
                 if (value) {
-                  console.warn(enableTipoTrabajo);
                   onChange(value);
                   props.saveFNCPERSONPropiety('FNCOCUPAC_ID', value);
                   setOcupacionPrincipal(value);
-                  console.log(
+                  /* console.log(
                     `props.FNCPERSON.FNCPAREN_ID tiene ${props.FNCPERSON.FNCPAREN_ID}`,
                   );
                   console.log(
                     `props.FNCPERSON.FNCOCUPAC_ID tiene ${props.FNCPERSON.FNCOCUPAC_ID}`,
-                  );
-                  console.warn(value);
-                  console.warn(value);
-                  if (value == 485) {
-                    setEnableTipoTrabajo(true)
+                  ); */
+                  if (value == 485 || value == null) {
+                    setEnableTipoTrabajo(true);
                   } else {
                     setEnableTipoTrabajo(false);
                     props.saveAnswerLocal(
                       QuestionTypes.selectOne,
                       QuestionConditionPersonCodes.TipoTrabajo,
-                      190,
+                      '190',
                     );
                   }
                   /* props.saveAnswerLocal(
@@ -363,7 +391,6 @@ const _OtherIdentificationDataForm = (props: any) => {
                       QuestionConditionPersonCodes.TipoTrabajo,
                       value,
                     ); */
-                  console.warn(enableTipoTrabajo);
                 }
               }}
               selectedValue={ocupacionPrincipal}
@@ -386,20 +413,7 @@ const _OtherIdentificationDataForm = (props: any) => {
                   onChange(value);
                   props.saveFNCPERSONPropiety('FNCPAREN_ID', value);
                   setParentezcoGrupoFamiliar(value);
-                  console.log(
-                    `props.FNCPERSON.FNCPAREN_ID tiene ${props.FNCPERSON.FNCPAREN_ID}`,
-                  );
-                  console.log(
-                    `props.FNCPERSON.FNCOCUPAC_ID tiene ${props.FNCPERSON.FNCOCUPAC_ID}`,
-                  );
                 }
-                /* onChange(value);
-                props.saveFNCPERSONPropiety('FNCPAREN_ID', value);
-                setParentezcoGrupoFamiliar(value);
-                console.log(
-                  `parentezcogrupofamiliar tiene ${parentezcoGrupoFamiliar}`,
-                );
-                console.log(`value tiene ${value}`); */
               }}
               selectedValue={parentezcoGrupoFamiliar}
               items={parentezcoGrupoFamiliares}
@@ -408,6 +422,30 @@ const _OtherIdentificationDataForm = (props: any) => {
           )}
           name="parentezcoGrupoFamiliar"
         />
+        {enablePueblo ? (
+          <Controller //Pueblo indigena
+            control={control}
+            render={({onChange, onBlur, value}) => (
+              <BPicker
+                label="Pueblo Indigena"
+                prompt="Selecione una opcion"
+                onBlur={onBlur}
+                error={errors.puebloIndigena}
+                onChange={(value: any) => {
+                  if (value) {
+                    console.log(`luna id ${props.FNCPERSON.FNCLUNIND_ID}`);
+                    onChange(value);
+                    setPuebloIndigena(value);
+                  }
+                }}
+                selectedValue={puebloIndigena}
+                items={puebloIndigenaSelect}
+                //value={value}
+              />
+            )}
+            name="puebloIndigena"
+          />
+        ) : null}
         <Controller //Estado civil
           control={control}
           render={({onChange, onBlur, value}) => (
@@ -450,6 +488,9 @@ const _OtherIdentificationDataForm = (props: any) => {
               error={errors.GrupoEtnico}
               onChange={(value: any) => {
                 onChange(value);
+                validateGrupoEtnico(value);
+                console.log(`grupo etnico value: ${value}`);
+                console.log(`enable pueblo vale: ${enablePueblo}`);
                 props.saveAnswerLocal(
                   QuestionTypes.selectOne,
                   QuestionConditionPersonCodes.GrupoEtnico,
@@ -463,7 +504,7 @@ const _OtherIdentificationDataForm = (props: any) => {
                   'GrupoEtnico',
                 );
               }}
-              value={value}
+              //value={value}
               selectedValue={value}
               items={
                 getItemsForQuestionSelect(
@@ -474,38 +515,40 @@ const _OtherIdentificationDataForm = (props: any) => {
           )}
           name="GrupoEtnico"
         />
-        <Controller //Casta
-          control={control}
-          render={({onChange, onBlur, value}) => (
-            <BPicker
-              label={getQuestionlabel(QuestionConditionPersonCodes.Casta)}
-              onBlur={onBlur}
-              error={errors.Casta}
-              onChange={(value: any) => {
-                onChange(value);
-                props.saveAnswerLocal(
-                  QuestionTypes.selectOne,
-                  QuestionConditionPersonCodes.Casta,
-                  value,
-                );
-              }}
-              onLoad={() => {
-                getAnswers(
-                  QuestionTypes.selectOne,
-                  QuestionConditionPersonCodes.Casta,
-                  'Casta',
-                );
-              }}
-              value={value}
-              selectedValue={value}
-              items={
-                getItemsForQuestionSelect(QuestionConditionPersonCodes.Casta)
-                  .children
-              }
-            />
-          )}
-          name="Casta"
-        />
+        {enableCasta ? (
+          <Controller //Casta
+            control={control}
+            render={({onChange, onBlur, value}) => (
+              <BPicker
+                label={getQuestionlabel(QuestionConditionPersonCodes.Casta)}
+                onBlur={onBlur}
+                error={errors.Casta}
+                onChange={(value: any) => {
+                  onChange(value);
+                  props.saveAnswerLocal(
+                    QuestionTypes.selectOne,
+                    QuestionConditionPersonCodes.Casta,
+                    value,
+                  );
+                }}
+                onLoad={() => {
+                  getAnswers(
+                    QuestionTypes.selectOne,
+                    QuestionConditionPersonCodes.Casta,
+                    'Casta',
+                  );
+                }}
+                //value={value}
+                selectedValue={value}
+                items={
+                  getItemsForQuestionSelect(QuestionConditionPersonCodes.Casta)
+                    .children
+                }
+              />
+            )}
+            name="Casta"
+          />
+        ) : null}
         <Controller
           control={control}
           render={({onChange, onBlur, value}) => (
@@ -557,7 +600,6 @@ const _OtherIdentificationDataForm = (props: any) => {
                 onChange={(value: any) => {
                   onChange(value);
                   if (value) {
-                    setlist(1);
                     props.saveAnswerLocal(
                       QuestionTypes.selectOne,
                       QuestionConditionPersonCodes.DominioLenguaMaterna,
@@ -718,7 +760,7 @@ const _OtherIdentificationDataForm = (props: any) => {
                   'NivelEstudio',
                 );
               }}
-              value={value}
+              //value={value}
               selectedValue={value}
               items={
                 getItemsForQuestionSelect(
@@ -729,41 +771,45 @@ const _OtherIdentificationDataForm = (props: any) => {
           )}
           name="NivelEstudio"
         />
-        <Controller //TipoTrabajo
-          control={control}
-          render={({onChange, onBlur, value}) => (
-            <BPicker
-              enabled={enableTipoTrabajo}
-              label={getQuestionlabel(QuestionConditionPersonCodes.TipoTrabajo)}
-              onBlur={onBlur}
-              error={errors.TipoTrabajo}
-              onChange={(value: any) => {
-                onChange(value);
-                console.log('no aplica en tipo trabajo vale', value);
-                props.saveAnswerLocal(
-                  QuestionTypes.selectOne,
+        {enableTipoTrabajo ? (
+          <Controller //TipoTrabajo
+            control={control}
+            render={({onChange, onBlur, value}) => (
+              <BPicker
+                //enabled={enableTipoTrabajo}
+                label={getQuestionlabel(
                   QuestionConditionPersonCodes.TipoTrabajo,
-                  value,
-                );
-              }}
-              onLoad={() => {
-                getAnswers(
-                  QuestionTypes.selectOne,
-                  QuestionConditionPersonCodes.TipoTrabajo,
-                  'TipoTrabajo',
-                );
-              }}
-              value={value}
-              selectedValue={value}
-              items={
-                getItemsForQuestionSelect(
-                  QuestionConditionPersonCodes.TipoTrabajo,
-                ).children
-              }
-            />
-          )}
-          name="TipoTrabajo"
-        />
+                )}
+                onBlur={onBlur}
+                error={errors.TipoTrabajo}
+                onChange={(value: any) => {
+                  onChange(value);
+                  console.log('no aplica en tipo trabajo vale', value);
+                  props.saveAnswerLocal(
+                    QuestionTypes.selectOne,
+                    QuestionConditionPersonCodes.TipoTrabajo,
+                    value,
+                  );
+                }}
+                onLoad={() => {
+                  getAnswers(
+                    QuestionTypes.selectOne,
+                    QuestionConditionPersonCodes.TipoTrabajo,
+                    'TipoTrabajo',
+                  );
+                }}
+                //value={value}
+                selectedValue={value}
+                items={
+                  getItemsForQuestionSelect(
+                    QuestionConditionPersonCodes.TipoTrabajo,
+                  ).children
+                }
+              />
+            )}
+            name="TipoTrabajo"
+          />
+        ) : null}
         <Controller //PoblacionPensionada
           control={control}
           render={({onChange, onBlur, value}) => (
@@ -788,7 +834,7 @@ const _OtherIdentificationDataForm = (props: any) => {
                   'PoblacionPensionada',
                 );
               }}
-              value={value}
+              //value={value}
               selectedValue={value}
               items={
                 getItemsForQuestionSelect(
@@ -855,7 +901,7 @@ const _OtherIdentificationDataForm = (props: any) => {
                   'Religion',
                 );
               }}
-              value={value}
+              //value={value}
               selectedValue={value}
               items={
                 getItemsForQuestionSelect(QuestionConditionPersonCodes.Religion)
@@ -932,9 +978,10 @@ const mapDispatchToProps = {
   getQuestionWithOptions,
   saveAnswerLocal,
   getQuestionAnswer,
-  updateFNCPERSON,
-  saveFNCPERSON,
+  //updateFNCPERSON,
+  //saveFNCPERSON,
   saveFNCPERSONPropiety,
+  getEntitySelect,
 };
 const mapStateToProps = (person: any) => {
   return {

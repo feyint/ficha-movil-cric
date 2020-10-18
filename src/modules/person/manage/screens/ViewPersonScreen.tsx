@@ -102,7 +102,14 @@ class ViewPersonScreen extends Component<Props, State> {
             <List.Item
               title="Otros datos de identificación"
               left={() => <List.Icon icon="card-account-mail" />}
-              onPress={() => this.goOtherDataIdentificationScreen()}
+              onPress={() => {
+                this.props.FNCPERSON.FNCLUNIND_ID != null
+                  ? this.navigate('OtherIdentificationDataScreen')
+                  : Alert.alert(
+                      'Accion no permitida',
+                      'Debe seleccionar luna indigena en datos de nacimiento',
+                    );
+              }}
             />
             <List.Item
               title="Informacion de salud"
@@ -158,9 +165,6 @@ class ViewPersonScreen extends Component<Props, State> {
   }
   navigate(screen: string) {
     this.props.navigation.navigate(screen);
-  }
-  goOtherDataIdentificationScreen() {
-    this.props.navigation.navigate('OtherIdentificationDataScreen');
   }
 }
 const mapDispatchToProps = {
