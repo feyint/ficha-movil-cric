@@ -44,7 +44,6 @@ export default class PersonService {
     return item;
   }
   async UpdateFNCPERSON(item: any) {
-    console.error('person: ', item);
     await Realm.open({
       schema: [FNCPERSONSCHEMA],
       schemaVersion: schemaVersion,
@@ -54,14 +53,11 @@ export default class PersonService {
           .objects(DataBaseSchemas.FNCPERSONSCHEMA)
           .filtered(`ID = ${item.ID}`)
           .sorted('ID', true)[0];
-        console.error('person: ', person);
         if (person) {
           realm.write(() => {
             for (const key of Object.keys(item)) {
               if (key in person && key !== 'ID') {
                 // or obj1.hasOwnProperty(key)
-                console.error(person[key], item[key]);
-                
                 person[key] = item[key];
               }
             }
@@ -73,6 +69,32 @@ export default class PersonService {
         return error;
       });
     return item;
+  }
+  async getPersonbyIdentification(
+    identification: any,
+    identificationType: any,
+  ) {
+    let result = await Realm.open({
+      schema: [FNCPERSONSCHEMA],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        let person = realm
+          .objects(DataBaseSchemas.FNCPERSONSCHEMA)
+          .filtered(`IDENTIFICACION = '${identification}' AND FNCTIPIDE_ID = ${identificationType}`);
+        if (person.length > 0) {
+          let items: FNCPERSON[] = [];
+          for (let item of person) {
+            items.push(item);
+          }
+          return items;
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        return undefined;
+      });
+    return result;
   }
   async getLasPersonCode() {
     const result = await Realm.open({
@@ -95,7 +117,6 @@ export default class PersonService {
       });
     return result;
   }
-
   /**
    *
    * @param questionsQuery

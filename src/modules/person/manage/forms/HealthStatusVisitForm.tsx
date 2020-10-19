@@ -82,7 +82,6 @@ const _HealthStatusVisitForm = (props: any) => {
   };
 
   const getItemsForQuestionMultiSelect = (code: string) => {
-    console.log('state.questions: ', state.questions);
     return syncCatalogService.getItemsForQuestionMultiSelect(
       code,
       state.questions,

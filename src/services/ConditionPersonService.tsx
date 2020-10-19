@@ -228,7 +228,6 @@ export default class ConditionPersonService {
           .filtered(
             `FNCPERSON_ID = ${FNCPERSON_ID} AND FNCELEPER_ID = ${FNCELEPER_ID}`,
           );
-        console.error(items);
         if (items.length > 0) {
           return items[0].FNCCONPER_ID;
         } else {

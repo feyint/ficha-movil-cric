@@ -4,11 +4,10 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {ListItem} from 'react-native-elements';
 import {FNCPERSON} from '../../../../state/person/types';
 const _PersonList = (props: any) => {
-  console.log(props);
   return (
     <KeyboardAwareScrollView>
       <View style={styles.container}>
-        {props.persons
+        {props.persons && props.persons.length > 0
           ? props.persons.map((person: FNCPERSON, i: any) => (
               <ListItem
                 onPress={() => props.onSelect(person)}
