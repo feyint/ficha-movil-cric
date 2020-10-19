@@ -19,14 +19,14 @@ const _LoginForm = (props) => {
   const {handleSubmit, control, errors} = useForm({
     resolver: yupResolver(schemaForm),
   });
-  React.useEffect(() => {
-    const res = props.authAction({username: 'test', password: 's'});
-    if (res) {
-      navigation.navigate('MenuHome');
-    } else {
-      setVisible(!visible);
-    }
-  }, [])
+  // React.useEffect(() => {
+  //   const res = props.authAction({username: 'test', password: 's'});
+  //   if (res) {
+  //     navigation.navigate('MenuHome');
+  //   } else {
+  //     setVisible(!visible);
+  //   }
+  // }, [])
   const [visible, setVisible] = React.useState(false);
   const onSubmit = (data: any) => {
     const res = props.authAction(data);
