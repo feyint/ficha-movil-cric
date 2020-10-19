@@ -12,6 +12,7 @@ import {FNBNUCVIV} from '../house/types';
 export const ActionType = {
   SET_FNCPERSON: 'SET_FNCPERSON',
   SET_PERSON_QUESTION_LIST: 'SET_PERSON_QUESTION_LIST',
+  SET_FNBINFSAL: 'SET_FNBINFSAL',
 };
 
 const setPERSON_QUESTION_LIST = (data: PersonQuestion[]) => {
@@ -19,6 +20,9 @@ const setPERSON_QUESTION_LIST = (data: PersonQuestion[]) => {
 };
 const _setPERSON = (data: any) => {
   return {type: ActionType.SET_FNCPERSON, data};
+};
+const _setFNBINFSAL = (data: any) => {
+  return {type: ActionType.SET_FNBINFSAL, data};
 };
 
 /* const _setFNCPERSON = (data: FNCPERSON) => {
@@ -50,6 +54,32 @@ export const clearFNCPERSON = () => (dispatch: any) => {
   };
   dispatch(_setPERSON(person));
 };
+export const clearFNBINFSAL = () => (dispatch: any) => {
+  let cFNBINFSAL = {
+    ID: null,
+    PESO: null,
+    TALLA: null,
+    TA_SISTOLICA: null,
+    TA_DIASTOLICA: null,
+    USO_PROTESIS: null,
+    TIEMPO_PROTESIS: null,
+    ULTIMA_VISITA: null,
+    FECHA_MUERTE: null,
+    DEFUNCION: null,
+    FECHA_ACTIVIDAD: null,
+    USUARIO_DATA: null,
+    FECHA_CREACION: null,
+    ORIGEN_DATA: null,
+    FNCPERSON_ID: null,
+    FNCINTIMC_ID: null,
+    FNCINTTEA_ID: null,
+  };
+  dispatch(_setFNBINFSAL(cFNBINFSAL));
+};
+
+export const setFNBINFSAL = (data: FNBINFSAL) => async (dispatch: any) => {
+  dispatch(_setFNBINFSAL(data));
+};
 
 export const setFNCPERSON = (data: FNCPERSON) => async (dispatch: any) => {
   dispatch(_setPERSON(data));
@@ -78,6 +108,7 @@ export const saveFNCPERSON = (data: FNCPERSON) => async (
     });
   }
   dispatch(_setPERSON(data));
+  return data;
 };
 export const updateFNCPERSON = (data: any) => async (
   dispatch: any,

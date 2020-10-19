@@ -9,7 +9,7 @@ export const ActionType = {
 };
 
 export const clearFNCNCSALREP = () => (dispatch: any) => {
-  let NCSALREP = {
+  let NCSALREP: any = {
     ID: null,
     FNCPERSON_ID: null,
     EDAD_PRIMERA_REGLA: null,

@@ -70,6 +70,32 @@ export default class PersonService {
       });
     return item;
   }
+  async getPersonbyIdentification(
+    identification: any,
+    identificationType: any,
+  ) {
+    let result = await Realm.open({
+      schema: [FNCPERSONSCHEMA],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        let person = realm
+          .objects(DataBaseSchemas.FNCPERSONSCHEMA)
+          .filtered(`IDENTIFICACION = '${identification}' AND FNCTIPIDE_ID = ${identificationType}`);
+        if (person.length > 0) {
+          let items: FNCPERSON[] = [];
+          for (let item of person) {
+            items.push(item);
+          }
+          return items;
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        return undefined;
+      });
+    return result;
+  }
   async getLasPersonCode() {
     const result = await Realm.open({
       schema: [FNCPERSONSCHEMA],
@@ -91,7 +117,6 @@ export default class PersonService {
       });
     return result;
   }
-
   /**
    *
    * @param questionsQuery

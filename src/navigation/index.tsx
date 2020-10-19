@@ -27,7 +27,6 @@ import {
   UnhealthyHabitsScreen,
   LastPregnancyScreen,
   CurrentPregnancyScreen,
-  BirthDataScreen,
   OtherIdentificationDataScreen,
   PersonalInformationScreen,
   ContactInformationScreen,
@@ -180,14 +179,6 @@ export const Dashboard = () => {
         options={{
           headerShown: false,
           title: 'Gestación actual',
-        }}
-      />
-      <DashboardStack.Screen
-        component={BirthDataScreen}
-        name="BirthDataScreen"
-        options={{
-          headerShown: false,
-          title: 'Datos de nacimiento',
         }}
       />
       <DashboardStack.Screen

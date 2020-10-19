@@ -8,12 +8,7 @@ import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {BButton, BDatePickerModal, BPicker} from '../../../../core/components';
 import {ConditionPersonService, UtilsService} from '../../../../services';
-import {FNCPERSON} from '../../../../state/person/types';
-import {
-  getQuestionWithOptions,
-  saveFNCPERSON,
-  updateFNCPERSON,
-} from '../../../../state/person/actions';
+import {updateFNCPERSON} from '../../../../state/person/actions';
 import {
   DataBaseSchemas,
   FNCLUNINDSCHEMA,
@@ -26,8 +21,10 @@ import {
   getQuestionAnswer,
 } from '../../../../state/ConditionPerson/actions';
 import {getEntitySelect} from '../../../location/state/actions';
-import {QuestionConditionPersonCodes, QuestionTypes} from '../../../../core/utils/PersonTypes';
-import {ConditionPersonQuestion} from '../state/types';
+import {
+  QuestionConditionPersonCodes,
+  QuestionTypes,
+} from '../../../../core/utils/PersonTypes';
 const schemaForm = yup.object().shape({
   birthdate: yup.date().required('La fecha de nacimiento es requerida'),
   fucmunici: yup.number().required(),
@@ -37,16 +34,11 @@ const schemaForm = yup.object().shape({
   fnclunocci: yup.number().optional(),
   lacmaterna: yup.number().optional(),
 });
-const questions = [
-  QuestionConditionPersonCodes.LunaOccidental,
-  QuestionConditionPersonCodes.LactanciaMaterna,
-];
 const _BirthInformationForm = (props: any) => {
   const navigation = useNavigation();
   const {handleSubmit, control, errors, setValue} = useForm({
     resolver: yupResolver(schemaForm),
   });
-  const [questionsS, setquestionsS] = useState<ConditionPersonQuestion[]>([]);
   const [fucpaisSelect, setfucpaisSelect] = useState<
     {label: any; value: any}[]
   >([]);
@@ -69,8 +61,6 @@ const _BirthInformationForm = (props: any) => {
   const fetchQuestions = async () => {
     let paises = await props.getEntitySelect('FUCPAIS', FUCPAISSCHEMA);
     let fncluninds = await props.getEntitySelect('FNCLUNIND', FNCLUNINDSCHEMA);
-    let questionitems = await props.getQuestionWithOptions(questions);
-    setquestionsS(questionitems);
     setfucpaisSelect(paises.children);
     setfnclunindselect(fncluninds.children);
     if (props.FNCPERSON.ID) {
@@ -95,7 +85,6 @@ const _BirthInformationForm = (props: any) => {
         null,
         true,
       );
-      console.error(dept);
       setValue('fucpais', dept.FUCPAIS_ID);
       setfucpais('' + dept.FUCPAIS_ID);
       let departsm = await props.getEntitySelect(
@@ -121,8 +110,8 @@ const _BirthInformationForm = (props: any) => {
   };
 
   const getItemsForQuestionSelect = (code: string) => {
-    let syncCatalogService = new ConditionPersonService();
-    return syncCatalogService.getItemsForQuestionSelect(code, questionsS);
+    let service = new ConditionPersonService();
+    return service.getItemsForQuestionSelect(code, props.questions);
   };
   const onSubmit = async (data: any) => {
     navigation.goBack();
@@ -136,7 +125,7 @@ const _BirthInformationForm = (props: any) => {
     );
     setfucdepatSelect(FUCDEPART.children);
     setValue('fucdepat', '');
-    setfucdepat(null);
+    setfucdepat('');
   }
   async function onChangeDept(idDept: any) {
     let FUCMUNICI = await props.getEntitySelect(
@@ -360,9 +349,7 @@ const mapStateToProps = (person: any) => {
 };
 const mapDispatchToProps = {
   updateFNCPERSON,
-  saveFNCPERSON,
   getEntitySelect,
-  getQuestionWithOptions,
   saveAnswerLocal,
   getQuestionAnswer,
 };

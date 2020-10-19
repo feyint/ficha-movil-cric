@@ -53,38 +53,46 @@ export const saveAnswerLocal = (
   questionCode: string,
   answer: any,
 ) => async (_dispatch: any, getState: any) => {
+  // console.error('llega', answer);
   if (questionCode) {
-    const store = getState();
-    let questionItems: ConditionPersonQuestion[] =
-      store.conditionperson.CONDITIONPERSONQUESTIONLIST;
-    let question: any = await getQuestionByCode(questionCode, questionItems);
-    if (question) {
-      let person: FNCPERSON = store.person.FNCPERSON;
-      let personServie: ConditionPersonService = new ConditionPersonService();
-      switch (type) {
-        case 1: // oneOption
-          let option = getOption(question.ID, JSON.parse(answer), person.ID);
-          if (option.FNCCONPER_ID) {
-            await personServie.saveQuestionOption([option]);
-          } else {
-            await personServie.deleteAnswerForQuestion(person.ID, question.ID);
-          }
-          break;
-        case 2: // multiSelect
-          let options = [];
-          for (let i = 0; i < answer.length; i++) {
-            let opt = getOption(question.ID, answer[i], person.ID);
-            options.push(opt);
-          }
-          if (options.length > 0) {
-            await personServie.saveQuestionOption(options);
-          } else {
-            await personServie.deleteAnswerForQuestion(person.ID, item.ID);
-          }
-          break;
-        default:
-          break;
+    try {
+      const store = getState();
+      let questionItems: ConditionPersonQuestion[] =
+        store.conditionperson.CONDITIONPERSONQUESTIONLIST;
+      let question: any = await getQuestionByCode(questionCode, questionItems);
+      if (question) {
+        let person: FNCPERSON = store.person.FNCPERSON;
+        let personServie: ConditionPersonService = new ConditionPersonService();
+        switch (type) {
+          case 1: // oneOption
+            let option = getOption(question.ID, JSON.parse(answer), person.ID);
+            if (option.FNCCONPER_ID) {
+              await personServie.saveQuestionOption([option]);
+            } else {
+              await personServie.deleteAnswerForQuestion(
+                person.ID,
+                question.ID,
+              );
+            }
+            break;
+          case 2: // multiSelect
+            let options = [];
+            for (let i = 0; i < answer.length; i++) {
+              let opt = getOption(question.ID, answer[i], person.ID);
+              options.push(opt);
+            }
+            if (options.length > 0) {
+              await personServie.saveQuestionOption(options);
+            } else {
+              await personServie.deleteAnswerForQuestion(person.ID, item.ID);
+            }
+            break;
+          default:
+            break;
+        }
       }
+    } catch (error) {
+      console.error(error);
     }
   }
 };
@@ -132,7 +140,7 @@ export async function getQuestionByCode(
   if (questionItems.length === 0) {
     questionItems = await setConditionQuestionWithOptions();
   }
-  let item = questionItems.find(item => {
+  let item = questionItems.find((item) => {
     return item.CODIGO === questionCode;
   });
   return item as ConditionPersonQuestion;

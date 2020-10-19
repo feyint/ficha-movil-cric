@@ -46,9 +46,7 @@ const questionscodes = [
 ];
 
 const schemaForm = yup.object().shape({
-  parentezcoGrupoFamiliar: yup.string().required(),
   EstadoCivil: yup.number().required(),
-  GrupoEtnico: yup.number().required(),
   Casta: yup.number().notRequired(),
   LenguaMaterna: yup.number().required(),
   DominioLenguaMaterna: yup.number().notRequired(),
@@ -85,7 +83,6 @@ const _OtherIdentificationDataForm = (props: any) => {
   const [lenguaMaterna, setLenguaMaterna] = useState('');
   //const [castaPikerEnable, setCastaPikerEnable] = useState(false);
   const navigation = useNavigation();
-  const [parentezcoGrupoFamiliar, setParentezcoGrupoFamiliar] = useState('');
   const [leng, setLeng] = useState('');
 
   //const [castaPikerEnable, setCastaPikerEnable] = useState(false);
@@ -95,25 +92,9 @@ const _OtherIdentificationDataForm = (props: any) => {
   const [enableCasta, setEnableCasta] = useState(false);
   const [enablePueblo, setEnablePueblo] = useState(false);
 
-  /* const getItemsForQuestionSelectLanguaje = async () => {
-    console.log(
-      '***************************** segunda lengua *****************************',
-    );
-    let resulsegundaLengua = await getItemsForQuestionSelect(
-      QuestionConditionPersonCodes.DominioLenguaMaterna,
-    ).children;
-    console.log('vamo a calmarno', resulsegundaLengua);
-    setsegundaLenguaMaterna(resulsegundaLengua);
-    //let resulsegundaLengua = await syncCatalogService.getOrganiList();
-  }; */
-
   const {handleSubmit, control, errors, setValue} = useForm({
     resolver: yupResolver(schemaForm),
   });
-
-  const [parentezcoGrupoFamiliares, setParentezcoGrupoFamiliares] = useState<
-    {label: any; value: any}[]
-  >([]);
 
   //TODO: JAL
   /* const [segundaLenguaMaterna, setsegundaLenguaMaterna] = useState<
@@ -148,7 +129,6 @@ const _OtherIdentificationDataForm = (props: any) => {
       });
     }
     let result = await props.getQuestionWithOptions(questionscodes);
-    let resultparen = await syncCatalogService.getParentList();
     let resultocupac = await syncCatalogService.getOcupacList();
     let resultorgani = await syncCatalogService.getOrganiList();
     let lenguas = syncCatalogService.getItemsForQuestionSelect(
@@ -162,9 +142,11 @@ const _OtherIdentificationDataForm = (props: any) => {
     setQuestions(result);
     setlenguaMaternaSelect(lenguas.children);
     setsegundaLenguaSelect(segundalengua.children);
-    setParentezcoGrupoFamiliares(resultparen);
     setOcupacionPrincipales(resultocupac);
     setOrganizaciones(resultorgani);
+    // /* if (prop == 'GrupoEtnico') {
+    //   setEnablePueblo(question !== '99' || question !== null);
+    // } */
     //------------------------------------------------------------------------
     /* let FNCPUEIND = await props.getEntitySelect(
       'FNCLUNIND',
@@ -183,27 +165,10 @@ const _OtherIdentificationDataForm = (props: any) => {
     setPuebloIndigena(null);
     //------------------------------------------------------------------------
     if (props.FNCPERSON.ID) {
-      setValue('parentezcoGrupoFamiliar', props.FNCPERSON.FNCPAREN_ID);
-      setParentezcoGrupoFamiliar(props.FNCPERSON.FNCPAREN_ID);
       setValue('ocupacionPrincipal', props.FNCPERSON.FNCOCUPAC_ID);
       setOcupacionPrincipal(props.FNCPERSON.FNCOCUPAC_ID);
       setValue('organizacion', props.FNCPERSON.FNCORGANI_ID);
       setOrganizacion(props.FNCPERSON.FNCORGANI_ID);
-    }
-    //getAnswersFNCPERSON();
-  }
-  /* async function fillSecondLanguaje(key) {
-    getAnswers(
-      QuestionTypes.selectOne,
-      QuestionConditionPersonCodes.SegundaLenguaMaterna,
-      'SegundaLenguaMaterna',
-      key,
-    );
-  } */
-  async function getAnswersFNCPERSON() {
-    if (props.FNCPERSON.FNCPAREN_ID && props.FNCPERSON.FNCPAREN_ID !== 'null') {
-      setValue('parentezcoGrupoFamiliar', '' + props.FNCPERSON.FNCPAREN_ID);
-      setParentezcoGrupoFamiliar('' + props.FNCPERSON.FNCPAREN_ID);
     }
   }
 
@@ -224,9 +189,6 @@ const _OtherIdentificationDataForm = (props: any) => {
     if (prop == 'puebloIndigena') {
       setEnableCasta(question === '23');
     }
-    /* if (prop == 'GrupoEtnico') {
-      setEnablePueblo(question !== '99' || question !== null);
-    } */
   }
   async function getAnswersMultiselect(
     type: number,
@@ -240,7 +202,6 @@ const _OtherIdentificationDataForm = (props: any) => {
     console.log(`se ejecuta el onchangelengua y value tiene${value}`);
     setLenguaMaterna(value);
     let item = lenguaMaternaSelect.find((i) => i.value === value);
-    console.error('item', item);
     let segundalengua: any = [];
     segundaLenguaSelect.forEach((lengua) => {
       if (lengua.label != item.label) {
@@ -307,7 +268,6 @@ const _OtherIdentificationDataForm = (props: any) => {
     return syncCatalogService.getItemsForQuestionSelect(code, questions);
   };
   const getItemsForQuestionMultiSelect = (code: string) => {
-    console.log('state.questions: ', state.questionscodesMultiselect);
     return syncCatalogService.getItemsForQuestionMultiSelect(
       code,
       state.questionscodesMultiselect,
@@ -335,18 +295,6 @@ const _OtherIdentificationDataForm = (props: any) => {
                   onChange(value);
                   props.saveFNCPERSONPropiety('FNCORGANI_ID', value);
                   setOrganizacion(value);
-                  /* console.log(
-                    `props.FNCPERSON.FNCPAREN_ID tiene ${props.FNCPERSON.FNCPAREN_ID}`,
-                  );
-                  console.log(
-                    `props.FNCPERSON.FNCOCUPAC_ID tiene ${props.FNCPERSON.FNCOCUPAC_ID}`,
-                  );
-                  console.log(
-                    `props.FNCPERSON.FNCORGANI_ID tiene ${props.FNCPERSON.FNCORGANI_ID}`,
-                  );
-                  console.log(
-                    `props.FNCPERSON.FNCLUNIND_ID tiene ${props.FNCPERSON.FNCLUNIND_ID}`,
-                  ); */
                 }
               }}
               selectedValue={organizacion}
@@ -370,12 +318,6 @@ const _OtherIdentificationDataForm = (props: any) => {
                   onChange(value);
                   props.saveFNCPERSONPropiety('FNCOCUPAC_ID', value);
                   setOcupacionPrincipal(value);
-                  /* console.log(
-                    `props.FNCPERSON.FNCPAREN_ID tiene ${props.FNCPERSON.FNCPAREN_ID}`,
-                  );
-                  console.log(
-                    `props.FNCPERSON.FNCOCUPAC_ID tiene ${props.FNCPERSON.FNCOCUPAC_ID}`,
-                  ); */
                   if (value == 485 || value == null) {
                     setEnableTipoTrabajo(true);
                   } else {
@@ -386,11 +328,6 @@ const _OtherIdentificationDataForm = (props: any) => {
                       '190',
                     );
                   }
-                  /* props.saveAnswerLocal(
-                      QuestionTypes.selectOne,
-                      QuestionConditionPersonCodes.TipoTrabajo,
-                      value,
-                    ); */
                 }
               }}
               selectedValue={ocupacionPrincipal}
@@ -399,28 +336,6 @@ const _OtherIdentificationDataForm = (props: any) => {
             />
           )}
           name="ocupacionPrincipal"
-        />
-        <Controller //Parentezco en el grupo familiar
-          control={control}
-          render={({onChange, onBlur, value}) => (
-            <BPicker
-              label="Parentezco en el grupo familiar"
-              prompt="Selecione una opcion"
-              onBlur={onBlur}
-              error={errors.parentezcoGrupoFamiliar}
-              onChange={(value: any) => {
-                if (value) {
-                  onChange(value);
-                  props.saveFNCPERSONPropiety('FNCPAREN_ID', value);
-                  setParentezcoGrupoFamiliar(value);
-                }
-              }}
-              selectedValue={parentezcoGrupoFamiliar}
-              items={parentezcoGrupoFamiliares}
-              //value={value}
-            />
-          )}
-          name="parentezcoGrupoFamiliar"
         />
         {enablePueblo ? (
           <Controller //Pueblo indigena
@@ -440,7 +355,6 @@ const _OtherIdentificationDataForm = (props: any) => {
                 }}
                 selectedValue={puebloIndigena}
                 items={puebloIndigenaSelect}
-                //value={value}
               />
             )}
             name="puebloIndigena"
@@ -468,7 +382,6 @@ const _OtherIdentificationDataForm = (props: any) => {
                   'EstadoCivil',
                 );
               }}
-              //value={value}
               selectedValue={value}
               items={
                 getItemsForQuestionSelect(
@@ -478,42 +391,6 @@ const _OtherIdentificationDataForm = (props: any) => {
             />
           )}
           name="EstadoCivil"
-        />
-        <Controller //GrupoEtnico
-          control={control}
-          render={({onChange, onBlur, value}) => (
-            <BPicker
-              label={getQuestionlabel(QuestionConditionPersonCodes.GrupoEtnico)}
-              onBlur={onBlur}
-              error={errors.GrupoEtnico}
-              onChange={(value: any) => {
-                onChange(value);
-                validateGrupoEtnico(value);
-                console.log(`grupo etnico value: ${value}`);
-                console.log(`enable pueblo vale: ${enablePueblo}`);
-                props.saveAnswerLocal(
-                  QuestionTypes.selectOne,
-                  QuestionConditionPersonCodes.GrupoEtnico,
-                  value,
-                );
-              }}
-              onLoad={() => {
-                getAnswers(
-                  QuestionTypes.selectOne,
-                  QuestionConditionPersonCodes.GrupoEtnico,
-                  'GrupoEtnico',
-                );
-              }}
-              //value={value}
-              selectedValue={value}
-              items={
-                getItemsForQuestionSelect(
-                  QuestionConditionPersonCodes.GrupoEtnico,
-                ).children
-              }
-            />
-          )}
-          name="GrupoEtnico"
         />
         {enableCasta ? (
           <Controller //Casta
@@ -656,10 +533,8 @@ const _OtherIdentificationDataForm = (props: any) => {
                     'SegundaLenguaMaterna',
                   );
                 }}
-                //value={value}
                 selectedValue={value}
                 items={segundaLenguaFiltered}
-                //items={list === 0 ? lenguaMaternaSelect : segundaLenguaFiltered}
               />
             )}
             name="SegundaLenguaMaterna"

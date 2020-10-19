@@ -340,4 +340,35 @@ export default class SexAndRepHealthPersonService {
       });
     return result;
   }
+  async SaveFNCSALREPPropiety(
+    FNCSALREPID: number,
+    propiety: string,
+    value: any,
+  ) {
+    // console.error(JSON.stringify(value));
+    const result = await Realm.open({
+      schema: [FNCSALREPSCHEMA],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        realm.write(() => {
+          let item: any = realm
+            .objects(DataBaseSchemas.FNCSALREPSCHEMA)
+            .filtered(`ID = ${FNCSALREPID}`)
+            .sorted('ID', true)[0];
+          if (item) {
+            // console.error('result[propiety] ', propiety, value);
+            item[propiety] = value;
+            return true;
+          } else {
+            return false;
+          }
+        });
+      })
+      .catch((error) => {
+        console.error('error FNCSALREP ', error);
+        return error;
+      });
+    return result;
+  }
 }

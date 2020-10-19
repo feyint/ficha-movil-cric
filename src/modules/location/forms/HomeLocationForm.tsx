@@ -222,7 +222,11 @@ const _HomeLocationForm = (props: any) => {
         setValue('latitude', '' + pos.coords.latitude);
         setValue('longitude', '' + pos.coords.longitude);
       },
-      (e) => setError(e.message),
+      (e) => {
+        console.error(e);
+        setError(e.message);
+      },
+      {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000},
     );
   }
   async function onChangeDept(idDept: any) {

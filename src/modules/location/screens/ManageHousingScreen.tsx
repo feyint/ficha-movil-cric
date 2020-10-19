@@ -38,7 +38,7 @@ class ManageHousingScreen extends Component<any, any> {
           />
           {this.props.FUBUBIVIV && this.props.FUBUBIVIV.CODIGO !== '' ? (
             <List.Item
-              onPress={() => this.goFamilyScreen() /*this.goHouseMenuScreen()*/}
+              onPress={() => this.goFamilyScreen()}
               title="Nucleo Familiar"
               left={() => <List.Icon icon="account-group" />}
             />

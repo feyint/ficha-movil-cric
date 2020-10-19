@@ -3,20 +3,23 @@ import {HousingQuestion} from '../../modules/housing/state/types';
 
 // TODO traer de la base de datos
 const FNBINFSAL = {
-  ID: 100,
-  PESO: 80,
-  TALLA: 70,
-  TA_SISTOLICA: 0,
-  TA_DIASTOLICA: 0,
-  USO_PROTESIS: 1,
-  TIEMPO_PROTESIS: 0,
-  ULTIMA_VISITA: new Date(),
-  FECHA_MUERTE: new Date(),
-  DEFUNCION: 'string',
-  FECHA_ACTIVIDAD: new Date(),
-  USUARIO_DATA: 'SYSTEM_USER_CTL',
-  FECHA_CREACION: new Date(),
-  ORIGEN_DATA: 'SYSTEM_USER_CTL',
+  ID: null,
+  PESO: null,
+  TALLA: null,
+  TA_SISTOLICA: null,
+  TA_DIASTOLICA: null,
+  USO_PROTESIS: null,
+  TIEMPO_PROTESIS: null,
+  ULTIMA_VISITA: null,
+  FECHA_MUERTE: null,
+  DEFUNCION: null,
+  FECHA_ACTIVIDAD: null,
+  USUARIO_DATA: null,
+  FECHA_CREACION: null,
+  ORIGEN_DATA: null,
+  FNCPERSON_ID: null,
+  FNCINTIMC_ID: null,
+  FNCINTTEA_ID: null,
 };
 const FNCPERSON = {
   ID: null,
@@ -58,6 +61,11 @@ export default (state = initialState, action: any) => {
       return {
         ...state,
         FNCPERSON: action.data,
+      };
+    case ActionType.SET_FNBINFSAL:
+      return {
+        ...state,
+        FNBINFSAL: action.FNBINFSAL,
       };
     default:
       return state;

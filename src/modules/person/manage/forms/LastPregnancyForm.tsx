@@ -107,7 +107,6 @@ const _LastPregnancyForm = (props: any) => {
   };
 
   const getItemsForQuestionMultiSelect = (code: string) => {
-    console.log('state.questions: ', state.questions);
     return syncCatalogService.getItemsForQuestionMultiSelect(
       code,
       state.questions,

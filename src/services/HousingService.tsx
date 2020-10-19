@@ -234,12 +234,10 @@ export default class HousingService {
         let items: any = realm
           .objects(DataBaseSchemas.FNBNUCVIV_FNCPERSONSCHEMA)
           .filtered(`FNBNUCVIV_ID = ${FNBNUCVIV_ID}`);
-        console.log('FNBNUCVIV_FNCPERSONSCHEMA items', items);
         for (let i of items) {
           let person: any = realm
             .objects(DataBaseSchemas.FNCPERSONSCHEMA)
             .filtered(`ID = ${i.FNCPERSON_ID}`)[0];
-          console.log('person ', person);
           if (person) {
             persons.push(person);
           }
@@ -375,11 +373,9 @@ export default class HousingService {
           .filtered(
             `FNBNUCVIV_ID = ${answeroption[0].FNBNUCVIV_ID} AND FVCELEVIV_ID = ${answeroption[0].FVCELEVIV_ID}`,
           );
-        console.log('registros ya en base de datos', options.length);
         realm.write(() => {
           realm.delete(options);
           for (let i = 0; i < answeroption.length; i++) {
-            console.log('option ', answeroption[i]);
             realm.create(DataBaseSchemas.FNBNUCVIV_FVCCONVIVSCHEMA, {
               FNBNUCVIV_ID: answeroption[i].FNBNUCVIV_ID,
               FVCCONVIV_ID: answeroption[i].FVCCONVIV_ID,
@@ -406,7 +402,6 @@ export default class HousingService {
           .filtered(
             `FNBNUCVIV_ID = ${FNBNUCVIV_ID} AND FVCELEVIV_ID = ${FVCELEVIV_ID}`,
           );
-        console.log('borrar respuestas', options.length);
         realm.write(() => {
           realm.delete(options);
         });
