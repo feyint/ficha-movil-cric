@@ -179,6 +179,7 @@ export default class ConditionPersonService {
    */
   async saveQuestionOption(answeroption: FNCPERSON_FNCCONPER[]) {
     //TODO consultar si ya existe
+    
     await Realm.open({
       schema: [FNCPERSON_FNCCONPERSCHEMA],
       schemaVersion: schemaVersion,

@@ -5,7 +5,11 @@ import {Appbar, Text} from 'react-native-paper';
 import {NavigationProp} from '@react-navigation/native';
 import PersonManageList from '../forms/PersonManageList';
 import {connect} from 'react-redux';
-import {clearFNCPERSON, setFNCPERSON} from '../../../../state/person/actions';
+import {
+  clearFNBINFSAL,
+  clearFNCPERSON,
+  setFNCPERSON,
+} from '../../../../state/person/actions';
 import {FNBNUCVIV} from '../../../../state/house/types';
 import {HousingService} from '../../../../services';
 import {FNCPERSON} from '../../../../state/person/types';
@@ -14,6 +18,7 @@ interface Props {
   navigation: NavigationProp<any>;
   clearFNCPERSON: any;
   setFNCPERSON: any;
+  clearFNBINFSAL: any;
   FNBNUCVIV: FNBNUCVIV;
 }
 interface State {
@@ -29,9 +34,13 @@ class PersonManageScreen extends Component<Props, State> {
   }
 
   componentDidMount() {
-    this._unsubscribe = this.props.navigation.addListener('focus', () => {
-      this.fetchPersons();
-    });
+    try {
+      this._unsubscribe = this.props.navigation.addListener('focus', () => {
+        this.fetchPersons();
+      });
+    } catch (error) {
+      console.error('ocurrio un error');
+    }
   }
   componentWillUnmount() {
     if (this._unsubscribe) {
@@ -43,7 +52,6 @@ class PersonManageScreen extends Component<Props, State> {
     let result = await syncCatalogService.getFNBNUCVIVPersons(
       this.props.FNBNUCVIV.ID,
     );
-    console.log(`listando personas ${result}`);
     if (result) {
       this.setState({
         persons: result,
@@ -86,6 +94,7 @@ class PersonManageScreen extends Component<Props, State> {
   }
   createNewPerson() {
     this.props.clearFNCPERSON();
+    this.props.clearFNBINFSAL();
     this.props.navigation.navigate('ViewPersonScreen');
   }
 }
@@ -93,6 +102,7 @@ class PersonManageScreen extends Component<Props, State> {
 const mapDispatchToProps = {
   clearFNCPERSON,
   setFNCPERSON,
+  clearFNBINFSAL,
 };
 const mapStateToProps = (housing: any) => {
   return {

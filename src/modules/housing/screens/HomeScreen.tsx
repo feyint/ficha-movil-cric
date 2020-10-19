@@ -12,6 +12,8 @@ import {FUBUBIVIV} from '../../../state/house/types';
 
 interface FormData {
   navigation: NavigationProp<any>;
+  clearFUBUBIVIV: any;
+  setFUBUBIVIV: any;
 }
 interface State {
   houses: FUBUBIVIV[];

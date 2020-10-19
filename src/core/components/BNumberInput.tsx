@@ -11,6 +11,7 @@ interface Props {
   keyboardType?: any;
   disabled?: boolean;
   secureTextEntry?: any;
+  onBlurr?: any;
 }
 
 export default class BNumberInput extends Component<Props, any> {
@@ -18,6 +19,7 @@ export default class BNumberInput extends Component<Props, any> {
     return (
       <View>
         <TextInput
+          onBlur={() => this.props.onBlurr()}
           error={this.props.error}
           label={this.props.label}
           mode="outlined"

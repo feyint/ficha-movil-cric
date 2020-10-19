@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {View} from 'react-native';
 import {Appbar} from 'react-native-paper';
 import {NavigationProp} from '@react-navigation/native';
-import { HouseConditionsForm } from '../forms';
+import {HouseConditionsForm} from '../forms';
 
 interface Props {
   navigation: NavigationProp<any>;

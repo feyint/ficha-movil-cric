@@ -5,7 +5,6 @@ const initialState = {
 };
 
 export default (state = initialState, action: any) => {
-  console.log('Action Status Person: ', action);
   switch (action.type) {
     case ActionType.SET_CONDITIONPERSON_QUESTION_LIST:
       return {

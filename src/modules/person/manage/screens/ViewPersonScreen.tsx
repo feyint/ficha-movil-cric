@@ -22,27 +22,37 @@ interface State {
 }
 
 class ViewPersonScreen extends Component<Props, State> {
-  state = {
-    created: false,
-    enableSexReproductionHealt: false,
-  };
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      created: false,
+      enableSexReproductionHealt: false,
+    };
+  }
   private _unsubscribe: any;
   _goBack() {
     this.props.navigation.goBack();
   }
   async UNSAFE_componentWillMount() {}
   async componentDidMount() {
-    if (!this.props.FNCPERSON.ID) {
+    await this.initdata();
+  }
+  async initdata() {
+    if (!this.props.FNCPERSON || !this.props.FNCPERSON.ID) {
       this.navigate('PersonalInformationScreen');
       this._unsubscribe = this.props.navigation.addListener('focus', () => {
-        if (this.state.created) {
-          if (!this.props.FNCPERSON.ID) {
-            this.props.navigation.goBack();
+        try {
+          if (this.state.created) {
+            if (!this.props.FNCPERSON.ID) {
+              this.props.navigation.goBack();
+            }
+          } else {
+            this.setState({
+              created: true,
+            });
           }
-        } else {
-          this.setState({
-            created: true,
-          });
+        } catch (error) {
+          console.error('error focus ', error);
         }
       });
     } else {
@@ -61,8 +71,12 @@ class ViewPersonScreen extends Component<Props, State> {
     }
   }
   componentWillUnmount() {
-    if (this._unsubscribe) {
-      this._unsubscribe();
+    try {
+      if (this._unsubscribe) {
+        this._unsubscribe();
+      }
+    } catch (error) {
+      console.error('cath de null', error);
     }
   }
   render() {
