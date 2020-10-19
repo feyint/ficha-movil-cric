@@ -106,7 +106,7 @@ export const updateFNCPERSON = (data: any) => async (
     FNCGENERO_ID: person.FNCGENERO_ID,
   };
   let personServie: PersonService = new PersonService();
-  await personServie.UpdateFNCPERSON(data);
+  await personServie.UpdateFNCPERSON(Object.assign(data, {ID: person.ID}));
   for (const key of Object.keys(data)) {
     if (key in item && key !== 'ID') {
       item[key] = data[key];
