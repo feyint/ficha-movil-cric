@@ -10,20 +10,15 @@ export const QuestionPersonCodes = {
   DesparasitacionInterna: '9',
   AntecedentesFamiliares: '10',
   Fuma: '11',
-  ConsumeBebidasAlcoholicas: '18',
-  EvidenciaConsumoSustanciasPsicoactivas: '17',
-  EvidenciaViolencia: '19',
   EstadoNutricional: '12',
   RealizacionDePruebasDeCerologiaYVihEnElUltimoTrimestreGestacional: '13',
   RealizacionRitualOPracticasCulturales: '14',
   CausaDeLaMuerte: '15',
   ColoresSemaforo: '16',
   DesparasitacionExterna: '17',
-};
-
-export const QuestionTypes = {
-  selectOne: 1,
-  multiSelect: 2,
+  EvidenciaConsumoSustanciasPsicoactivas: '17',
+  ConsumeBebidasAlcoholicas: '18',
+  EvidenciaViolencia: '19',
 };
 
 export const QuestionConditionPersonCodes = {
@@ -63,3 +58,13 @@ export const QuestionSexAndRepHealthPersonCodes = {
   SaludSexual: '11',
   TerminacionGestacion: '12',
 };
+
+export const QuestionTypes = {
+  selectOne: 1,
+  multiSelect: 2,
+};
+
+export const logicOption = [
+  {value: true, label: 'Si'},
+  {value: false, label: 'No'},
+];

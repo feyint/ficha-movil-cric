@@ -146,7 +146,7 @@ class ViewPersonScreen extends Component<Props, State> {
             <List.Item
               title="Gestación actual"
               left={() => <List.Icon icon="map-marker" />}
-              //onPress={() => this.goHomeLocation()}
+              onPress={() => this.navigate('CurrentPregnancyScreen')}
             />
             <List.Item
               title="Otros datos de salud sexual y reproductiva"

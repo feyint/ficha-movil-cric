@@ -411,7 +411,6 @@ export const FUCBARVERSCHEMA = {
     FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
     FECHA_CREACION: {type: 'date', default: new Date()},
     FUCRESGUA_ID: 'int',
-    FUCZONCUI_ID: 'int',
     FUCZONA_ID: 'int',
   },
 };
@@ -613,7 +612,6 @@ export default class DataBaseProvider {
           NOMBRE: 'Barrio vereda 2',
           ESTADO: 1,
           FUCRESGUA_ID: 1925,
-          FUCZONCUI_ID: 1,
           FUCZONA_ID: 1,
         });
         realm.create('FNCGENERO', {

@@ -1,5 +1,5 @@
-import { ActionType } from './actions';
-import { HousingQuestion } from '../../modules/housing/state/types';
+import {ActionType} from './actions';
+import {HousingQuestion} from '../../modules/housing/state/types';
 
 // TODO traer de la base de datos
 const FNBINFSAL = {
@@ -16,7 +16,7 @@ const FNBINFSAL = {
   FECHA_ACTIVIDAD: new Date(),
   USUARIO_DATA: 'SYSTEM_USER_CTL',
   FECHA_CREACION: new Date(),
-  ORIGEN_DATA: 'SYSTEM_USER_CTL'
+  ORIGEN_DATA: 'SYSTEM_USER_CTL',
 };
 const FNCPERSON = {
   ID: null,

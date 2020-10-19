@@ -124,7 +124,7 @@ const _LastPregnancyForm = (props: any) => {
           control={control}
           render={({onChange, onBlur, value}) => (
             <BPicker
-              enabled={false}
+              enabled={true}
               label={getQuestionlabel(
                 QuestionSexAndRepHealthPersonCodes.TerminacionGestacion,
               )}
@@ -191,7 +191,7 @@ const _LastPregnancyForm = (props: any) => {
           control={control}
           render={({onChange, onBlur, value}) => (
             <BPicker
-              enabled={false}
+              enabled={true}
               label={getQuestionlabel(
                 QuestionSexAndRepHealthPersonCodes.PersonaQueAtendioUltimoParto,
               )}
@@ -269,7 +269,7 @@ const _LastPregnancyForm = (props: any) => {
                 QuestionSexAndRepHealthPersonCodes.ComplicacionAtencionUltimoParto,
               )}
               onBlur={onBlur}
-              error={errors.ProgramaDeSalud}
+              error={errors.ComplicacionAtencionUltimoParto}
               onChange={(values: any) => {
                 onChange(values);
                 console.log('save', values);

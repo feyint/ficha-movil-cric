@@ -59,6 +59,7 @@ export default class ConditionPersonService {
       }
       questionItems.push(questionItem);
     }
+    console.log(questionItems);
     return questionItems;
   }
 

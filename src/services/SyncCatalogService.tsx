@@ -114,7 +114,7 @@ export default class SyncCatalogService {
   }
   async syncEntities() {
     let itemFVCELEVIV: any = await this.getEntity({entityName: 'FVCELEVIV'});
-    const FVCELEVIVSchema = itemFVCELEVIV.data.map((item) => {
+    const FVCELEVIVSchema = itemFVCELEVIV.data.map((item: any) => {
       return {
         ID: item.id,
         CODIGO: item.codigo,
@@ -129,7 +129,7 @@ export default class SyncCatalogService {
     );
 
     let itemFVCCONVIV: any = await this.getEntity({entityName: 'FVCCONVIV'});
-    const FVCCONVIVSchema = itemFVCCONVIV.data.map((item) => {
+    const FVCCONVIVSchema = itemFVCCONVIV.data.map((item: any) => {
       return {
         ID: item.id,
         CODIGO: item.codigo,
@@ -381,14 +381,13 @@ export default class SyncCatalogService {
       entityName: 'FUCBARVER',
     });
     if (itemFUCBARVERSCHEMAs && itemFUCBARVERSCHEMAs.data.length > 0) {
-      const FUCBARVERSCHEMAs = itemFUCBARVERSCHEMAs.data.map((item) => {
+      const FUCBARVERSCHEMAs = itemFUCBARVERSCHEMAs.data.map((item: any) => {
         return {
           ID: item.id,
           CODIGO: item.codigo,
           NOMBRE: item.nombre,
           ESTADO: item.estado,
           FUCRESGUA_ID: item.fucresguaId.id,
-          FUCZONCUI_ID: item.fuczoncuiId.id,
           FUCZONA_ID: item.fuczonaId.id,
         };
       });
@@ -401,7 +400,7 @@ export default class SyncCatalogService {
     let itemFUCZONASCHEMAs: any = await this.getEntity({
       entityName: 'FUCZONA',
     });
-    const FUCZONASCHEMAs = itemFUCZONASCHEMAs.data.map((item) => {
+    const FUCZONASCHEMAs = itemFUCZONASCHEMAs.data.map((item: any) => {
       return {
         ID: item.id,
         CODIGO: item.codigo,
@@ -417,7 +416,7 @@ export default class SyncCatalogService {
     let itemFUCUNICUISCHEMAs: any = await this.getEntity({
       entityName: 'FUCUNICUI',
     });
-    const FUCUNICUISCHEMAs = itemFUCUNICUISCHEMAs.data.map((item) => {
+    const FUCUNICUISCHEMAs = itemFUCUNICUISCHEMAs.data.map((item: any) => {
       return {
         ID: item.id,
         CODIGO: item.codigo,
@@ -434,7 +433,7 @@ export default class SyncCatalogService {
     let itemFUCZONCUISCHEMAs: any = await this.getEntity({
       entityName: 'FUCZONCUI',
     });
-    const FUCZONCUISCHEMAs = itemFUCZONCUISCHEMAs.data.map((item) => {
+    const FUCZONCUISCHEMAs = itemFUCZONCUISCHEMAs.data.map((item: any) => {
       return {
         ID: item.id,
         CODIGO: item.codigo,
@@ -452,7 +451,7 @@ export default class SyncCatalogService {
     let itemFNCLUNINDs: any = await this.getEntity({
       entityName: 'FNCLUNIND',
     });
-    const FNCLUNINDs = itemFNCLUNINDs.data.map((item) => {
+    const FNCLUNINDs = itemFNCLUNINDs.data.map((item: any) => {
       return {
         ID: item.id,
         CODIGO: item.codigo,
@@ -478,7 +477,11 @@ export default class SyncCatalogService {
           for (let i = 0; i < listItems.length; i++) {
             const item = listItems[i];
             console.log(type, ' ', item);
-            realm.create(type, item);
+            try{
+              realm.create(type, item);
+            }catch(e){
+              console.log(e.message);
+            }
           }
         });
         console.log('couuunt ', realm.objects(type).length);

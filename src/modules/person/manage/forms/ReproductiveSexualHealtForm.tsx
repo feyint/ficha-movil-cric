@@ -49,7 +49,6 @@ const _ReproductiveSexualHealtForm = (props: any) => {
   };
   const validatepregnancynumber = () => {
     let isValid = false;
-    console.error(typeof(pregnancynumber));
     if (pregnancynumber > 0) {
       if (parideznumber && abortionnumber && cesariannumber) {
         let sum = parideznumber + abortionnumber + cesariannumber;
