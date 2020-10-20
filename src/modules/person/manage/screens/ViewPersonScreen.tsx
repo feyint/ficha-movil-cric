@@ -128,7 +128,7 @@ class ViewPersonScreen extends Component<Props, State> {
             <List.Item
               title="Informacion de salud"
               left={() => <List.Icon icon="bottle-tonic-plus-outline" />}
-              //onPress={() => this.goHomeLocation()}
+              onPress={() => this.navigate('HealthInformationScreen')}
             />
             <List.Item
               title="Estado de salud en la visita"
@@ -165,7 +165,9 @@ class ViewPersonScreen extends Component<Props, State> {
             <List.Item
               title="Otros datos de salud sexual y reproductiva"
               left={() => <List.Icon icon="map-marker" />}
-              //onPress={() => this.goHomeLocation()}
+              onPress={() =>
+                this.navigate('AnotherReproductiveSexualHealtScreen')
+              }
             />
             <List.Item
               title="Mortalidad en los últimos 12 meses"

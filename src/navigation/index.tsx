@@ -32,6 +32,8 @@ import {
   ContactInformationScreen,
   ReproductiveSexualHealtScreen,
   BirthInformationScreen,
+  AnotherReproductiveSexualHealtScreen,
+  HealthInformationScreen,
 } from '../modules/person/manage/screens';
 import {FamilyScreen} from '../modules/families/screens';
 
@@ -171,6 +173,22 @@ export const Dashboard = () => {
         options={{
           headerShown: false,
           title: 'Finalizacion de la ultima gestacion',
+        }}
+      />
+      <DashboardStack.Screen
+        component={HealthInformationScreen}
+        name="HealthInformationScreen"
+        options={{
+          headerShown: false,
+          title: 'Informacion de salud',
+        }}
+      />
+      <DashboardStack.Screen
+        component={AnotherReproductiveSexualHealtScreen}
+        name="AnotherReproductiveSexualHealtScreen"
+        options={{
+          headerShown: false,
+          title: 'Otros datos de salud sexual y reproductiva',
         }}
       />
       <DashboardStack.Screen
