@@ -410,9 +410,9 @@ export const FUCBARVERSCHEMA = {
     USUARIO_DATA: 'string?',
     FECHA_ACTIVIDAD: {type: 'date', default: new Date()},
     FECHA_CREACION: {type: 'date', default: new Date()},
-    FUCRESGUA_ID: 'int',
-    FUCZONCUI_ID: 'int',
-    FUCZONA_ID: 'int',
+    FUCRESGUA_ID: 'int?',
+    FUCZONCUI_ID: 'int?',
+    FUCZONA_ID: 'int?',
   },
 };
 export const FUCZONASCHEMA = {

@@ -388,7 +388,6 @@ export default class SyncCatalogService {
           NOMBRE: item.nombre,
           ESTADO: item.estado,
           FUCRESGUA_ID: item.fucresguaId.id,
-          FUCZONCUI_ID: item.fuczoncuiId.id,
           FUCZONA_ID: item.fuczonaId.id,
         };
       });
@@ -478,7 +477,10 @@ export default class SyncCatalogService {
           for (let i = 0; i < listItems.length; i++) {
             const item = listItems[i];
             console.log(type, ' ', item);
-            realm.create(type, item);
+            try {
+              realm.create(type, item);
+            } catch (error) {
+            }
           }
         });
         console.log('couuunt ', realm.objects(type).length);
