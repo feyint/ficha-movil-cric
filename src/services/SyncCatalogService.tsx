@@ -477,10 +477,9 @@ export default class SyncCatalogService {
           for (let i = 0; i < listItems.length; i++) {
             const item = listItems[i];
             console.log(type, ' ', item);
-            try{
+            try {
               realm.create(type, item);
-            }catch(e){
-              console.log(e.message);
+            } catch (error) {
             }
           }
         });

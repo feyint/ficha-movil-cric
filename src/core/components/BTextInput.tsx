@@ -12,7 +12,6 @@ interface Props {
   value?: string;
   error?: any;
   onChange?: any;
-  onBlur?: any;
   keyboardType?: any;
   secureTextEntry?: boolean;
   disabled?: boolean;
@@ -27,7 +26,6 @@ export default class BTextInput extends Component<Props, State> {
           error={this.props.error}
           mode={this.props.mode ? this.props.mode : 'outlined'}
           label={this.props.label}
-          onBlur={() => this.props.onBlur()}
           onChangeText={(text) => this.props.onChange(text)}
           value={this.props.value}
           disabled={this.props.disabled}

@@ -36,7 +36,7 @@ const schemaForm = yup.object().shape({
   /* sidewalk: yup.string().required(),
   carezone: yup.string().required(), */
   sidewalk: yup.string().required('Barrio o vereda requerido').nullable(),
-  carezone: yup.string().required('Zona de cuidado requerido'),
+  carezone: yup.string().optional(),
   latitude: yup.string().required(),
   longitude: yup.string().required(),
   address: yup.string().required(),
@@ -325,7 +325,8 @@ const _HomeLocationForm = (props: any) => {
         COORDENADA_Y: position.longitude,
         DIRECCION: data.address,
         FUCBARVER_ID: JSON.parse(data.sidewalk),
-        FUCZONCUI_ID: JSON.parse(data.carezone),
+        //FUCZONCUI_ID: JSON.parse(data.carezone),
+        FUCZONCUI_ID: 1,
       };
       let result = await props.updateFUBUBIVIV(item, originalhouseCode);
       navigation.goBack();
