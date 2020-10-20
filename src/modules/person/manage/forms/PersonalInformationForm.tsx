@@ -197,10 +197,7 @@ const _PersonalInformationForm = (props: any) => {
                   onChange(value);
                   setIdentification(value);
                 }}
-                onBlur={() => {
-                  console.log('on blur');
-                  onChangeIdentification();
-                }}
+                onBlur={onBlur}
                 value={identification}
               />
             )}
@@ -212,10 +209,7 @@ const _PersonalInformationForm = (props: any) => {
             render={({onChange, onBlur, value}) => (
               <BTextInput
                 label="Identificación"
-                onBlur={() => {
-                  console.log('on blur');
-                  onChangeIdentification();
-                }}
+                onBlur={onBlur}
                 error={errors.identification}
                 onChange={(value) => {
                   onChange(value);
