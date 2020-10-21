@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, Alert} from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {yupResolver} from '@hookform/resolvers';
@@ -39,6 +39,18 @@ const _ReproductiveSexualHealtForm = (props: any) => {
     }
   };
   const onSubmit = async (data: any) => {
+    validatepregnancynumber()
+      ? null
+      : Alert.alert(
+          'Acción no permitida',
+          'La suma de los campos Número paridez, Número abortos, Número cesárea debe ser igual al Número de gravidez',
+        );
+    valideateBornPregnancy()
+      ? navigation.goBack()
+      : Alert.alert(
+          'Acción no permitida',
+          'La suma de los campos Número de nacidos vivos y  Número de nacidos muertos debe ser mayor o igual al Número de gravidez',
+        );
     // let person: FNCPERSON = props.FNCPERSON;
     // let item: any = {};
     // item.TEL_CELULAR = data.phonenumber;
@@ -47,15 +59,31 @@ const _ReproductiveSexualHealtForm = (props: any) => {
     // let inserted = await props.updateFNCPERSON(item);
     // navigation.goBack();
   };
+  const validateField = (value: any) => {
+    if (value > pregnancynumber) {
+      return false;
+    } else {
+      return true;
+    }
+  };
   const validatepregnancynumber = () => {
     let isValid = false;
-    console.error(typeof(pregnancynumber));
+    //console.error(typeof pregnancynumber);
     if (pregnancynumber > 0) {
-      if (parideznumber && abortionnumber && cesariannumber) {
-        let sum = parideznumber + abortionnumber + cesariannumber;
-        if (sum <= pregnancynumber) {
-          return true;
-        }
+      let sum = parideznumber + abortionnumber + cesariannumber;
+      if (sum == pregnancynumber) {
+        isValid = true;
+      }
+    }
+    return isValid;
+  };
+  const valideateBornPregnancy = () => {
+    let isValid = false;
+    if (pregnancynumber > 0) {
+      let suma = bornnumber + bornnumberdeath;
+      //console.warn(`${suma}`);
+      if (suma >= pregnancynumber) {
+        isValid = true;
       }
     }
     return isValid;
@@ -105,11 +133,17 @@ const _ReproductiveSexualHealtForm = (props: any) => {
               error={errors.parideznumber}
               onChange={(value) => {
                 onChange(value);
-                if (validatepregnancynumber()) {
-                  setparideznumber(value);
-                }
+                //if (validatepregnancynumber(parseInt(value, 10))) {
+                validateField(parseInt(value, 10))
+                  ? setparideznumber(parseInt(value, 10))
+                  : Alert.alert(
+                      'Valor mayor al de gravidez',
+                      'Ingrese un valor correcto',
+                    );
+
+                //}
               }}
-              value={'' + parideznumber}
+              value={parideznumber ? ' ' + parideznumber : '0'}
             />
           )}
           name="parideznumber"
@@ -123,9 +157,17 @@ const _ReproductiveSexualHealtForm = (props: any) => {
               error={errors.abortionnumber}
               onChange={(value) => {
                 onChange(value);
-                setabortionnumber(value);
+                //if (validatepregnancynumber(parseInt(value, 10))) {
+                validateField(parseInt(value, 10))
+                  ? setabortionnumber(parseInt(value, 10))
+                  : Alert.alert(
+                      'Valor mayor al de gravidez',
+                      'Ingrese un valor correcto',
+                    );
+
+                //}
               }}
-              value={'' + abortionnumber}
+              value={abortionnumber ? ' ' + abortionnumber : '0'}
             />
           )}
           name="abortionnumber"
@@ -139,9 +181,17 @@ const _ReproductiveSexualHealtForm = (props: any) => {
               error={errors.cesariannumber}
               onChange={(value) => {
                 onChange(value);
-                setcesariannumber(value);
+                //if (validatepregnancynumber(parseInt(value, 10))) {
+                validateField(parseInt(value, 10))
+                  ? setcesariannumber(parseInt(value, 10))
+                  : Alert.alert(
+                      'Valor mayor al de gravidez',
+                      'Ingrese un valor correcto',
+                    );
+
+                //}
               }}
-              value={'' + cesariannumber}
+              value={cesariannumber ? ' ' + cesariannumber : '0'}
             />
           )}
           name="cesariannumber"
@@ -155,9 +205,14 @@ const _ReproductiveSexualHealtForm = (props: any) => {
               error={errors.bornnumber}
               onChange={(value) => {
                 onChange(value);
-                setbornnumber(value);
+                validateField(parseInt(value, 10))
+                  ? setbornnumber(parseInt(value, 10))
+                  : Alert.alert(
+                      'Valor mayor al de gravidez',
+                      'Ingrese un valor correcto',
+                    );
               }}
-              value={'' + bornnumber}
+              value={bornnumber ? ' ' + bornnumber : '0'}
             />
           )}
           name="bornnumber"
@@ -171,9 +226,14 @@ const _ReproductiveSexualHealtForm = (props: any) => {
               error={errors.bornnumberdeath}
               onChange={(value) => {
                 onChange(value);
-                setbornnumberdeath(value);
+                validateField(parseInt(value, 10))
+                  ? setbornnumberdeath(parseInt(value, 10))
+                  : Alert.alert(
+                      'Valor mayor al de gravidez',
+                      'Ingrese un valor correcto',
+                    );
               }}
-              value={'' + bornnumberdeath}
+              value={bornnumberdeath ? ' ' + bornnumberdeath : '0'}
             />
           )}
           name="bornnumberdeath"
