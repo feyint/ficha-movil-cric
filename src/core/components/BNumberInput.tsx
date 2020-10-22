@@ -11,6 +11,7 @@ interface Props {
   keyboardType?: any;
   disabled?: boolean;
   secureTextEntry?: any;
+  onBlur?: any;
 }
 
 export default class BNumberInput extends Component<Props, any> {
@@ -26,6 +27,7 @@ export default class BNumberInput extends Component<Props, any> {
           onChangeText={(text) => {
             this.props.onChange(text);
           }}
+          onBlur={this.props.onBlur ? this.props.onBlur() : null}
           value={this.props.value}
         />
         {this.props.error ? (

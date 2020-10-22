@@ -79,15 +79,19 @@ export default class PersonService {
       schemaVersion: schemaVersion,
     })
       .then((realm) => {
+        let query = `IDENTIFICACION = '${identification}'`;
+        if (identificationType) {
+          query = `IDENTIFICACION = '${identification}' AND FNCTIPIDE_ID = ${identificationType}`;
+        }
         let person = realm
           .objects(DataBaseSchemas.FNCPERSONSCHEMA)
-          .filtered(`IDENTIFICACION = '${identification}' AND FNCTIPIDE_ID = ${identificationType}`);
+          .filtered(query);
         if (person.length > 0) {
           let items: FNCPERSON[] = [];
           for (let item of person) {
             items.push(item);
           }
-          return items;
+          return items[0];
         }
       })
       .catch((error) => {
