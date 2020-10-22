@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, Alert} from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {yupResolver} from '@hookform/resolvers';
@@ -10,17 +10,22 @@ import {BButton, BPicker, BTextInput} from '../../../../core/components';
 import BNumberInput from '../../../../core/components/BNumberInput';
 import {ConditionPersonService, PersonService} from '../../../../services';
 import {FNCPERSON} from '../../../../state/person/types';
-import {saveFNCPERSON, updateFNCPERSON} from '../../../../state/person/actions';
+import {
+  saveFNCPERSON,
+  saveSaveFNBNUCVIV_FNCPERSON,
+  updateFNCPERSON,
+} from '../../../../state/person/actions';
 import {
   QuestionConditionPersonCodes,
   QuestionTypes,
 } from '../../../../core/utils/PersonTypes';
-import {ConditionPersonQuestion} from '../state/types';
 import {
   getQuestionAnswer,
   getQuestionWithOptions,
   saveAnswerLocal,
 } from '../../../../state/ConditionPerson/actions';
+import PersonRelationService from '../../../../services/PersonRelationService';
+
 const schemaForm = yup.object().shape({
   parentezcoGrupoFamiliar: yup.string().required(),
   firstname: yup.string().required(),
@@ -49,11 +54,11 @@ const _PersonalInformationForm = (props: any) => {
     {label: 'Menor sin identificación', value: '5'},
   ];
   const [genders, setGenders] = useState<{label: any; value: any}[]>([]);
-  const [gender, setGender] = useState();
+  const [gender, setGender] = useState<any>();
   const [identification, setIdentification] = useState('');
   const [identificationType, setIdentificationType] = useState<any>();
   const [grupoEtnico, setGrupoEtnico] = useState<any>();
-  const [parentezcoGrupoFamiliar, setParentezcoGrupoFamiliar] = useState('');
+  const [parentezcoGrupoFamiliar, setParentezcoGrupoFamiliar] = useState<any>();
   const [
     parentezcoGrupoFamiliarSelect,
     setParentezcoGrupoFamiliarSelect,
@@ -61,7 +66,12 @@ const _PersonalInformationForm = (props: any) => {
   useEffect(() => {
     fetchQuestions();
   }, []);
-  const fetchQuestions = async () => {
+  useEffect(() => {
+    let delayDebounceFn = onChangeIdentification();
+    return () => clearTimeout(delayDebounceFn);
+  }, [identification, identificationType]);
+
+  const fetchQuestions = async (item = null) => {
     let result = await personService.getGenderList();
     let resultparen = await conditionpersonService.getParentList();
     setGenders(result);
@@ -79,6 +89,27 @@ const _PersonalInformationForm = (props: any) => {
       setGender(props.FNCPERSON.FNCGENERO_ID);
       setValue('parentezcoGrupoFamiliar', props.FNCPERSON.FNCPAREN_ID);
       setParentezcoGrupoFamiliar(props.FNCPERSON.FNCPAREN_ID);
+    }
+  };
+  const refreshPerson = async (item: FNCPERSON) => {
+    if (item) {
+      setValue('firstname', item.PRIMER_NOMBRE);
+      setValue('middlename', item.SEGUNDO_NOMBRE);
+      setValue('lastname', item.PRIMER_APELLIDO);
+      setValue('secondlastname', item.SEGUNDO_APELLIDO);
+      setValue('identification', item.IDENTIFICACION);
+      setIdentification(item.IDENTIFICACION);
+      setValue('identificationType', item.FNCTIPIDE_ID);
+      setIdentificationType('' + item.FNCTIPIDE_ID);
+      setValue('gender', item.FNCGENERO_ID);
+      setGender(item.FNCGENERO_ID);
+      setValue('parentezcoGrupoFamiliar', item.FNCPAREN_ID);
+      setParentezcoGrupoFamiliar(item.FNCPAREN_ID);
+      getAnswers(
+        QuestionTypes.selectOne,
+        QuestionConditionPersonCodes.GrupoEtnico,
+        'GrupoEtnico',
+      );
     }
   };
   const onSubmit = async (data: any) => {
@@ -130,26 +161,110 @@ const _PersonalInformationForm = (props: any) => {
     setValue(prop, question);
     setGrupoEtnico(question);
   }
-  async function validateidentificationNumber() {
-    if (identificationType == '4') { // adulto sin identificación
-      if (grupoEtnico == '95') { // codigo 1 indigena
-      }
+  async function asociateExistingPerson(item: FNCPERSON) {
+    let asociated = await props.saveSaveFNBNUCVIV_FNCPERSON(item);
+    if (asociated) {
+      await refreshPerson(item);
+    } else {
+      Alert.alert(
+        'Error al asociar persona',
+        'Ocurrio un error al asociar la persona a este nucleo familiar',
+        [
+          {
+            text: 'aceptar',
+          },
+        ],
+      );
     }
   }
-  async function onChangeIdentification() {
-    let person: FNCPERSON = props.FNCPERSON;
-    // if (person.ID == null) {
-    //   if (identification && identificationType) {
-    //     let persons = await personService.getPersonbyIdentification(
-    //       identification,
-    //       identificationType,
-    //     );
-    //     if (persons) {
-    //       if (persons[0].FNCPAREN_ID == '7'){
-    //       }
-    //     }
-    //   }
-    // }
+  async function existingCurrentFNBNUCVIV(FNCPERSON_ID: number) {
+    let personRelationService = new PersonRelationService();
+    return await personRelationService.countFNBNUCVIV_FNCPERSON(
+      props.FNBNUCVIV.ID,
+      FNCPERSON_ID,
+    );
+  }
+  function onChangeIdentification() {
+    const delayDebounceFn = setTimeout(async () => {
+      let person: FNCPERSON = props.FNCPERSON;
+      console.log(identification);
+      //TODO validar solo numero de identificacion
+      if (identification && identificationType) {
+        let item = await personService.getPersonbyIdentification(
+          identification,
+          identificationType,
+        );
+        if (item) {
+          //valida que no exista en el nucleo familiar actual
+          if (!person.ID && (await existingCurrentFNBNUCVIV(item.ID))) {
+            setIdentification('');
+            Alert.alert(
+              'Identificación existente',
+              `La persona ${item.PRIMER_NOMBRE} ${item.SEGUNDO_NOMBRE} ${item.PRIMER_NOMBRE} ${item.SEGUNDO_APELLIDO} \ncon identificación ${item.IDENTIFICACION}\nya se encuentra en este nucleo familiar`,
+              [
+                {
+                  text: 'aceptar',
+                },
+              ],
+            );
+          } else if (person.ID !== item.ID) {
+            if (item.FNCPAREN_ID == 7) {
+              Alert.alert(
+                'Identificación existente',
+                `La persona ${item.PRIMER_NOMBRE} ${item.SEGUNDO_NOMBRE} ${item.PRIMER_NOMBRE} ${item.SEGUNDO_APELLIDO} \ncon identificación ${item.IDENTIFICACION} ya esta asociada a un nucleo familiar \nDesea asociarla a este nucle familiar cómo "CABEZA DE FAMILIA"?`,
+                [
+                  {
+                    text: 'Si, Asociar',
+                    onPress: async () => {
+                      await asociateExistingPerson(item);
+                    },
+                  },
+                  {
+                    text: 'No',
+                    onPress: () => {
+                      setIdentification('');
+                    },
+                  },
+                ],
+              );
+            } else {
+              setIdentification('');
+              Alert.alert(
+                'Identificación existente',
+                `La persona ${item.PRIMER_NOMBRE} ${item.SEGUNDO_NOMBRE} ${item.PRIMER_NOMBRE} ${item.SEGUNDO_APELLIDO} \ncon identificación ${item.IDENTIFICACION} ya esta asociada a un nucleo familiar \npara asociarlo a este debe tener el parentezco "CABEZA DE FAMILIA"`,
+                [
+                  {
+                    text: 'aceptar',
+                  },
+                ],
+              );
+            }
+          }
+        } else {
+          let existDocument = await personService.getPersonbyIdentification(
+            identification,
+            null,
+          );
+          if (existDocument) {
+            Alert.alert(
+              'Identificación existente',
+              `El numero de identificación ${identification} ya se encuentra registrado en el sistema con otro tipo de identificación, \n Valide la información`,
+              [
+                {
+                  text: 'aceptar',
+                },
+              ],
+            );
+            setIdentification('');
+          }
+        }
+      }
+    }, 1000);
+    return delayDebounceFn;
+  }
+  function validateRelationship() {
+    //TODO Validar si la identificacion pertenece a mas de un nucleo no puede cambiar el parentezo
+    //TODO validar si es la unica persona del nucleo debe ser cabeza de hogar
   }
   return (
     <KeyboardAwareScrollView>
@@ -166,6 +281,9 @@ const _PersonalInformationForm = (props: any) => {
                 if (identificationType == '1' || identificationType == '2') {
                   if (value !== '1' && value !== '2') {
                     setIdentification('');
+                    onChange(value);
+                    setIdentificationType(value);
+                  } else {
                     onChange(value);
                     setIdentificationType(value);
                   }
@@ -186,10 +304,10 @@ const _PersonalInformationForm = (props: any) => {
           )}
           name="identificationType"
         />
-        {identificationType == '1' || identificationType == '2' ? (
-          <Controller
-            control={control}
-            render={({onChange, onBlur, value}) => (
+        <Controller
+          control={control}
+          render={({onChange, value}) =>
+            identificationType == '1' || identificationType == '2' ? (
               <BNumberInput
                 label="Identificación"
                 error={errors.identification}
@@ -199,13 +317,7 @@ const _PersonalInformationForm = (props: any) => {
                 }}
                 value={identification}
               />
-            )}
-            name="identification"
-          />
-        ) : (
-          <Controller
-            control={control}
-            render={({onChange, onBlur, value}) => (
+            ) : (
               <BTextInput
                 label="Identificación"
                 error={
@@ -219,11 +331,10 @@ const _PersonalInformationForm = (props: any) => {
                 }}
                 value={identification}
               />
-            )}
-            name="identification"
-          />
-        )}
-
+            )
+          }
+          name="identification"
+        />
         <Controller
           control={control}
           render={({onChange, value}) => (
@@ -243,7 +354,7 @@ const _PersonalInformationForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BTextInput
               label="Primer nombre"
               error={errors.firstname}
@@ -255,7 +366,7 @@ const _PersonalInformationForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BTextInput
               label="Segundo nombre"
               error={errors.middlename}
@@ -267,7 +378,7 @@ const _PersonalInformationForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BTextInput
               label="Primer apellido"
               error={errors.lastname}
@@ -279,7 +390,7 @@ const _PersonalInformationForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BTextInput
               label="Segundo Apellido"
               error={errors.secondlastname}
@@ -346,7 +457,9 @@ const _PersonalInformationForm = (props: any) => {
           <BButton
             color="secondary"
             value="Guardar Cambios"
-            onPress={handleSubmit(onSubmit)}
+            onPress={handleSubmit(onSubmit, (err) => {
+              console.error(err);
+            })}
           />
         </View>
       </View>
@@ -368,9 +481,10 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = (person: any) => {
+const mapStateToProps = (state: any) => {
   return {
-    FNCPERSON: person.person.FNCPERSON,
+    FNCPERSON: state.person.FNCPERSON,
+    FNBNUCVIV: state.housing.FNBNUCVIV,
   };
 };
 const mapDispatchToProps = {
@@ -379,6 +493,7 @@ const mapDispatchToProps = {
   getQuestionWithOptions,
   saveAnswerLocal,
   getQuestionAnswer,
+  saveSaveFNBNUCVIV_FNCPERSON,
 };
 export default connect(
   mapStateToProps,

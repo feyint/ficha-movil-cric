@@ -110,6 +110,26 @@ export const saveFNCPERSON = (data: FNCPERSON) => async (
   dispatch(_setPERSON(data));
   return data;
 };
+export const saveSaveFNBNUCVIV_FNCPERSON = (data: FNCPERSON) => async (
+  dispatch: any,
+  getState: any,
+) => {
+  const store = getState();
+  let family: FNBNUCVIV = store.housing.FNBNUCVIV;
+  let personRelation: PersonRelationService = new PersonRelationService();
+  let nucleoPersona: FNBNUCVIV_FNCPERSON = {
+    FNBNUCVIV_ID: family.ID,
+    FNCPERSON_ID: data.ID,
+    ID: -1,
+  };
+  try {
+    await personRelation.SaveFNBNUCVIV_FNCPERSON(nucleoPersona);
+    dispatch(_setPERSON(data));
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
 export const updateFNCPERSON = (data: any) => async (
   dispatch: any,
   getState: any,
