@@ -28,6 +28,7 @@ const schemaForm = yup.object().shape({
   lastname: yup.string().required(),
   secondlastname: yup.string().optional(),
   identification: yup.string().required(),
+  withoutidentification: yup.string().notRequired(),
   identificationType: yup.string().required(),
   gender: yup.string().required(),
   GrupoEtnico: yup.number().required(),
@@ -207,7 +208,11 @@ const _PersonalInformationForm = (props: any) => {
             render={({onChange, onBlur, value}) => (
               <BTextInput
                 label="Identificación"
-                error={errors.identification}
+                error={
+                  identificationType == '3'
+                    ? errors.identification
+                    : errors.withoutidentification
+                }
                 onChange={(value) => {
                   onChange(value);
                   setIdentification(value);
