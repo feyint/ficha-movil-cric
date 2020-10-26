@@ -90,24 +90,21 @@ export const saveFNCPERSON = (data: FNCPERSON) => async (
 ) => {
   const store = getState();
   let family: FNBNUCVIV = store.housing.FNBNUCVIV;
-  let personServie: PersonService = new PersonService();
-  let personRelation: PersonRelationService = new PersonRelationService();
-  let sexhealtService: SexAndRepHealthPersonService = new SexAndRepHealthPersonService();
-  let result = await personServie.SaveFNCPERSON(data);
-  if (result) {
-    let nucleoPersona: FNBNUCVIV_FNCPERSON = {
-      FNBNUCVIV_ID: family.ID,
-      FNCPERSON_ID: result.ID,
-      ID: -1,
-    };
-    data.CODIGO = result.CODIGO;
-    data.ID = result.ID;
-    personRelation.SaveFNBNUCVIV_FNCPERSON(nucleoPersona);
-    sexhealtService.SaveFNCSALREP({
-      FNCPERSON_ID: result.ID,
-    });
+  try {
+    let personServie: PersonService = new PersonService();
+    let sexhealtService: SexAndRepHealthPersonService = new SexAndRepHealthPersonService();
+    let result = await personServie.SaveFNCPERSON(data, family.ID);
+    if (result) {
+      data.CODIGO = result.CODIGO;
+      data.ID = result.ID;
+      sexhealtService.SaveFNCSALREP({
+        FNCPERSON_ID: result.ID,
+      });
+    }
+    dispatch(_setPERSON(data));
+  } catch (error) {
+    return false;
   }
-  dispatch(_setPERSON(data));
   return data;
 };
 export const saveSaveFNBNUCVIV_FNCPERSON = (data: FNCPERSON) => async (

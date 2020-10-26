@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {BButton} from '../../../../core/components';
-import {View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import {Appbar, Text} from 'react-native-paper';
 import {NavigationProp} from '@react-navigation/native';
 import PersonManageList from '../forms/PersonManageList';
@@ -13,6 +13,8 @@ import {
 import {FNBNUCVIV} from '../../../../state/house/types';
 import {HousingService} from '../../../../services';
 import {FNCPERSON} from '../../../../state/person/types';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { ListItem } from 'react-native-elements';
 
 interface Props {
   navigation: NavigationProp<any>;
@@ -43,19 +45,21 @@ class PersonManageScreen extends Component<Props, State> {
     }
   }
   componentWillUnmount() {
-    if (this._unsubscribe) {
-      this._unsubscribe();
-    }
+    this._unsubscribe();
   }
   async fetchPersons() {
-    let syncCatalogService = new HousingService();
-    let result = await syncCatalogService.getFNBNUCVIVPersons(
-      this.props.FNBNUCVIV.ID,
-    );
-    if (result) {
-      this.setState({
-        persons: result,
-      });
+    try {
+      let syncCatalogService = new HousingService();
+      let result = await syncCatalogService.getFNBNUCVIVPersons(
+        this.props.FNBNUCVIV.ID,
+      );
+      if (result) {
+        this.setState({
+          persons: result,
+        });
+      }
+    } catch (error) {
+      console.error(error);
     }
   }
   _goBack() {
@@ -78,13 +82,28 @@ class PersonManageScreen extends Component<Props, State> {
           mode="contained"
           onPress={() => this.createNewPerson()}
         />
-        <PersonManageList
-          persons={this.state.persons}
-          onSelect={(value: any) => {
-            console.log('Selected Item: ', value);
-            this.goViewPersonScreen(value);
-          }}
-        />
+        <KeyboardAwareScrollView>
+          <View style={styles.container}>
+            {this.state.persons && this.state.persons.length > 0
+              ? this.state.persons.map((person: FNCPERSON, i: any) => (
+                  <ListItem
+                    onPress={() => {
+                      this.goViewPersonScreen(person);
+                    }}
+                    key={i}
+                    bottomDivider>
+                    <ListItem.Content>
+                      <ListItem.Title>{person.PRIMER_NOMBRE}</ListItem.Title>
+                      <ListItem.Subtitle>
+                        {person.IDENTIFICACION}
+                      </ListItem.Subtitle>
+                    </ListItem.Content>
+                  </ListItem>
+                ))
+              : null}
+          </View>
+          <View style={styles.spacer} />
+        </KeyboardAwareScrollView>
       </View>
     );
   }
@@ -109,5 +128,16 @@ const mapStateToProps = (housing: any) => {
     FNBNUCVIV: housing.housing.FNBNUCVIV,
   };
 };
+
+const styles = StyleSheet.create({
+  spacer: {
+    height: 50,
+  },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 8,
+  },
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(PersonManageScreen);

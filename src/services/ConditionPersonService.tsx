@@ -366,27 +366,4 @@ export default class ConditionPersonService {
       });
     return result;
   }
-  async getParentList() {
-    const result = await Realm.open({
-      schema: [FNCPARENSCHEMA],
-      schemaVersion: schemaVersion,
-    })
-      .then((realm) => {
-        let itemsSelect: {label: any; value: any}[] = [];
-        let items = realm.objects('FNCPAREN');
-        for (let item of items) {
-          itemsSelect.push({
-            label: item.NOMBRE,
-            value: item.ID,
-          });
-        }
-        itemsSelect.unshift({label: 'Seleccione', value: '-1'});
-        return itemsSelect;
-      })
-      .catch((error) => {
-        console.error(error);
-        return error;
-      });
-    return result;
-  }
 }

@@ -29,7 +29,7 @@ export default class PersonRelationService {
       })
       .catch((error) => {
         console.error(error);
-        return error;
+        return false;
       });
     return result;
   }
