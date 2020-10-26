@@ -8,7 +8,7 @@ import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {BButton, BPicker, BTextInput} from '../../../../core/components';
 import BNumberInput from '../../../../core/components/BNumberInput';
-import {ConditionPersonService, PersonService} from '../../../../services';
+import {ConditionPersonService, HousingService, PersonService} from '../../../../services';
 import {FNCPERSON} from '../../../../state/person/types';
 import {
   saveFNCPERSON,
@@ -41,20 +41,17 @@ const schemaForm = yup.object().shape({
 const _PersonalInformationForm = (props: any) => {
   const navigation = useNavigation();
   const personService = new PersonService();
+  const housingService = new HousingService();
   const conditionpersonService = new ConditionPersonService();
   const {handleSubmit, control, errors, setValue} = useForm({
     resolver: yupResolver(schemaForm),
   });
-  const identificationTypes = [
-    {label: 'Seleccione', value: '-1'},
-    {label: 'Cédula de ciudadania (CC)', value: '1'},
-    {label: 'Tarjeta de identidad (TI)', value: '2'},
-    {label: 'Registro civil', value: '3'},
-    {label: 'Adulto sin identificación', value: '4'},
-    {label: 'Menor sin identificación', value: '5'},
-  ];
   const [genders, setGenders] = useState<{label: any; value: any}[]>([]);
+  const [identificationTypes, setidentificationTypes] = useState<
+    {label: any; value: any}[]
+  >([]);
   const [gender, setGender] = useState<any>();
+  const [alreadyHeaderID, setalreadyHeaderID] = useState<number>(0);
   const [identification, setIdentification] = useState('');
   const [identificationType, setIdentificationType] = useState<any>();
   const [grupoEtnico, setGrupoEtnico] = useState<any>();
@@ -72,19 +69,25 @@ const _PersonalInformationForm = (props: any) => {
   }, [identification, identificationType]);
 
   const fetchQuestions = async (item = null) => {
-    let result = await personService.getGenderList();
-    let resultparen = await conditionpersonService.getParentList();
+    let result = await personService.getSelectList('FNCGENERO');
+    let resultFNCPAREN = await personService.getSelectList('FNCPAREN');
+    let resultFNCTIPIDE = await personService.getSelectList('FNCTIPIDE');
+    let alreadyexistheader = await housingService.getFNBNUCVIVPersonsParent(
+      props.FNBNUCVIV.ID,
+    );
+    setalreadyHeaderID(alreadyexistheader);
     setGenders(result);
-    setParentezcoGrupoFamiliarSelect(resultparen);
+    setidentificationTypes(resultFNCTIPIDE);
+    setParentezcoGrupoFamiliarSelect(resultFNCPAREN);
     if (props.FNCPERSON.ID) {
       setValue('firstname', props.FNCPERSON.PRIMER_NOMBRE);
       setValue('middlename', props.FNCPERSON.SEGUNDO_NOMBRE);
       setValue('lastname', props.FNCPERSON.PRIMER_APELLIDO);
       setValue('secondlastname', props.FNCPERSON.SEGUNDO_APELLIDO);
+      setValue('identificationType', props.FNCPERSON.FNCTIPIDE_ID);
+      setIdentificationType(props.FNCPERSON.FNCTIPIDE_ID);
       setValue('identification', props.FNCPERSON.IDENTIFICACION);
       setIdentification(props.FNCPERSON.IDENTIFICACION);
-      setValue('identificationType', props.FNCPERSON.FNCTIPIDE_ID);
-      setIdentificationType('' + props.FNCPERSON.FNCTIPIDE_ID);
       setValue('gender', props.FNCPERSON.FNCGENERO_ID);
       setGender(props.FNCPERSON.FNCGENERO_ID);
       setValue('parentezcoGrupoFamiliar', props.FNCPERSON.FNCPAREN_ID);
@@ -146,11 +149,21 @@ const _PersonalInformationForm = (props: any) => {
       item.FNCGENERO_ID = JSON.parse(data.gender);
       item.FNCPAREN_ID = JSON.parse(data.parentezcoGrupoFamiliar);
       let inserted = await props.saveFNCPERSON(item);
-      if (inserted.ID) {
+      if (inserted && inserted.ID) {
         props.saveAnswerLocal(
           QuestionTypes.selectOne,
           QuestionConditionPersonCodes.GrupoEtnico,
           data.GrupoEtnico,
+        );
+      } else {
+        Alert.alert(
+          'Ocurrio un error',
+          'Ocurrio un error al guardar persona por favor vuelva a intentar',
+          [
+            {
+              text: 'aceptar',
+            },
+          ],
         );
       }
     }
@@ -262,7 +275,23 @@ const _PersonalInformationForm = (props: any) => {
     }, 1000);
     return delayDebounceFn;
   }
-  function validateRelationship() {
+  function validateRelationship(value: any) {
+    if (
+      props.FNCPERSON.FNCPAREN_ID !== alreadyHeaderID &&
+      value == alreadyHeaderID
+    ) {
+      Alert.alert(
+        'Ya existe un cabeza de familia',
+        'El nucleo familiar no puede tener mas de un cabeza de familia',
+        [
+          {
+            text: 'aceptar',
+          },
+        ],
+      );
+      setParentezcoGrupoFamiliar('-1');
+      setValue('parentezcoGrupoFamiliar', '');
+    }
     //TODO Validar si la identificacion pertenece a mas de un nucleo no puede cambiar el parentezo
     //TODO validar si es la unica persona del nucleo debe ser cabeza de hogar
   }
@@ -279,7 +308,7 @@ const _PersonalInformationForm = (props: any) => {
               error={errors.identificationType}
               onChange={(value) => {
                 if (identificationType == '1' || identificationType == '2') {
-                  if (value !== '1' && value !== '2') {
+                  if (value && value !== '1' && value !== '2') {
                     setIdentification('');
                     onChange(value);
                     setIdentificationType(value);
@@ -296,6 +325,15 @@ const _PersonalInformationForm = (props: any) => {
                     onChange(value);
                     setIdentificationType(value);
                   }
+                }
+              }}
+              onLoad={() => {
+                if (props.FNCPERSON.ID) {
+                  setValue(
+                    'identificationType',
+                    '' + props.FNCPERSON.FNCTIPIDE_ID,
+                  );
+                  setIdentificationType('' + props.FNCPERSON.FNCTIPIDE_ID);
                 }
               }}
               selectedValue={identificationType}
@@ -412,8 +450,13 @@ const _PersonalInformationForm = (props: any) => {
                 if (value) {
                   onChange(value);
                   setParentezcoGrupoFamiliar(value);
+                  validateRelationship(value);
                 }
               }}
+              // onLoad={async () => {
+              //   let resultFNCPAREN = await personService.getSelectList('FNCPAREN');
+              //   setParentezcoGrupoFamiliarSelect(resultFNCPAREN);
+              // }}
               selectedValue={parentezcoGrupoFamiliar}
               items={parentezcoGrupoFamiliarSelect}
               //value={value}

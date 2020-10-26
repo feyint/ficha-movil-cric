@@ -1,7 +1,7 @@
 import Realm from 'realm';
 export enum DataBaseSchemas {
   UserSchema = 'User',
-  FNCTIPIDENSCHEMA = 'FNCTIPIDEN', // tipo de identificacion
+  FNCTIPIDESCHEMA = 'FNCTIPIDE', // tipo de identificacion
   FVBENCUESSCHEMA = 'FVBENCUESSCHEMA',
   FVCCONVIVSCHEMA = 'FVCCONVIV', //respuestas housing
   FVCELEVIVSCHEMA = 'FVCELEVIV', //preguntas housing
@@ -51,8 +51,8 @@ export const UserSchema = {
     identification: 'string',
   },
 };
-export const FNCTIPIDENSCHEMA = {
-  name: DataBaseSchemas.FNCTIPIDENSCHEMA,
+export const FNCTIPIDESCHEMA = {
+  name: DataBaseSchemas.FNCTIPIDESCHEMA,
   properties: {
     ID: 'int',
     CODIGO: 'string',
@@ -555,7 +555,7 @@ export default class DataBaseProvider {
       schemaVersion: schemaVersion,
       schema: [
         UserSchema,
-        FNCTIPIDENSCHEMA,
+        FNCTIPIDESCHEMA,
         FVBENCUESSCHEMA,
         FVCCONVIVSCHEMA,
         FVCELEVIVSCHEMA,
@@ -631,24 +631,24 @@ export default class DataBaseProvider {
           ESTADO: 1,
         });
         //-------------------------------------------------------------
-        realm.create('FNCPAREN', {
-          ID: 7,
-          CODIGO: '1',
-          NOMBRE: 'CABEZA DE NÚCLEO',
-          ESTADO: 1,
-        });
-        realm.create('FNCPAREN', {
-          ID: 8,
-          CODIGO: '2',
-          NOMBRE: 'CÓNYUGE',
-          ESTADO: 1,
-        });
-        realm.create('FNCPAREN', {
-          ID: 9,
-          CODIGO: '3',
-          NOMBRE: 'prueba',
-          ESTADO: 1,
-        });
+        // realm.create('FNCPAREN', {
+        //   ID: 7,
+        //   CODIGO: '1',
+        //   NOMBRE: 'CABEZA DE NÚCLEO',
+        //   ESTADO: 1,
+        // });
+        // realm.create('FNCPAREN', {
+        //   ID: 8,
+        //   CODIGO: '2',
+        //   NOMBRE: 'CÓNYUGE',
+        //   ESTADO: 1,
+        // });
+        // realm.create('FNCPAREN', {
+        //   ID: 9,
+        //   CODIGO: '3',
+        //   NOMBRE: 'prueba',
+        //   ESTADO: 1,
+        // });
         /*  realm.create('FNCOCUPAC', {
           ID: 258,
           CODIGO: '5212',
@@ -733,7 +733,7 @@ export default class DataBaseProvider {
     let count = await Realm.open({
       schemaVersion: schemaVersion,
       schema: [
-        FNCTIPIDENSCHEMA,
+        FNCTIPIDESCHEMA,
         FVBENCUESSCHEMA,
         FVCCONVIVSCHEMA,
         FVCELEVIVSCHEMA,

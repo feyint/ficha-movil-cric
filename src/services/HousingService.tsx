@@ -7,18 +7,10 @@ import {
   DataBaseSchemas,
   FNBNUCVIV_FVCCONVIVSCHEMA,
   FNCPERSONSCHEMA,
-  FUCDEPARTSCHEMA,
-  FUCMUNICISCHEMA,
-  FUCTIPTERSCHEMA,
-  FUCRESGUASCHEMA,
-  FUCBARVERSCHEMA,
-  FUCZONASCHEMA,
-  FNCDESARMSCHEMA,
-  FNCOCUPACSCHEMA,
-  FUCUNICUISCHEMA,
   FUCZONCUISCHEMA,
   FNBNUCVIV_FNCPERSONSCHEMA,
   FUCZONCUI_FUCBARVERSCHEMA,
+  FNCPARENSCHEMA,
 } from '../providers/DataBaseProvider';
 import Realm from 'realm';
 import {
@@ -31,6 +23,7 @@ import {capitalizeFirstLetter} from '../core/utils/utils';
 import {UtilsService} from '.';
 import {FNCPERSON} from '../state/person/types';
 import {FUCZONCUI} from '../modules/location/state/types';
+import {PersonParametersConst} from '../core/utils/SystemParameters';
 const HOUSECODE_INCREMENT = '0000';
 export default class HousingService {
   async getFamilies(HouseID: number) {
@@ -246,6 +239,45 @@ export default class HousingService {
       })
       .catch((error) => {
         return error;
+      });
+    return result;
+  }
+  async getFNBNUCVIVPersonsParent(FNBNUCVIV_ID: number) {
+    const result = await Realm.open({
+      schema: [FNBNUCVIV_FNCPERSONSCHEMA, FNCPERSONSCHEMA, FNCPARENSCHEMA],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        let alreadyHead = 0;
+        let parentHeaderID = 0;
+        let items: any = realm
+          .objects(DataBaseSchemas.FNBNUCVIV_FNCPERSONSCHEMA)
+          .filtered(`FNBNUCVIV_ID = ${FNBNUCVIV_ID}`);
+        if (items.length > 0) {
+          let paren = realm
+            .objects(DataBaseSchemas.FNCPARENSCHEMA)
+            .filtered(
+              `CODIGO = '${PersonParametersConst.fncpersonparentheadercode}'`,
+            )[0];
+          if (paren) {
+            parentHeaderID = paren.ID;
+          }
+        }
+        for (let i of items) {
+          let person: any = realm
+            .objects(DataBaseSchemas.FNCPERSONSCHEMA)
+            .filtered(`ID = ${i.FNCPERSON_ID}`)[0];
+          if (person) {
+            if (person.FNCPAREN_ID == parentHeaderID) {
+              alreadyHead = person.FNCPAREN_ID;
+            }
+          }
+        }
+        return alreadyHead;
+      })
+      .catch((error) => {
+        console.error(error);
+        return 0;
       });
     return result;
   }
