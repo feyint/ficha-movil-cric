@@ -14,13 +14,13 @@ export default class PersonRelationService {
       DataBaseSchemas.FNBNUCVIV_FNCPERSONSCHEMA,
     );
     item.ID = FNCPERSON_ID;
-    const result = await Realm.open({
+    let result = await Realm.open({
       schema: [FNBNUCVIV_FNCPERSONSCHEMA],
       schemaVersion: schemaVersion,
     })
       .then((realm) => {
         realm.write(() => {
-          let inserted = realm.create(
+          let inserted: FNBNUCVIV_FNCPERSON = realm.create(
             DataBaseSchemas.FNBNUCVIV_FNCPERSONSCHEMA,
             item,
           );
@@ -29,7 +29,25 @@ export default class PersonRelationService {
       })
       .catch((error) => {
         console.error(error);
-        return error;
+        return false;
+      });
+    return result;
+  }
+  async countFNBNUCVIV_FNCPERSON(FNBNUCVIV_ID: number, FNCPERSON_ID: number) {
+    const result = await Realm.open({
+      schema: [FNBNUCVIV_FNCPERSONSCHEMA],
+      schemaVersion: schemaVersion,
+    })
+      .then((realm) => {
+        let items = realm
+          .objects(DataBaseSchemas.FNBNUCVIV_FNCPERSONSCHEMA)
+          .filtered(
+            `FNBNUCVIV_ID = ${FNBNUCVIV_ID} AND FNCPERSON_ID = ${FNCPERSON_ID}`,
+          );
+        return items.length > 0;
+      })
+      .catch((error) => {
+        return false;
       });
     return result;
   }

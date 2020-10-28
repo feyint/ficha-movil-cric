@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, Alert} from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {yupResolver} from '@hookform/resolvers';
@@ -10,6 +10,8 @@ import {BButton} from '../../../../core/components';
 import BNumberInput from '../../../../core/components/BNumberInput';
 import {FNCPERSON} from '../../../../state/person/types';
 import {saveFNCPERSON, updateFNCPERSON} from '../../../../state/person/actions';
+import { FNCSALREP } from '../../../../state/SexAndRepHealthPerson/types';
+import { updateFNCSALREP } from '../../../../state/SexAndRepHealthPerson/actions';
 const schemaForm = yup.object().shape({
   agemenstruation: yup.number().integer().min(1),
   pregnancynumber: yup.number().integer(),
@@ -39,22 +41,60 @@ const _ReproductiveSexualHealtForm = (props: any) => {
     }
   };
   const onSubmit = async (data: any) => {
-    // let person: FNCPERSON = props.FNCPERSON;
-    // let item: any = {};
-    // item.TEL_CELULAR = data.phonenumber;
-    // item.TEL_ALTERNO = data.phonenumber2;
-    // item.CORREO_ELECTRONICO = data.email;
-    // let inserted = await props.updateFNCPERSON(item);
-    // navigation.goBack();
+    let item: FNCSALREP = props.FNCSALREPDATA;
+    console.error(item);
+    if (validatepregnancynumber()) {
+      if (valideateBornPregnancy()) {
+        if (item.ID) {
+          let fncsalrep: any = {};
+          fncsalrep.EDAD_PRIMERA_REGLA = data.agemenstruation;
+          fncsalrep.GRAVIDEZ = data.pregnancynumber;
+          fncsalrep.PARIDEZ = data.parideznumber;
+          fncsalrep.ABORTO = data.abortionnumber;
+          fncsalrep.CESAREA = data.cesariannumber;
+          fncsalrep.NACIDOS_VIVOS = data.bornnumber;
+          fncsalrep.NACIDOS_MUERTOS = data.bornnumberdeath;
+          fncsalrep.ID = item.ID;
+          await props.updateFNCSALREP(fncsalrep);
+          navigation.goBack();
+        }
+      } else {
+        Alert.alert(
+          'Acción no permitida',
+          'La suma de los campos Número de nacidos vivos y  Número de nacidos muertos debe ser mayor o igual al Número de gravidez',
+        );
+      }
+    } else {
+      Alert.alert(
+        'Acción no permitida',
+        'La suma de los campos Número paridez, Número abortos, Número cesárea debe ser igual al Número de gravidez',
+      );
+    }
+  };
+  const validateField = (value: any) => {
+    if (value > pregnancynumber) {
+      return false;
+    } else {
+      return true;
+    }
   };
   const validatepregnancynumber = () => {
     let isValid = false;
     if (pregnancynumber > 0) {
-      if (parideznumber && abortionnumber && cesariannumber) {
-        let sum = parideznumber + abortionnumber + cesariannumber;
-        if (sum <= pregnancynumber) {
-          return true;
-        }
+      let sum = parideznumber + abortionnumber + cesariannumber;
+      if (sum == pregnancynumber) {
+        isValid = true;
+      }
+    }
+    return isValid;
+  };
+  const valideateBornPregnancy = () => {
+    let isValid = false;
+    if (pregnancynumber > 0) {
+      let suma = bornnumber + bornnumberdeath;
+      //console.warn(`${suma}`);
+      if (suma >= pregnancynumber) {
+        isValid = true;
       }
     }
     return isValid;
@@ -104,11 +144,17 @@ const _ReproductiveSexualHealtForm = (props: any) => {
               error={errors.parideznumber}
               onChange={(value) => {
                 onChange(value);
-                if (validatepregnancynumber()) {
-                  setparideznumber(value);
-                }
+                //if (validatepregnancynumber(parseInt(value, 10))) {
+                validateField(parseInt(value, 10))
+                  ? setparideznumber(parseInt(value, 10))
+                  : Alert.alert(
+                      'Valor mayor al de gravidez',
+                      'Ingrese un valor correcto',
+                    );
+
+                //}
               }}
-              value={'' + parideznumber}
+              value={parideznumber ? ' ' + parideznumber : '0'}
             />
           )}
           name="parideznumber"
@@ -122,9 +168,17 @@ const _ReproductiveSexualHealtForm = (props: any) => {
               error={errors.abortionnumber}
               onChange={(value) => {
                 onChange(value);
-                setabortionnumber(value);
+                //if (validatepregnancynumber(parseInt(value, 10))) {
+                validateField(parseInt(value, 10))
+                  ? setabortionnumber(parseInt(value, 10))
+                  : Alert.alert(
+                      'Valor mayor al de gravidez',
+                      'Ingrese un valor correcto',
+                    );
+
+                //}
               }}
-              value={'' + abortionnumber}
+              value={abortionnumber ? ' ' + abortionnumber : '0'}
             />
           )}
           name="abortionnumber"
@@ -138,9 +192,17 @@ const _ReproductiveSexualHealtForm = (props: any) => {
               error={errors.cesariannumber}
               onChange={(value) => {
                 onChange(value);
-                setcesariannumber(value);
+                //if (validatepregnancynumber(parseInt(value, 10))) {
+                validateField(parseInt(value, 10))
+                  ? setcesariannumber(parseInt(value, 10))
+                  : Alert.alert(
+                      'Valor mayor al de gravidez',
+                      'Ingrese un valor correcto',
+                    );
+
+                //}
               }}
-              value={'' + cesariannumber}
+              value={cesariannumber ? ' ' + cesariannumber : '0'}
             />
           )}
           name="cesariannumber"
@@ -154,9 +216,14 @@ const _ReproductiveSexualHealtForm = (props: any) => {
               error={errors.bornnumber}
               onChange={(value) => {
                 onChange(value);
-                setbornnumber(value);
+                validateField(parseInt(value, 10))
+                  ? setbornnumber(parseInt(value, 10))
+                  : Alert.alert(
+                      'Valor mayor al de gravidez',
+                      'Ingrese un valor correcto',
+                    );
               }}
-              value={'' + bornnumber}
+              value={bornnumber ? ' ' + bornnumber : '0'}
             />
           )}
           name="bornnumber"
@@ -170,9 +237,14 @@ const _ReproductiveSexualHealtForm = (props: any) => {
               error={errors.bornnumberdeath}
               onChange={(value) => {
                 onChange(value);
-                setbornnumberdeath(value);
+                validateField(parseInt(value, 10))
+                  ? setbornnumberdeath(parseInt(value, 10))
+                  : Alert.alert(
+                      'Valor mayor al de gravidez',
+                      'Ingrese un valor correcto',
+                    );
               }}
-              value={'' + bornnumberdeath}
+              value={bornnumberdeath ? ' ' + bornnumberdeath : '0'}
             />
           )}
           name="bornnumberdeath"
@@ -202,14 +274,14 @@ const styles = StyleSheet.create({
     padding: 8,
   },
 });
-const mapStateToProps = (person: any) => {
+const mapStateToProps = (store: any) => {
   return {
-    FNCPERSON: person.person.FNCPERSON,
+    FNCPERSON: store.person.FNCPERSON,
+    FNCSALREPDATA: store.sarhealthperson.FNCSALREPDATA,
   };
 };
 const mapDispatchToProps = {
-  updateFNCPERSON,
-  saveFNCPERSON,
+  updateFNCSALREP,
 };
 export default connect(
   mapStateToProps,

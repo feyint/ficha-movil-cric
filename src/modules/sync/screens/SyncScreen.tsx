@@ -38,6 +38,7 @@ interface State {
   FNCOCUPAC: number;
   FNCPUEIND: Number;
   FNCORGANI: Number;
+  FNCTIPIDE: Number;
   /* /-------------------- */
 }
 
@@ -69,6 +70,7 @@ class SyncScreen extends Component<Props, State> {
       FNCLUNIND: 0,
       FNCELEREP: 0,
       FNCCONREP: 0,
+      FNCTIPIDE: 0,
     };
     this.countEntity();
   }
@@ -90,7 +92,7 @@ class SyncScreen extends Component<Props, State> {
             size={60}
             color={this.props.theme.colors.secondary}
           />
-          <View style={{height: 100, width: '100%'}}>
+          <View style={{height: 100, width: '100%', paddingBottom: 10}}>
             <BButton
               color="secondary"
               value="Sincronizar Catalogos"
@@ -132,11 +134,14 @@ class SyncScreen extends Component<Props, State> {
             <Paragraph>
               FNCLUNIND (pueblo indigena): {this.state.FNCLUNIND}
             </Paragraph>
-             <Paragraph>
+            <Paragraph>
               FNCELEREP (preguntas salud sexual y rep): {this.state.FNCELEREP}
             </Paragraph>
             <Paragraph>
               FNCCONREP (respuestas salud sexual y rep): {this.state.FNCCONREP}
+            </Paragraph>
+            <Paragraph>
+              FNCTIPIDE (tipo identificación): {this.state.FNCTIPIDE}
             </Paragraph>
             {/* ------------------------------------------ */}
             <Paragraph>FUCPAIS (Pais) : {this.state.FUCPAIS}</Paragraph>
@@ -239,6 +244,9 @@ class SyncScreen extends Component<Props, State> {
     let countFNCLUNIND = await this.syncCatalogService.countEntities(
       'FNCLUNIND',
     );
+    let countFNCTIPIDE = await this.syncCatalogService.countEntities(
+      'FNCTIPIDE',
+    );
     this.setState({
       FVCCONVIV: countFVCCONVIV,
       FVCELEVIV: countFVCELEVIV,
@@ -265,6 +273,7 @@ class SyncScreen extends Component<Props, State> {
       FNCLUNIND: countFNCLUNIND,
       FNCELEREP: countFNCELEREP,
       FNCCONREP: countFNCCONREP,
+      FNCTIPIDE: countFNCTIPIDE,
     });
   }
   async clearPollEntities() {

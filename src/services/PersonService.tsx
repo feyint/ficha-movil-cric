@@ -6,6 +6,9 @@ import {
   FNBINFSAL_FNCCONSALSCHEMA,
   DataBaseSchemas,
   FNCGENEROSCHEMA,
+  FNCPARENSCHEMA,
+  FNCTIPIDESCHEMA,
+  FNBNUCVIV_FNCPERSONSCHEMA,
 } from '../providers/DataBaseProvider';
 import Realm from 'realm';
 import {
@@ -14,11 +17,12 @@ import {
 } from '../modules/person/manage/state/types';
 import {SelectSchema, MultiSelectSchema} from '../core/utils/types';
 import {capitalizeFirstLetter} from '../core/utils/utils';
-import {FNBINFSAL_FNCCONSAL, FNCPERSON} from '../state/person/types';
+import {FNBINFSAL_FNCCONSAL, FNBNUCVIV_FNCPERSON, FNCPERSON} from '../state/person/types';
 import {UtilsService} from '.';
+import PersonRelationService from './PersonRelationService';
 
 export default class PersonService {
-  async SaveFNCPERSON(item: FNCPERSON) {
+  async SaveFNCPERSON(item: FNCPERSON, familyID: number) {
     let utils = new UtilsService();
     let FNCPERSON_ID = await utils.getLastEntityID(
       DataBaseSchemas.FNCPERSONSCHEMA,
@@ -28,12 +32,30 @@ export default class PersonService {
     item.FECHA_CREACION = new Date();
     item.CODIGO = FNCPERSON_CODIGO;
     const result = await Realm.open({
-      schema: [FNCPERSONSCHEMA],
+      schema: [FNCPERSONSCHEMA, FNBNUCVIV_FNCPERSONSCHEMA],
       schemaVersion: schemaVersion,
     })
       .then((realm) => {
         realm.write(() => {
           let inserted = realm.create('FNCPERSON', item);
+          if (inserted) {
+            try {
+              let nucleoPersona: FNBNUCVIV_FNCPERSON = {
+                FNBNUCVIV_ID: familyID,
+                FNCPERSON_ID: inserted.ID,
+                ID: -1,
+              };
+              let personRelation: PersonRelationService = new PersonRelationService();
+              let asociated = personRelation.SaveFNBNUCVIV_FNCPERSON(
+                nucleoPersona,
+              );
+              if (!asociated) {
+                realm.delete(inserted);
+              }
+            } catch (error) {
+              realm.delete(inserted);
+            }
+          }
           return inserted;
         });
       })
@@ -79,15 +101,19 @@ export default class PersonService {
       schemaVersion: schemaVersion,
     })
       .then((realm) => {
+        let query = `IDENTIFICACION = '${identification}'`;
+        if (identificationType) {
+          query = `IDENTIFICACION = '${identification}' AND FNCTIPIDE_ID = ${identificationType}`;
+        }
         let person = realm
           .objects(DataBaseSchemas.FNCPERSONSCHEMA)
-          .filtered(`IDENTIFICACION = '${identification}' AND FNCTIPIDE_ID = ${identificationType}`);
+          .filtered(query);
         if (person.length > 0) {
           let items: FNCPERSON[] = [];
           for (let item of person) {
             items.push(item);
           }
-          return items;
+          return items[0];
         }
       })
       .catch((error) => {
@@ -394,21 +420,22 @@ export default class PersonService {
       });
     return result;
   }
-  async getGenderList() {
+  async getSelectList(entity: string) {
     const result = await Realm.open({
-      schema: [FNCGENEROSCHEMA],
+      schema: [FNCGENEROSCHEMA, FNCPARENSCHEMA, FNCTIPIDESCHEMA],
       schemaVersion: schemaVersion,
     })
       .then((realm) => {
-        let itemsSelect: {label: any; value: any}[] = [];
-        let items = realm.objects('FNCGENERO');
+        let itemsSelect: {label: any; value: any; item: any}[] = [];
+        let items = realm.objects(entity);
         for (let item of items) {
           itemsSelect.push({
             label: item.NOMBRE,
             value: item.ID,
+            item: item,
           });
         }
-        itemsSelect.unshift({label: 'Seleccione', value: '-1'});
+        itemsSelect.unshift({label: 'Seleccione', value: '-1', item: null});
         return itemsSelect;
       })
       .catch((error) => {

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
@@ -25,8 +26,10 @@ import {
   QuestionConditionPersonCodes,
   QuestionTypes,
 } from '../../../../core/utils/PersonTypes';
+import moment from 'moment';
+import {PersonParametersConst} from '../../../../core/utils/SystemParameters';
+import { Text } from 'react-native-paper';
 const schemaForm = yup.object().shape({
-  birthdate: yup.date().required('La fecha de nacimiento es requerida'),
   fucmunici: yup.number().required(),
   fucdepat: yup.number().required(),
   fucpais: yup.number().required(),
@@ -55,9 +58,42 @@ const _BirthInformationForm = (props: any) => {
   const [fucdepat, setfucdepat] = useState<string>();
   const [fucpais, setfucpais] = useState<string>();
   const [fnclunind, setfnclunind] = useState<string>();
+  const [enablelacmaterna, setenablelacmaterna] = useState<boolean>(false);
+  const [ageActual, setageActual] = useState<string>('');
   useEffect(() => {
     fetchQuestions();
   }, []);
+  useEffect(() => {
+    if (props.FNCPERSON.ID) {
+      let birthDate = props.FNCPERSON.FECHA_NACIMIENTO;
+      var years = moment().diff(moment(birthDate, 'DD-MM-YYYY'), 'years');
+      var days = moment().diff(moment(birthDate, 'DD-MM-YYYY'), 'days');
+      var a = moment(new Date());
+      var b = moment(birthDate);
+      var diffDuration = moment.duration(a.diff(b));
+      var months = moment().diff(
+        moment(birthDate, 'DD-MM-YYYY'),
+        'months',
+        true,
+      );
+      if (days <= PersonParametersConst.PRM021) {
+        setenablelacmaterna(true);
+      }
+      if (days >= 0 && days <= 30) {
+        setageActual(`${days} días`);
+      }
+      if (months >= 1 && months <= 12) {
+        setageActual(
+          `${diffDuration.months()} meses y ${diffDuration.days()} días`,
+        );
+      }
+      if (years >= 1) {
+        setageActual(
+          `${diffDuration.years()} años ${diffDuration.months()} meses y ${diffDuration.days()} días`,
+        );
+      }
+    }
+  }, [fucmuniciSelect]);
   const fetchQuestions = async () => {
     let paises = await props.getEntitySelect('FUCPAIS', FUCPAISSCHEMA);
     let fncluninds = await props.getEntitySelect('FNCLUNIND', FNCLUNINDSCHEMA);
@@ -105,7 +141,6 @@ const _BirthInformationForm = (props: any) => {
       setfucmuniciSelect(municipios.children);
       setValue('fucmunici', props.FNCPERSON.FUCMUNICI_ID);
       setfucmunici('' + props.FNCPERSON.FUCMUNICI_ID);
-      setValue('birthdate', props.FNCPERSON.FECHA_NACIMIENTO);
     }
   };
 
@@ -145,27 +180,8 @@ const _BirthInformationForm = (props: any) => {
   return (
     <KeyboardAwareScrollView>
       <View style={styles.container}>
-        <Controller
-          control={control}
-          render={({onChange, value}) => (
-            <BDatePickerModal
-              maximumDate={new Date()}
-              label="Fecha de nacimiento"
-              error={errors.birthdate}
-              onChange={(value: Date) => {
-                onChange(value);
-                if (value) {
-                  props.updateFNCPERSON({
-                    FECHA_NACIMIENTO: value,
-                  });
-                }
-              }}
-              onLoad={() => {}}
-              value={value}
-            />
-          )}
-          name="birthdate"
-        />
+        <Text>Edad actual</Text>
+        <Text style={styles.containerage}>{ageActual}</Text>
         <Controller
           control={control}
           render={({onChange}) => (
@@ -211,7 +227,7 @@ const _BirthInformationForm = (props: any) => {
           render={({onChange}) => (
             <BPicker
               label="Municipio"
-              error={errors.fucdepat}
+              error={errors.fucmunici}
               onChange={(value: any) => {
                 onChange(value);
                 setfucmunici(value);
@@ -226,7 +242,7 @@ const _BirthInformationForm = (props: any) => {
               items={fucmuniciSelect}
             />
           )}
-          name="fucdepat"
+          name="fucmunici"
         />
         <Controller
           control={control}
@@ -283,43 +299,45 @@ const _BirthInformationForm = (props: any) => {
           )}
           name="fnclunind"
         />
-        <Controller
-          control={control}
-          render={({onChange, value}) => (
-            <BPicker
-              label="Lactancia materna"
-              error={errors.lacmaterna}
-              onChange={(value: any) => {
-                onChange(value);
-                if (value) {
-                  props.saveAnswerLocal(
+        {enablelacmaterna && (
+          <Controller
+            control={control}
+            render={({onChange, value}) => (
+              <BPicker
+                label="Lactancia materna"
+                error={errors.lacmaterna}
+                onChange={(value: any) => {
+                  onChange(value);
+                  if (value) {
+                    props.saveAnswerLocal(
+                      QuestionTypes.selectOne,
+                      QuestionConditionPersonCodes.LactanciaMaterna,
+                      value,
+                    );
+                  }
+                }}
+                selectedValue={value}
+                items={
+                  getItemsForQuestionSelect(
+                    QuestionConditionPersonCodes.LactanciaMaterna,
+                  ).children
+                }
+                onLoad={() => {
+                  getAnswers(
                     QuestionTypes.selectOne,
                     QuestionConditionPersonCodes.LactanciaMaterna,
-                    value,
+                    'lacmaterna',
                   );
-                }
-              }}
-              selectedValue={value}
-              items={
-                getItemsForQuestionSelect(
-                  QuestionConditionPersonCodes.LactanciaMaterna,
-                ).children
-              }
-              onLoad={() => {
-                getAnswers(
-                  QuestionTypes.selectOne,
-                  QuestionConditionPersonCodes.LactanciaMaterna,
-                  'lacmaterna',
-                );
-              }}
-            />
-          )}
-          name="lacmaterna"
-        />
+                }}
+              />
+            )}
+            name="lacmaterna"
+          />
+        )}
         <View>
           <BButton
             color="secondary"
-            value="Guardar Cambios"
+            value="Volver"
             onPress={handleSubmit(onSubmit)}
           />
         </View>
@@ -334,6 +352,15 @@ const styles = StyleSheet.create({
     height: 40,
     padding: 10,
     borderRadius: 4,
+  },
+  containerage: {
+    fontSize: 16,
+    padding: 10,
+    marginBottom: 5,
+    color: 'black',
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: 'black',
   },
   container: {
     flex: 1,
