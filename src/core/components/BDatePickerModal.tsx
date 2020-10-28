@@ -73,7 +73,7 @@ export default class BDatePickerModal extends Component<Props, State> {
           maximumDate={this.props.maximumDate}
           isVisible={this.state.isVisible}
           mode={this.props.mode}
-          date={this.props.value}
+          date={this.props.value ? this.props.value : new Date()}
           onConfirm={this.handleConfirm}
           onCancel={this.hideDatePicket}
         />

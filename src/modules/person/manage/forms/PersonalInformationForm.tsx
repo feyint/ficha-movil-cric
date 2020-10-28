@@ -1,14 +1,23 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
 import {View, StyleSheet, Alert} from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {yupResolver} from '@hookform/resolvers';
 import * as yup from 'yup';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
-import {BButton, BPicker, BTextInput} from '../../../../core/components';
+import {
+  BButton,
+  BDatePickerModal,
+  BPicker,
+  BTextInput,
+} from '../../../../core/components';
 import BNumberInput from '../../../../core/components/BNumberInput';
-import {ConditionPersonService, HousingService, PersonService} from '../../../../services';
+import {
+  ConditionPersonService,
+  HousingService,
+  PersonService,
+} from '../../../../services';
 import {FNCPERSON} from '../../../../state/person/types';
 import {
   saveFNCPERSON,
@@ -25,6 +34,7 @@ import {
   saveAnswerLocal,
 } from '../../../../state/ConditionPerson/actions';
 import PersonRelationService from '../../../../services/PersonRelationService';
+import {PersonParametersConst} from '../../../../core/utils/SystemParameters';
 
 const schemaForm = yup.object().shape({
   parentezcoGrupoFamiliar: yup.string().required(),
@@ -33,11 +43,12 @@ const schemaForm = yup.object().shape({
   lastname: yup.string().required(),
   secondlastname: yup.string().optional(),
   identification: yup.string().required(),
-  withoutidentification: yup.string().notRequired(),
   identificationType: yup.string().required(),
   gender: yup.string().required(),
   GrupoEtnico: yup.number().required(),
+  birthdate: yup.date().required('La fecha de nacimiento es requerida'),
 });
+// eslint-disable-next-line react-hooks/exhaustive-deps
 const _PersonalInformationForm = (props: any) => {
   const navigation = useNavigation();
   const personService = new PersonService();
@@ -46,16 +57,19 @@ const _PersonalInformationForm = (props: any) => {
   const {handleSubmit, control, errors, setValue} = useForm({
     resolver: yupResolver(schemaForm),
   });
+  const [person, setPerson] = useState<FNCPERSON>();
   const [genders, setGenders] = useState<{label: any; value: any}[]>([]);
   const [identificationTypes, setidentificationTypes] = useState<
-    {label: any; value: any}[]
+    {label: any; value: any; item: any}[]
   >([]);
+  const [identificationEx, setidentificationEx] = useState<any[]>([]);
   const [gender, setGender] = useState<any>();
   const [alreadyHeaderID, setalreadyHeaderID] = useState<number>(0);
   const [identification, setIdentification] = useState('');
   const [identificationType, setIdentificationType] = useState<any>();
   const [grupoEtnico, setGrupoEtnico] = useState<any>();
   const [parentezcoGrupoFamiliar, setParentezcoGrupoFamiliar] = useState<any>();
+  const [birthDate, setbirthDate] = useState<Date>(new Date());
   const [
     parentezcoGrupoFamiliarSelect,
     setParentezcoGrupoFamiliarSelect,
@@ -64,11 +78,53 @@ const _PersonalInformationForm = (props: any) => {
     fetchQuestions();
   }, []);
   useEffect(() => {
+    if (props.FNCPERSON.ID) {
+      setValue('parentezcoGrupoFamiliar', props.FNCPERSON.FNCPAREN_ID);
+      setParentezcoGrupoFamiliar(props.FNCPERSON.FNCPAREN_ID);
+    }
+  }, [parentezcoGrupoFamiliarSelect]);
+  useEffect(() => {
+    if (props.FNCPERSON.ID) {
+      let idtypeEx: any[] = [];
+      identificationTypes.forEach((item) => {
+        if (
+          item.item &&
+          PersonParametersConst.identificationType.indexOf(item.item.CODIGO) !==
+            -1
+        ) {
+          idtypeEx.push(item.item);
+        }
+      });
+      setValue('identificationType', props.FNCPERSON.FNCTIPIDE_ID);
+      setIdentificationType(props.FNCPERSON.FNCTIPIDE_ID);
+      setidentificationEx(idtypeEx);
+    }
+  }, [identificationTypes]);
+  useEffect(() => {
+    if (props.FNCPERSON.ID) {
+      setValue('gender', props.FNCPERSON.FNCGENERO_ID);
+      setGender(props.FNCPERSON.FNCGENERO_ID);
+    }
+  }, [genders]);
+  useEffect(() => {
     let delayDebounceFn = onChangeIdentification();
     return () => clearTimeout(delayDebounceFn);
   }, [identification, identificationType]);
-
-  const fetchQuestions = async (item = null) => {
+  useEffect(() => {
+    if (person) {
+      setValue('firstname', person.PRIMER_NOMBRE);
+      setValue('middlename', person.SEGUNDO_NOMBRE);
+      setValue('lastname', person.PRIMER_APELLIDO);
+      setValue('secondlastname', person.SEGUNDO_APELLIDO);
+      setValue('identification', person.IDENTIFICACION);
+      setIdentification(person.IDENTIFICACION);
+      setValue('parentezcoGrupoFamiliar', person.FNCPAREN_ID);
+      setParentezcoGrupoFamiliar(person.FNCPAREN_ID);
+      setValue('birthdate', person.FECHA_NACIMIENTO);
+      setbirthDate(person.FECHA_NACIMIENTO);
+    }
+  }, [person]);
+  const fetchQuestions = async () => {
     let result = await personService.getSelectList('FNCGENERO');
     let resultFNCPAREN = await personService.getSelectList('FNCPAREN');
     let resultFNCTIPIDE = await personService.getSelectList('FNCTIPIDE');
@@ -80,18 +136,7 @@ const _PersonalInformationForm = (props: any) => {
     setidentificationTypes(resultFNCTIPIDE);
     setParentezcoGrupoFamiliarSelect(resultFNCPAREN);
     if (props.FNCPERSON.ID) {
-      setValue('firstname', props.FNCPERSON.PRIMER_NOMBRE);
-      setValue('middlename', props.FNCPERSON.SEGUNDO_NOMBRE);
-      setValue('lastname', props.FNCPERSON.PRIMER_APELLIDO);
-      setValue('secondlastname', props.FNCPERSON.SEGUNDO_APELLIDO);
-      setValue('identificationType', props.FNCPERSON.FNCTIPIDE_ID);
-      setIdentificationType(props.FNCPERSON.FNCTIPIDE_ID);
-      setValue('identification', props.FNCPERSON.IDENTIFICACION);
-      setIdentification(props.FNCPERSON.IDENTIFICACION);
-      setValue('gender', props.FNCPERSON.FNCGENERO_ID);
-      setGender(props.FNCPERSON.FNCGENERO_ID);
-      setValue('parentezcoGrupoFamiliar', props.FNCPERSON.FNCPAREN_ID);
-      setParentezcoGrupoFamiliar(props.FNCPERSON.FNCPAREN_ID);
+      setPerson(props.FNCPERSON);
     }
   };
   const refreshPerson = async (item: FNCPERSON) => {
@@ -116,8 +161,7 @@ const _PersonalInformationForm = (props: any) => {
     }
   };
   const onSubmit = async (data: any) => {
-    let person: FNCPERSON = props.FNCPERSON;
-    if (person.ID != null) {
+    if (person && person.ID != null) {
       try {
         let inserted = await props.updateFNCPERSON({
           ID: person.ID,
@@ -129,6 +173,7 @@ const _PersonalInformationForm = (props: any) => {
           FNCTIPIDE_ID: JSON.parse(data.identificationType),
           FNCGENERO_ID: JSON.parse(data.gender),
           FNCPAREN_ID: JSON.parse(data.parentezcoGrupoFamiliar),
+          FECHA_NACIMIENTO: birthDate,
         });
         props.saveAnswerLocal(
           QuestionTypes.selectOne,
@@ -148,6 +193,7 @@ const _PersonalInformationForm = (props: any) => {
       item.FNCTIPIDE_ID = JSON.parse(data.identificationType);
       item.FNCGENERO_ID = JSON.parse(data.gender);
       item.FNCPAREN_ID = JSON.parse(data.parentezcoGrupoFamiliar);
+      item.FECHA_NACIMIENTO = birthDate;
       let inserted = await props.saveFNCPERSON(item);
       if (inserted && inserted.ID) {
         props.saveAnswerLocal(
@@ -199,17 +245,20 @@ const _PersonalInformationForm = (props: any) => {
   }
   function onChangeIdentification() {
     const delayDebounceFn = setTimeout(async () => {
-      let person: FNCPERSON = props.FNCPERSON;
-      console.log(identification);
       //TODO validar solo numero de identificacion
-      if (identification && identificationType) {
+      if (person && person.ID && person.IDENTIFICACION == identification) {
+      } else if (identification && identificationType) {
         let item = await personService.getPersonbyIdentification(
           identification,
           identificationType,
         );
         if (item) {
           //valida que no exista en el nucleo familiar actual
-          if (!person.ID && (await existingCurrentFNBNUCVIV(item.ID))) {
+          if (
+            person &&
+            !person.ID &&
+            (await existingCurrentFNBNUCVIV(item.ID))
+          ) {
             setIdentification('');
             Alert.alert(
               'Identificación existente',
@@ -220,7 +269,7 @@ const _PersonalInformationForm = (props: any) => {
                 },
               ],
             );
-          } else if (person.ID !== item.ID) {
+          } else if (person && person.ID !== item.ID) {
             if (item.FNCPAREN_ID == 7) {
               Alert.alert(
                 'Identificación existente',
@@ -277,7 +326,8 @@ const _PersonalInformationForm = (props: any) => {
   }
   function validateRelationship(value: any) {
     if (
-      props.FNCPERSON.FNCPAREN_ID !== alreadyHeaderID &&
+      person &&
+      person.FNCPAREN_ID !== alreadyHeaderID &&
       value == alreadyHeaderID
     ) {
       Alert.alert(
@@ -296,217 +346,229 @@ const _PersonalInformationForm = (props: any) => {
     //TODO validar si es la unica persona del nucleo debe ser cabeza de hogar
   }
   return (
-    <KeyboardAwareScrollView>
-      <View style={styles.container}>
-        <Controller
-          control={control}
-          render={({onChange, onBlur, value}) => (
-            <BPicker
-              label="Tipo de identificación"
-              prompt="Seleccione una opción"
-              onBlur={onBlur}
-              error={errors.identificationType}
-              onChange={(value) => {
-                if (identificationType == '1' || identificationType == '2') {
-                  if (value && value !== '1' && value !== '2') {
-                    setIdentification('');
-                    onChange(value);
-                    setIdentificationType(value);
-                  } else {
-                    onChange(value);
-                    setIdentificationType(value);
-                  }
+    <View style={styles.container}>
+      <Controller
+        control={control}
+        render={({onChange, value}) => (
+          <BPicker
+            label="Tipo de identificación"
+            prompt="Seleccione una opción"
+            error={errors.identificationType}
+            onChange={(value) => {
+              if (
+                identificationEx &&
+                identificationEx.find((i) => i.ID == identificationType)
+              ) {
+                if (!identificationEx.find((i) => i.ID == value)) {
+                  setIdentification('');
+                  onChange(value);
+                  setIdentificationType(value);
                 } else {
-                  if (value == '1' || value == '2') {
-                    setIdentification('');
-                    onChange(value);
-                    setIdentificationType(value);
-                  } else {
-                    onChange(value);
-                    setIdentificationType(value);
-                  }
-                }
-              }}
-              onLoad={() => {
-                if (props.FNCPERSON.ID) {
-                  setValue(
-                    'identificationType',
-                    '' + props.FNCPERSON.FNCTIPIDE_ID,
-                  );
-                  setIdentificationType('' + props.FNCPERSON.FNCTIPIDE_ID);
-                }
-              }}
-              selectedValue={identificationType}
-              items={identificationTypes}
-            />
-          )}
-          name="identificationType"
-        />
-        <Controller
-          control={control}
-          render={({onChange, value}) =>
-            identificationType == '1' || identificationType == '2' ? (
-              <BNumberInput
-                label="Identificación"
-                error={errors.identification}
-                onChange={(value) => {
                   onChange(value);
-                  setIdentification(value);
-                }}
-                value={identification}
-              />
-            ) : (
-              <BTextInput
-                label="Identificación"
-                error={
-                  identificationType == '3'
-                    ? errors.identification
-                    : errors.withoutidentification
+                  setIdentificationType(value);
                 }
-                onChange={(value) => {
+              } else {
+                if (identificationEx.find((i) => i.ID == value)) {
+                  setIdentification('');
                   onChange(value);
-                  setIdentification(value);
-                }}
-                value={identification}
-              />
-            )
-          }
-          name="identification"
-        />
-        <Controller
-          control={control}
-          render={({onChange, value}) => (
-            <BPicker
-              label="Género"
-              error={errors.gender}
-              onChange={(value: any) => {
-                onChange(value);
-                setGender(value);
-              }}
-              onLoad={() => {}}
-              selectedValue={gender}
-              items={genders}
-            />
-          )}
-          name="gender"
-        />
-        <Controller
-          control={control}
-          render={({onChange, value}) => (
-            <BTextInput
-              label="Primer nombre"
-              error={errors.firstname}
-              onChange={(value) => onChange(value)}
-              value={value}
-            />
-          )}
-          name="firstname"
-        />
-        <Controller
-          control={control}
-          render={({onChange, value}) => (
-            <BTextInput
-              label="Segundo nombre"
-              error={errors.middlename}
-              onChange={(value) => onChange(value)}
-              value={value}
-            />
-          )}
-          name="middlename"
-        />
-        <Controller
-          control={control}
-          render={({onChange, value}) => (
-            <BTextInput
-              label="Primer apellido"
-              error={errors.lastname}
-              onChange={(value) => onChange(value)}
-              value={value}
-            />
-          )}
-          name="lastname"
-        />
-        <Controller
-          control={control}
-          render={({onChange, value}) => (
-            <BTextInput
-              label="Segundo Apellido"
-              error={errors.secondlastname}
-              onChange={(value) => onChange(value)}
-              value={value}
-            />
-          )}
-          name="secondlastname"
-        />
-        <Controller //Parentezco en el grupo familiar
-          control={control}
-          render={({onChange, onBlur, value}) => (
-            <BPicker
-              label="Parentezco en el grupo familiar"
-              prompt="Selecione una opcion"
-              onBlur={onBlur}
-              error={errors.parentezcoGrupoFamiliar}
-              onChange={(value: any) => {
-                if (value) {
+                  setIdentificationType(value);
+                } else {
                   onChange(value);
-                  setParentezcoGrupoFamiliar(value);
-                  validateRelationship(value);
+                  setIdentificationType(value);
                 }
-              }}
-              // onLoad={async () => {
-              //   let resultFNCPAREN = await personService.getSelectList('FNCPAREN');
-              //   setParentezcoGrupoFamiliarSelect(resultFNCPAREN);
-              // }}
-              selectedValue={parentezcoGrupoFamiliar}
-              items={parentezcoGrupoFamiliarSelect}
-              //value={value}
-            />
-          )}
-          name="parentezcoGrupoFamiliar"
-        />
-        <Controller //GrupoEtnico
-          control={control}
-          render={({onChange, onBlur, value}) => (
-            <BPicker
-              label={'Grupo etnico'}
-              onBlur={onBlur}
-              error={errors.GrupoEtnico}
-              onChange={(value: any) => {
-                onChange(value);
-                if (value) {
-                  setGrupoEtnico(value);
-                }
-              }}
-              onLoad={() => {
-                getAnswers(
-                  QuestionTypes.selectOne,
-                  QuestionConditionPersonCodes.GrupoEtnico,
-                  'GrupoEtnico',
-                );
-              }}
-              //value={value}
-              selectedValue={grupoEtnico}
-              items={
-                conditionpersonService.getItemsForQuestionSelect(
-                  QuestionConditionPersonCodes.GrupoEtnico,
-                  props.questions,
-                ).children
               }
-            />
-          )}
-          name="GrupoEtnico"
-        />
-        <View>
-          <BButton
-            color="secondary"
-            value="Guardar Cambios"
-            onPress={handleSubmit(onSubmit, (err) => {
-              console.error(err);
-            })}
+            }}
+            onLoad={() => {
+              if (person && person.ID) {
+                setValue('identificationType', '' + person.FNCTIPIDE_ID);
+                setIdentificationType('' + props.FNCPERSON.FNCTIPIDE_ID);
+              }
+            }}
+            selectedValue={identificationType}
+            items={identificationTypes}
           />
-        </View>
+        )}
+        name="identificationType"
+      />
+      <Controller
+        control={control}
+        render={({onChange, value}) =>
+          identificationEx.find((i) => i.ID == identificationType) ? (
+            <BNumberInput
+              label="Identificación"
+              error={errors.identification}
+              onChange={(value) => {
+                onChange(value);
+                setIdentification(value);
+              }}
+              value={identification}
+            />
+          ) : (
+            <BTextInput
+              label="Identificación"
+              error={errors.identification}
+              onChange={(value) => {
+                onChange(value);
+                setIdentification(value);
+              }}
+              value={identification}
+            />
+          )
+        }
+        name="identification"
+      />
+      <Controller
+        control={control}
+        render={({onChange, value}) => (
+          <BPicker
+            label="Género"
+            error={errors.gender}
+            onChange={(value: any) => {
+              onChange(value);
+              setGender(value);
+            }}
+            onLoad={() => {}}
+            selectedValue={gender}
+            items={genders}
+          />
+        )}
+        name="gender"
+      />
+      <Controller
+        control={control}
+        render={({onChange, value}) => (
+          <BDatePickerModal
+            maximumDate={new Date()}
+            label="Fecha de nacimiento"
+            error={errors.birthdate}
+            onChange={(value: Date) => {
+              onChange(value);
+              if (value) {
+                setbirthDate(value);
+              }
+            }}
+            onLoad={() => {}}
+            value={birthDate}
+          />
+        )}
+        name="birthdate"
+      />
+      <Controller
+        control={control}
+        render={({onChange, value}) => (
+          <BTextInput
+            label="Primer nombre"
+            error={errors.firstname}
+            onChange={(value) => onChange(value)}
+            value={value}
+          />
+        )}
+        name="firstname"
+      />
+      <Controller
+        control={control}
+        render={({onChange, value}) => (
+          <BTextInput
+            label="Segundo nombre"
+            error={errors.middlename}
+            onChange={(value) => onChange(value)}
+            value={value}
+          />
+        )}
+        name="middlename"
+      />
+      <Controller
+        control={control}
+        render={({onChange, value}) => (
+          <BTextInput
+            label="Primer apellido"
+            error={errors.lastname}
+            onChange={(value) => onChange(value)}
+            value={value}
+          />
+        )}
+        name="lastname"
+      />
+      <Controller
+        control={control}
+        render={({onChange, value}) => (
+          <BTextInput
+            label="Segundo Apellido"
+            error={errors.secondlastname}
+            onChange={(value) => onChange(value)}
+            value={value}
+          />
+        )}
+        name="secondlastname"
+      />
+      <Controller //Parentezco en el grupo familiar
+        control={control}
+        render={({onChange, onBlur, value}) => (
+          <BPicker
+            label="Parentezco en el grupo familiar"
+            prompt="Selecione una opcion"
+            onBlur={onBlur}
+            error={errors.parentezcoGrupoFamiliar}
+            onChange={(value: any) => {
+              if (value) {
+                onChange(value);
+                setParentezcoGrupoFamiliar(value);
+                validateRelationship(value);
+              }
+            }}
+            // onLoad={async () => {
+            //   let resultFNCPAREN = await personService.getSelectList('FNCPAREN');
+            //   setParentezcoGrupoFamiliarSelect(resultFNCPAREN);
+            // }}
+            selectedValue={parentezcoGrupoFamiliar}
+            items={parentezcoGrupoFamiliarSelect}
+            //value={value}
+          />
+        )}
+        name="parentezcoGrupoFamiliar"
+      />
+      <Controller //GrupoEtnico
+        control={control}
+        render={({onChange, onBlur, value}) => (
+          <BPicker
+            label={'Grupo etnico'}
+            onBlur={onBlur}
+            error={errors.GrupoEtnico}
+            onChange={(value: any) => {
+              onChange(value);
+              if (value) {
+                setGrupoEtnico(value);
+              }
+            }}
+            onLoad={() => {
+              getAnswers(
+                QuestionTypes.selectOne,
+                QuestionConditionPersonCodes.GrupoEtnico,
+                'GrupoEtnico',
+              );
+            }}
+            //value={value}
+            selectedValue={grupoEtnico}
+            items={
+              conditionpersonService.getItemsForQuestionSelect(
+                QuestionConditionPersonCodes.GrupoEtnico,
+                props.questions,
+              ).children
+            }
+          />
+        )}
+        name="GrupoEtnico"
+      />
+      <View>
+        <BButton
+          color="secondary"
+          value="Guardar Cambios"
+          onPress={handleSubmit(onSubmit, (err) => {
+            console.error(err);
+          })}
+        />
       </View>
-    </KeyboardAwareScrollView>
+    </View>
   );
 };
 
@@ -521,6 +583,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 8,
+    paddingBottom: 50,
   },
 });
 

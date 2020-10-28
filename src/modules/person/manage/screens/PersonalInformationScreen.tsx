@@ -6,6 +6,7 @@ import {NavigationProp} from '@react-navigation/native';
 import {QuestionConditionPersonCodes} from '../../../../core/utils/PersonTypes';
 import {getQuestionWithOptions} from '../../../../state/ConditionPerson/actions';
 import {connect} from 'react-redux';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 interface Props {
   navigation: NavigationProp<any>;
@@ -46,7 +47,9 @@ class PersonalInformationScreen extends Component<Props, State> {
           <Appbar.Content title="Datos Personales" />
         </Appbar.Header>
         {this.state.loaded ? (
-          <PersonalInformationForm questions={this.state.questionitems} />
+          <KeyboardAwareScrollView>
+            <PersonalInformationForm questions={this.state.questionitems} />
+          </KeyboardAwareScrollView>
         ) : null}
       </View>
     );
