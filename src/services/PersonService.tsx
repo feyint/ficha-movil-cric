@@ -426,15 +426,16 @@ export default class PersonService {
       schemaVersion: schemaVersion,
     })
       .then((realm) => {
-        let itemsSelect: {label: any; value: any}[] = [];
+        let itemsSelect: {label: any; value: any; item: any}[] = [];
         let items = realm.objects(entity);
         for (let item of items) {
           itemsSelect.push({
             label: item.NOMBRE,
             value: item.ID,
+            item: item,
           });
         }
-        itemsSelect.unshift({label: 'Seleccione', value: '-1'});
+        itemsSelect.unshift({label: 'Seleccione', value: '-1', item: null});
         return itemsSelect;
       })
       .catch((error) => {

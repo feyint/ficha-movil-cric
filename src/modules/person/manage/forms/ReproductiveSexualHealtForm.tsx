@@ -10,6 +10,8 @@ import {BButton} from '../../../../core/components';
 import BNumberInput from '../../../../core/components/BNumberInput';
 import {FNCPERSON} from '../../../../state/person/types';
 import {saveFNCPERSON, updateFNCPERSON} from '../../../../state/person/actions';
+import { FNCSALREP } from '../../../../state/SexAndRepHealthPerson/types';
+import { updateFNCSALREP } from '../../../../state/SexAndRepHealthPerson/actions';
 const schemaForm = yup.object().shape({
   agemenstruation: yup.number().integer().min(1),
   pregnancynumber: yup.number().integer(),
@@ -39,25 +41,35 @@ const _ReproductiveSexualHealtForm = (props: any) => {
     }
   };
   const onSubmit = async (data: any) => {
-    validatepregnancynumber()
-      ? null
-      : Alert.alert(
-          'Acción no permitida',
-          'La suma de los campos Número paridez, Número abortos, Número cesárea debe ser igual al Número de gravidez',
-        );
-    valideateBornPregnancy()
-      ? navigation.goBack()
-      : Alert.alert(
+    let item: FNCSALREP = props.FNCSALREPDATA;
+    console.error(item);
+    if (validatepregnancynumber()) {
+      if (valideateBornPregnancy()) {
+        if (item.ID) {
+          let fncsalrep: any = {};
+          fncsalrep.EDAD_PRIMERA_REGLA = data.agemenstruation;
+          fncsalrep.GRAVIDEZ = data.pregnancynumber;
+          fncsalrep.PARIDEZ = data.parideznumber;
+          fncsalrep.ABORTO = data.abortionnumber;
+          fncsalrep.CESAREA = data.cesariannumber;
+          fncsalrep.NACIDOS_VIVOS = data.bornnumber;
+          fncsalrep.NACIDOS_MUERTOS = data.bornnumberdeath;
+          fncsalrep.ID = item.ID;
+          await props.updateFNCSALREP(fncsalrep);
+          navigation.goBack();
+        }
+      } else {
+        Alert.alert(
           'Acción no permitida',
           'La suma de los campos Número de nacidos vivos y  Número de nacidos muertos debe ser mayor o igual al Número de gravidez',
         );
-    // let person: FNCPERSON = props.FNCPERSON;
-    // let item: any = {};
-    // item.TEL_CELULAR = data.phonenumber;
-    // item.TEL_ALTERNO = data.phonenumber2;
-    // item.CORREO_ELECTRONICO = data.email;
-    // let inserted = await props.updateFNCPERSON(item);
-    // navigation.goBack();
+      }
+    } else {
+      Alert.alert(
+        'Acción no permitida',
+        'La suma de los campos Número paridez, Número abortos, Número cesárea debe ser igual al Número de gravidez',
+      );
+    }
   };
   const validateField = (value: any) => {
     if (value > pregnancynumber) {
@@ -263,14 +275,14 @@ const styles = StyleSheet.create({
     padding: 8,
   },
 });
-const mapStateToProps = (person: any) => {
+const mapStateToProps = (store: any) => {
   return {
-    FNCPERSON: person.person.FNCPERSON,
+    FNCPERSON: store.person.FNCPERSON,
+    FNCSALREPDATA: store.sarhealthperson.FNCSALREPDATA,
   };
 };
 const mapDispatchToProps = {
-  updateFNCPERSON,
-  saveFNCPERSON,
+  updateFNCSALREP,
 };
 export default connect(
   mapStateToProps,

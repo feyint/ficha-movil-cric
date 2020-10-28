@@ -11,7 +11,7 @@ interface Props {
   selectedValue?: string;
   items?: {label: string; value: string; item?: any}[];
   errorText?: string;
-  error?: boolean;
+  error?: any;
   onBlur?: any;
   onChange?: any;
   onLoad?: any;
@@ -23,7 +23,7 @@ class BPicker extends Component<Props, any> {
   constructor(props: Props) {
     super(props);
   }
-  UNSAFE_componentWillMount() {
+  componentDidMount() {
     if (this.props.onLoad) {
       this.props.onLoad(true);
     }
@@ -54,44 +54,46 @@ class BPicker extends Component<Props, any> {
   }
   render() {
     return (
-      <View>
-        <Text>{this.renderLabel()}</Text>
-        <View
-          style={this.props.error ? styles.containerError : styles.container}>
-          <Picker
-            mode="dropdown"
-            prompt={
-              this.props.prompt ? this.props.prompt : 'Seleccione una opción'
-            }
-            enabled={this.props.enabled}
-            selectedValue={this.props.selectedValue}
-            onValueChange={(itemValue, itemIndex) => {
-              if (
-                itemValue === '-1' ||
-                itemValue === '' ||
-                itemValue === null
-              ) {
-                this.props.onChange(null);
-              } else {
-                this.props.onChange(itemValue);
+      this.props.items && (
+        <View>
+          <Text>{this.renderLabel()}</Text>
+          <View
+            style={this.props.error ? styles.containerError : styles.container}>
+            <Picker
+              mode="dropdown"
+              prompt={
+                this.props.prompt ? this.props.prompt : 'Seleccione una opción'
               }
-            }}
-            style={
-              this.props.enabled && !this.props.enabled
-                ? styles.pickerdisabled
-                : styles.picker
-            }>
-            {this.renderItems()}
-          </Picker>
+              enabled={this.props.enabled}
+              selectedValue={this.props.selectedValue}
+              onValueChange={(itemValue, itemIndex) => {
+                if (
+                  itemValue === '-1' ||
+                  itemValue === '' ||
+                  itemValue === null
+                ) {
+                  this.props.onChange(null);
+                } else {
+                  this.props.onChange(itemValue);
+                }
+              }}
+              style={
+                this.props.enabled && !this.props.enabled
+                  ? styles.pickerdisabled
+                  : styles.picker
+              }>
+              {this.renderItems()}
+            </Picker>
+          </View>
+          {this.props.error ? (
+            <HelperText type="error">
+              {this.props.error
+                ? this.props.error.message
+                : 'El campo es requerido'}
+            </HelperText>
+          ) : null}
         </View>
-        {this.props.error ? (
-          <HelperText type="error">
-            {this.props.error
-              ? this.props.error.message
-              : 'El campo es requerido'}
-          </HelperText>
-        ) : null}
-      </View>
+      )
     );
   }
 }
