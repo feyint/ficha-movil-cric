@@ -36,9 +36,7 @@ const questions = [
 ];
 
 const schemaForm = yup.object().shape({
-  FechaUltimaMenstruacion: yup.date().max(new Date()).required(),
-  //EdadGestacional: yup.string().required(),
-  //FechaProbableParto: yup.date().required(),
+  FechaUltimaMenstruacion: yup.date().required(),
   PracticasCulturalesDuranteLaGestacion: yup.array().required(),
   acompanamientoDeGestacion: yup.array().required(),
   AcompanamientoFamilia: yup.boolean().required(),
@@ -114,7 +112,6 @@ const _CurrentPregnancyForm = (props: any) => {
             <BDatePickerModal
               label="Fecha de la última Menstruación"
               maximumDate={new Date()}
-              onBlur={onBlur}
               error={errors.FechaUltimaMenstruacion}
               onChange={(value: any) => {
                 onChange(value);
@@ -154,6 +151,7 @@ const _CurrentPregnancyForm = (props: any) => {
           control={control}
           render={({onChange, onBlur, value}) => (
             <BDatePickerModal
+              disabled={true}
               label="Fecha Probable de parto"
               onBlur={onBlur}
               error={errors.FechaProbableParto}
