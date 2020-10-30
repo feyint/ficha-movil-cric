@@ -35,6 +35,7 @@ import {
 } from '../../../../state/ConditionPerson/actions';
 import PersonRelationService from '../../../../services/PersonRelationService';
 import {PersonParametersConst} from '../../../../core/utils/SystemParameters';
+import {theme} from '../../../../core/style/theme';
 
 const schemaForm = yup.object().shape({
   parentezcoGrupoFamiliar: yup.string().required(),
@@ -160,6 +161,21 @@ const _PersonalInformationForm = (props: any) => {
       );
     }
   };
+  function alert(data: any) {
+    Alert.alert(
+      'Volver!!!',
+      'Esta seguro?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {text: 'Aceptar', onPress: () => navigation.goBack()},
+      ],
+      {cancelable: false},
+    );
+  }
   const onSubmit = async (data: any) => {
     if (person && person.ID != null) {
       try {
@@ -559,13 +575,20 @@ const _PersonalInformationForm = (props: any) => {
         )}
         name="GrupoEtnico"
       />
-      <View>
+      <View style={{display: 'flex', flexDirection: 'row', marginLeft: '20%'}}>
         <BButton
+          style={styles.aceptButon}
           color="secondary"
-          value="Guardar Cambios"
-          onPress={handleSubmit(onSubmit, (err) => {
-            console.error(err);
-          })}
+          value="Volver"
+          labelStyle={styles.text}
+          onPress={alert}
+        />
+        <BButton
+          style={styles.cancelButon}
+          color="secondary"
+          //labelStyle={styles.text}
+          value="Validar"
+          onPress={handleSubmit(onSubmit)}
         />
       </View>
     </View>
@@ -584,6 +607,27 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 8,
     paddingBottom: 50,
+  },
+  aceptButon: {
+    backgroundColor: 'white',
+    color: 'white',
+    width: '25%',
+    borderWidth: 2,
+    borderColor: theme.colors.primary,
+  },
+  cancelButon: {
+    //left: 500,
+    //position: 'relative',
+    //marginTop: -60,
+    backgroundColor: theme.colors.primary,
+    width: '25%',
+    color: 'red',
+  },
+  text: {
+    fontWeight: 'bold',
+    fontSize: 20,
+    lineHeight: 26,
+    color: theme.colors.primary,
   },
 });
 

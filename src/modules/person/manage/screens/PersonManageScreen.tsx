@@ -1,6 +1,6 @@
-import React, {Component} from 'react';
-import {BButton} from '../../../../core/components';
-import {StyleSheet, View} from 'react-native';
+import React, {Component, useState} from 'react';
+import {BButton, BTextInput, BSearchBar, BSearchBarV2} from '../../../../core/components';
+import {Alert, StyleSheet, View} from 'react-native';
 import {Appbar, Text} from 'react-native-paper';
 import {NavigationProp} from '@react-navigation/native';
 import PersonManageList from '../forms/PersonManageList';
@@ -13,9 +13,11 @@ import {
 import {FNBNUCVIV} from '../../../../state/house/types';
 import {HousingService} from '../../../../services';
 import {FNCPERSON} from '../../../../state/person/types';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { ListItem } from 'react-native-elements';
-
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {ListItem} from 'react-native-elements';
+import { onChange, Value } from 'react-native-reanimated';
+//import {Searchbar} from 'react-native-paper';
+//let helperArray = require('./userList.json');
 interface Props {
   navigation: NavigationProp<any>;
   clearFNCPERSON: any;
@@ -25,16 +27,23 @@ interface Props {
 }
 interface State {
   persons: FNCPERSON[];
+  filteredPersons: FNCPERSON[];
+  //filteredPersonsID: FNCPERSON[];
+  word: string;
 }
+/* const Helper2 =()=>{
+  const [searchQuery, setSearchQuery] = React.useState('');
+} */
 class PersonManageScreen extends Component<Props, State> {
   private _unsubscribe: any;
   constructor(props: Props) {
     super(props);
     this.state = {
       persons: [],
+      filteredPersons: [],
+      word: '',
     };
   }
-
   componentDidMount() {
     try {
       this._unsubscribe = this.props.navigation.addListener('focus', () => {
@@ -62,8 +71,23 @@ class PersonManageScreen extends Component<Props, State> {
       console.error(error);
     }
   }
+  //const [searchQuery, setSearchQuery] = React.useState('');
   _goBack() {
     this.props.navigation.goBack();
+  }
+  searchUser(textToSearch: any) {
+    this.setState({
+      filteredPersons: this.state.persons.filter(
+        (i) =>
+          i.PRIMER_NOMBRE.toLowerCase().includes(textToSearch.toLowerCase()) ||
+          i.IDENTIFICACION.toLowerCase().includes(textToSearch.toLowerCase()) ||
+          i.PRIMER_APELLIDO.toLowerCase().includes(
+            textToSearch.toLowerCase(),
+          ) ||
+          i.SEGUNDO_NOMBRE.toLowerCase().includes(textToSearch.toLowerCase()) ||
+          i.SEGUNDO_APELLIDO.toLowerCase().includes(textToSearch.toLowerCase()),
+      ),
+    });
   }
   render() {
     return (
@@ -83,9 +107,27 @@ class PersonManageScreen extends Component<Props, State> {
           onPress={() => this.createNewPerson()}
         />
         <KeyboardAwareScrollView>
+          {/* <BTextInput
+            onBlur={true}
+            label={'Buscar'}
+            onChange={(text: any) => {
+              console.log(text);
+              this.searchUser(text);
+              //this.searchIdentification(text);
+            }}
+          /> */}
+          {/* <BSearchBar /> */}
+          <BSearchBarV2
+            placeholder="Ingrese identificacion o nombre de persona a buscar"
+            onChange={(text: any) => {
+              console.log(text);
+              this.searchUser(text);
+              //this.searchIdentification(text);
+            }}
+          />
           <View style={styles.container}>
-            {this.state.persons && this.state.persons.length > 0
-              ? this.state.persons.map((person: FNCPERSON, i: any) => (
+            {this.state.filteredPersons && this.state.filteredPersons.length > 0
+              ? this.state.filteredPersons.map((person: FNCPERSON, i: any) => (
                   <ListItem
                     onPress={() => {
                       this.goViewPersonScreen(person);
@@ -93,14 +135,30 @@ class PersonManageScreen extends Component<Props, State> {
                     key={i}
                     bottomDivider>
                     <ListItem.Content>
-                      <ListItem.Title>{person.PRIMER_NOMBRE}</ListItem.Title>
+                      <ListItem.Title>{`${person.PRIMER_NOMBRE}  ${person.SEGUNDO_NOMBRE}  ${person.PRIMER_APELLIDO}  ${person.SEGUNDO_APELLIDO}`}</ListItem.Title>
                       <ListItem.Subtitle>
                         {person.IDENTIFICACION}
                       </ListItem.Subtitle>
                     </ListItem.Content>
                   </ListItem>
                 ))
-              : null}
+              : this.state.persons.map((person: FNCPERSON, i: any) => (
+                  <ListItem
+                    onPress={() => {
+                      this.goViewPersonScreen(person);
+                    }}
+                    key={i}
+                    bottomDivider>
+                    <ListItem.Content>
+                      <ListItem.Title>
+                        {`${person.PRIMER_NOMBRE}  ${person.SEGUNDO_NOMBRE}  ${person.PRIMER_APELLIDO}  ${person.SEGUNDO_APELLIDO}`}
+                      </ListItem.Title>
+                      <ListItem.Subtitle>
+                        {person.IDENTIFICACION}
+                      </ListItem.Subtitle>
+                    </ListItem.Content>
+                  </ListItem>
+                ))}
           </View>
           <View style={styles.spacer} />
         </KeyboardAwareScrollView>

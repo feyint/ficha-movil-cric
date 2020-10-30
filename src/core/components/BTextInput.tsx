@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {HelperText, TextInput} from 'react-native-paper';
-import {View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import BError from './BError';
 
 interface State {
@@ -17,12 +17,15 @@ interface Props {
   disabled?: boolean;
   multiline?: boolean;
   numberOfLines?: number;
+  onBlur?: any;
+  icon?: any;
 }
 export default class BTextInput extends Component<Props, State> {
   render() {
     return (
       <View>
         <TextInput
+          style={styles.input}
           error={this.props.error}
           mode={this.props.mode ? this.props.mode : 'outlined'}
           label={this.props.label}
@@ -43,3 +46,10 @@ export default class BTextInput extends Component<Props, State> {
     );
   }
 }
+
+const styles = StyleSheet.create({
+  input: {
+    marginTop: 10,
+    backgroundColor: '#ffff',
+  },
+});

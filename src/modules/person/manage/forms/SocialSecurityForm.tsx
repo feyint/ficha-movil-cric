@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, Alert} from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {yupResolver} from '@hookform/resolvers';
@@ -18,6 +18,8 @@ import {
   getQuestionAnswer,
 } from '../../../../state/ConditionPerson/actions';
 import {ConditionPersonQuestion} from '../state/types';
+import { colors } from 'react-native-elements';
+import { theme } from '../../../../core/style/theme';
 
 const questions = [
   QuestionConditionPersonCodes.SeguridadSocial,
@@ -27,8 +29,13 @@ const questions = [
 
 const schemaForm = yup.object().shape({
   SeguridadSocial: yup.number().required(),
-  EPS: yup.number().optional(),
+  //EPS: yup.number().optional(),
   ProgramaDeSalud: yup.array().required(),
+  EPS: yup.string().when('SeguridadSocial', {
+    is: '91',
+    then: yup.string().required(),
+    otherwise: yup.string().notRequired(),
+  }),
 });
 
 const _SocialSecurityForm = (props: any) => {
@@ -92,6 +99,21 @@ const _SocialSecurityForm = (props: any) => {
       state.questions,
     );
   };
+  function alert(data: any) {
+    Alert.alert(
+      'Volver!!!',
+      'Esta seguro?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {text: 'Aceptar', onPress: () => navigation.goBack()},
+      ],
+      {cancelable: false},
+    );
+  }
   function onSubmit(data: any) {
     navigation.goBack();
   }
@@ -189,7 +211,7 @@ const _SocialSecurityForm = (props: any) => {
                     QuestionConditionPersonCodes.ProgramaDeSalud,
                     values,
                   );
-                  }
+                }
               }}
               onLoad={() => {
                 console.log('onLoad');
@@ -207,10 +229,20 @@ const _SocialSecurityForm = (props: any) => {
           )}
           name="ProgramaDeSalud"
         />
-        <View>
+        <View
+          style={{display: 'flex', flexDirection: 'row', marginLeft: '20%'}}>
           <BButton
+            style={styles.aceptButon}
             color="secondary"
-            value="Guardar Cambios"
+            value="Volver"
+            labelStyle={styles.text}
+            onPress={alert}
+          />
+          <BButton
+            style={styles.cancelButon}
+            color="secondary"
+            //labelStyle={styles.text}
+            value="Validar"
             onPress={handleSubmit(onSubmit)}
           />
         </View>
@@ -234,6 +266,31 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 8,
+  },
+  buton: {
+    width: '25%',
+    //backgroundColor: colors.primary,
+  },
+  aceptButon: {
+    backgroundColor: 'white',
+    color: 'white',
+    width: '25%',
+    borderWidth: 2,
+    borderColor: theme.colors.primary,
+  },
+  cancelButon: {
+    //left: 500,
+    //position: 'relative',
+    //marginTop: -60,
+    backgroundColor: theme.colors.primary,
+    width: '25%',
+    color: 'red',
+  },
+  text: {
+    fontWeight: 'bold',
+    fontSize: 20,
+    lineHeight: 26,
+    color: theme.colors.primary,
   },
 });
 const mapDispatchToProps = {
