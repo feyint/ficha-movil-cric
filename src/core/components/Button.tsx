@@ -4,7 +4,7 @@ import {StyleSheet} from 'react-native';
 interface Props {
   mode?: 'text' | 'outlined' | 'contained' | undefined;
   value: string;
-  color: 'primary' | 'secondary';
+  color: 'primary' | 'secondary' | 'accent';
   onPress?: any;
   theme: ReactNativePaper.Theme;
   style?: any;

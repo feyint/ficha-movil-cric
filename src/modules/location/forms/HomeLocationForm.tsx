@@ -23,23 +23,22 @@ import {
   FUCTIPTERSCHEMA,
   FUCZONASCHEMA,
 } from '../../../providers/DataBaseProvider';
+import {FieldValidator} from '../../../providers';
 
 interface GeolocationData {
   latitude: string;
   longitude: string;
 }
 const schemaForm = yup.object().shape({
-  department: yup.string().required(),
-  municipality: yup.string().required(),
-  territoryType: yup.string().required(),
-  shelterOrCouncil: yup.string().required(),
-  /* sidewalk: yup.string().required(),
-  carezone: yup.string().required(), */
-  sidewalk: yup.string().required('Barrio o vereda requerido').nullable(),
-  carezone: yup.string().optional(),
+  department: FieldValidator.required(yup, 'Departamento'),
+  municipality: FieldValidator.required(yup, 'Municipio'),
+  territoryType: FieldValidator.required(yup, 'Tipo de territorio'),
+  shelterOrCouncil: FieldValidator.required(yup, 'Resguardo o cabildo'),
+  sidewalk: FieldValidator.required(yup, 'Centro poblado').nullable(),
+  carezone: yup.mixed().optional(),
   latitude: yup.string().optional(),
   longitude: yup.string().optional(),
-  address: yup.string().required(),
+  address: FieldValidator.required(yup, 'Dirección'),
   housingCode: yup.string().optional(),
 });
 
@@ -397,7 +396,7 @@ const _HomeLocationForm = (props: any) => {
               enabled={true}
               onBlur={onBlur}
               error={errors.municipality}
-              onChange={(value:any) => {
+              onChange={(value: any) => {
                 onChange(value);
                 setMunicipio(value);
                 onChangeMuni(value, tipoterritorio);
@@ -417,7 +416,7 @@ const _HomeLocationForm = (props: any) => {
               enabled={true}
               onBlur={onBlur}
               error={errors.territoryType}
-              onChange={(value:any) => {
+              onChange={(value: any) => {
                 onChange(value);
                 if (value) {
                   setTipoterritorio(value);
@@ -439,7 +438,7 @@ const _HomeLocationForm = (props: any) => {
               enabled={true}
               onBlur={onBlur}
               error={errors.shelterOrCouncil}
-              onChange={(value:any) => {
+              onChange={(value: any) => {
                 onChange(value);
                 if (value) {
                   setCentropoblado(value);
@@ -481,7 +480,7 @@ const _HomeLocationForm = (props: any) => {
               enabled={true}
               onBlur={onBlur}
               error={errors.carezone}
-              onChange={(value:any) => {
+              onChange={(value: any) => {
                 onChange(value);
                 setZonacuidado(value);
               }}
@@ -499,7 +498,7 @@ const _HomeLocationForm = (props: any) => {
               label="Latitud"
               disabled={false}
               error={errors.latitude}
-              onChange={(value:any) => {
+              onChange={(value: any) => {
                 onChange(value);
                 setPosition({
                   ...position,
@@ -519,7 +518,7 @@ const _HomeLocationForm = (props: any) => {
               label="Longitud"
               disabled={false}
               error={errors.longitude}
-              onChange={(value:any) => {
+              onChange={(value: any) => {
                 onChange(value);
                 setPosition({
                   ...position,
@@ -538,7 +537,7 @@ const _HomeLocationForm = (props: any) => {
               label="Dirección"
               disabled={false}
               error={errors.address}
-              onChange={(value:any) => {
+              onChange={(value: any) => {
                 onChange(value);
                 setAddress(value);
               }}

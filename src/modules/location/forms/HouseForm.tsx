@@ -26,19 +26,26 @@ import {
   saveFNBNUCVIVPropiety,
 } from '../../../state/house/actions';
 import {connect} from 'react-redux';
+import {FieldValidator} from '../../../providers';
 const schemaForm = yup.object().shape({
-  housecode: yup.string().required(),
-  MaterialTecho: yup.number().required(),
-  MaterialPiso: yup.string().required(),
-  MaterialPared: yup.string().required(),
-  Tenenciavivienda: yup.string().required(),
-  kitchenislocated: yup.string().required(),
-  smokeinsidehouse: yup.string().required(),
-  Cocinacon: yup.string().required(),
-  Numerodepersonaspordormitorio: yup.string().required(),
-  Habitacionesenlavivienda: yup.string().required(),
-  TipodeAlumbrado: yup.string().required(),
-  internetaccess: yup.string().required(),
+  housecode: FieldValidator.required(yup, 'Código vivienda'),
+  MaterialTecho: FieldValidator.required(yup, 'Material Techo'),
+  MaterialPiso: FieldValidator.required(yup, 'Material Piso'),
+  MaterialPared: FieldValidator.required(yup, 'Material Pared'),
+  Tenenciavivienda: FieldValidator.required(yup, 'Tenencia vivienda'),
+  kitchenislocated: FieldValidator.required(yup, 'La cocina se encuentra'),
+  smokeinsidehouse: FieldValidator.required(yup, 'Humo dentro de la casa'),
+  Cocinacon: FieldValidator.required(yup, 'Cocina con'),
+  Numerodepersonaspordormitorio: FieldValidator.required(
+    yup,
+    'Número de personas por dormitorio',
+  ),
+  Habitacionesenlavivienda: FieldValidator.required(
+    yup,
+    'Habitaciones en la vivienda',
+  ),
+  TipodeAlumbrado: FieldValidator.required(yup, 'Tipo de Alumbrado'),
+  internetaccess: FieldValidator.required(yup, 'Acceso a Internet'),
 });
 const questions = [
   QuestionFamilyCodes.MaterialTecho,
