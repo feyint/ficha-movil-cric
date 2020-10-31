@@ -37,8 +37,8 @@ const schemaForm = yup.object().shape({
   carezone: yup.string().required(), */
   sidewalk: yup.string().required('Barrio o vereda requerido').nullable(),
   carezone: yup.string().optional(),
-  latitude: yup.string().required(),
-  longitude: yup.string().required(),
+  latitude: yup.string().optional(),
+  longitude: yup.string().optional(),
   address: yup.string().required(),
   housingCode: yup.string().optional(),
 });
@@ -201,6 +201,7 @@ const _HomeLocationForm = (props: any) => {
       setZonacuidado('' + props.FUBUBIVIV.FUCZONCUI_ID);
       setValue('carezone', '' + props.FUBUBIVIV.FUCZONCUI_ID);
       setValue('department', '' + dept.ID);
+      setDepartment('' + dept.ID);
       setValue('municipality', '' + munici.ID);
       setValue('territoryType', '' + cenpoblado.FUCTIPRES_ID);
       setValue('shelterOrCouncil', '' + cenpoblado.ID);
@@ -239,6 +240,8 @@ const _HomeLocationForm = (props: any) => {
     setMunicipioSelect(FUCMUNICI);
     setValue('municipality', '-1');
     setMunicipio('-1');
+    await onChangeMuni('null', 'null');
+    onChangeCentroOResgua('null');
   }
   async function onChangeMuni(munid: string, typeid: string) {
     let FUCRESGUA = await props.getEntitySelect(
