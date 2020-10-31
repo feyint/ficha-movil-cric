@@ -54,14 +54,14 @@ const schemaForm = yup.object().shape({
   DominioSegundaLengua: yup.number().notRequired(),
   CapacidadDiversa: yup.array().notRequired(),
   NivelEstudio: yup.number().required(),
-  TipoTrabajo: yup.number().required(),
+  TipoTrabajo: yup.number().optional(),
   PoblacionPensionada: yup.number().required(),
   OtrosSaberesAnsestrales: yup.array().required(),
   Religion: yup.number().required(),
   TipoDeCuidadosCulturalesQueRealiza: yup.array().required(),
   ocupacionPrincipal: yup.number().required(),
   organizacion: yup.number().required(),
-  puebloIndigena: yup.number().required(),
+  puebloIndigena: yup.number().optional(),
 });
 
 const _OtherIdentificationDataForm = (props: any) => {
@@ -817,7 +817,9 @@ const _OtherIdentificationDataForm = (props: any) => {
           <BButton
             color="secondary"
             value="Guardar Cambios"
-            onPress={handleSubmit(onSubmit)}
+            onPress={handleSubmit(onSubmit, (err) => {
+              console.warn(err);
+            })}
           />
         </View>
       </View>

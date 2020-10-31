@@ -316,7 +316,6 @@ const _HomeLocationForm = (props: any) => {
   }
   const onSubmit = async (data: any) => {
     if (props.FUBUBIVIV.CODIGO !== '') {
-      console.log(data);
       let item: FUBUBIVIV = {
         ID: props.FUBUBIVIV.ID,
         CODIGO: houseCode,

@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, Alert} from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {yupResolver} from '@hookform/resolvers';
@@ -29,6 +29,9 @@ import {
 import moment from 'moment';
 import {PersonParametersConst} from '../../../../core/utils/SystemParameters';
 import { Text } from 'react-native-paper';
+import { colors } from 'react-native-elements';
+import { theme } from '../../../../core/style/theme';
+
 const schemaForm = yup.object().shape({
   fucmunici: yup.number().required(),
   fucdepat: yup.number().required(),
@@ -148,6 +151,21 @@ const _BirthInformationForm = (props: any) => {
     let service = new ConditionPersonService();
     return service.getItemsForQuestionSelect(code, props.questions);
   };
+  function alert(data: any) {
+    Alert.alert(
+      'Volver!!!',
+      'Esta seguro?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {text: 'Aceptar', onPress: () => navigation.goBack()},
+      ],
+      {cancelable: false},
+    );
+  }
   const onSubmit = async (data: any) => {
     navigation.goBack();
   };
@@ -334,10 +352,20 @@ const _BirthInformationForm = (props: any) => {
             name="lacmaterna"
           />
         )}
-        <View>
+        <View
+          style={{display: 'flex', flexDirection: 'row', marginLeft: '20%'}}>
           <BButton
+            style={styles.aceptButon}
             color="secondary"
             value="Volver"
+            labelStyle={styles.text}
+            onPress={alert}
+          />
+          <BButton
+            style={styles.cancelButon}
+            color="secondary"
+            //labelStyle={styles.text}
+            value="Validar"
             onPress={handleSubmit(onSubmit)}
           />
         </View>
@@ -347,6 +375,31 @@ const _BirthInformationForm = (props: any) => {
 };
 
 const styles = StyleSheet.create({
+  buton: {
+    width: '25%',
+    //backgroundColor: colors.primary,
+  },
+  aceptButon: {
+    backgroundColor: 'white',
+    color: 'white',
+    width: '25%',
+    borderWidth: 2,
+    borderColor: theme.colors.primary,
+  },
+  cancelButon: {
+    //left: 500,
+    //position: 'relative',
+    //marginTop: -60,
+    backgroundColor: theme.colors.primary,
+    width: '25%',
+    color: 'red',
+  },
+  text: {
+    fontWeight: 'bold',
+    fontSize: 20,
+    lineHeight: 26,
+    color: theme.colors.primary,
+  },
   input: {
     backgroundColor: 'white',
     height: 40,
