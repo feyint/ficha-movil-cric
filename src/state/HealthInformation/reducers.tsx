@@ -31,11 +31,8 @@ const initialState = {
   CONDITIONPERSONQUESTIONLIST: [] as HousingQuestion[],
 };
 export default (state = initialState, action: any) => {
-  //console.log('Action Status Person: ', action);
   switch (action.type) {
     case ActionType.SET_SEXANDREPHEALTHPERSON_QUESTION_LIST:
-      console.log("SET_SEXANDREPHEALTHPERSON_QUESTION_LIST_preson_state");
-      console.log(JSON.stringify(action.data));
       return {
         ...state,
         SEXANDREPHEALTHPERSONQUESTIONLIST: action.data,

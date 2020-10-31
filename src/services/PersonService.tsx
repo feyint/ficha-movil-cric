@@ -286,7 +286,6 @@ export default class PersonService {
         realm.write(() => {
           realm.delete(options);
           for (let i = 0; i < answeroption.length; i++) {
-            console.log('option ', answeroption[i]);
             realm.create(DataBaseSchemas.FNBINFSAL_FNCCONSALSCHEMA, {
               FNCCONSAL_ID: answeroption[i].FNCCONSAL_ID,
               FNBINFSAL_ID: answeroption[i].FNBINFSAL_ID,

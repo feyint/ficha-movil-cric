@@ -253,7 +253,6 @@ export const getQuestionAnswer = (type: number, questionCode: string) => async (
   let personServie: PersonService = new PersonService();
   let questionItems: PersonQuestion[] = store.person.PERSONQUESTIONLIST;
   let question = getQuestionByCode(questionCode, questionItems);
-  console.log('answer query ', question);
   switch (type) {
     case 1: // oneOption
       let option = await personServie.getAnswerOneOption(

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Alert, View} from 'react-native';
+import {Alert, StyleSheet, View} from 'react-native';
 import {Appbar, Text} from 'react-native-paper';
 import {List} from 'react-native-paper';
 import {NavigationProp} from '@react-navigation/native';
@@ -9,6 +9,7 @@ import {FNCPERSON} from '../../../../state/person/types';
 import {FNBNUCVIV} from '../../../../state/house/types';
 import {GenreService, SexAndRepHealthPersonService} from '../../../../services';
 import {setFNCNCSALREP} from '../../../../state/SexAndRepHealthPerson/actions';
+import {theme} from '../../../../core/style/theme';
 
 interface Props {
   navigation: NavigationProp<any>;
@@ -85,37 +86,62 @@ class ViewPersonScreen extends Component<Props, State> {
         <KeyboardAwareScrollView>
           <Appbar.Header>
             <Appbar.BackAction onPress={() => this._goBack()} />
-            <Appbar.Content title="Ver persona" />
+            <Appbar.Content
+              title="Ver persona"
+              subtitle={`${this.props.FNCPERSON.PRIMER_NOMBRE} ${this.props.FNCPERSON.PRIMER_APELLIDO}`}
+            />
           </Appbar.Header>
-          <Text>
-            {this.props.FNCPERSON.PRIMER_NOMBRE}{' '}
-            {this.props.FNCPERSON.PRIMER_APELLIDO}
+
+          <Text style={{fontSize: 16, padding: 10}}>
+            <Text style={{fontWeight: 'bold'}}>Nucleo familiar:</Text>{' '}
+            {this.props.FNBNUCVIV.CODIGO}
           </Text>
-          <Text>Nucleo al que pertenece: {this.props.FNBNUCVIV.CODIGO}</Text>
           <List.Section>
             <List.Item
-              onPress={() => this.navigate('PersonalInformationScreen')}
               title="Datos personales"
-              left={() => <List.Icon icon="account-box" />}
+              left={() => (
+                <List.Icon icon="account-box" color={theme.colors.gray} />
+              )}
+              right={() => <Text style={styles.numberIndicator}>01</Text>}
+              onPress={() => this.navigate('PersonalInformationScreen')}
             />
+            <View style={styles.divisor} />
             <List.Item
               title="Datos de nacimiento"
-              left={() => <List.Icon icon="baby-face" />}
+              left={() => (
+                <List.Icon icon="baby-face" color={theme.colors.gray} />
+              )}
+              right={() => <Text style={styles.numberIndicator}>02</Text>}
               onPress={() => this.navigate('BirthInformationScreen')}
             />
+            <View style={styles.divisor} />
             <List.Item
               title="Seguridad social"
-              left={() => <List.Icon icon="bottle-tonic-plus" />}
+              left={() => (
+                <List.Icon icon="bottle-tonic-plus" color={theme.colors.gray} />
+              )}
+              right={() => <Text style={styles.numberIndicator}>03</Text>}
               onPress={() => this.navigate('SocialSecurityScreen')}
             />
+            <View style={styles.divisor} />
             <List.Item
               title="Datos de contacto"
-              left={() => <List.Icon icon="card-account-phone" />}
+              left={() => (
+                <List.Icon
+                  icon="card-account-phone"
+                  color={theme.colors.gray}
+                />
+              )}
+              right={() => <Text style={styles.numberIndicator}>04</Text>}
               onPress={() => this.navigate('ContactInformationScreen')}
             />
+            <View style={styles.divisor} />
             <List.Item
               title="Otros datos de identificación"
-              left={() => <List.Icon icon="card-account-mail" />}
+              left={() => (
+                <List.Icon icon="card-account-mail" color={theme.colors.gray} />
+              )}
+              right={() => <Text style={styles.numberIndicator}>05</Text>}
               onPress={() => {
                 this.props.FNCPERSON.FNCLUNIND_ID != null
                   ? this.navigate('OtherIdentificationDataScreen')
@@ -125,24 +151,38 @@ class ViewPersonScreen extends Component<Props, State> {
                     );
               }}
             />
+            <View style={styles.divisor} />
             <List.Item
               title="Informacion de salud"
               left={() => <List.Icon icon="bottle-tonic-plus-outline" />}
+              right={() => <Text style={styles.numberIndicator}>06</Text>}
               onPress={() => this.navigate('HealthInformationScreen')}
             />
+            <View style={styles.divisor} />
             <List.Item
               title="Estado de salud en la visita"
-              left={() => <List.Icon icon="map-marker" />}
+              left={() => (
+                <List.Icon icon="map-marker" color={theme.colors.gray} />
+              )}
+              right={() => <Text style={styles.numberIndicator}>07</Text>}
               onPress={() => this.navigate('HealthStatusVisitScreen')}
             />
+            <View style={styles.divisor} />
             <List.Item
               title="Hábitos no saludables"
-              left={() => <List.Icon icon="map-marker" />}
+              left={() => (
+                <List.Icon icon="map-marker" color={theme.colors.gray} />
+              )}
+              right={() => <Text style={styles.numberIndicator}>08</Text>}
               onPress={() => this.navigate('UnhealthyHabitsScreen')}
             />
+            <View style={styles.divisor} />
             <List.Item
               title="Salud sexual y reproductiva"
-              left={() => <List.Icon icon="map-marker" />}
+              left={() => (
+                <List.Icon icon="map-marker" color={theme.colors.gray} />
+              )}
+              right={() => <Text style={styles.numberIndicator}>09</Text>}
               onPress={() => {
                 this.state.enableSexReproductionHealt
                   ? this.navigate('ReproductiveSexualHealtScreen')
@@ -152,28 +192,45 @@ class ViewPersonScreen extends Component<Props, State> {
                     );
               }}
             />
+            <View style={styles.divisor} />
             <List.Item
               title="Finalización de la última gestación"
-              left={() => <List.Icon icon="map-marker" />}
+              left={() => (
+                <List.Icon icon="map-marker" color={theme.colors.gray} />
+              )}
+              right={() => <Text style={styles.numberIndicator}>10</Text>}
               onPress={() => this.navigate('LastPregnancyScreen')}
             />
+            <View style={styles.divisor} />
             <List.Item
               title="Gestación actual"
-              left={() => <List.Icon icon="map-marker" />}
+              left={() => (
+                <List.Icon icon="map-marker" color={theme.colors.gray} />
+              )}
+              right={() => <Text style={styles.numberIndicator}>11</Text>}
               onPress={() => this.navigate('CurrentPregnancyScreen')}
             />
+            <View style={styles.divisor} />
             <List.Item
               title="Otros datos de salud sexual y reproductiva"
-              left={() => <List.Icon icon="map-marker" />}
+              left={() => (
+                <List.Icon icon="map-marker" color={theme.colors.gray} />
+              )}
+              right={() => <Text style={styles.numberIndicator}>12</Text>}
               onPress={() =>
                 this.navigate('AnotherReproductiveSexualHealtScreen')
               }
             />
+            <View style={styles.divisor} />
             <List.Item
               title="Mortalidad en los últimos 12 meses"
-              left={() => <List.Icon icon="emoticon-dead" />}
+              left={() => (
+                <List.Icon icon="emoticon-dead" color={theme.colors.gray} />
+              )}
+              right={() => <Text style={styles.numberIndicator}>13</Text>}
               onPress={() => this.navigate('MortalityLast12MonthsScreen')}
             />
+            <View style={styles.divisor} />
           </List.Section>
         </KeyboardAwareScrollView>
       </View>
@@ -183,6 +240,19 @@ class ViewPersonScreen extends Component<Props, State> {
     this.props.navigation.navigate(screen);
   }
 }
+
+const styles = StyleSheet.create({
+  divisor: {height: 1, backgroundColor: theme.colors.light},
+  numberIndicator: {
+    backgroundColor: theme.colors.accent,
+    color: theme.colors.secondaryFont,
+    fontSize: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    marginVertical: 10,
+    borderRadius: 5,
+  },
+});
 const mapDispatchToProps = {
   setFNCNCSALREP,
 };

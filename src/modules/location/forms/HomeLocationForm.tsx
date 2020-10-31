@@ -69,7 +69,8 @@ const _HomeLocationForm = (props: any) => {
     name: '',
     children: [],
   });
-  const [FUCZONCUIItems, setFUCZONCUIItems] = useState<{
+  const [FUCZONCUIItems, setFUCZONCUIItems] = useState<
+    {
       value: string;
       label: string;
     }[]
@@ -223,7 +224,6 @@ const _HomeLocationForm = (props: any) => {
         setValue('longitude', '' + pos.coords.longitude);
       },
       (e) => {
-        console.error(e);
         setError(e.message);
       },
       {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000},
@@ -288,7 +288,6 @@ const _HomeLocationForm = (props: any) => {
             setValue('sidewalk', '', {shouldValidate: true});
             setBarrioVereda('');
           }
-          console.log('ress ', ress);
         }
       }
     }
@@ -349,11 +348,10 @@ const _HomeLocationForm = (props: any) => {
       <View style={styles.container}>
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BTextInput
               label="Codigo de vivienda"
               disabled={true}
-              onBlur={onBlur}
               error={errors.housingCode}
               value={houseCode}
               onChange={(valueC: any) => {
@@ -397,7 +395,7 @@ const _HomeLocationForm = (props: any) => {
               enabled={true}
               onBlur={onBlur}
               error={errors.municipality}
-              onChange={(value) => {
+              onChange={(value:any) => {
                 onChange(value);
                 setMunicipio(value);
                 onChangeMuni(value, tipoterritorio);
@@ -417,7 +415,7 @@ const _HomeLocationForm = (props: any) => {
               enabled={true}
               onBlur={onBlur}
               error={errors.territoryType}
-              onChange={(value) => {
+              onChange={(value:any) => {
                 onChange(value);
                 if (value) {
                   setTipoterritorio(value);
@@ -439,7 +437,7 @@ const _HomeLocationForm = (props: any) => {
               enabled={true}
               onBlur={onBlur}
               error={errors.shelterOrCouncil}
-              onChange={(value) => {
+              onChange={(value:any) => {
                 onChange(value);
                 if (value) {
                   setCentropoblado(value);
@@ -452,28 +450,6 @@ const _HomeLocationForm = (props: any) => {
           )}
           name="shelterOrCouncil"
         />
-        {/* ----------------------------------------------------------------- */}
-        {/* <Controller
-          control={control}
-          render={({onChange, onBlur, value}) => (
-            <BPicker
-              label="Zona"
-              prompt="Seleccione una opción"
-              enabled={true}
-              onBlur={onBlur}
-              error={errors.carezone}
-              onChange={(value) => {
-                //console.error(value);
-                onChange(value);
-                setZonacuidado(value);
-              }}
-              selectedValue={zonacuidado}
-              items={zonacuidadoSelect.children}
-            />
-          )}
-          name="carezone"
-        /> */}
-        {/* ----------------------------------------------------------------- */}
         <Controller
           control={control}
           render={({onChange, onBlur, value}) => (
@@ -483,7 +459,7 @@ const _HomeLocationForm = (props: any) => {
               enabled={true}
               onBlur={onBlur}
               error={errors.sidewalk}
-              onChange={(value) => {
+              onChange={(value: any) => {
                 onChange(value);
                 setBarrioVereda(value);
                 onChangeBarrioVereda(value);
@@ -503,7 +479,7 @@ const _HomeLocationForm = (props: any) => {
               enabled={true}
               onBlur={onBlur}
               error={errors.carezone}
-              onChange={(value) => {
+              onChange={(value:any) => {
                 onChange(value);
                 setZonacuidado(value);
               }}
@@ -515,14 +491,13 @@ const _HomeLocationForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BTextInput
               value={position.latitude}
               label="Latitud"
               disabled={false}
-              onBlur={onBlur}
               error={errors.latitude}
-              onChange={(value) => {
+              onChange={(value:any) => {
                 onChange(value);
                 setPosition({
                   ...position,
@@ -536,14 +511,13 @@ const _HomeLocationForm = (props: any) => {
         <Controller
           value={position.longitude}
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BTextInput
               value={position.longitude}
               label="Longitud"
               disabled={false}
-              onBlur={onBlur}
               error={errors.longitude}
-              onChange={(value) => {
+              onChange={(value:any) => {
                 onChange(value);
                 setPosition({
                   ...position,
@@ -556,14 +530,13 @@ const _HomeLocationForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BTextInput
               value={address}
               label="Dirección"
               disabled={false}
-              onBlur={onBlur}
               error={errors.address}
-              onChange={(value) => {
+              onChange={(value:any) => {
                 onChange(value);
                 setAddress(value);
               }}

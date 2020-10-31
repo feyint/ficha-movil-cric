@@ -38,7 +38,7 @@ class BRadioButton extends Component<Props, any> {
                   return (
                     <View>
                       <RadioButton.Item
-                        key={'' + item.value}
+                        key={`${Math.round(Math.random() * 10000000)}-${item.value}`}
                         style={styles.flexDirection}
                         label={item.label}
                         value={'' + item.value}

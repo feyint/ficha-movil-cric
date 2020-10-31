@@ -216,7 +216,7 @@ export const HomeTabs = () => {
   return (
     <BottomTabs.Navigator
       activeColor={colors.secondaryFont}
-      inactiveColor={colors.primaryFont}
+      inactiveColor={colors.primaryLight}
       barStyle={{backgroundColor: colors.primary}}>
       <BottomTabs.Screen
         name="Ficha Familiar"

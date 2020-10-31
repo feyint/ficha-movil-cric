@@ -110,7 +110,6 @@ const _HouseForm = (props: any) => {
     );
   };
   const onSubmit = (data: any) => {
-    console.log(data);
     navigation.goBack();
   };
 
@@ -127,7 +126,6 @@ const _HouseForm = (props: any) => {
               error={errors.housecode}
               onChange={(value: any) => {
                 onChange(value);
-                console.log('Selected Item: ', value);
               }}
               value={value}
             />
@@ -308,8 +306,6 @@ const _HouseForm = (props: any) => {
               onChange={(value: any) => {
                 if (value) {
                   onChange(value);
-                  console.log('Selected Item: ', value);
-                  props.saveFNBNUCVIVPropiety('HUMO_CASA', JSON.parse(value));
                 }
               }}
             />

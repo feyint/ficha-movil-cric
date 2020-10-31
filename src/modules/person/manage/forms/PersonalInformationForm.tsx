@@ -181,7 +181,6 @@ const _PersonalInformationForm = (props: any) => {
           data.GrupoEtnico,
         );
       } catch (error) {
-        console.error(error);
       }
     } else {
       let item: any = {};
@@ -564,7 +563,6 @@ const _PersonalInformationForm = (props: any) => {
           color="secondary"
           value="Guardar Cambios"
           onPress={handleSubmit(onSubmit, (err) => {
-            console.error(err);
           })}
         />
       </View>

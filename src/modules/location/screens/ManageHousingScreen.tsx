@@ -1,10 +1,11 @@
 import React, {Component} from 'react';
-import {View} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import {Appbar} from 'react-native-paper';
 import {List} from 'react-native-paper';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {setQuestionWithOptions} from '../../../state/house/actions';
+import {theme} from '../../../core/style/theme';
 
 interface Props {
   navigation: NavigationProp<any>;
@@ -32,17 +33,26 @@ class ManageHousingScreen extends Component<any, any> {
         </Appbar.Header>
         <List.Section>
           <List.Item
-            title="Ubicación"
-            left={() => <List.Icon icon="map-marker" />}
+            title="Ubicación de la vivienda"
+            left={() => (
+              <List.Icon icon="map-marker" color={theme.colors.gray} />
+            )}
+            right={() => <Text style={styles.numberIndicator}>01</Text>}
             onPress={() => this.goHomeLocation()}
           />
-          {this.props.FUBUBIVIV && this.props.FUBUBIVIV.CODIGO !== '' ? (
-            <List.Item
-              onPress={() => this.goFamilyScreen()}
-              title="Nucleo Familiar"
-              left={() => <List.Icon icon="account-group" />}
-            />
-          ) : null}
+          <View style={styles.divisor} />
+          {this.props.FUBUBIVIV && this.props.FUBUBIVIV.CODIGO !== ''
+            ? [
+                <List.Item
+                  onPress={() => this.goFamilyScreen()}
+                  title="Nucleo Familiar"
+                  left={() => (
+                    <List.Icon icon="account-group" color={theme.colors.gray} />
+                  )}
+                />,
+                <View style={styles.divisor} />,
+              ]
+            : null}
         </List.Section>
       </View>
     );
@@ -57,6 +67,18 @@ class ManageHousingScreen extends Component<any, any> {
     this.props.navigation.navigate('HomeLocationScreen');
   }
 }
+const styles = StyleSheet.create({
+  divisor: {height: 1, backgroundColor: theme.colors.light},
+  numberIndicator: {
+    backgroundColor: theme.colors.accent,
+    color: theme.colors.secondaryFont,
+    fontSize: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    marginVertical: 10,
+    borderRadius: 5,
+  },
+});
 const mapStateToProps = (housing: any) => {
   return {
     FUBUBIVIV: housing.housing.FUBUBIVIV,

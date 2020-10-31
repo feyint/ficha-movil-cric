@@ -9,6 +9,7 @@ import {HousingService} from '../../../services';
 import {setConditionQuestionWithOptions} from '../../../state/ConditionPerson/actions';
 import {setQuestionWithOptions} from '../../../state/person/actions';
 import {setSexAndRepHealthQuestionWithOptions} from '../../../state/SexAndRepHealthPerson/actions';
+import BFabButton from '../../../core/components/BFabButton';
 
 interface State {
   families: any[];
@@ -41,24 +42,19 @@ class FamilyScreen extends Component<any, State> {
   }
   render() {
     return (
-      <View>
+      <View style={{flex: 1}}>
         <Appbar.Header>
           <Appbar.BackAction onPress={() => this._goBack()} />
           <Appbar.Content title="Nucleo Familiar" />
         </Appbar.Header>
-        <BButton
-          color="primary"
-          value="Crear Nuevo"
-          mode="contained"
-          onPress={() => this.createNewNF()}
-        />
         <FamilyList
           families={this.state.families}
           onPress={(family: any) => {
-            console.log('Family->', family);
             this.goHouseMenuScreen(family);
           }}
         />
+        
+        <BFabButton onPress={() => this.createNewNF()} />
       </View>
     );
   }

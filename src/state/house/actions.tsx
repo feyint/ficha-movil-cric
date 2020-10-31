@@ -192,7 +192,6 @@ export const getQuestionAnswer = (type: number, questionCode: string) => async (
   let houseServie: HousingService = new HousingService();
   let questionItems: HousingQuestion[] = store.housing.HOUSINGQUESTIONLIST;
   let question = getQuestionByCode(questionCode, questionItems);
-  console.log('answer query ', question);
   switch (type) {
     case 1: // oneOption
       let option = await houseServie.getAnswerOneOption(family.ID, question.ID);

@@ -42,7 +42,6 @@ const _ReproductiveSexualHealtForm = (props: any) => {
   };
   const onSubmit = async (data: any) => {
     let item: FNCSALREP = props.FNCSALREPDATA;
-    console.error(item);
     if (validatepregnancynumber()) {
       if (valideateBornPregnancy()) {
         if (item.ID) {

@@ -7,5 +7,5 @@ export type MultiSelectSchema = {
 export type SelectSchema = {
   name: string;
   id: number;
-  children: {label: string; value: string; item: any}[];
+  children: {label: string; value: string; item: any;}[];
 };

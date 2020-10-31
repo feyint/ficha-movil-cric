@@ -121,13 +121,12 @@ const _LastPregnancyForm = (props: any) => {
       <View style={styles.container}>
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BPicker
               enabled={true}
               label={getQuestionlabel(
                 QuestionSexAndRepHealthPersonCodes.TerminacionGestacion,
               )}
-              onBlur={onBlur}
               error={errors.TerminacionGestacion}
               onChange={(value: any) => {
                 onChange(value);
@@ -148,7 +147,6 @@ const _LastPregnancyForm = (props: any) => {
                   'TerminacionGestacion',
                 );
               }}
-              value={value}
               selectedValue={value}
               items={
                 getItemsForQuestionSelect(
@@ -161,26 +159,19 @@ const _LastPregnancyForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BDatePickerModal
               label="Fecha Terminacion De La Gestacion"
-              //isVisible={false}
-              onBlur={onBlur}
               error={errors.FechaTerminacionDeLaGestacion}
               onChange={(value: any) => {
                 onChange(value);
-                console.log('Selected Item in date piker: ', value);
                 if (value) {
                   props.saveFNCSALREPPropiety(
                     'PARTO_ULTIMO',
                     value,
-                    //JSON.parse(value),
                   );
                 }
               }}
-              /* onLoad={() => {
-                console.log('OnLoad BDatePickerModal');
-              }} */
               value={value}
             />
           )}
@@ -188,17 +179,15 @@ const _LastPregnancyForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BPicker
               enabled={true}
               label={getQuestionlabel(
                 QuestionSexAndRepHealthPersonCodes.PersonaQueAtendioUltimoParto,
               )}
-              onBlur={onBlur}
               error={errors.TerminacionGestacion}
               onChange={(value: any) => {
                 onChange(value);
-                console.log('Persona que atendió el último parto es: ', value);
                 props.saveAnswerLocal(
                   QuestionTypes.selectOne,
                   QuestionSexAndRepHealthPersonCodes.PersonaQueAtendioUltimoParto,
@@ -212,7 +201,6 @@ const _LastPregnancyForm = (props: any) => {
                   'PersonaQueAtendioUltimoParto',
                 );
               }}
-              value={value}
               selectedValue={value}
               items={
                 getItemsForQuestionSelect(
@@ -225,16 +213,14 @@ const _LastPregnancyForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BPicker
               label={getQuestionlabel(
                 QuestionSexAndRepHealthPersonCodes.LugarAtencionUltimoParto,
               )}
-              onBlur={onBlur}
               error={errors.TerminacionGestacion}
               onChange={(value: any) => {
                 onChange(value);
-                console.log('lugar atencion ultimo parto value es: ', value);
                 props.saveAnswerLocal(
                   QuestionTypes.selectOne,
                   QuestionSexAndRepHealthPersonCodes.LugarAtencionUltimoParto,
@@ -248,7 +234,6 @@ const _LastPregnancyForm = (props: any) => {
                   'LugarAtencionUltimoParto',
                 );
               }}
-              value={value}
               selectedValue={value}
               items={
                 getItemsForQuestionSelect(
@@ -271,7 +256,6 @@ const _LastPregnancyForm = (props: any) => {
               error={errors.ComplicacionAtencionUltimoParto}
               onChange={(values: any) => {
                 onChange(values);
-                console.log('save', values);
                 props.saveAnswerLocal(
                   QuestionTypes.multiSelect,
                   QuestionSexAndRepHealthPersonCodes.ComplicacionAtencionUltimoParto,

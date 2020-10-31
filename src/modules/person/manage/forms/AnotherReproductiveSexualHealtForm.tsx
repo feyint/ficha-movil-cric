@@ -150,7 +150,6 @@ const _AnotherReproductiveSexualHealtForm = (props: any) => {
               error={errors.SaludSexual}
               onChange={(value: any) => {
                 onChange(value);
-                console.log('save: ', value);
                 props.saveAnswerLocal(
                   QuestionTypes.selectOne,
                   QuestionSexAndRepHealthPersonCodes.SaludSexual,
@@ -259,7 +258,6 @@ const _AnotherReproductiveSexualHealtForm = (props: any) => {
               error={errors.ExamenDeProstata}
               onChange={(value: any) => {
                 onChange(value);
-                console.log('save: ', value);
                 props.saveAnswerLocal(
                   QuestionTypes.selectOne,
                   QuestionSexAndRepHealthPersonCodes.ExamenDeProstata,

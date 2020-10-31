@@ -162,7 +162,7 @@ const _OtherIdentificationDataForm = (props: any) => {
     );
     setPuebloIndigenaSelect(FNCPUEIND.children);
     setValue('puebloIndigena', '');
-    setPuebloIndigena(null);
+    setPuebloIndigena('');
     //------------------------------------------------------------------------
     if (props.FNCPERSON.ID) {
       setValue('ocupacionPrincipal', props.FNCPERSON.FNCOCUPAC_ID);
@@ -199,12 +199,11 @@ const _OtherIdentificationDataForm = (props: any) => {
     setValue(prop, questionscodesMultiselect);
   }
   const onChangeLengua = (value: string) => {
-    console.log(`se ejecuta el onchangelengua y value tiene${value}`);
     setLenguaMaterna(value);
     let item = lenguaMaternaSelect.find((i) => i.value === value);
     let segundalengua: any = [];
     segundaLenguaSelect.forEach((lengua) => {
-      if (lengua.label != item.label) {
+      if (lengua.label != item?.label) {
         segundalengua.push(lengua);
       }
     });
@@ -522,8 +521,6 @@ const _OtherIdentificationDataForm = (props: any) => {
                     );
                     validateSegundaLengua(value);
                   }
-
-                  console.log(`valor en sleng es ${value}`);
                 }}
                 onLoad={async () => {
                   onChangeLengua(leng);
@@ -588,7 +585,6 @@ const _OtherIdentificationDataForm = (props: any) => {
               error={errors.CapacidadDiversa}
               onChange={(values: any) => {
                 onChange(values);
-                console.log('save', values);
                 props.saveAnswerLocal(
                   QuestionTypes.multiSelect,
                   QuestionConditionPersonCodes.CapacidadDiversa,
@@ -659,7 +655,6 @@ const _OtherIdentificationDataForm = (props: any) => {
                 error={errors.TipoTrabajo}
                 onChange={(value: any) => {
                   onChange(value);
-                  console.log('no aplica en tipo trabajo vale', value);
                   props.saveAnswerLocal(
                     QuestionTypes.selectOne,
                     QuestionConditionPersonCodes.TipoTrabajo,
@@ -731,7 +726,6 @@ const _OtherIdentificationDataForm = (props: any) => {
               error={errors.OtrosSaberesAnsestrales}
               onChange={(values: any) => {
                 onChange(values);
-                console.log('save', values);
                 props.saveAnswerLocal(
                   QuestionTypes.multiSelect,
                   QuestionConditionPersonCodes.OtrosSaberesAnsestrales,
@@ -797,7 +791,6 @@ const _OtherIdentificationDataForm = (props: any) => {
               error={errors.TipoDeCuidadosCulturalesQueRealiza}
               onChange={(values: any) => {
                 onChange(values);
-                console.log('save', values);
                 props.saveAnswerLocal(
                   QuestionTypes.multiSelect,
                   QuestionConditionPersonCodes.TipoDeCuidadosCulturalesQueRealiza,

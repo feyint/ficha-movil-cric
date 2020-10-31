@@ -55,7 +55,6 @@ class BImagePicker extends Component<Props, State> {
                 const type = "image/jpg";
                 const name = response.fileName;
                 const source = { path, type, name };
-                console.log('Camera: ', source)
                 this.state.images.push(source);
                 this.setState({ images: this.state.images });
                 this.setState({ modal: false });
@@ -72,7 +71,6 @@ class BImagePicker extends Component<Props, State> {
             }
         }
         ImagePicker.launchImageLibrary(options, (response) => {
-            // console.log('Response=', response);
             if (response.didCancel) {
                 console.log("User cancelled image picker");
             } else if (response.error) {
@@ -82,7 +80,6 @@ class BImagePicker extends Component<Props, State> {
                 const type = "image/jpg"
                 const name = response.fileName
                 const source = { path, type, name }
-                console.log('ImageLibrary: ', source)
                 this.state.images.push(source);
                 this.setState({ images: this.state.images });
                 this.setState({ modal: false });
@@ -109,7 +106,6 @@ class BImagePicker extends Component<Props, State> {
     }
 
     Image(image: any) {
-        console.log('Image: ', image);
         return (
             <View style={stylesDisplayImages.container}>
                 <View>

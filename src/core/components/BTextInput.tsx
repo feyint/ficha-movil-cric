@@ -17,6 +17,7 @@ interface Props {
   disabled?: boolean;
   multiline?: boolean;
   numberOfLines?: number;
+  isPassword?: boolean;
 }
 export default class BTextInput extends Component<Props, State> {
   render() {
@@ -24,6 +25,7 @@ export default class BTextInput extends Component<Props, State> {
       <View>
         <TextInput
           error={this.props.error}
+          secureTextEntry={this.props.isPassword ? true : false}
           mode={this.props.mode ? this.props.mode : 'outlined'}
           label={this.props.label}
           onChangeText={(text) => this.props.onChange(text)}

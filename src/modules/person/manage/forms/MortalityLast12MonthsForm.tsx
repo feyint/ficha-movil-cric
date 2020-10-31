@@ -71,15 +71,13 @@ const _MortalityLast12MonthsForm = (props: any) => {
       <View style={styles.container}>
         <Controller
           control={control}
-          render={({ onChange, onBlur, value }) => (
+          render={({ onChange, value }) => (
             <BDatePickerModal
               label="Fecha de la muerte"
               disabled={false}
-              onBlur={onBlur}
               error={errors.FechaMuerte}
               onChange={(value: any) => {
                 onChange(value);
-                console.log('Selected Item: ', value);
               }}
               onLoad={() => {
                 console.log('OnLoad BDatePickerModal');
@@ -91,12 +89,11 @@ const _MortalityLast12MonthsForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({ onChange, onBlur, value }) => (
+          render={({ onChange, value }) => (
             <BPicker
               label={
                 getItemsForQuestionSelect(QuestionPersonCodes.CausaDeLaMuerte).name
               }
-              onBlur={onBlur}
               error={errors.CausaDeLaMuerte}
               onChange={(value: any) => {
                 onChange(value);
@@ -113,7 +110,6 @@ const _MortalityLast12MonthsForm = (props: any) => {
                   'CausaDeLaMuerte',
                 );
               }}
-              value={value}
               selectedValue={value}
               items={
                 getItemsForQuestionSelect(QuestionPersonCodes.CausaDeLaMuerte).children
@@ -124,12 +120,11 @@ const _MortalityLast12MonthsForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({ onChange, onBlur, value }) => (
+          render={({ onChange, value }) => (
             <BPicker
               label={
                 getItemsForQuestionSelect(QuestionPersonCodes.RealizacionRitualOPracticasCulturales).name
               }
-              onBlur={onBlur}
               error={errors.RealizacionRitualOPracticasCulturales}
               onChange={(value: any) => {
                 onChange(value);
@@ -146,7 +141,6 @@ const _MortalityLast12MonthsForm = (props: any) => {
                   'RealizacionRitualOPracticasCulturales',
                 );
               }}
-              value={value}
               selectedValue={value}
               items={
                 getItemsForQuestionSelect(QuestionPersonCodes.RealizacionRitualOPracticasCulturales).children
@@ -165,7 +159,6 @@ const _MortalityLast12MonthsForm = (props: any) => {
               error={errors.Soportes}
               onChange={(value: any) => {
                 onChange(value);
-                console.log('Selected Images: ', value);
               }}
               value={value}
             />

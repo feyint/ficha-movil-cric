@@ -156,7 +156,6 @@ const _HouseConditionForm = (props: any) => {
               onBlur={onBlur}
               error={errors.FuentedeAgua}
               onChange={(values: any) => {
-                console.log('FuentedeAgua ', values);
                 onChange(values);
                 props.saveAnswerLocal(
                   QuestionTypes.multiSelect,
@@ -219,7 +218,6 @@ const _HouseConditionForm = (props: any) => {
               onBlur={onBlur}
               error={errors.AlmacenamientoAguaconsumo}
               onChange={(values: any) => {
-                console.log('respuesta ', values);
                 onChange(values);
                 props.saveAnswerLocal(
                   QuestionTypes.multiSelect,
@@ -264,7 +262,6 @@ const _HouseConditionForm = (props: any) => {
                   'Estadodelrecipiente',
                 );
               }}
-              value={value}
               selectedValue={value}
               items={
                 getItemsForQuestionSelect(
@@ -315,7 +312,6 @@ const _HouseConditionForm = (props: any) => {
                   'ManejoderesiduosBiodegradables',
                 );
               }}
-              value={value}
               selectedValue={value}
               items={
                 getItemsForQuestionSelect(
@@ -348,7 +344,6 @@ const _HouseConditionForm = (props: any) => {
                   'ManejoresiduosOrdinariosnoreciclables',
                 );
               }}
-              value={value}
               selectedValue={value}
               items={
                 getItemsForQuestionSelect(
@@ -381,7 +376,6 @@ const _HouseConditionForm = (props: any) => {
                   'ManejoresiduosReciclables',
                 );
               }}
-              value={value}
               selectedValue={value}
               items={
                 getItemsForQuestionSelect(
@@ -414,7 +408,6 @@ const _HouseConditionForm = (props: any) => {
                   'Manejoresiduospeligrosos',
                 );
               }}
-              value={value}
               selectedValue={value}
               items={
                 getItemsForQuestionSelect(
@@ -447,7 +440,6 @@ const _HouseConditionForm = (props: any) => {
                   'Eliminacionexcretas',
                 );
               }}
-              value={value}
               selectedValue={value}
               items={
                 getItemsForQuestionSelect(
@@ -480,7 +472,6 @@ const _HouseConditionForm = (props: any) => {
                   'DisposicionfinalAguasdomesticas',
                 );
               }}
-              value={value}
               selectedValue={value}
               items={
                 getItemsForQuestionSelect(
@@ -513,7 +504,6 @@ const _HouseConditionForm = (props: any) => {
                   'ConvivenciaAnimalesCasa',
                 );
               }}
-              value={value}
               selectedValue={value}
               items={
                 getItemsForQuestionSelect(
@@ -575,7 +565,6 @@ const _HouseConditionForm = (props: any) => {
               onBlur={onBlur}
               error={errors.TipodeRiesgodelavivienda}
               onChange={(values: any) => {
-                console.log('respuesta ', values);
                 onChange(values);
                 props.saveAnswerLocal(
                   QuestionTypes.multiSelect,
@@ -626,7 +615,6 @@ const _HouseConditionForm = (props: any) => {
               onBlur={onBlur}
               error={errors.PresenciadevectoresCasa}
               onChange={(values: any) => {
-                console.log('respuesta ', values);
                 onChange(values);
                 props.saveAnswerLocal(
                   QuestionTypes.multiSelect,
@@ -671,7 +659,6 @@ const _HouseConditionForm = (props: any) => {
                   'Tipodeespacioproductivo',
                 );
               }}
-              value={value}
               selectedValue={value}
               items={
                 getItemsForQuestionSelect(
@@ -692,7 +679,6 @@ const _HouseConditionForm = (props: any) => {
               onBlur={onBlur}
               error={errors.Destinodelosproductos}
               onChange={(values: any) => {
-                console.log('respuesta ', values);
                 onChange(values);
                 props.saveAnswerLocal(
                   QuestionTypes.multiSelect,
@@ -725,7 +711,6 @@ const _HouseConditionForm = (props: any) => {
               onBlur={onBlur}
               error={errors.PracticasCulturalesProductivo}
               onChange={(values: any) => {
-                console.log('respuesta ', values);
                 onChange(values);
                 props.saveAnswerLocal(
                   QuestionTypes.multiSelect,
@@ -758,7 +743,6 @@ const _HouseConditionForm = (props: any) => {
               onBlur={onBlur}
               error={errors.ActividadesProductivasVivienda}
               onChange={(values: any) => {
-                console.log('respuesta ', values);
                 onChange(values);
                 props.saveAnswerLocal(
                   QuestionTypes.multiSelect,
@@ -791,7 +775,6 @@ const _HouseConditionForm = (props: any) => {
               onBlur={onBlur}
               error={errors.FamiliaPracticasCulturales}
               onChange={(values: any) => {
-                console.log('respuesta ', values);
                 onChange(values);
                 props.saveAnswerLocal(
                   QuestionTypes.multiSelect,
@@ -816,12 +799,11 @@ const _HouseConditionForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BTextInput
               label="Observaciones"
               multiline={true}
               numberOfLines={3}
-              onBlur={onBlur}
               error={errors.Observaciones}
               onChange={(value: any) => {
                 onChange(value);

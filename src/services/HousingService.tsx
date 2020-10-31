@@ -72,7 +72,6 @@ export default class HousingService {
       .then((realm) => {
         realm.write(() => {
           let result = realm.create(DataBaseSchemas.FUBUBIVIVSCHEMA, item);
-          console.log('INSERT ITEM ', result);
         });
       })
       .catch((error) => {
@@ -81,7 +80,6 @@ export default class HousingService {
     return result;
   }
   async UpdateHouse(item: FUBUBIVIV) {
-    console.log('UPDATE HOUSE', item);
     const result = await Realm.open({
       schema: [FUBUBIVIVSCHEMA],
       schemaVersion: schemaVersion,
@@ -173,7 +171,6 @@ export default class HousingService {
         if (item) {
           let values = item.CODIGO.split('-');
           increment = this.incrementNumber(values[1]);
-          console.log('incrementincrement ', increment);
         } else {
           increment = this.incrementNumber('0');
         }
@@ -281,39 +278,6 @@ export default class HousingService {
       });
     return result;
   }
-  /* async getUnidadesCuidado(FUCZONCUI_ID: number) {
-    const result = await Realm.open({
-      schema: [FUCZONCUISCHEMA, FNCPERSONSCHEMA, ULTIMA],
-      schemaVersion: schemaVersion,
-    })
-      .then((realm) => {
-        let resultado = {sede: '', unidad: ''};
-        let zona: any = realm
-          .objects(DataBaseSchemas.FUCZONCUISCHEMA)
-          .filtered(`ID = ${FUCZONCUI_ID}`)[0];
-        console.log('FUCZONCUISCHEMA items', items);
-        if(zona){
-          let FUBSEDCUI_ID = zona.FUBSEDCUI_ID;
-          let sede: any = realm
-            .objects(DataBaseSchemas.FNCPERSONSCHEMA)
-            .filtered(`ID = ${FUBSEDCUI_ID}`)[0];
-            if(sede){
-              resultado.sede = sede.CAmpo1;
-              let FUCUNICUI_ID = sede[0].FUCUNICUI_ID;
-              let unidad: any = realm
-                .objects(DataBaseSchemas.ULTIMA)
-                .filtered(`ID = ${FUCUNICUI_ID}`)[0];
-                resultado.unidad = unidad.campo2;
-                return resultado;
-            }
-            return null;
-        }
-      })
-      .catch((error) => {
-        return error;
-      });
-    return result;
-  } */
   async getFUCZONCUI(FUCBARVER_ID: number) {
     const result = await Realm.open({
       schema: [FUCZONCUI_FUCBARVERSCHEMA, FUCZONCUISCHEMA],

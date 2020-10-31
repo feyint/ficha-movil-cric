@@ -69,7 +69,6 @@ const _UnhealthyHabitsForm = (props: any) => {
   };
 
   const getItemsForQuestionMultiSelect = (code: string) => {
-    console.log('state.questions: ', state.questions);
     return syncCatalogService.getItemsForQuestionMultiSelect(
       code,
       state.questions,
@@ -92,7 +91,6 @@ const _UnhealthyHabitsForm = (props: any) => {
               error={errors.Fuma}
               onChange={(value: any) => {
                 onChange(value);
-                console.log('save: ', value);
                 props.saveAnswerLocal(
                   QuestionTypes.selectOne,
                   QuestionPersonCodes.Fuma,
@@ -124,7 +122,6 @@ const _UnhealthyHabitsForm = (props: any) => {
               error={errors.ConsumeBebidasAlcoholicas}
               onChange={(value: any) => {
                 onChange(value);
-                console.log('save: ', value);
                 props.saveAnswerLocal(
                   QuestionTypes.selectOne,
                   QuestionPersonCodes.ConsumeBebidasAlcoholicas,
@@ -156,7 +153,6 @@ const _UnhealthyHabitsForm = (props: any) => {
               error={errors.EvidenciaConsumoSustanciasPsicoactivas}
               onChange={(value: any) => {
                 onChange(value);
-                console.log('save: ', value);
                 props.saveAnswerLocal(
                   QuestionTypes.selectOne,
                   QuestionPersonCodes.EvidenciaConsumoSustanciasPsicoactivas,

@@ -59,7 +59,6 @@ export default class ConditionPersonService {
       }
       questionItems.push(questionItem);
     }
-    console.log(questionItems);
     return questionItems;
   }
 
@@ -106,7 +105,6 @@ export default class ConditionPersonService {
             item: null,
           };
           item.children.push(itemChild);
-          //console.log(itemChild);
         }
         item.children.unshift({value: '-1', label: 'Seleccione', item: null});
       }
@@ -194,7 +192,6 @@ export default class ConditionPersonService {
         realm.write(() => {
           realm.delete(options);
           for (let i = 0; i < answeroption.length; i++) {
-            //console.log('option ', answeroption[i]);
             let result = realm.create(
               DataBaseSchemas.FNCPERSON_FNCCONPERSCHEMA,
               {
@@ -258,7 +255,6 @@ export default class ConditionPersonService {
           .filtered(
             `FNCPERSON_ID = ${FNCPERSON_ID} AND FNCELEPER_ID = ${FNCELEPER_ID}`,
           );
-        //console.log('borrar ', options.length);
         realm.write(() => {
           realm.delete(options);
         });
@@ -280,15 +276,11 @@ export default class ConditionPersonService {
       schemaVersion: schemaVersion,
     })
       .then((realm) => {
-        /* console.log(
-          `FNCPERSON_ID = ${FNCPERSON_ID} AND FNCELEPER_ID = ${FNCELEPER_ID}`,
-        ); */
         let items = realm
           .objects(DataBaseSchemas.FNCPERSON_FNCCONPERSCHEMA)
           .filtered(
             `FNCPERSON_ID = ${FNCPERSON_ID} AND FNCELEPER_ID = ${FNCELEPER_ID}`,
           );
-        //console.warn('items getAnswerMultiSelect ', items.length);
         return items.map((item: any) => {
           return item.FNCCONPER_ID;
         });
@@ -339,7 +331,6 @@ export default class ConditionPersonService {
         return itemsSelect;
       })
       .catch((error) => {
-        console.error(error);
         return error;
       });
     return result;

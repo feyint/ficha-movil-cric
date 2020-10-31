@@ -44,16 +44,12 @@ class BMultiSelect extends Component<Props, State> {
     }
   }
   onSelectedItemsChange(selectedItems: any) {
-    // do something with selectedItems
     this.props.onChange(selectedItems);
     this.setState({selectedItems: selectedItems});
-    // console.log('Selected Items: ', this.state.selectedItems);
   }
   conConfirm(selectedItems: any) {
-    // do something with selectedItems
     this.setState({selectedItems: selectedItems});
     this.props.onChange(this.state.selectedItems);
-    // console.log('Selected Items: ', this.state.selectedItems);
   }
   render() {
     return (
@@ -62,7 +58,7 @@ class BMultiSelect extends Component<Props, State> {
           <SectionedMultiSelect
             single={this.props.single ? this.props.single : false}
             expandDropDowns={true}
-            items={this.props.items ? [this.props.items] : undefined}
+            items={this.props.items ? [this.props.items] : []}
             uniqueKey="id"
             subKey="children"
             selectText={this.props.label}
@@ -102,7 +98,6 @@ class BMultiSelect extends Component<Props, State> {
     );
   }
   public setSelectedItem(selectedItems: any[]) {
-    console.log('selectedItems ', selectedItems);
   }
 }
 const styles = StyleSheet.create({

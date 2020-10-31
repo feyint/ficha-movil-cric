@@ -1,5 +1,5 @@
 import React, {Component, useState} from 'react';
-import {View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import {BButton} from '../../../core/components';
 //import {LoginForm} from '../components';
 import {NavigationProp} from '@react-navigation/native';
@@ -9,6 +9,8 @@ import {setFUBUBIVIV, clearFUBUBIVIV} from '../../../state/house/actions';
 import {HouseList} from '../forms';
 import {HousingService} from '../../../services';
 import {FUBUBIVIV} from '../../../state/house/types';
+import {theme} from '../../../core/style/theme';
+import BFabButton from '../../../core/components/BFabButton';
 
 interface FormData {
   navigation: NavigationProp<any>;
@@ -48,22 +50,17 @@ class HomeScreen extends Component<FormData, State> {
   }
   render() {
     return (
-      <View>
+      <View style={{flex: 1}}>
         <Appbar.Header>
           <Appbar.Content title="INICIO" />
         </Appbar.Header>
-        <BButton
-          color="primary"
-          value="Crear Nueva"
-          mode="contained"
-          onPress={() => this.createNew()}
-        />
         <HouseList
           houses={this.state.houses}
           onSelect={(value: any) => {
             this.goToHouse(value);
           }}
         />
+        <BFabButton onPress={() => this.createNew()} />
       </View>
     );
   }
@@ -71,8 +68,7 @@ class HomeScreen extends Component<FormData, State> {
     this.props.clearFUBUBIVIV();
     this.props.navigation.navigate('ManageHousingScreen');
   }
-  async goToHouse(value) {
-    console.log('Selected Item: ', value);
+  async goToHouse(value: any) {
     await this.props.setFUBUBIVIV(value);
     this.props.navigation.navigate('ManageHousingScreen');
   }

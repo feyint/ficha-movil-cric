@@ -1,13 +1,14 @@
 import React, {Component} from 'react';
 import {BHeader} from '../../../core/components';
 import {FamiliarNucleus, Department, SafeForm, CareZone} from '../components';
-import {View} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import {Appbar} from 'react-native-paper';
 import {List} from 'react-native-paper';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {saveFNBNUCVIV} from '../../../state/house/actions';
 import {HousingService} from '../../../services';
+import {theme} from '../../../core/style/theme';
 
 interface Props {
   navigation: NavigationProp<any>;
@@ -55,29 +56,44 @@ class HouseMenuScreen extends Component<any, State> {
         <List.Section>
           <List.Item
             title="Vivienda"
+            left={() => <List.Icon icon="home" color={theme.colors.gray} />}
+            right={() => <Text style={styles.numberIndicator}>01</Text>}
             onPress={() => this.goHouseScreen()}
-            left={() => <List.Icon icon="home" />}
           />
+          <View style={styles.divisor} />
           <List.Item
-            onPress={() => this.goHousingStatusScreen()}
             title="Estado de la vivienda"
-            left={() => <List.Icon icon="home-alert" />}
+            left={() => (
+              <List.Icon icon="home-alert" color={theme.colors.gray} />
+            )}
+            right={() => <Text style={styles.numberIndicator}>02</Text>}
+            onPress={() => this.goHousingStatusScreen()}
           />
+          <View style={styles.divisor} />
           <List.Item
             title="Condiciones de la vivienda"
+            left={() => (
+              <List.Icon icon="home-heart" color={theme.colors.gray} />
+            )}
+            right={() => <Text style={styles.numberIndicator}>03</Text>}
             onPress={() => this.goHouseContitionsScreen()}
-            left={() => <List.Icon icon="home-heart" />}
           />
+          <View style={styles.divisor} />
+          <List.Item
+            title="Datos del encuestador"
+            left={() => <List.Icon icon="account" color={theme.colors.gray} />}
+            right={() => <Text style={styles.numberIndicator}>04</Text>}
+            onPress={() => this.goPollsterScreen()}
+          />
+          <View style={styles.divisor} />
           <List.Item
             title="Administrar personas"
-            left={() => <List.Icon icon="account-group" />}
+            left={() => (
+              <List.Icon icon="account-group" color={theme.colors.gray} />
+            )}
             onPress={() => this.goPersonManageScreen()}
           />
-          <List.Item
-            onPress={() => this.goPollsterScreen()}
-            title="Datos del encuestador"
-            left={() => <List.Icon icon="account" />}
-          />
+          <View style={styles.divisor} />
         </List.Section>
       </View>
     );
@@ -101,6 +117,18 @@ class HouseMenuScreen extends Component<any, State> {
     this.props.navigation.navigate('PersonManageScreen');
   }
 }
+const styles = StyleSheet.create({
+  divisor: {height: 1, backgroundColor: theme.colors.light},
+  numberIndicator: {
+    backgroundColor: theme.colors.accent,
+    color: theme.colors.secondaryFont,
+    fontSize: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    marginVertical: 10,
+    borderRadius: 5,
+  },
+});
 const mapDispatchToProps = {
   saveFNBNUCVIV,
 };

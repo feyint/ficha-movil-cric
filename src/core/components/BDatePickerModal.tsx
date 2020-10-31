@@ -28,7 +28,6 @@ export default class BDatePickerModal extends Component<Props, State> {
     };
   }
   UNSAFE_componentWillMount() {
-    console.log('UNSAFE_componentWillMount (BDatePickerModal)');
     if (this.props.onLoad) {
       this.props.onLoad(true);
     }

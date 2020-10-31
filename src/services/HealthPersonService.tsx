@@ -235,7 +235,6 @@ export default class SexAndRepHealthPersonService {
         realm.write(() => {
           realm.delete(options);
           for (let i = 0; i < answeroption.length; i++) {
-            console.log('option ', answeroption[i]);
             realm.create(DataBaseSchemas.FNCSALREP_FNCCONREPSCHEMA, {
               FNCCONREP_ID: answeroption[i].FNCCONREP_ID,
               FNCSALREP_ID: answeroption[i].FNCSALREP_ID,
@@ -345,7 +344,6 @@ export default class SexAndRepHealthPersonService {
     propiety: string,
     value: any,
   ) {
-    // console.error(JSON.stringify(value));
     const result = await Realm.open({
       schema: [FNCSALREPSCHEMA],
       schemaVersion: schemaVersion,
@@ -357,7 +355,6 @@ export default class SexAndRepHealthPersonService {
             .filtered(`ID = ${FNCSALREPID}`)
             .sorted('ID', true)[0];
           if (item) {
-            // console.error('result[propiety] ', propiety, value);
             item[propiety] = value;
             return true;
           } else {

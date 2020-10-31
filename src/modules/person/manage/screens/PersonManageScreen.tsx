@@ -13,8 +13,9 @@ import {
 import {FNBNUCVIV} from '../../../../state/house/types';
 import {HousingService} from '../../../../services';
 import {FNCPERSON} from '../../../../state/person/types';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { ListItem } from 'react-native-elements';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {ListItem} from 'react-native-elements';
+import BFabButton from '../../../../core/components/BFabButton';
 
 interface Props {
   navigation: NavigationProp<any>;
@@ -67,21 +68,15 @@ class PersonManageScreen extends Component<Props, State> {
   }
   render() {
     return (
-      <View>
+      <View style={{flex: 1}}>
         <Appbar.Header>
           <Appbar.BackAction onPress={() => this._goBack()} />
           <Appbar.Content title="Identificacion nucleo familiar" />
         </Appbar.Header>
-        <Text>
-          Personas relacionadas con el nucleo familiar{' '}
+        <Text style={{fontSize: 16, padding: 10}}>
+          <Text style={{fontWeight: 'bold'}}>Nucleo familiar:</Text>{' '}
           {this.props.FNBNUCVIV.CODIGO}
         </Text>
-        <BButton
-          color="primary"
-          value="Nueva persona"
-          mode="contained"
-          onPress={() => this.createNewPerson()}
-        />
         <KeyboardAwareScrollView>
           <View style={styles.container}>
             {this.state.persons && this.state.persons.length > 0
@@ -104,6 +99,8 @@ class PersonManageScreen extends Component<Props, State> {
           </View>
           <View style={styles.spacer} />
         </KeyboardAwareScrollView>
+
+        <BFabButton onPress={() => this.createNewPerson()} />
       </View>
     );
   }

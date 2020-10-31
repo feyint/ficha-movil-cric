@@ -56,7 +56,6 @@ export default class UtilsService {
           query = query + ` AND ${_columnFilter2} = ${_value2}`;
         }
         if (query.length > 0) {
-          console.log(`${_columnFilter} = ${_value}`);
           items = items.filtered(query);
         }
         if (first) {

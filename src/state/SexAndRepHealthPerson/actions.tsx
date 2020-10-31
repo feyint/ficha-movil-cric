@@ -128,9 +128,7 @@ export const saveFNCSALREP = (data: any) => async (
   let family: FNCSALREP = store.sarhealthperson.FNCSALREP;
   let personServie: SexAndRepHealthPersonService = new SexAndRepHealthPersonService();
   let result = await personServie.SaveFNCSALREP(data);
-  // console.error(result);
   if (result) {
-    //family.CODIGO = result.CODIGO;
     family.FNCPERSON_ID = result.FNCPERSON_ID;
     family.ID = result.ID;
   }
@@ -254,7 +252,6 @@ export const getQuestionAnswer = (type: number, questionCode: string) => async (
   let questionItems: SexAndRepHealthPersonQuestion[] =
     store.sarhealthperson.SEXANDREPHEALTHPERSONQUESTIONLIST;
   let question = getQuestionByCode(questionCode, questionItems);
-  console.log('answer query ', question);
   switch (type) {
     case 1: // oneOption
       let option = await personServie.getAnswerOneOption(

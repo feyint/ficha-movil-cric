@@ -540,7 +540,6 @@ export const allCatalogs = () =>
     })
       .then((realm) => {
         let servicios = realm.objects('FVCCONVIV');
-        console.log('Response realm: ', servicios);
         resolve(servicios);
       })
       .catch((error) => {

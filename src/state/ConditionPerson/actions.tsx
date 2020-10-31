@@ -53,7 +53,6 @@ export const saveAnswerLocal = (
   questionCode: string,
   answer: any,
 ) => async (_dispatch: any, getState: any) => {
-  // console.error('llega', answer);
   if (questionCode) {
     try {
       const store = getState();

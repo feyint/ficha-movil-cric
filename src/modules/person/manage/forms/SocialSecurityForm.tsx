@@ -86,7 +86,6 @@ const _SocialSecurityForm = (props: any) => {
   };
 
   const getItemsForQuestionMultiSelect = (code: string) => {
-    console.log('state.questions: ', state.questions);
     return syncCatalogService.getItemsForQuestionMultiSelect(
       code,
       state.questions,
@@ -183,7 +182,6 @@ const _SocialSecurityForm = (props: any) => {
               onChange={(values: any) => {
                 if (values) {
                   onChange(values);
-                  console.log('save', values);
                   props.saveAnswerLocal(
                     QuestionTypes.multiSelect,
                     QuestionConditionPersonCodes.ProgramaDeSalud,

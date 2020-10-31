@@ -505,7 +505,6 @@ export default class SyncCatalogService {
       FNCTIPIDESCHEMA,
       FNCTIPIDEs,
     );
-    // console.log('FVCELEVIV ', FVCELEVIVSchema);
   }
   async syncSaveEntities(type: string, schema: any, listItems: any[]) {
     if (listItems.length > 0) {

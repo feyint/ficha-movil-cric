@@ -33,7 +33,6 @@ const _PollsterForm = (user) => {
     {label: 'Registro civil', value: '3'},
   ];
   const onSubmit = (data: any) => {
-    console.log(data);
     navigation.goBack();
   };
   return (

@@ -154,7 +154,6 @@ const _HealthInformationForm = (props: any) => {
               onBlur={onBlur}
               onChange={(value: any) => {
                 onChange(value);
-                console.log('save: ', value);
               }}
               onLoad={() => {
                 getAnswers(
@@ -213,7 +212,6 @@ const _HealthInformationForm = (props: any) => {
               onBlur={onBlur}
               onChange={(value: any) => {
                 onChange(value);
-                console.log('save: ', value);
               }}
               onLoad={() => {
                 getAnswers(
@@ -236,7 +234,6 @@ const _HealthInformationForm = (props: any) => {
               onBlur={onBlur}
               onChange={(value: any) => {
                 onChange(value);
-                console.log('save: ', value);
               }}
               onLoad={() => {
                 getAnswers(
@@ -264,7 +261,6 @@ const _HealthInformationForm = (props: any) => {
               onBlur={onBlur}
               onChange={(value: any) => {
                 onChange(value);
-                console.log('save: ', value);
               }}
               onLoad={() => {
                 getAnswers(
@@ -368,7 +364,6 @@ const _HealthInformationForm = (props: any) => {
               onBlur={onBlur}
               onChange={(value: any) => {
                 onChange(value);
-                console.log('save: ', value);
               }}
               onLoad={() => {
                 getAnswers(
@@ -390,7 +385,6 @@ const _HealthInformationForm = (props: any) => {
               onBlur={onBlur}
               onChange={(value: any) => {
                 onChange(value);
-                console.log('save: ', value);
               }}
               onLoad={() => {
                 getAnswers(
@@ -417,7 +411,6 @@ const _HealthInformationForm = (props: any) => {
               onBlur={onBlur}
               onChange={(value: any) => {
                 onChange(value);
-                console.log('save: ', value);
               }}
               onLoad={() => {
                 getAnswers(
@@ -465,7 +458,6 @@ const _HealthInformationForm = (props: any) => {
               onBlur={onBlur}
               onChange={(value: any) => {
                 onChange(value);
-                console.log('save: ', value);
               }}
               onLoad={() => {
                 getAnswers(

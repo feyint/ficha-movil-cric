@@ -12,5 +12,6 @@ const styles = StyleSheet.create({
     color: theme.colors.primary,
     fontWeight: 'bold',
     paddingVertical: 14,
+    textAlign: 'center'
   },
 });

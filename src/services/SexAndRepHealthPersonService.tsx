@@ -345,7 +345,6 @@ export default class SexAndRepHealthPersonService {
     propiety: string,
     value: any,
   ) {
-    // console.error(JSON.stringify(value));
     const result = await Realm.open({
       schema: [FNCSALREPSCHEMA],
       schemaVersion: schemaVersion,
@@ -357,7 +356,6 @@ export default class SexAndRepHealthPersonService {
             .filtered(`ID = ${FNCSALREPID}`)
             .sorted('ID', true)[0];
           if (item) {
-            // console.error('result[propiety] ', propiety, value);
             item[propiety] = value;
             return true;
           } else {
