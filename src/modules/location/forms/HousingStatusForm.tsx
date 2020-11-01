@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useState, useEffect} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
@@ -18,6 +19,7 @@ import {
   getQuestionAnswer,
   getQuestionWithOptions,
 } from '../../../state/house/actions';
+import { PickerType } from '../../../core/utils/types';
 const schemaForm = yup.object().shape({
   Techo: yup.number().required(),
   Piso: yup.number().required(),
@@ -35,36 +37,82 @@ const questions = [
 const _HousingStatusForm = (props: any) => {
   const navigation = useNavigation();
   const syncCatalogService = new HousingService();
-
-  const [state, setState] = useState({
-    questions: [] as HousingQuestion[],
-  });
+  const [TechoSelect, setTechoSelect] = useState<PickerType[]>([]);
+  const [PisoSelect, setPisoSelect] = useState<PickerType[]>([]);
+  const [ParedSelect, setParedSelect] = useState<PickerType[]>([]);
+  const [VentilacionSelect, setVentilacionSelect] = useState<PickerType[]>([]);
+  const [IluminacionSelect, setIluminacionSelect] = useState<PickerType[]>([]);
+  const [questionsItems, setquestionsItems] = useState<HousingQuestion[]>([]);
   const {handleSubmit, control, errors, setValue} = useForm({
     resolver: yupResolver(schemaForm),
   });
   useEffect(() => {
     fetchQuestions();
   }, []);
+  useEffect(() => {
+    getAnswersFNBNUCVIV();
+  }, [questionsItems]);
+  useEffect(() => {
+    getAnswers(QuestionTypes.selectOne, QuestionFamilyCodes.Techo, 'Techo');
+  }, [TechoSelect]);
+  useEffect(() => {
+    getAnswers(QuestionTypes.selectOne, QuestionFamilyCodes.Piso, 'Piso');
+  }, [PisoSelect]);
+  useEffect(() => {
+    getAnswers(QuestionTypes.selectOne, QuestionFamilyCodes.Pared, 'Pared');
+  }, [ParedSelect]);
+  useEffect(() => {
+    getAnswers(
+      QuestionTypes.selectOne,
+      QuestionFamilyCodes.Ventilacion,
+      'Ventilacion',
+    );
+  }, [VentilacionSelect]);
+  useEffect(() => {
+    getAnswers(
+      QuestionTypes.selectOne,
+      QuestionFamilyCodes.Iluminacion,
+      'Iluminacion',
+    );
+  }, [IluminacionSelect]);
 
   async function fetchQuestions() {
     let result = await props.getQuestionWithOptions(questions);
     if (result) {
-      setState({
-        ...state,
-        questions: result,
-      });
+      setquestionsItems(result);
     }
+  }
+  async function getAnswersFNBNUCVIV() {
+    let TechoQuestion = syncCatalogService.getItemsForQuestionSelect(
+      QuestionFamilyCodes.Techo,
+      questionsItems,
+    );
+    setTechoSelect(TechoQuestion);
+    let PisoQuestion = syncCatalogService.getItemsForQuestionSelect(
+      QuestionFamilyCodes.Piso,
+      questionsItems,
+    );
+    setPisoSelect(PisoQuestion);
+    let ParedQuestion = syncCatalogService.getItemsForQuestionSelect(
+      QuestionFamilyCodes.Pared,
+      questionsItems,
+    );
+    setParedSelect(ParedQuestion);
+    let VentilacionQuestion = syncCatalogService.getItemsForQuestionSelect(
+      QuestionFamilyCodes.Ventilacion,
+      questionsItems,
+    );
+    setVentilacionSelect(VentilacionQuestion);
+    let IluminacionQuestion = syncCatalogService.getItemsForQuestionSelect(
+      QuestionFamilyCodes.Iluminacion,
+      questionsItems,
+    );
+    setIluminacionSelect(IluminacionQuestion);
   }
   async function getAnswers(type: number, code: string, prop: string) {
     let question = await props.getQuestionAnswer(type, code);
     setValue(prop, question);
   }
-  const getItemsForQuestionSelect = (code: string) => {
-    return syncCatalogService.getItemsForQuestionSelect(code, state.questions);
-  };
-  const getQuestionlabel = (code: string) => {
-    return syncCatalogService.getQuestionlabel(code, state.questions);
-  };
   function onSubmit() {
     navigation.goBack();
   }
@@ -87,18 +135,8 @@ const _HousingStatusForm = (props: any) => {
                   vlue,
                 );
               }}
-              onLoad={() => {
-                getAnswers(
-                  QuestionTypes.selectOne,
-                  QuestionFamilyCodes.Techo,
-                  'Techo',
-                );
-              }}
-              value={value}
               selectedValue={value}
-              items={
-                getItemsForQuestionSelect(QuestionFamilyCodes.Techo).children
-              }
+              items={TechoSelect}
             />
           )}
           name="Techo"
@@ -119,18 +157,8 @@ const _HousingStatusForm = (props: any) => {
                   vlue,
                 );
               }}
-              onLoad={() => {
-                getAnswers(
-                  QuestionTypes.selectOne,
-                  QuestionFamilyCodes.Piso,
-                  'Piso',
-                );
-              }}
-              value={value}
               selectedValue={value}
-              items={
-                getItemsForQuestionSelect(QuestionFamilyCodes.Piso).children
-              }
+              items={PisoSelect}
             />
           )}
           name="Piso"
@@ -151,18 +179,8 @@ const _HousingStatusForm = (props: any) => {
                   vlue,
                 );
               }}
-              onLoad={() => {
-                getAnswers(
-                  QuestionTypes.selectOne,
-                  QuestionFamilyCodes.Pared,
-                  'Pared',
-                );
-              }}
-              value={value}
               selectedValue={value}
-              items={
-                getItemsForQuestionSelect(QuestionFamilyCodes.Pared).children
-              }
+              items={ParedSelect}
             />
           )}
           name="Pared"
@@ -183,19 +201,8 @@ const _HousingStatusForm = (props: any) => {
                   vlue,
                 );
               }}
-              onLoad={() => {
-                getAnswers(
-                  QuestionTypes.selectOne,
-                  QuestionFamilyCodes.Ventilacion,
-                  'Ventilacion',
-                );
-              }}
-              value={value}
               selectedValue={value}
-              items={
-                getItemsForQuestionSelect(QuestionFamilyCodes.Ventilacion)
-                  .children
-              }
+              items={VentilacionSelect}
             />
           )}
           name="Ventilacion"
@@ -216,19 +223,8 @@ const _HousingStatusForm = (props: any) => {
                   vlue,
                 );
               }}
-              onLoad={() => {
-                getAnswers(
-                  QuestionTypes.selectOne,
-                  QuestionFamilyCodes.Iluminacion,
-                  'Iluminacion',
-                );
-              }}
-              value={value}
               selectedValue={value}
-              items={
-                getItemsForQuestionSelect(QuestionFamilyCodes.Ventilacion)
-                  .children
-              }
+              items={IluminacionSelect}
             />
           )}
           name="Iluminacion"

@@ -9,3 +9,4 @@ export type SelectSchema = {
   id: number;
   children: {label: string; value: string; item: any}[];
 };
+export type PickerType = {label: string; value: string; item: any};

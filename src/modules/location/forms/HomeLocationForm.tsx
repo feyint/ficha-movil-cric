@@ -8,7 +8,7 @@ import {BTextInput, BPicker, BButton} from '../../../core/components';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {getEntitySelect, getLasHouseCode} from '../state/actions';
-import {SelectSchema} from '../../../core/utils/types';
+import {PickerType, SelectSchema} from '../../../core/utils/types';
 import Geolocation from '@react-native-community/geolocation';
 import {saveFUBUBIVIV, updateFUBUBIVIV} from '../../../state/house/actions';
 import {FUBUBIVIV} from '../../../state/house/types';
@@ -21,7 +21,6 @@ import {
   FUCMUNICISCHEMA,
   FUCRESGUASCHEMA,
   FUCTIPTERSCHEMA,
-  FUCZONASCHEMA,
 } from '../../../providers/DataBaseProvider';
 import {FieldValidator} from '../../../providers';
 
@@ -54,7 +53,6 @@ const _HomeLocationForm = (props: any) => {
   });
   const [department, setDepartment] = useState('');
   const [municipio, setMunicipio] = useState('');
-  //const [zonacuidado, setZonacuidado] = useState('');
   const [originalhouseCode, setoriginalHouseCode] = useState('');
   const [houseCode, setHouseCode] = useState('');
   const [tipoterritorio, setTipoterritorio] = useState('-1');
@@ -63,44 +61,23 @@ const _HomeLocationForm = (props: any) => {
   const [barrioVereda, setBarrioVereda] = useState('');
   const [zonacuidado, setZonacuidado] = useState('');
   const [address, setAddress] = useState('');
-  const [zonacuidadoSelect, setZonacuidadoSelect] = useState<SelectSchema>({
-    id: 0,
-    name: '',
-    children: [],
-  });
   const [FUCZONCUIItems, setFUCZONCUIItems] = useState<
     {
       value: string;
       label: string;
     }[]
   >([]);
-  const [municipioSelect, setMunicipioSelect] = useState<SelectSchema>({
-    id: 0,
-    name: '',
-    children: [],
-  });
+  const [municipioSelect, setMunicipioSelect] = useState<PickerType[]>([]);
   const [tipoterritorioSelect, setTipoterritorioSelect] = useState<
-    SelectSchema
-  >({
-    id: 0,
-    name: '',
-    children: [],
-  });
-  const [departamentoSelect, setDepartamentoSelect] = useState<SelectSchema>({
-    id: 0,
-    name: '',
-    children: [],
-  });
-  const [barrioVeredaSelect, setBarrioVeredaSelect] = useState<SelectSchema>({
-    id: 0,
-    name: '',
-    children: [],
-  });
-  const [rescentropSelect, setrescentropSelect] = useState<SelectSchema>({
-    id: 0,
-    name: '',
-    children: [],
-  });
+    PickerType[]
+  >([]);
+  const [departamentoSelect, setDepartamentoSelect] = useState<PickerType[]>(
+    [],
+  );
+  const [barrioVeredaSelect, setBarrioVeredaSelect] = useState<PickerType[]>(
+    [],
+  );
+  const [rescentropSelect, setrescentropSelect] = useState<PickerType[]>([]);
   useEffect(() => {
     fetchQuestions();
   }, []);
@@ -110,14 +87,12 @@ const _HomeLocationForm = (props: any) => {
   async function fetchQuestions() {
     let FUCDEPART = await props.getEntitySelect('FUCDEPART', FUCDEPARTSCHEMA);
     let FUCTIPTER = await props.getEntitySelect('FUCTIPTER', FUCTIPTERSCHEMA);
-    let FUCZONA = await props.getEntitySelect('FUCZONA', FUCZONASCHEMA);
     let FUCMUNICI = await props.getEntitySelect(
       'FUCMUNICI',
       FUCMUNICISCHEMA,
       'FUCDEPART_ID',
       getValues().department,
     );
-    setZonacuidadoSelect(FUCZONA);
     setDepartamentoSelect(FUCDEPART);
     setTipoterritorioSelect(FUCTIPTER);
     setMunicipioSelect(FUCMUNICI);
@@ -255,6 +230,7 @@ const _HomeLocationForm = (props: any) => {
     setValue('shelterOrCouncil', '');
     setCentropoblado('');
   }
+  //TODO AJUSTAR ESOS NUMEROS QUEMADOS POR CODIGOS
   async function onChangeTypeTerr(typeid: any) {
     if (typeid == '1') {
       typeid = '3';
@@ -280,8 +256,8 @@ const _HomeLocationForm = (props: any) => {
         resguaId,
       );
       setBarrioVeredaSelect(FUCBARVER);
-      for (let i = 0; i < rescentropSelect.children.length; i++) {
-        const item: any = rescentropSelect.children[i];
+      for (let i = 0; i < rescentropSelect.length; i++) {
+        const item: any = rescentropSelect[i];
         if (item.item && item.item.ID == resguaId) {
           let ress = await props.getLasHouseCode(item.item.CODIGO);
           setHouseCode(`${item.item.CODIGO}-${ress}`);
@@ -328,7 +304,7 @@ const _HomeLocationForm = (props: any) => {
         //FUCZONCUI_ID: JSON.parse(data.carezone),
         FUCZONCUI_ID: 1,
       };
-      let result = await props.updateFUBUBIVIV(item, originalhouseCode);
+      await props.updateFUBUBIVIV(item, originalhouseCode);
       navigation.goBack();
     } else {
       // SAVE
@@ -340,7 +316,7 @@ const _HomeLocationForm = (props: any) => {
         FUCBARVER_ID: JSON.parse(data.sidewalk),
         FUCZONCUI_ID: JSON.parse(data.carezone),
       };
-      let result = await props.saveFUBUBIVIV(item);
+      await props.saveFUBUBIVIV(item);
       navigation.goBack();
     }
   };
@@ -382,7 +358,7 @@ const _HomeLocationForm = (props: any) => {
                 // todo
               }}
               selectedValue={department}
-              items={departamentoSelect.children}
+              items={departamentoSelect}
             />
           )}
           name="department"
@@ -402,7 +378,7 @@ const _HomeLocationForm = (props: any) => {
                 onChangeMuni(value, tipoterritorio);
               }}
               selectedValue={municipio}
-              items={municipioSelect.children}
+              items={municipioSelect}
             />
           )}
           name="municipality"
@@ -424,7 +400,7 @@ const _HomeLocationForm = (props: any) => {
                 }
               }}
               selectedValue={tipoterritorio}
-              items={tipoterritorioSelect.children}
+              items={tipoterritorioSelect}
             />
           )}
           name="territoryType"
@@ -446,7 +422,7 @@ const _HomeLocationForm = (props: any) => {
                 }
               }}
               selectedValue={centropoblado}
-              items={rescentropSelect.children}
+              items={rescentropSelect}
             />
           )}
           name="shelterOrCouncil"
@@ -466,7 +442,7 @@ const _HomeLocationForm = (props: any) => {
                 onChangeBarrioVereda(value);
               }}
               selectedValue={barrioVereda}
-              items={barrioVeredaSelect.children}
+              items={barrioVeredaSelect}
             />
           )}
           name="sidewalk"

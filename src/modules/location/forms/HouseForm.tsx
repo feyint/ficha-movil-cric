@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useState, useEffect} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
@@ -27,6 +28,7 @@ import {
 } from '../../../state/house/actions';
 import {connect} from 'react-redux';
 import {FieldValidator} from '../../../providers';
+import {PickerType} from '../../../core/utils/types';
 const schemaForm = yup.object().shape({
   housecode: FieldValidator.required(yup, 'Código vivienda'),
   MaterialTecho: FieldValidator.required(yup, 'Material Techo'),
@@ -64,60 +66,166 @@ const listCocinaseEncuentra = [
 ];
 
 const _HouseForm = (props: any) => {
-  const navigation = useNavigation();
   const syncCatalogService = new HousingService();
   const [internetaccess, setInternetaccess] = useState<boolean>();
-  const [state, setState] = useState({
-    questions: [] as HousingQuestion[],
-  });
+  const [questionsItems, setQuestionsItems] = useState<HousingQuestion[]>([]);
+  const [materialTechSelect, setmaterialTechSelect] = useState<PickerType[]>(
+    [],
+  );
+  const [MaterialPisoSelect, setMaterialPisoSelect] = useState<PickerType[]>(
+    [],
+  );
+  const [MaterialParedSelect, setMaterialParedSelect] = useState<PickerType[]>(
+    [],
+  );
+  const [TenenciaviviendaSelect, setTenenciaviviendaSelect] = useState<
+    PickerType[]
+  >([]);
+  const [TipodeAlumbradoSelect, setTipodeAlumbradoSelect] = useState<
+    PickerType[]
+  >([]);
+  const [CocinaConSelect, setCocinaConSelect] = useState<PickerType[]>([]);
+  const [
+    HabitacionesenlaviviendaSelect,
+    setHabitacionesenlaviviendaSelect,
+  ] = useState<PickerType[]>([]);
+  const [
+    NumerodepersonaspordormitorioSelect,
+    setNumerodepersonaspordormitorioSelect,
+  ] = useState<PickerType[]>([]);
+
   const {handleSubmit, control, errors, setValue} = useForm({
     resolver: yupResolver(schemaForm),
   });
   useEffect(() => {
     fetchQuestions();
   }, []);
+  useEffect(() => {
+    getAnswersFNBNUCVIV();
+  }, [questionsItems]);
+  useEffect(() => {
+    getAnswers(
+      QuestionTypes.selectOne,
+      QuestionFamilyCodes.MaterialTecho,
+      'MaterialTecho',
+    );
+  }, [materialTechSelect]);
+  useEffect(() => {
+    getAnswers(
+      QuestionTypes.selectOne,
+      QuestionFamilyCodes.MaterialPiso,
+      'MaterialPiso',
+    );
+  }, [MaterialPisoSelect]);
+  useEffect(() => {
+    getAnswers(
+      QuestionTypes.selectOne,
+      QuestionFamilyCodes.MaterialPared,
+      'MaterialPared',
+    );
+  }, [MaterialParedSelect]);
+  useEffect(() => {
+    getAnswers(
+      QuestionTypes.selectOne,
+      QuestionFamilyCodes.Tenenciavivienda,
+      'Tenenciavivienda',
+    );
+  }, [TenenciaviviendaSelect]);
+  useEffect(() => {
+    getAnswers(
+      QuestionTypes.selectOne,
+      QuestionFamilyCodes.Cocinacon,
+      'Cocinacon',
+    );
+  }, [CocinaConSelect]);
+  useEffect(() => {
+    getAnswers(
+      QuestionTypes.selectOne,
+      QuestionFamilyCodes.Numerodepersonaspordormitorio,
+      'Numerodepersonaspordormitorio',
+    );
+    let HabitacionesenlaviviendaQuestion = syncCatalogService.getItemsForQuestionSelect(
+      QuestionFamilyCodes.Habitacionesenlavivienda,
+      questionsItems,
+    );
+    setHabitacionesenlaviviendaSelect(HabitacionesenlaviviendaQuestion);
+  }, [NumerodepersonaspordormitorioSelect]);
+  useEffect(() => {
+    getAnswers(
+      QuestionTypes.selectOne,
+      QuestionFamilyCodes.Habitacionesenlavivienda,
+      'Habitacionesenlavivienda',
+    );
+    let TipodeAlumbradoQuestion = syncCatalogService.getItemsForQuestionSelect(
+      QuestionFamilyCodes.TipodeAlumbrado,
+      questionsItems,
+    );
+    setTipodeAlumbradoSelect(TipodeAlumbradoQuestion);
+  }, [HabitacionesenlaviviendaSelect]);
+  useEffect(() => {
+    getAnswers(
+      QuestionTypes.selectOne,
+      QuestionFamilyCodes.TipodeAlumbrado,
+      'TipodeAlumbrado',
+    );
+  }, [TipodeAlumbradoSelect]);
   const fetchQuestions = async () => {
     let result = await syncCatalogService.getQuestionWithOptions(questions);
     if (result) {
-      setState({
-        ...state,
-        questions: result,
-      });
+      setQuestionsItems(result);
     }
-    setValue('housecode', props.FNBNUCVIV.CODIGO);
-    getAnswersFNBNUCVIV();
   };
   async function getAnswers(type: number, code: string, prop: string) {
     let question = await props.getQuestionAnswer(type, code);
     setValue(prop, question);
   }
   async function getAnswersFNBNUCVIV() {
-    setValue('smokeinsidehouse', props.FNBNUCVIV.HUMO_CASA);
+    // questions.forEach(QuestionCode => {
+    //   let result = syncCatalogService.getItemsForQuestionSelect(
+    //     QuestionFamilyCodes.MaterialTecho,
+    //     questionsItems,
+    //   );
+    // });
+    let MaterialTechoQuestion = syncCatalogService.getItemsForQuestionSelect(
+      QuestionFamilyCodes.MaterialTecho,
+      questionsItems,
+    );
+    setmaterialTechSelect(MaterialTechoQuestion);
+    let MaterialPisoQuestion = syncCatalogService.getItemsForQuestionSelect(
+      QuestionFamilyCodes.MaterialPiso,
+      questionsItems,
+    );
+    setMaterialPisoSelect(MaterialPisoQuestion);
+    let MaterialParedQuestion = syncCatalogService.getItemsForQuestionSelect(
+      QuestionFamilyCodes.MaterialPared,
+      questionsItems,
+    );
+    setMaterialParedSelect(MaterialParedQuestion);
+    let TenenciaviviendaQuestion = syncCatalogService.getItemsForQuestionSelect(
+      QuestionFamilyCodes.Tenenciavivienda,
+      questionsItems,
+    );
+    setTenenciaviviendaSelect(TenenciaviviendaQuestion);
+    let CocinaConQuestion = syncCatalogService.getItemsForQuestionSelect(
+      QuestionFamilyCodes.Cocinacon,
+      questionsItems,
+    );
+    setCocinaConSelect(CocinaConQuestion);
+    let NumerodepersonaspordormitorioQuestion = syncCatalogService.getItemsForQuestionSelect(
+      QuestionFamilyCodes.Numerodepersonaspordormitorio,
+      questionsItems,
+    );
+    setNumerodepersonaspordormitorioSelect(
+      NumerodepersonaspordormitorioQuestion,
+    );
+    setValue('housecode', props.FNBNUCVIV.CODIGO);
+    setValue('smokeinsidehouse', props.FNBNUCVIV.HUMO_DENTRO);
     setValue('kitchenislocated', props.FNBNUCVIV.LUGAR_COCINA);
     setValue('internetaccess', props.FNBNUCVIV.ACCESO_INTERNET);
     setInternetaccess(props.FNBNUCVIV.ACCESO_INTERNET);
-    // if (answer) {
-    //   setValue('smokeinsidehouse', answer);
-    //   return answer;
-    // }
-    // return null;
   }
-  const getItemsForQuestionSelect = (code: string) => {
-    return syncCatalogService.getItemsForQuestionSelect(code, state.questions);
-  };
-
-  const getQuestionlabel = (code: string) => {
-    return syncCatalogService.getQuestionlabel(code, state.questions);
-  };
-
-  const getItemsForQuestionMultiSelect = (code: string) => {
-    return syncCatalogService.getItemsForQuestionMultiSelect(
-      code,
-      state.questions,
-    );
-  };
-  const onSubmit = (data: any) => {
-    navigation.goBack();
+  const onSubmit = () => {
+    props.goBack();
   };
 
   return (
@@ -125,11 +233,10 @@ const _HouseForm = (props: any) => {
       <View style={styles.container}>
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BTextInput
               label="Código nucleo familiar"
               disabled={true}
-              onBlur={onBlur}
               error={errors.housecode}
               onChange={(value: any) => {
                 onChange(value);
@@ -141,13 +248,9 @@ const _HouseForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BPicker
-              label={
-                getItemsForQuestionSelect(QuestionFamilyCodes.MaterialTecho)
-                  .name
-              }
-              onBlur={onBlur}
+              label={'Material Techo'}
               error={errors.MaterialTecho}
               onChange={(vlue: any) => {
                 onChange(vlue);
@@ -159,30 +262,17 @@ const _HouseForm = (props: any) => {
                   );
                 }
               }}
-              onLoad={() => {
-                getAnswers(
-                  QuestionTypes.selectOne,
-                  QuestionFamilyCodes.MaterialTecho,
-                  'MaterialTecho',
-                );
-              }}
               selectedValue={value}
-              items={
-                getItemsForQuestionSelect(QuestionFamilyCodes.MaterialTecho)
-                  .children
-              }
+              items={materialTechSelect}
             />
           )}
           name="MaterialTecho"
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BPicker
-              label={
-                getItemsForQuestionSelect(QuestionFamilyCodes.MaterialPiso).name
-              }
-              onBlur={onBlur}
+              label={'Material del piso'}
               error={errors.MaterialPiso}
               onChange={(vlue: any) => {
                 onChange(vlue);
@@ -194,31 +284,17 @@ const _HouseForm = (props: any) => {
                   );
                 }
               }}
-              onLoad={() => {
-                getAnswers(
-                  QuestionTypes.selectOne,
-                  QuestionFamilyCodes.MaterialPiso,
-                  'MaterialPiso',
-                );
-              }}
               selectedValue={value}
-              items={
-                getItemsForQuestionSelect(QuestionFamilyCodes.MaterialPiso)
-                  .children
-              }
+              items={MaterialPisoSelect}
             />
           )}
           name="MaterialPiso"
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BPicker
-              label={
-                getItemsForQuestionSelect(QuestionFamilyCodes.MaterialPared)
-                  .name
-              }
-              onBlur={onBlur}
+              label={'Material Pared'}
               error={errors.MaterialPared}
               onChange={(vlue: any) => {
                 onChange(vlue);
@@ -230,31 +306,17 @@ const _HouseForm = (props: any) => {
                   );
                 }
               }}
-              onLoad={() => {
-                getAnswers(
-                  QuestionTypes.selectOne,
-                  QuestionFamilyCodes.MaterialPared,
-                  'MaterialPared',
-                );
-              }}
               selectedValue={value}
-              items={
-                getItemsForQuestionSelect(QuestionFamilyCodes.MaterialPared)
-                  .children
-              }
+              items={MaterialParedSelect}
             />
           )}
           name="MaterialPared"
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BPicker
-              label={
-                getItemsForQuestionSelect(QuestionFamilyCodes.Tenenciavivienda)
-                  .name
-              }
-              onBlur={onBlur}
+              label={'Tenencia Vivien'}
               error={errors.Tenenciavivienda}
               onChange={(vlue: any) => {
                 onChange(vlue);
@@ -266,29 +328,18 @@ const _HouseForm = (props: any) => {
                   );
                 }
               }}
-              onLoad={() => {
-                getAnswers(
-                  QuestionTypes.selectOne,
-                  QuestionFamilyCodes.Tenenciavivienda,
-                  'Tenenciavivienda',
-                );
-              }}
               selectedValue={value}
-              items={
-                getItemsForQuestionSelect(QuestionFamilyCodes.Tenenciavivienda)
-                  .children
-              }
+              items={TenenciaviviendaSelect}
             />
           )}
           name="Tenenciavivienda"
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BPicker
               label="La cocina se encuentra"
               enabled={true}
-              onBlur={onBlur}
               error={errors.kitchenislocated}
               onChange={(value: any) => {
                 if (value) {
@@ -313,6 +364,7 @@ const _HouseForm = (props: any) => {
               onChange={(value: any) => {
                 if (value) {
                   onChange(value);
+                  props.saveFNBNUCVIVPropiety('HUMO_DENTRO', JSON.parse(value));
                 }
               }}
             />
@@ -321,12 +373,9 @@ const _HouseForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BPicker
-              label={
-                getItemsForQuestionSelect(QuestionFamilyCodes.Cocinacon).name
-              }
-              onBlur={onBlur}
+              label={'Cocina con'}
               error={errors.Cocinacon}
               onChange={(vlue: any) => {
                 onChange(vlue);
@@ -338,32 +387,17 @@ const _HouseForm = (props: any) => {
                   );
                 }
               }}
-              onLoad={() => {
-                getAnswers(
-                  QuestionTypes.selectOne,
-                  QuestionFamilyCodes.Cocinacon,
-                  'Cocinacon',
-                );
-              }}
               selectedValue={value}
-              items={
-                getItemsForQuestionSelect(QuestionFamilyCodes.Cocinacon)
-                  .children
-              }
+              items={CocinaConSelect}
             />
           )}
           name="Cocinacon"
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BPicker
-              label={
-                getItemsForQuestionSelect(
-                  QuestionFamilyCodes.Numerodepersonaspordormitorio,
-                ).name
-              }
-              onBlur={onBlur}
+              label={'Numero de personas por dormitorio'}
               error={errors.Numerodepersonaspordormitorio}
               onChange={(vlue: any) => {
                 onChange(vlue);
@@ -375,33 +409,17 @@ const _HouseForm = (props: any) => {
                   );
                 }
               }}
-              onLoad={() => {
-                getAnswers(
-                  QuestionTypes.selectOne,
-                  QuestionFamilyCodes.Numerodepersonaspordormitorio,
-                  'Numerodepersonaspordormitorio',
-                );
-              }}
               selectedValue={value}
-              items={
-                getItemsForQuestionSelect(
-                  QuestionFamilyCodes.Numerodepersonaspordormitorio,
-                ).children
-              }
+              items={NumerodepersonaspordormitorioSelect}
             />
           )}
           name="Numerodepersonaspordormitorio"
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BPicker
-              label={
-                getItemsForQuestionSelect(
-                  QuestionFamilyCodes.Habitacionesenlavivienda,
-                ).name
-              }
-              onBlur={onBlur}
+              label={'Habitaciones en la vivienda'}
               error={errors.Habitacionesenlavivienda}
               onChange={(vlue: any) => {
                 onChange(vlue);
@@ -413,32 +431,17 @@ const _HouseForm = (props: any) => {
                   );
                 }
               }}
-              onLoad={() => {
-                getAnswers(
-                  QuestionTypes.selectOne,
-                  QuestionFamilyCodes.Habitacionesenlavivienda,
-                  'Habitacionesenlavivienda',
-                );
-              }}
               selectedValue={value}
-              items={
-                getItemsForQuestionSelect(
-                  QuestionFamilyCodes.Habitacionesenlavivienda,
-                ).children
-              }
+              items={HabitacionesenlaviviendaSelect}
             />
           )}
           name="Habitacionesenlavivienda"
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BPicker
-              label={
-                getItemsForQuestionSelect(QuestionFamilyCodes.TipodeAlumbrado)
-                  .name
-              }
-              onBlur={onBlur}
+              label={'Tipo de alumbrado'}
               error={errors.TipodeAlumbrado}
               onChange={(vlue: any) => {
                 onChange(vlue);
@@ -450,18 +453,8 @@ const _HouseForm = (props: any) => {
                   );
                 }
               }}
-              onLoad={() => {
-                getAnswers(
-                  QuestionTypes.selectOne,
-                  QuestionFamilyCodes.TipodeAlumbrado,
-                  'TipodeAlumbrado',
-                );
-              }}
               selectedValue={value}
-              items={
-                getItemsForQuestionSelect(QuestionFamilyCodes.TipodeAlumbrado)
-                  .children
-              }
+              items={TipodeAlumbradoSelect}
             />
           )}
           name="TipodeAlumbrado"

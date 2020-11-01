@@ -1,8 +1,5 @@
-import {FUBUBIVIV} from '../../../state/house/types';
-import {allCatalogs} from '../../../providers/DataBaseProvider';
 import {HousingService, UtilsService} from '../../../services';
-import {Catalog} from './types';
-import {SelectSchema} from '../../../core/utils/types';
+import {PickerType} from '../../../core/utils/types';
 
 export const ActionType = {
   CATALOGS_HOUSE: 'CATALOGS_HOUSE',
@@ -17,8 +14,8 @@ export const getEntitySelect = (
   _columnFilter2 = null,
   _value2 = null,
 ) => {
-  return async (_dispatch: any, getState: any) => {
-    let item: SelectSchema = {name: '', id: 0, children: []};
+  return async (_dispatch: any) => {
+    let item: PickerType[] = [];
     let utils: UtilsService = new UtilsService();
     let items = await utils.getFilterEntity(
       entity,
@@ -28,15 +25,14 @@ export const getEntitySelect = (
       _columnFilter2,
       _value2,
     );
-    item.name = '';
     for (let option of items) {
-      item.children.push({
+      item.push({
         value: option.ID.toString(),
         label: option.NOMBRE,
         item: option,
       });
     }
-    item.children.unshift({value: '-1', label: 'Seleccione', item: null});
+    item.unshift({value: '-1', label: 'Seleccione', item: null});
     return item;
   };
 };

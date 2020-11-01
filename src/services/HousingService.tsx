@@ -18,7 +18,7 @@ import {
   HousingQuestionOption,
 } from '../modules/housing/state/types';
 import {FNBNUCVIV_FVCCONVIV, FUBUBIVIV, FNBNUCVIV} from '../state/house/types';
-import {SelectSchema, MultiSelectSchema} from '../core/utils/types';
+import {SelectSchema, MultiSelectSchema, PickerType} from '../core/utils/types';
 import {capitalizeFirstLetter} from '../core/utils/utils';
 import {UtilsService} from '.';
 import {FNCPERSON} from '../state/person/types';
@@ -408,19 +408,17 @@ export default class HousingService {
       });
   }
   getItemsForQuestionSelect(code: string, questions: HousingQuestion[]) {
-    let item: SelectSchema = {name: '', id: 0, children: []};
+    let item: PickerType[] = [];
     for (let i = 0; i < questions.length; i++) {
       if (questions[i].CODIGO === code) {
-        item.id = questions[i].ID;
-        item.name = capitalizeFirstLetter(questions[i].NOMBRE);
         for (let option of questions[i].OPTIONS) {
-          item.children.push({
+          item.push({
             value: option.ID.toString(),
             label: option.NOMBRE,
             item: option,
           });
         }
-        item.children.unshift({value: '-1', label: 'Seleccione', item: null});
+        item.unshift({value: '-1', label: 'Seleccione', item: null});
       }
     }
     return item;
@@ -485,7 +483,6 @@ export default class HousingService {
           .filtered(
             `FNBNUCVIV_ID = ${FNBNUCVIV_ID} AND FVCELEVIV_ID = ${FVCELEVIV_ID}`,
           );
-        console.warn('items getAnswerMultiSelect ', items.length);
         if (items.length > 0) {
           return items[0].FVCCONVIV_ID;
         } else {
@@ -493,7 +490,8 @@ export default class HousingService {
         }
       })
       .catch((error) => {
-        return error;
+        console.error(error);
+        return '';
       });
     return result;
   }

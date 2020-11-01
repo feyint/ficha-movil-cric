@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import {HelperText, TextInput} from 'react-native-paper';
-import {View} from 'react-native';
-
+import {StyleSheet, View} from 'react-native';
 
 interface Props {
   label?: string;
@@ -19,6 +18,7 @@ export default class BNumberInput extends Component<Props, any> {
     return (
       <View>
         <TextInput
+          style={styles.container}
           error={this.props.error}
           label={this.props.label}
           mode="outlined"
@@ -41,3 +41,8 @@ export default class BNumberInput extends Component<Props, any> {
     );
   }
 }
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: 'white',
+  },
+});

@@ -99,6 +99,7 @@ class BPicker extends Component<Props, any> {
 }
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: 'white',
     marginBottom: 5,
     color: 'black',
     borderRadius: 5,
@@ -106,6 +107,7 @@ const styles = StyleSheet.create({
     borderColor: 'black',
   },
   containerError: {
+    backgroundColor: 'white',
     color: 'red',
     borderRadius: 5,
     borderWidth: 2,

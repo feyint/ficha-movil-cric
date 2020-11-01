@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useState, useEffect} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
@@ -71,7 +72,7 @@ const schemaForm = yup.object().shape({
   PracticasCulturalesProductivo: yup.array().required(),
   ActividadesProductivasVivienda: yup.array().required(),
   FamiliaPracticasCulturales: yup.array().required(),
-  RiesgoVivienda: yup.string().required().oneOf(['SI', 'NO']),
+  RiesgoVivienda: yup.boolean().required(),
   NumeroAnimales: yup.number().required(),
   NumeroAnimalesnoVacunados: yup.number().required(),
   Observaciones: yup.string().optional(),
@@ -82,11 +83,11 @@ const ResiduosViviendaOption = [
 ];
 const _HouseConditionForm = (props: any) => {
   const syncCatalogService = new HousingService();
-  const [state, setState] = useState({
-    questions: [] as HousingQuestion[],
-  });
+  const [questionsItems, setquestionsItems] = useState<HousingQuestion[]>([]);
   const [numeroAnimales, setNumeroAnimales] = useState('');
-  const [numeroAnimalesnoVacunados, setNumeroAnimalesnoVacunados] = useState('');
+  const [numeroAnimalesnoVacunados, setNumeroAnimalesnoVacunados] = useState(
+    '',
+  );
   const navigation = useNavigation();
   const {handleSubmit, control, errors, setValue} = useForm({
     resolver: yupResolver(schemaForm),
@@ -94,14 +95,14 @@ const _HouseConditionForm = (props: any) => {
   useEffect(() => {
     fetchQuestions();
   }, []);
+  useEffect(() => {
+    getAnswersFNBNUCVIV();
+  }, [questionsItems]);
   async function fetchQuestions() {
     let result = await props.getQuestionWithOptions(questions);
     if (result) {
-      setState({
-        questions: result,
-      });
+      setquestionsItems(result);
     }
-    getAnswersFNBNUCVIV();
   }
   async function getAnswersFNBNUCVIV() {
     if (
@@ -123,23 +124,24 @@ const _HouseConditionForm = (props: any) => {
     setValue('ResiduosGeneranenVivienda', props.FNBNUCVIV.RESIDUO_BOR);
     setValue('setNumeroAnimalesnoVacunados', props.FNBNUCVIV.RIESGO);
     setValue('Observaciones', props.FNBNUCVIV.OBSERVACION);
+    setValue('RiesgoVivienda', props.FNBNUCVIV.RIESGO);
   }
   async function getAnswers(type: number, code: string, prop: string) {
     let question = await props.getQuestionAnswer(type, code);
     setValue(prop, question);
   }
   const getItemsForQuestionSelect = (code: string) => {
-    return syncCatalogService.getItemsForQuestionSelect(code, state.questions);
+    return syncCatalogService.getItemsForQuestionSelect(code, questionsItems);
   };
 
   const getQuestionlabel = (code: string) => {
-    return syncCatalogService.getQuestionlabel(code, state.questions);
+    return syncCatalogService.getQuestionlabel(code, questionsItems);
   };
 
   const getItemsForQuestionMultiSelect = (code: string) => {
     return syncCatalogService.getItemsForQuestionMultiSelect(
       code,
-      state.questions,
+      questionsItems,
     );
   };
   function onSubmit(data: any) {
@@ -150,10 +152,9 @@ const _HouseConditionForm = (props: any) => {
       <View style={styles.container}>
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BMultiSelect
               label={getQuestionlabel(QuestionFamilyCodes.FuentedeAgua)}
-              onBlur={onBlur}
               error={errors.FuentedeAgua}
               onChange={(values: any) => {
                 onChange(values);
@@ -180,10 +181,9 @@ const _HouseConditionForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BMultiSelect
               label={getQuestionlabel(QuestionFamilyCodes.Tratamientoagua)}
-              onBlur={onBlur}
               error={errors.Tratamientoagua}
               onChange={(values: any) => {
                 onChange(values);
@@ -210,12 +210,11 @@ const _HouseConditionForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BMultiSelect
               label={getQuestionlabel(
                 QuestionFamilyCodes.AlmacenamientoAguaconsumo,
               )}
-              onBlur={onBlur}
               error={errors.AlmacenamientoAguaconsumo}
               onChange={(values: any) => {
                 onChange(values);
@@ -242,10 +241,9 @@ const _HouseConditionForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BPicker
               label="Estado del recipiente"
-              onBlur={onBlur}
               error={errors.Estadodelrecipiente}
               onChange={(vlue: any) => {
                 onChange(vlue);
@@ -263,18 +261,16 @@ const _HouseConditionForm = (props: any) => {
                 );
               }}
               selectedValue={value}
-              items={
-                getItemsForQuestionSelect(
-                  QuestionFamilyCodes.Estadodelrecipiente,
-                ).children
-              }
+              items={getItemsForQuestionSelect(
+                QuestionFamilyCodes.Estadodelrecipiente,
+              )}
             />
           )}
           name="Estadodelrecipiente"
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BRadioButton
               label="Residuos que se generan en la vivienda"
               value={value}
@@ -292,10 +288,9 @@ const _HouseConditionForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BPicker
               label="Manejo de residuos Biodegradables"
-              onBlur={onBlur}
               error={errors.ManejoderesiduosBiodegradables}
               onChange={(vlue: any) => {
                 onChange(vlue);
@@ -313,21 +308,18 @@ const _HouseConditionForm = (props: any) => {
                 );
               }}
               selectedValue={value}
-              items={
-                getItemsForQuestionSelect(
-                  QuestionFamilyCodes.ManejoderesiduosBiodegradables,
-                ).children
-              }
+              items={getItemsForQuestionSelect(
+                QuestionFamilyCodes.ManejoderesiduosBiodegradables,
+              )}
             />
           )}
           name="ManejoderesiduosBiodegradables"
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BPicker
               label="Manejo residuos Ordinarios no reciclables"
-              onBlur={onBlur}
               error={errors.ManejoresiduosOrdinariosnoreciclables}
               onChange={(vlue: any) => {
                 onChange(vlue);
@@ -345,21 +337,18 @@ const _HouseConditionForm = (props: any) => {
                 );
               }}
               selectedValue={value}
-              items={
-                getItemsForQuestionSelect(
-                  QuestionFamilyCodes.ManejoresiduosOrdinariosnoreciclables,
-                ).children
-              }
+              items={getItemsForQuestionSelect(
+                QuestionFamilyCodes.ManejoresiduosOrdinariosnoreciclables,
+              )}
             />
           )}
           name="ManejoresiduosOrdinariosnoreciclables"
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BPicker
               label="Manejo residuos Reciclables"
-              onBlur={onBlur}
               error={errors.ManejoresiduosReciclables}
               onChange={(vlue: any) => {
                 onChange(vlue);
@@ -377,21 +366,18 @@ const _HouseConditionForm = (props: any) => {
                 );
               }}
               selectedValue={value}
-              items={
-                getItemsForQuestionSelect(
-                  QuestionFamilyCodes.ManejoresiduosReciclables,
-                ).children
-              }
+              items={getItemsForQuestionSelect(
+                QuestionFamilyCodes.ManejoresiduosReciclables,
+              )}
             />
           )}
           name="ManejoresiduosReciclables"
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BPicker
               label="Manejo residuos peligrosos"
-              onBlur={onBlur}
               error={errors.Manejoresiduospeligrosos}
               onChange={(vlue: any) => {
                 onChange(vlue);
@@ -409,21 +395,18 @@ const _HouseConditionForm = (props: any) => {
                 );
               }}
               selectedValue={value}
-              items={
-                getItemsForQuestionSelect(
-                  QuestionFamilyCodes.Manejoresiduospeligrosos,
-                ).children
-              }
+              items={getItemsForQuestionSelect(
+                QuestionFamilyCodes.Manejoresiduospeligrosos,
+              )}
             />
           )}
           name="Manejoresiduospeligrosos"
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BPicker
               label="Eliminación excretas"
-              onBlur={onBlur}
               error={errors.Eliminacionexcretas}
               onChange={(vlue: any) => {
                 onChange(vlue);
@@ -441,21 +424,18 @@ const _HouseConditionForm = (props: any) => {
                 );
               }}
               selectedValue={value}
-              items={
-                getItemsForQuestionSelect(
-                  QuestionFamilyCodes.Eliminacionexcretas,
-                ).children
-              }
+              items={getItemsForQuestionSelect(
+                QuestionFamilyCodes.Eliminacionexcretas,
+              )}
             />
           )}
           name="Eliminacionexcretas"
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BPicker
               label="Disposición final Aguas residuales domesticas"
-              onBlur={onBlur}
               error={errors.DisposicionfinalAguasdomesticas}
               onChange={(vlue: any) => {
                 onChange(vlue);
@@ -473,21 +453,18 @@ const _HouseConditionForm = (props: any) => {
                 );
               }}
               selectedValue={value}
-              items={
-                getItemsForQuestionSelect(
-                  QuestionFamilyCodes.DisposicionfinalAguasdomesticas,
-                ).children
-              }
+              items={getItemsForQuestionSelect(
+                QuestionFamilyCodes.DisposicionfinalAguasdomesticas,
+              )}
             />
           )}
           name="DisposicionfinalAguasdomesticas"
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BPicker
               label="Convivencia con animales adentro de la casa"
-              onBlur={onBlur}
               error={errors.ConvivenciaAnimalesCasa}
               onChange={(vlue: any) => {
                 onChange(vlue);
@@ -505,18 +482,16 @@ const _HouseConditionForm = (props: any) => {
                 );
               }}
               selectedValue={value}
-              items={
-                getItemsForQuestionSelect(
-                  QuestionFamilyCodes.ConvivenciaAnimalesCasa,
-                ).children
-              }
+              items={getItemsForQuestionSelect(
+                QuestionFamilyCodes.ConvivenciaAnimalesCasa,
+              )}
             />
           )}
           name="ConvivenciaAnimalesCasa"
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BNumberInput
               label="Número de animales vacunados"
               error={errors.NumeroAnimales}
@@ -537,7 +512,7 @@ const _HouseConditionForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BNumberInput
               label="Número de animales no vacunados"
               error={errors.NumeroAnimalesnoVacunados}
@@ -557,12 +532,11 @@ const _HouseConditionForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BMultiSelect
               label={getQuestionlabel(
                 QuestionFamilyCodes.TipodeRiesgodelavivienda,
               )}
-              onBlur={onBlur}
               error={errors.TipodeRiesgodelavivienda}
               onChange={(values: any) => {
                 onChange(values);
@@ -589,7 +563,7 @@ const _HouseConditionForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BRadioButton
               label="Riesgo de la vivienda"
               value={value}
@@ -607,12 +581,11 @@ const _HouseConditionForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BMultiSelect
               label={getQuestionlabel(
                 QuestionFamilyCodes.PresenciadevectoresCasa,
               )}
-              onBlur={onBlur}
               error={errors.PresenciadevectoresCasa}
               onChange={(values: any) => {
                 onChange(values);
@@ -639,10 +612,9 @@ const _HouseConditionForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BPicker
               label="Tipo de espacio productivo"
-              onBlur={onBlur}
               error={errors.Tipodeespacioproductivo}
               onChange={(vlue: any) => {
                 onChange(vlue);
@@ -660,23 +632,20 @@ const _HouseConditionForm = (props: any) => {
                 );
               }}
               selectedValue={value}
-              items={
-                getItemsForQuestionSelect(
-                  QuestionFamilyCodes.Tipodeespacioproductivo,
-                ).children
-              }
+              items={getItemsForQuestionSelect(
+                QuestionFamilyCodes.Tipodeespacioproductivo,
+              )}
             />
           )}
           name="Tipodeespacioproductivo"
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BMultiSelect
               label={getQuestionlabel(
                 QuestionFamilyCodes.Destinodelosproductos,
               )}
-              onBlur={onBlur}
               error={errors.Destinodelosproductos}
               onChange={(values: any) => {
                 onChange(values);
@@ -703,12 +672,11 @@ const _HouseConditionForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BMultiSelect
               label={getQuestionlabel(
                 QuestionFamilyCodes.PracticasCulturalesProductivo,
               )}
-              onBlur={onBlur}
               error={errors.PracticasCulturalesProductivo}
               onChange={(values: any) => {
                 onChange(values);
@@ -735,12 +703,11 @@ const _HouseConditionForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BMultiSelect
               label={getQuestionlabel(
                 QuestionFamilyCodes.ActividadesProductivasVivienda,
               )}
-              onBlur={onBlur}
               error={errors.ActividadesProductivasVivienda}
               onChange={(values: any) => {
                 onChange(values);
@@ -767,12 +734,11 @@ const _HouseConditionForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BMultiSelect
               label={getQuestionlabel(
                 QuestionFamilyCodes.FamiliaPracticasCulturales,
               )}
-              onBlur={onBlur}
               error={errors.FamiliaPracticasCulturales}
               onChange={(values: any) => {
                 onChange(values);

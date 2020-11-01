@@ -290,7 +290,7 @@ export const FNBNUCVIVSCHEMA = {
     RIESGO: 'bool?',
     OBSERVACION: 'string?',
     LUGAR_COCINA: 'string?',
-    HUMO_DENTRO: 'string?',
+    HUMO_DENTRO: 'bool?',
     ACCESO_INTERNET: 'bool?',
     TOTAL_ANIMAL: 'int?',
     FECHA_ACTIVIDAD: {type: 'date', default: new Date()},

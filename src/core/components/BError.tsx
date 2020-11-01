@@ -15,7 +15,9 @@ class BError extends Component<Props> {
       <View>
         {this.props.error ? (
           <HelperText type="error">
-            {this.props.error ? null : this.props.error.message}
+            {this.props.error
+              ? this.props.error.message
+              : 'El campo es requerido'}
           </HelperText>
         ) : null}
       </View>

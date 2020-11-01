@@ -28,9 +28,9 @@ import {
 } from '../../../../core/utils/PersonTypes';
 import moment from 'moment';
 import {PersonParametersConst} from '../../../../core/utils/SystemParameters';
-import { Text } from 'react-native-paper';
-import { colors } from 'react-native-elements';
-import { theme } from '../../../../core/style/theme';
+import {Text} from 'react-native-paper';
+import {colors} from 'react-native-elements';
+import {theme} from '../../../../core/style/theme';
 
 const schemaForm = yup.object().shape({
   fucmunici: yup.number().required(),
@@ -100,50 +100,54 @@ const _BirthInformationForm = (props: any) => {
   const fetchQuestions = async () => {
     let paises = await props.getEntitySelect('FUCPAIS', FUCPAISSCHEMA);
     let fncluninds = await props.getEntitySelect('FNCLUNIND', FNCLUNINDSCHEMA);
-    setfucpaisSelect(paises.children);
-    setfnclunindselect(fncluninds.children);
+    setfucpaisSelect(paises);
+    setfnclunindselect(fncluninds);
     if (props.FNCPERSON.ID) {
-      setValue('fnclunind', props.FNCPERSON.FNCLUNIND_ID);
-      setfnclunind('' + props.FNCPERSON.FNCLUNIND_ID);
-      let service: UtilsService = new UtilsService();
-      let munici = await service.getFilterEntity(
-        DataBaseSchemas.FUCMUNICISCHEMA,
-        FUCMUNICISCHEMA,
-        'ID',
-        props.FNCPERSON.FUCMUNICI_ID,
-        null,
-        null,
-        true,
-      );
-      let dept = await service.getFilterEntity(
-        DataBaseSchemas.FUCDEPARTSCHEMA,
-        FUCDEPARTSCHEMA,
-        'ID',
-        munici.FUCDEPART_ID,
-        null,
-        null,
-        true,
-      );
-      setValue('fucpais', dept.FUCPAIS_ID);
-      setfucpais('' + dept.FUCPAIS_ID);
-      let departsm = await props.getEntitySelect(
-        'FUCDEPART',
-        FUCDEPARTSCHEMA,
-        'FUCPAIS_ID',
-        dept.FUCPAIS_ID,
-      );
-      setfucdepatSelect(departsm.children);
-      setValue('fucdepat', dept.ID);
-      setfucdepat('' + dept.ID);
-      let municipios = await props.getEntitySelect(
-        'FUCMUNICI',
-        FUCMUNICISCHEMA,
-        'FUCDEPART_ID',
-        dept.ID,
-      );
-      setfucmuniciSelect(municipios.children);
-      setValue('fucmunici', props.FNCPERSON.FUCMUNICI_ID);
-      setfucmunici('' + props.FNCPERSON.FUCMUNICI_ID);
+      if (props.FNCPERSON.FNCLUNIND_ID) {
+        setValue('fnclunind', props.FNCPERSON.FNCLUNIND_ID);
+        setfnclunind('' + props.FNCPERSON.FNCLUNIND_ID);
+      }
+      if (props.FNCPERSON.FUCMUNICI_ID) {
+        let service: UtilsService = new UtilsService();
+        let munici = await service.getFilterEntity(
+          DataBaseSchemas.FUCMUNICISCHEMA,
+          FUCMUNICISCHEMA,
+          'ID',
+          props.FNCPERSON.FUCMUNICI_ID,
+          null,
+          null,
+          true,
+        );
+        let dept = await service.getFilterEntity(
+          DataBaseSchemas.FUCDEPARTSCHEMA,
+          FUCDEPARTSCHEMA,
+          'ID',
+          munici.FUCDEPART_ID,
+          null,
+          null,
+          true,
+        );
+        setValue('fucpais', dept.FUCPAIS_ID);
+        setfucpais('' + dept.FUCPAIS_ID);
+        let departsm = await props.getEntitySelect(
+          'FUCDEPART',
+          FUCDEPARTSCHEMA,
+          'FUCPAIS_ID',
+          dept.FUCPAIS_ID,
+        );
+        setfucdepatSelect(departsm);
+        setValue('fucdepat', dept.ID);
+        setfucdepat('' + dept.ID);
+        let municipios = await props.getEntitySelect(
+          'FUCMUNICI',
+          FUCMUNICISCHEMA,
+          'FUCDEPART_ID',
+          dept.ID,
+        );
+        setfucmuniciSelect(municipios);
+        setValue('fucmunici', props.FNCPERSON.FUCMUNICI_ID);
+        setfucmunici('' + props.FNCPERSON.FUCMUNICI_ID);
+      }
     }
   };
 
@@ -176,7 +180,7 @@ const _BirthInformationForm = (props: any) => {
       'FUCPAIS_ID',
       fucpais_id,
     );
-    setfucdepatSelect(FUCDEPART.children);
+    setfucdepatSelect(FUCDEPART);
     setValue('fucdepat', '');
     setfucdepat('');
   }
@@ -187,7 +191,7 @@ const _BirthInformationForm = (props: any) => {
       'FUCDEPART_ID',
       idDept,
     );
-    setfucmuniciSelect(FUCMUNICI.children);
+    setfucmuniciSelect(FUCMUNICI);
     setValue('fucmunici', '');
     setfucmunici(null);
   }

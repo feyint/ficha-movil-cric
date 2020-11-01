@@ -97,11 +97,11 @@ class BMultiSelect extends Component<Props, State> {
       <Text style={styles.noText}>No hay resultados para esa palabra.</Text>
     );
   }
-  public setSelectedItem(selectedItems: any[]) {
-  }
+  public setSelectedItem(selectedItems: any[]) {}
 }
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: 'white',
     padding: 10,
     color: 'black',
     borderRadius: 5,
@@ -109,9 +109,11 @@ const styles = StyleSheet.create({
     borderColor: 'black',
   },
   spacer: {
-    paddingBottom: 10,
+    paddingTop: 5,
+    paddingBottom: 5,
   },
   containerError: {
+    backgroundColor: 'white',
     padding: 10,
     color: 'red',
     borderRadius: 5,

@@ -372,6 +372,7 @@ const _HealthInformationForm = (props: any) => {
                   'ExamenDeProstata',
                 );
               }}
+              items={[]}
               selectedValue={value}
             />
           )}
@@ -394,11 +395,7 @@ const _HealthInformationForm = (props: any) => {
                 );
               }}
               selectedValue={value}
-              items={
-                getItemsForQuestionSelect(
-                  QuestionSexAndRepHealthPersonCodes.ExamenDeProstata,
-                ).children
-              }
+              items={[]}
             />
           )}
           name="SintomaticoRespiratorio"
@@ -420,11 +417,7 @@ const _HealthInformationForm = (props: any) => {
                 );
               }}
               selectedValue={value}
-              items={
-                getItemsForQuestionSelect(
-                  QuestionSexAndRepHealthPersonCodes.ExamenDeProstata,
-                ).children
-              }
+              items={[]}
             />
           )}
           name="SintomaticoMalaria"
@@ -467,11 +460,7 @@ const _HealthInformationForm = (props: any) => {
                 );
               }}
               selectedValue={value}
-              items={
-                getItemsForQuestionSelect(
-                  QuestionSexAndRepHealthPersonCodes.ExamenDeProstata,
-                ).children
-              }
+              items={[]}
             />
           )}
           name="DesparasitacionExternaUltimoSemestre"

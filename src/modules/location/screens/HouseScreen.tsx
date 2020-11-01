@@ -19,7 +19,7 @@ class HouseScreen extends Component<Props, any> {
           <Appbar.BackAction onPress={() => this._goBack()} />
           <Appbar.Content title="Vivienda" />
         </Appbar.Header>
-        <HouseForm />
+        <HouseForm goBack={() => this._goBack()} />
       </View>
     );
   }
