@@ -168,6 +168,44 @@ class SyncScreen extends Component<Props, State> {
             <Paragraph>
               FUCZONCUI (Zona de cuidado) : {this.state.FUCZONCUI}
             </Paragraph>
+            {this.state.FVCCONVIV != 0 &&
+            this.state.FVCELEVIV != 0 &&
+            this.state.FUCDEPART != 0 &&
+            this.state.FUCMUNICI != 0 &&
+            this.state.FUCTIPTER != 0 &&
+            this.state.FUCRESGUA != 0 &&
+            this.state.FUCBARVER != 0 &&
+            this.state.FUCZONA != 0 &&
+            this.state.FNCPAREN != 0 &&
+            this.state.FNCOCUPAC != 0 &&
+            this.state.FNCPUEIND != 0 &&
+            this.state.FNCORGANI != 0 &&
+            this.state.FUCUNICUI != 0 &&
+            this.state.FUCZONCUI != 0 &&
+            this.state.FNCELESAL != 0 &&
+            this.state.FNCCONSAL != 0 &&
+            this.state.FNCELEPER != 0 &&
+            this.state.FNCCONPER != 0 &&
+            this.state.FNCDESARM != 0 &&
+            this.state.FUCPAIS != 0 &&
+            this.state.FNCLUNIND != 0 &&
+            this.state.FNCELEREP != 0 &&
+            this.state.FNCCONREP != 0 &&
+            this.state.FNCTIPIDE != 0
+              ? Alert.alert(
+                  'Sincronizacion completada',
+                  '',
+                  [
+                    /* {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                  }, */
+                    {text: 'Aceptar', onPress: () => console.log('ok Pressed')},
+                  ],
+                  {cancelable: false},
+                )
+              : null}
           </View>
         </View>
       </View>

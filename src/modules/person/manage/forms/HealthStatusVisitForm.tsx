@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {View, StyleSheet, Picker} from 'react-native';
+import {View, StyleSheet, Picker, Alert} from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {yupResolver} from '@hookform/resolvers';
@@ -24,6 +24,7 @@ import {
   getEntitySelect,
   getLasHouseCode,
 } from '../../../../modules/location/state/actions';
+import {theme} from '../../../../core/style/theme';
 
 const questions = [
   QuestionPersonCodes.DesarmoniaOccidental,
@@ -31,7 +32,7 @@ const questions = [
 ];
 
 const schemaForm = yup.object().shape({
-  DesarmoniaPropia: yup.array().required(),
+  DesarmoniaPropia: yup.array().optional(),
   DesarmoniaOccidental: yup.array().required(),
   AntecedentesFamiliares: yup.array().required(),
 });
@@ -87,7 +88,21 @@ const _HealthStatusVisitForm = (props: any) => {
       state.questions,
     );
   };
-
+  function alert(data: any) {
+    Alert.alert(
+      'Volver!!!',
+      'Esta seguro?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {text: 'Aceptar', onPress: () => navigation.goBack()},
+      ],
+      {cancelable: false},
+    );
+  }
   function onSubmit(data: any) {
     navigation.goBack();
   }
@@ -216,11 +231,23 @@ const _HealthStatusVisitForm = (props: any) => {
           name="AntecedentesFamiliares"
         />
 
-        <View>
+        <View
+          style={{display: 'flex', flexDirection: 'row', marginLeft: '20%'}}>
           <BButton
+            style={styles.aceptButon}
             color="secondary"
-            value="Guardar Cambios"
-            onPress={handleSubmit(onSubmit)}
+            value="Cancelar"
+            labelStyle={styles.text}
+            onPress={alert}
+          />
+          <BButton
+            style={styles.cancelButon}
+            color="secondary"
+            //labelStyle={styles.text}
+            value="Validar"
+            onPress={handleSubmit(onSubmit, (err) => {
+              console.warn(err);
+            })}
           />
         </View>
       </View>
@@ -243,6 +270,27 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 8,
+  },
+  aceptButon: {
+    backgroundColor: 'white',
+    color: 'white',
+    width: '25%',
+    borderWidth: 2,
+    borderColor: theme.colors.primary,
+  },
+  cancelButon: {
+    //left: 500,
+    //position: 'relative',
+    //marginTop: -60,
+    backgroundColor: theme.colors.primary,
+    width: '25%',
+    color: 'red',
+  },
+  text: {
+    fontWeight: 'bold',
+    fontSize: 15,
+    lineHeight: 26,
+    color: theme.colors.primary,
   },
 });
 const mapDispatchToProps = {

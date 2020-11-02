@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, Alert} from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {yupResolver} from '@hookform/resolvers';
@@ -29,6 +29,8 @@ import {
   saveFNCSALREPPropiety,
 } from '../../../../state/SexAndRepHealthPerson/actions';
 import {SexAndRepHealthPersonQuestion} from '../state/types';
+import {theme} from '../../../../core/style/theme';
+
 
 const questions = [
   QuestionSexAndRepHealthPersonCodes.MetodoDelPlaneacionFamiliar,
@@ -100,6 +102,22 @@ const _AnotherReproductiveSexualHealtForm = (props: any) => {
       state.questions,
     );
   };
+
+  function alert(data: any) {
+    Alert.alert(
+      'Volver!!!',
+      'Esta seguro?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {text: 'Aceptar', onPress: () => navigation.goBack()},
+      ],
+      {cancelable: false},
+    );
+  }
 
   function onSubmit(data: any) {
     navigation.goBack();
@@ -320,11 +338,23 @@ const _AnotherReproductiveSexualHealtForm = (props: any) => {
           )}
           name="TomoAccionesAnteResultado"
         />
-        <View>
+        <View
+          style={{display: 'flex', flexDirection: 'row', marginLeft: '20%'}}>
           <BButton
+            style={styles.aceptButon}
             color="secondary"
-            value="Guardar Cambios"
-            onPress={handleSubmit(onSubmit)}
+            value="Cancelar"
+            labelStyle={styles.text}
+            onPress={alert}
+          />
+          <BButton
+            style={styles.cancelButon}
+            color="secondary"
+            //labelStyle={styles.text}
+            value="Validar"
+            onPress={handleSubmit(onSubmit, (err) => {
+              console.warn(err);
+            })}
           />
         </View>
       </View>
@@ -347,6 +377,27 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 8,
+  },
+  aceptButon: {
+    backgroundColor: 'white',
+    color: 'white',
+    width: '25%',
+    borderWidth: 2,
+    borderColor: theme.colors.primary,
+  },
+  cancelButon: {
+    //left: 500,
+    //position: 'relative',
+    //marginTop: -60,
+    backgroundColor: theme.colors.primary,
+    width: '25%',
+    color: 'red',
+  },
+  text: {
+    fontWeight: 'bold',
+    fontSize: 15,
+    lineHeight: 26,
+    color: theme.colors.primary,
   },
 });
 const mapDispatchToProps = {

@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, Alert} from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {yupResolver} from '@hookform/resolvers';
@@ -27,6 +27,7 @@ import {
   FNCPUEINDSCHEMA,
 } from '../../../../providers/DataBaseProvider';
 import { createIconSetFromFontello } from 'react-native-vector-icons';
+import {theme} from '../../../../core/style/theme';
 
 const questionscodes = [
   QuestionConditionPersonCodes.EstadoCivil,
@@ -119,7 +120,21 @@ const _OtherIdentificationDataForm = (props: any) => {
   useEffect(() => {
     fetchQuestions();
   }, []);
-
+  function alert(data: any) {
+    Alert.alert(
+      'Volver!!!',
+      'Esta seguro?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {text: 'Aceptar', onPress: () => navigation.goBack()},
+      ],
+      {cancelable: false},
+    );
+  }
   async function fetchQuestions() {
     let resultMultiselect = await props.getQuestionWithOptions(questionscodes);
     if (resultMultiselect) {
@@ -289,7 +304,7 @@ const _OtherIdentificationDataForm = (props: any) => {
               onBlur={onBlur}
               error={errors.organizacion}
               onChange={(value: any) => {
-                onChange(value);
+                //onChange(value);
                 if (value) {
                   onChange(value);
                   props.saveFNCPERSONPropiety('FNCORGANI_ID', value);
@@ -813,10 +828,20 @@ const _OtherIdentificationDataForm = (props: any) => {
           )}
           name="TipoDeCuidadosCulturalesQueRealiza"
         />
-        <View>
+        <View
+          style={{display: 'flex', flexDirection: 'row', marginLeft: '20%'}}>
           <BButton
+            style={styles.aceptButon}
             color="secondary"
-            value="Guardar Cambios"
+            value="Cancelar"
+            labelStyle={styles.text}
+            onPress={alert}
+          />
+          <BButton
+            style={styles.cancelButon}
+            color="secondary"
+            //labelStyle={styles.text}
+            value="Validar"
             onPress={handleSubmit(onSubmit, (err) => {
               console.warn(err);
             })}
@@ -842,6 +867,27 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 8,
+  },
+  aceptButon: {
+    backgroundColor: 'white',
+    color: 'white',
+    width: '25%',
+    borderWidth: 2,
+    borderColor: theme.colors.primary,
+  },
+  cancelButon: {
+    //left: 500,
+    //position: 'relative',
+    //marginTop: -60,
+    backgroundColor: theme.colors.primary,
+    width: '25%',
+    color: 'red',
+  },
+  text: {
+    fontWeight: 'bold',
+    fontSize: 15,
+    lineHeight: 26,
+    color: theme.colors.primary,
   },
 });
 const mapDispatchToProps = {
