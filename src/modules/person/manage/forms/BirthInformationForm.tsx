@@ -361,7 +361,7 @@ const _BirthInformationForm = (props: any) => {
           <BButton
             style={styles.aceptButon}
             color="secondary"
-            value="Volver"
+            value="Cancelar"
             labelStyle={styles.text}
             onPress={alert}
           />
@@ -400,7 +400,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontWeight: 'bold',
-    fontSize: 20,
+    fontSize: 15,
     lineHeight: 26,
     color: theme.colors.primary,
   },
