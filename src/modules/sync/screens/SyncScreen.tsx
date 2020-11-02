@@ -214,6 +214,16 @@ class SyncScreen extends Component<Props, State> {
   async syncCatalogs() {
     await this.clearPollEntities();
     await this.syncEntities();
+    
+    Alert.alert(
+      'Sincronización terminada',
+      'La sincronización ha finalizado con éxito',
+      [
+        {
+          text: 'aceptar',
+        },
+      ],
+    );
     this.countEntity();
   }
   async countEntity() {

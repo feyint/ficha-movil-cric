@@ -7,6 +7,35 @@ import {theme} from './src/core/style/theme';
 import {Dashboard} from './src/navigation';
 import Store from './src/state/Store';
 import {DataBaseProvider, HttpProvider} from './src/providers';
+import {
+  setJSExceptionHandler,
+  setNativeExceptionHandler,
+} from 'react-native-exception-handler';
+import {Alert} from 'react-native';
+import ErrorBoundary from './src/core/components/ErrorBoundary';
+
+setJSExceptionHandler((error, isFatal) => {
+  Alert.alert(
+    `Ha ocurrido un error ${isFatal ? 'FATAL' : 'NO FATAL'} de js`,
+    error.message,
+    [
+      {
+        text: 'aceptar',
+      },
+    ],
+  );
+}, false);
+setNativeExceptionHandler(
+  (exceptionString) => {
+    Alert.alert('Ha ocurrido un error nativo', exceptionString, [
+      {
+        text: 'aceptar',
+      },
+    ]);
+  },
+  false,
+  false,
+);
 
 export default class App extends Component {
   constructor(props: any) {
@@ -22,11 +51,13 @@ export default class App extends Component {
   render() {
     let storeApp = Store();
     return (
-      <Provider store={storeApp}>
-        <PaperProvider theme={theme}>
-          <NavigationContainer>{<Dashboard />}</NavigationContainer>
-        </PaperProvider>
-      </Provider>
+      <ErrorBoundary onError={() => {}}>
+        <Provider store={storeApp}>
+          <PaperProvider theme={theme}>
+            <NavigationContainer>{<Dashboard />}</NavigationContainer>
+          </PaperProvider>
+        </Provider>
+      </ErrorBoundary>
     );
   }
 }

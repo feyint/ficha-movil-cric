@@ -8,6 +8,7 @@ import {
 } from './types';
 import PersonRelationService from '../../services/PersonRelationService';
 import {FNBNUCVIV} from '../house/types';
+import {Alert} from 'react-native';
 
 export const ActionType = {
   SET_FNCPERSON: 'SET_FNCPERSON',
@@ -103,6 +104,15 @@ export const saveFNCPERSON = (data: FNCPERSON) => async (
     }
     dispatch(_setPERSON(data));
   } catch (error) {
+    Alert.alert(
+      'Ha ocurrido un error',
+      error.message,
+      [
+        {
+          text: 'aceptar',
+        },
+      ],
+    );
     return false;
   }
   return data;

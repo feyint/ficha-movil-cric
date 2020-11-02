@@ -67,7 +67,7 @@ const deleted = (
 };
 
 const setDefaultHeaders = () => {
-  axios.defaults.baseURL = 'http://190.255.56.35:8080/';
+  axios.defaults.baseURL = 'http://192.168.0.3:8888/';
   // axios.defaults.timeout = 2500;
   axios.defaults.headers.common['Authorization'] = '';
   axios.defaults.headers.common['Content-Type'] = 'application/json';

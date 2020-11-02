@@ -61,7 +61,6 @@ class HouseMenuScreen extends Component<any, State> {
             key="vivienda"
             title="Vivienda"
             left={() => <List.Icon icon="home" color={theme.colors.gray} />}
-            right={() => <Text style={styles.numberIndicator}>01</Text>}
             onPress={() => this.goHouseScreen()}
           />
           <View style={styles.divisor} />
@@ -71,7 +70,6 @@ class HouseMenuScreen extends Component<any, State> {
             left={() => (
               <List.Icon icon="home-alert" color={theme.colors.gray} />
             )}
-            right={() => <Text style={styles.numberIndicator}>02</Text>}
             onPress={() => this.goHousingStatusScreen()}
           />
           <View style={styles.divisor} />
@@ -81,7 +79,6 @@ class HouseMenuScreen extends Component<any, State> {
             left={() => (
               <List.Icon icon="home-heart" color={theme.colors.gray} />
             )}
-            right={() => <Text style={styles.numberIndicator}>03</Text>}
             onPress={() => this.goHouseContitionsScreen()}
           />
           <View style={styles.divisor} />
@@ -89,7 +86,6 @@ class HouseMenuScreen extends Component<any, State> {
             key="datos"
             title="Datos del encuestador"
             left={() => <List.Icon icon="account" color={theme.colors.gray} />}
-            right={() => <Text style={styles.numberIndicator}>04</Text>}
             onPress={() => this.goPollsterScreen()}
           />
           <View style={styles.divisor} />
@@ -127,15 +123,6 @@ class HouseMenuScreen extends Component<any, State> {
 }
 const styles = StyleSheet.create({
   divisor: {height: 1, backgroundColor: theme.colors.light},
-  numberIndicator: {
-    backgroundColor: theme.colors.accent,
-    color: theme.colors.secondaryFont,
-    fontSize: 20,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    marginVertical: 10,
-    borderRadius: 5,
-  },
 });
 const mapDispatchToProps = {
   saveFNBNUCVIV,
