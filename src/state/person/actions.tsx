@@ -165,13 +165,19 @@ export const updateFNCPERSON = (data: any) => async (
 /**
  *
  */
-export const setQuestionWithOptions = () => async (dispatch: any) => {
-  let questionItems: PersonQuestion[] = [];
-  let personServie: PersonService = new PersonService();
-  questionItems = await personServie.getQuestionWithOptions();
-  dispatch(setPERSON_QUESTION_LIST(questionItems));
+export const setQuestionWithOptions = () => async (
+  dispatch: any,
+  getState: any,
+) => {
+  const store = getState();
+  let items: PersonQuestion[] = store.person.PERSONQUESTIONLIST;
+  if (items && items.length == 0) {
+    let questionItems: PersonQuestion[] = [];
+    let personServie: PersonService = new PersonService();
+    questionItems = await personServie.getQuestionWithOptions();
+    dispatch(setPERSON_QUESTION_LIST(questionItems));
+  }
 };
-
 /**
  *
  * @param questionsQuery

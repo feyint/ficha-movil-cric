@@ -8,6 +8,7 @@ import {
   clearFNBINFSAL,
   clearFNCPERSON,
   setFNCPERSON,
+  setQuestionWithOptions,
 } from '../../../../state/person/actions';
 import {FNBNUCVIV} from '../../../../state/house/types';
 import {HousingService} from '../../../../services';
@@ -21,6 +22,7 @@ interface Props {
   clearFNCPERSON: any;
   setFNCPERSON: any;
   clearFNBINFSAL: any;
+  setQuestionWithOptions: any;
   FNBNUCVIV: FNBNUCVIV;
 }
 interface State {
@@ -47,6 +49,7 @@ class PersonManageScreen extends Component<Props, State> {
       this._unsubscribe = this.props.navigation.addListener('focus', () => {
         this.fetchPersons();
       });
+      this.props.setQuestionWithOptions();
     } catch (error) {
       console.error('ocurrio un error');
     }
@@ -165,6 +168,7 @@ class PersonManageScreen extends Component<Props, State> {
 const mapDispatchToProps = {
   clearFNCPERSON,
   setFNCPERSON,
+  setQuestionWithOptions,
   clearFNBINFSAL,
 };
 const mapStateToProps = (housing: any) => {

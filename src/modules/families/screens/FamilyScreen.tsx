@@ -34,7 +34,7 @@ class FamilyScreen extends Component<any, State> {
     this.props.navigation.goBack();
   }
   async UNSAFE_componentWillMount() {
-    this.props.setQuestionWithOptions();
+    //this.props.setQuestionWithOptions();
     this.props.setConditionQuestionWithOptions();
     this.props.setSexAndRepHealthQuestionWithOptions();
     await this.fetchFamilies();
@@ -79,7 +79,7 @@ class FamilyScreen extends Component<any, State> {
 const mapDispatchToProps = {
   setFNBNUCVIV,
   clearFNBNUCVIV,
-  setQuestionWithOptions,
+  //setQuestionWithOptions,
   setConditionQuestionWithOptions,
   setSexAndRepHealthQuestionWithOptions,
 };
