@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View} from 'react-native';
+import {Alert, View} from 'react-native';
 import {BButton} from '../../../core/components';
 //import {LoginForm} from '../components';
 import {NavigationProp} from '@react-navigation/native';
@@ -176,6 +176,16 @@ class SyncScreen extends Component<Props, State> {
   async syncCatalogs() {
     await this.clearPollEntities();
     await this.syncEntities();
+    
+    Alert.alert(
+      'Sincronización terminada',
+      'La sincronización ha finalizado con éxito',
+      [
+        {
+          text: 'aceptar',
+        },
+      ],
+    );
     this.countEntity();
   }
   async countEntity() {

@@ -14,6 +14,8 @@ target 'ficha_familiar_movil' do
 
   pod 'react-native-geolocation', :path => '../node_modules/@react-native-community/geolocation'
 
+  pod 'ReactNativeExceptionHandler', :path => '../node_modules/react-native-exception-handler'
+
   target 'ficha_familiar_movilTests' do
     inherit! :complete
     # Pods for testing

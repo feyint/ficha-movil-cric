@@ -37,7 +37,6 @@ class ManageHousingScreen extends Component<any, any> {
             left={() => (
               <List.Icon icon="map-marker" color={theme.colors.gray} />
             )}
-            right={() => <Text style={styles.numberIndicator}>01</Text>}
             onPress={() => this.goHomeLocation()}
           />
           <View style={styles.divisor} />
@@ -69,15 +68,6 @@ class ManageHousingScreen extends Component<any, any> {
 }
 const styles = StyleSheet.create({
   divisor: {height: 1, backgroundColor: theme.colors.light},
-  numberIndicator: {
-    backgroundColor: theme.colors.accent,
-    color: theme.colors.secondaryFont,
-    fontSize: 20,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    marginVertical: 10,
-    borderRadius: 5,
-  },
 });
 const mapStateToProps = (housing: any) => {
   return {

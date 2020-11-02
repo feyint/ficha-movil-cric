@@ -102,7 +102,6 @@ class ViewPersonScreen extends Component<Props, State> {
               left={() => (
                 <List.Icon icon="account-box" color={theme.colors.gray} />
               )}
-              right={() => <Text style={styles.numberIndicator}>01</Text>}
               onPress={() => this.navigate('PersonalInformationScreen')}
             />
             <View style={styles.divisor} />
@@ -111,7 +110,6 @@ class ViewPersonScreen extends Component<Props, State> {
               left={() => (
                 <List.Icon icon="baby-face" color={theme.colors.gray} />
               )}
-              right={() => <Text style={styles.numberIndicator}>02</Text>}
               onPress={() => this.navigate('BirthInformationScreen')}
             />
             <View style={styles.divisor} />
@@ -120,7 +118,6 @@ class ViewPersonScreen extends Component<Props, State> {
               left={() => (
                 <List.Icon icon="bottle-tonic-plus" color={theme.colors.gray} />
               )}
-              right={() => <Text style={styles.numberIndicator}>03</Text>}
               onPress={() => this.navigate('SocialSecurityScreen')}
             />
             <View style={styles.divisor} />
@@ -132,7 +129,6 @@ class ViewPersonScreen extends Component<Props, State> {
                   color={theme.colors.gray}
                 />
               )}
-              right={() => <Text style={styles.numberIndicator}>04</Text>}
               onPress={() => this.navigate('ContactInformationScreen')}
             />
             <View style={styles.divisor} />
@@ -141,7 +137,6 @@ class ViewPersonScreen extends Component<Props, State> {
               left={() => (
                 <List.Icon icon="card-account-mail" color={theme.colors.gray} />
               )}
-              right={() => <Text style={styles.numberIndicator}>05</Text>}
               onPress={() => {
                 this.props.FNCPERSON.FNCLUNIND_ID != null
                   ? this.navigate('OtherIdentificationDataScreen')
@@ -155,7 +150,6 @@ class ViewPersonScreen extends Component<Props, State> {
             <List.Item
               title="Informacion de salud"
               left={() => <List.Icon icon="bottle-tonic-plus-outline" />}
-              right={() => <Text style={styles.numberIndicator}>06</Text>}
               onPress={() => this.navigate('HealthInformationScreen')}
             />
             <View style={styles.divisor} />
@@ -164,7 +158,6 @@ class ViewPersonScreen extends Component<Props, State> {
               left={() => (
                 <List.Icon icon="map-marker" color={theme.colors.gray} />
               )}
-              right={() => <Text style={styles.numberIndicator}>07</Text>}
               onPress={() => this.navigate('HealthStatusVisitScreen')}
             />
             <View style={styles.divisor} />
@@ -173,7 +166,6 @@ class ViewPersonScreen extends Component<Props, State> {
               left={() => (
                 <List.Icon icon="map-marker" color={theme.colors.gray} />
               )}
-              right={() => <Text style={styles.numberIndicator}>08</Text>}
               onPress={() => this.navigate('UnhealthyHabitsScreen')}
             />
             <View style={styles.divisor} />
@@ -182,7 +174,6 @@ class ViewPersonScreen extends Component<Props, State> {
               left={() => (
                 <List.Icon icon="map-marker" color={theme.colors.gray} />
               )}
-              right={() => <Text style={styles.numberIndicator}>09</Text>}
               onPress={() => {
                 this.state.enableSexReproductionHealt
                   ? this.navigate('ReproductiveSexualHealtScreen')
@@ -198,7 +189,6 @@ class ViewPersonScreen extends Component<Props, State> {
               left={() => (
                 <List.Icon icon="map-marker" color={theme.colors.gray} />
               )}
-              right={() => <Text style={styles.numberIndicator}>10</Text>}
               onPress={() => this.navigate('LastPregnancyScreen')}
             />
             <View style={styles.divisor} />
@@ -207,7 +197,6 @@ class ViewPersonScreen extends Component<Props, State> {
               left={() => (
                 <List.Icon icon="map-marker" color={theme.colors.gray} />
               )}
-              right={() => <Text style={styles.numberIndicator}>11</Text>}
               onPress={() => this.navigate('CurrentPregnancyScreen')}
             />
             <View style={styles.divisor} />
@@ -216,7 +205,6 @@ class ViewPersonScreen extends Component<Props, State> {
               left={() => (
                 <List.Icon icon="map-marker" color={theme.colors.gray} />
               )}
-              right={() => <Text style={styles.numberIndicator}>12</Text>}
               onPress={() =>
                 this.navigate('AnotherReproductiveSexualHealtScreen')
               }
@@ -227,7 +215,6 @@ class ViewPersonScreen extends Component<Props, State> {
               left={() => (
                 <List.Icon icon="emoticon-dead" color={theme.colors.gray} />
               )}
-              right={() => <Text style={styles.numberIndicator}>13</Text>}
               onPress={() => this.navigate('MortalityLast12MonthsScreen')}
             />
             <View style={styles.divisor} />
@@ -243,15 +230,6 @@ class ViewPersonScreen extends Component<Props, State> {
 
 const styles = StyleSheet.create({
   divisor: {height: 1, backgroundColor: theme.colors.light},
-  numberIndicator: {
-    backgroundColor: theme.colors.accent,
-    color: theme.colors.secondaryFont,
-    fontSize: 20,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    marginVertical: 10,
-    borderRadius: 5,
-  },
 });
 const mapDispatchToProps = {
   setFNCNCSALREP,
