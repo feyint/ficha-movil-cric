@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {View, StyleSheet, Text} from 'react-native';
+import {View, StyleSheet, Text, Alert} from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {yupResolver} from '@hookform/resolvers';
@@ -11,6 +11,8 @@ import BNumberInput from '../../../../core/components/BNumberInput';
 import {PersonService} from '../../../../services';
 import {FNCPERSON} from '../../../../state/person/types';
 import {saveFNCPERSON, updateFNCPERSON} from '../../../../state/person/actions';
+import {theme} from '../../../../core/style/theme';
+
 const schemaForm = yup.object().shape({
   phonenumber: yup.string().required(),
   phonenumber2: yup.string().required(),
@@ -28,6 +30,21 @@ const _ContactInformationForm = (props: any) => {
   useEffect(() => {
     fetchQuestions();
   }, []);
+  function alert(data: any) {
+    Alert.alert(
+      'Volver!!!',
+      'Esta seguro?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {text: 'Aceptar', onPress: () => navigation.goBack()},
+      ],
+      {cancelable: false},
+    );
+  }
   const fetchQuestions = async () => {
     if (props.FNCPERSON.ID) {
       setValue('phonenumber', props.FNCPERSON.TEL_CELULAR);
@@ -97,10 +114,20 @@ const _ContactInformationForm = (props: any) => {
           )}
           name="email"
         />
-        <View>
+        <View
+          style={{display: 'flex', flexDirection: 'row', marginLeft: '20%'}}>
           <BButton
+            style={styles.aceptButon}
             color="secondary"
-            value="Guardar Cambios"
+            value="Cancelar"
+            labelStyle={styles.text}
+            onPress={alert}
+          />
+          <BButton
+            style={styles.cancelButon}
+            color="secondary"
+            //labelStyle={styles.text}
+            value="Validar"
             onPress={handleSubmit(onSubmit)}
           />
         </View>
@@ -120,6 +147,27 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 8,
+  },
+  aceptButon: {
+    backgroundColor: 'white',
+    color: 'white',
+    width: '25%',
+    borderWidth: 2,
+    borderColor: theme.colors.primary,
+  },
+  cancelButon: {
+    //left: 500,
+    //position: 'relative',
+    //marginTop: -60,
+    backgroundColor: theme.colors.primary,
+    width: '25%',
+    color: 'red',
+  },
+  text: {
+    fontWeight: 'bold',
+    fontSize: 15,
+    lineHeight: 26,
+    color: theme.colors.primary,
   },
 });
 const mapStateToProps = (person: any) => {

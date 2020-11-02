@@ -12,6 +12,8 @@ import {FNCPERSON} from '../../../../state/person/types';
 import {saveFNCPERSON, updateFNCPERSON} from '../../../../state/person/actions';
 import { FNCSALREP } from '../../../../state/SexAndRepHealthPerson/types';
 import { updateFNCSALREP } from '../../../../state/SexAndRepHealthPerson/actions';
+import {theme} from '../../../../core/style/theme';
+
 const schemaForm = yup.object().shape({
   agemenstruation: yup.number().integer().min(1),
   pregnancynumber: yup.number().integer(),
@@ -87,6 +89,24 @@ const _ReproductiveSexualHealtForm = (props: any) => {
     }
     return isValid;
   };
+
+  function alert(data: any) {
+    Alert.alert(
+      'Volver!!!',
+      'Esta seguro?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {text: 'Aceptar', onPress: () => navigation.goBack()},
+      ],
+      {cancelable: false},
+    );
+  }
+
+
   const valideateBornPregnancy = () => {
     let isValid = false;
     if (pregnancynumber > 0) {
@@ -248,11 +268,23 @@ const _ReproductiveSexualHealtForm = (props: any) => {
           )}
           name="bornnumberdeath"
         />
-        <View>
+        <View
+          style={{display: 'flex', flexDirection: 'row', marginLeft: '20%'}}>
           <BButton
+            style={styles.aceptButon}
             color="secondary"
-            value="Guardar Cambios"
-            onPress={handleSubmit(onSubmit)}
+            value="Cancelar"
+            labelStyle={styles.text}
+            onPress={alert}
+          />
+          <BButton
+            style={styles.cancelButon}
+            color="secondary"
+            //labelStyle={styles.text}
+            value="Validar"
+            onPress={handleSubmit(onSubmit, (err) => {
+              console.warn(err);
+            })}
           />
         </View>
       </View>
@@ -271,6 +303,27 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 8,
+  },
+  aceptButon: {
+    backgroundColor: 'white',
+    color: 'white',
+    width: '25%',
+    borderWidth: 2,
+    borderColor: theme.colors.primary,
+  },
+  cancelButon: {
+    //left: 500,
+    //position: 'relative',
+    //marginTop: -60,
+    backgroundColor: theme.colors.primary,
+    width: '25%',
+    color: 'red',
+  },
+  text: {
+    fontWeight: 'bold',
+    fontSize: 15,
+    lineHeight: 26,
+    color: theme.colors.primary,
   },
 });
 const mapStateToProps = (store: any) => {

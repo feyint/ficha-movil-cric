@@ -578,14 +578,14 @@ const _PersonalInformationForm = (props: any) => {
         <BButton
           style={styles.aceptButon}
           color="secondary"
-          value="Volver"
+          value="Cancelar"
           labelStyle={styles.text}
           onPress={alert}
         />
         <BButton
           style={styles.cancelButon}
           color="secondary"
-          value="Validar"
+          value="Guardar"
           onPress={handleSubmit(onSubmit)}
         />
       </View>
@@ -623,7 +623,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontWeight: 'bold',
-    fontSize: 20,
+    fontSize: 15,
     lineHeight: 26,
     color: theme.colors.primary,
   },
