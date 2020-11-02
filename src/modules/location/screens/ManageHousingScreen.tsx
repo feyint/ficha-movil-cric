@@ -11,15 +11,20 @@ interface Props {
   navigation: NavigationProp<any>;
 }
 class ManageHousingScreen extends Component<any, any> {
-  _goBack() {
-    this.props.navigation.goBack();
+  constructor(props: any) {
+    super(props);
+    this.state = {
+      houses: [],
+    };
   }
-  UNSAFE_componentWillMount() {
-    this.props.setQuestionWithOptions();
-    let fubi = this.props.FUBUBIVIV;
+  async componentDidMount() {
+    await this.props.setQuestionWithOptions();
     if (this.props.FUBUBIVIV && this.props.FUBUBIVIV.CODIGO == '') {
       this.goHomeLocation();
     }
+  }
+  _goBack() {
+    this.props.navigation.goBack();
   }
   render() {
     return (
@@ -33,6 +38,7 @@ class ManageHousingScreen extends Component<any, any> {
         </Appbar.Header>
         <List.Section>
           <List.Item
+            key={'Ubicacion'}
             title="Ubicación de la vivienda"
             left={() => (
               <List.Icon icon="map-marker" color={theme.colors.gray} />
@@ -41,19 +47,18 @@ class ManageHousingScreen extends Component<any, any> {
             onPress={() => this.goHomeLocation()}
           />
           <View style={styles.divisor} />
-          {this.props.FUBUBIVIV && this.props.FUBUBIVIV.CODIGO !== ''
-            ? [
-                <List.Item
-                  onPress={() => this.goFamilyScreen()}
-                  title="Nucleo Familiar"
-                  left={() => (
-                    <List.Icon icon="account-group" color={theme.colors.gray} />
-                  )}
-                />,
-                <View style={styles.divisor} />,
-              ]
-            : null}
+          {this.props.FUBUBIVIV && this.props.FUBUBIVIV.CODIGO !== '' && (
+            <List.Item
+              key={'Nucleo'}
+              onPress={() => this.goFamilyScreen()}
+              title="Nucleo Familiar"
+              left={() => (
+                <List.Icon icon="account-group" color={theme.colors.gray} />
+              )}
+            />
+          )}
         </List.Section>
+        <View style={styles.divisor} />
       </View>
     );
   }

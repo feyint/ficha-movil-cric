@@ -23,7 +23,10 @@ class HouseMenuScreen extends Component<any, State> {
       CODIGO: this.props.FUBUBIVIV.CODIGO,
     };
   }
-  async UNSAFE_componentWillMount() {
+  async componentDidMount() {
+    this.inicialize();
+  }
+  async inicialize() {
     if (this.props.FNBNUCVIV.CODIGO == '') {
       const syncCatalogService = new HousingService();
       let NFCODIGO = await syncCatalogService.getLastNucleoCode(
@@ -55,6 +58,7 @@ class HouseMenuScreen extends Component<any, State> {
         </Appbar.Header>
         <List.Section>
           <List.Item
+            key="vivienda"
             title="Vivienda"
             left={() => <List.Icon icon="home" color={theme.colors.gray} />}
             right={() => <Text style={styles.numberIndicator}>01</Text>}
@@ -62,6 +66,7 @@ class HouseMenuScreen extends Component<any, State> {
           />
           <View style={styles.divisor} />
           <List.Item
+            key="Estado"
             title="Estado de la vivienda"
             left={() => (
               <List.Icon icon="home-alert" color={theme.colors.gray} />
@@ -71,6 +76,7 @@ class HouseMenuScreen extends Component<any, State> {
           />
           <View style={styles.divisor} />
           <List.Item
+            key="condiciones"
             title="Condiciones de la vivienda"
             left={() => (
               <List.Icon icon="home-heart" color={theme.colors.gray} />
@@ -80,6 +86,7 @@ class HouseMenuScreen extends Component<any, State> {
           />
           <View style={styles.divisor} />
           <List.Item
+            key="datos"
             title="Datos del encuestador"
             left={() => <List.Icon icon="account" color={theme.colors.gray} />}
             right={() => <Text style={styles.numberIndicator}>04</Text>}
@@ -87,6 +94,7 @@ class HouseMenuScreen extends Component<any, State> {
           />
           <View style={styles.divisor} />
           <List.Item
+            key="managep"
             title="Administrar personas"
             left={() => (
               <List.Icon icon="account-group" color={theme.colors.gray} />

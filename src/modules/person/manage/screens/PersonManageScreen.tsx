@@ -1,9 +1,8 @@
-import React, {Component, useState} from 'react';
-import {BButton, BTextInput, BSearchBar, BSearchBarV2} from '../../../../core/components';
-import {Alert, StyleSheet, View} from 'react-native';
+import React, {Component} from 'react';
+import {BSearchBarV2} from '../../../../core/components';
+import {StyleSheet, View} from 'react-native';
 import {Appbar, Text} from 'react-native-paper';
 import {NavigationProp} from '@react-navigation/native';
-import PersonManageList from '../forms/PersonManageList';
 import {connect} from 'react-redux';
 import {
   clearFNBINFSAL,
@@ -57,14 +56,16 @@ class PersonManageScreen extends Component<Props, State> {
   }
   async fetchPersons() {
     try {
-      let syncCatalogService = new HousingService();
-      let result = await syncCatalogService.getFNBNUCVIVPersons(
-        this.props.FNBNUCVIV.ID,
-      );
-      if (result) {
-        this.setState({
-          persons: result,
-        });
+      if (this.props.FNBNUCVIV.ID) {
+        let syncCatalogService = new HousingService();
+        let result = await syncCatalogService.getFNBNUCVIVPersons(
+          this.props.FNBNUCVIV.ID,
+        );
+        if (result) {
+          this.setState({
+            persons: result,
+          });
+        }
       }
     } catch (error) {
       console.error(error);
@@ -108,27 +109,29 @@ class PersonManageScreen extends Component<Props, State> {
           />
           <View style={styles.container}>
             {this.state.filteredPersons && this.state.filteredPersons.length > 0
-              ? this.state.filteredPersons.map((person: FNCPERSON, i: any) => (
+              ? this.state.filteredPersons.map(
+                  (person: FNCPERSON, i: number) => (
+                    <ListItem
+                      onPress={() => {
+                        this.goViewPersonScreen(person);
+                      }}
+                      key={`${i}${person.ID}`}
+                      bottomDivider>
+                      <ListItem.Content>
+                        <ListItem.Title>{`${person.PRIMER_NOMBRE}  ${person.SEGUNDO_NOMBRE}  ${person.PRIMER_APELLIDO}  ${person.SEGUNDO_APELLIDO}`}</ListItem.Title>
+                        <ListItem.Subtitle>
+                          {person.IDENTIFICACION}
+                        </ListItem.Subtitle>
+                      </ListItem.Content>
+                    </ListItem>
+                  ),
+                )
+              : this.state.persons.map((person: FNCPERSON, i: number) => (
                   <ListItem
                     onPress={() => {
                       this.goViewPersonScreen(person);
                     }}
-                    key={i}
-                    bottomDivider>
-                    <ListItem.Content>
-                      <ListItem.Title>{`${person.PRIMER_NOMBRE}  ${person.SEGUNDO_NOMBRE}  ${person.PRIMER_APELLIDO}  ${person.SEGUNDO_APELLIDO}`}</ListItem.Title>
-                      <ListItem.Subtitle>
-                        {person.IDENTIFICACION}
-                      </ListItem.Subtitle>
-                    </ListItem.Content>
-                  </ListItem>
-                ))
-              : this.state.persons.map((person: FNCPERSON, i: any) => (
-                  <ListItem
-                    onPress={() => {
-                      this.goViewPersonScreen(person);
-                    }}
-                    key={i}
+                    key={`${i}${person.ID}`}
                     bottomDivider>
                     <ListItem.Content>
                       <ListItem.Title>

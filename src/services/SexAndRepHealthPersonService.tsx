@@ -80,7 +80,36 @@ export default class SexAndRepHealthPersonService {
           .objects(DataBaseSchemas.FNCSALREPSCHEMA)
           .filtered(`FNCPERSON_ID = ${FNCPERSON_ID}`)
           .sorted('FNCPERSON_ID', true)[0];
-        return entity;
+        if (entity) {
+          return {
+            ID: entity.ID,
+            EDAD_PRIMERA_REGLA: entity.EDAD_PRIMERA_REGLA,
+            GRAVIDEZ: entity.GRAVIDEZ,
+            PARIDEZ: entity.PARIDEZ,
+            ABORTO: entity.ABORTO,
+            CESAREA: entity.CESAREA,
+            NACIDOS_VIVOS: entity.NACIDOS_VIVOS,
+            NACIDOS_MUERTOS: entity.NACIDOS_MUERTOS,
+            PARTO_ULTIMO: entity.PARTO_ULTIMO,
+            ULTIMA_REGLA: entity.ULTIMA_REGLA,
+            EDAD_GESTACION: entity.EDAD_GESTACION,
+            PARTO_ESTIMADO: entity.PARTO_ESTIMADO,
+            PRESENCIA_FAM: entity.PRESENCIA_FAM,
+            SEROLOGIA: entity.SEROLOGIA,
+            VIH: entity.VIH,
+            RESUL_CITOLOGIA: entity.RESUL_CITOLOGIA,
+            ACCION_CITOLOGIA: entity.ACCION_CITOLOGIA,
+            RESUL_PROSTATA: entity.RESUL_PROSTATA,
+            ACCION_PROSTATA: entity.ACCION_PROSTATA,
+            FECHA_ACTIVIDAD: entity.FECHA_ACTIVIDAD,
+            USUARIO_DATA: entity.USUARIO_DATA,
+            FECHA_CREACION: entity.FECHA_CREACION,
+            ORIGEN_DATA: entity.ORIGEN_DATA,
+            FNCPERSON_ID: entity.FNCPERSON_ID,
+          };
+        } else {
+          return null;
+        }
       })
       .catch((error) => {
         console.error(error);

@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import {View} from 'react-native';
 import {Appbar} from 'react-native-paper';
 import {FamilyList} from '../form';
-import {BButton} from '../../../core/components';
 import {connect} from 'react-redux';
 import {setFNBNUCVIV, clearFNBNUCVIV} from '../../../state/house/actions';
 import {HousingService} from '../../../services';
@@ -53,7 +52,6 @@ class FamilyScreen extends Component<any, State> {
             this.goHouseMenuScreen(family);
           }}
         />
-        
         <BFabButton onPress={() => this.createNewNF()} />
       </View>
     );

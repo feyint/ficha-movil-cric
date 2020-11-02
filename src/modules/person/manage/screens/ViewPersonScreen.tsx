@@ -23,20 +23,17 @@ interface State {
 }
 
 class ViewPersonScreen extends Component<Props, State> {
+  private _unsubscribe: any;
   constructor(props: Props) {
     super(props);
     this.state = {
       created: false,
       enableSexReproductionHealt: false,
     };
+    this.initdata();
   }
-  private _unsubscribe: any;
   _goBack() {
     this.props.navigation.goBack();
-  }
-  async UNSAFE_componentWillMount() {}
-  async componentDidMount() {
-    await this.initdata();
   }
   async initdata() {
     if (!this.props.FNCPERSON || !this.props.FNCPERSON.ID) {
