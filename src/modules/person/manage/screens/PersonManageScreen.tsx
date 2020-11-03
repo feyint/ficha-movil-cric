@@ -1,6 +1,11 @@
 import React, {Component, useState} from 'react';
-import {BButton, BTextInput, BSearchBar, BSearchBarV2} from '../../../../core/components';
-import {Alert, StyleSheet, View} from 'react-native';
+import {
+  BButton,
+  BTextInput,
+  BSearchBar,
+  BSearchBarV2,
+} from '../../../../core/components';
+import {Alert, Image, StyleSheet, View} from 'react-native';
 import {Appbar, Text} from 'react-native-paper';
 import {NavigationProp} from '@react-navigation/native';
 import PersonManageList from '../forms/PersonManageList';
@@ -86,6 +91,7 @@ class PersonManageScreen extends Component<Props, State> {
           i.SEGUNDO_NOMBRE.toLowerCase().includes(textToSearch.toLowerCase()) ||
           i.SEGUNDO_APELLIDO.toLowerCase().includes(textToSearch.toLowerCase()),
       ),
+      word: textToSearch,
     });
   }
   render() {
@@ -107,39 +113,54 @@ class PersonManageScreen extends Component<Props, State> {
             }}
           />
           <View style={styles.container}>
-            {this.state.filteredPersons && this.state.filteredPersons.length > 0
-              ? this.state.filteredPersons.map((person: FNCPERSON, i: any) => (
-                  <ListItem
-                    onPress={() => {
-                      this.goViewPersonScreen(person);
-                    }}
-                    key={i}
-                    bottomDivider>
-                    <ListItem.Content>
-                      <ListItem.Title>{`${person.PRIMER_NOMBRE}  ${person.SEGUNDO_NOMBRE}  ${person.PRIMER_APELLIDO}  ${person.SEGUNDO_APELLIDO}`}</ListItem.Title>
-                      <ListItem.Subtitle>
-                        {person.IDENTIFICACION}
-                      </ListItem.Subtitle>
-                    </ListItem.Content>
-                  </ListItem>
-                ))
-              : this.state.persons.map((person: FNCPERSON, i: any) => (
-                  <ListItem
-                    onPress={() => {
-                      this.goViewPersonScreen(person);
-                    }}
-                    key={i}
-                    bottomDivider>
-                    <ListItem.Content>
-                      <ListItem.Title>
-                        {`${person.PRIMER_NOMBRE}  ${person.SEGUNDO_NOMBRE}  ${person.PRIMER_APELLIDO}  ${person.SEGUNDO_APELLIDO}`}
-                      </ListItem.Title>
-                      <ListItem.Subtitle>
-                        {person.IDENTIFICACION}
-                      </ListItem.Subtitle>
-                    </ListItem.Content>
-                  </ListItem>
-                ))}
+            {this.state.filteredPersons &&
+            this.state.filteredPersons.length > 0 ? (
+              this.state.filteredPersons.map((person: FNCPERSON, i: any) => (
+                <ListItem
+                  onPress={() => {
+                    this.goViewPersonScreen(person);
+                  }}
+                  key={i}
+                  bottomDivider>
+                  <ListItem.Content>
+                    <ListItem.Title>{`${person.PRIMER_NOMBRE}  ${person.SEGUNDO_NOMBRE}  ${person.PRIMER_APELLIDO}  ${person.SEGUNDO_APELLIDO}`}</ListItem.Title>
+                    <ListItem.Subtitle>
+                      {person.IDENTIFICACION}
+                    </ListItem.Subtitle>
+                  </ListItem.Content>
+                </ListItem>
+              ))
+            ) : this.state.filteredPersons.length == 0 &&
+              this.state.word != '' ? (
+              <View>
+                <Image
+                  source={{
+                    uri:
+                      'https://image.flaticon.com/icons/png/512/64/64670.png',
+                  }}
+                  style={styles.imageStyle}
+                />
+                <Text style={styles.noResultsText}>¡Sin resultados!</Text>
+              </View>
+            ) : (
+              this.state.persons.map((person: FNCPERSON, i: any) => (
+                <ListItem
+                  onPress={() => {
+                    this.goViewPersonScreen(person);
+                  }}
+                  key={i}
+                  bottomDivider>
+                  <ListItem.Content>
+                    <ListItem.Title>
+                      {`${person.PRIMER_NOMBRE}  ${person.SEGUNDO_NOMBRE}  ${person.PRIMER_APELLIDO}  ${person.SEGUNDO_APELLIDO}`}
+                    </ListItem.Title>
+                    <ListItem.Subtitle>
+                      {person.IDENTIFICACION}
+                    </ListItem.Subtitle>
+                  </ListItem.Content>
+                </ListItem>
+              ))
+            )}
           </View>
           <View style={styles.spacer} />
         </KeyboardAwareScrollView>
@@ -178,6 +199,24 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 8,
+  },
+  imageStyle: {
+    padding: 10,
+    margin: 5,
+    height: 80,
+    width: 80,
+    resizeMode: 'stretch',
+    alignItems: 'center',
+    alignContent: 'center',
+    marginHorizontal: '42%',
+    opacity: 0.7,
+  },
+  noResultsText: {
+    resizeMode: 'stretch',
+    alignItems: 'center',
+    alignContent: 'center',
+    marginHorizontal: '38%',
+    fontSize: 20,
   },
 });
 
