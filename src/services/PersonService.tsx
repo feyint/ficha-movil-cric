@@ -53,6 +53,7 @@ export default class PersonService {
                 realm.delete(inserted);
               }
             } catch (error) {
+              console.error(error);
               realm.delete(inserted);
             }
           }
