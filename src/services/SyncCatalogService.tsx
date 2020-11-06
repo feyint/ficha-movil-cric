@@ -117,8 +117,8 @@ export default class SyncCatalogService {
         realm.delete(itemFNCOCUPAC);
         realm.delete(itemFNCPAREN);
         realm.delete(itemFNCTIPIDE);
-        realm.close();
       });
+      realm.close();
     });
   }
   async syncEntities() {
@@ -521,8 +521,8 @@ export default class SyncCatalogService {
               realm.create(type, item);
             } catch (error) {}
           }
-          realm.close();
         });
+        realm.close();
       });
     }
   }
