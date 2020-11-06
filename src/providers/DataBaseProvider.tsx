@@ -540,6 +540,7 @@ export const allCatalogs = () =>
     })
       .then((realm) => {
         let servicios = realm.objects('FVCCONVIV');
+        realm.close();
         resolve(servicios);
       })
       .catch((error) => {
@@ -725,6 +726,8 @@ export default class DataBaseProvider {
         //   FUBUBIVIV_CODE: 'CODVIVI1',
         // });
       });
+      
+      realm.close();
     });
   }
   async countEntity(entity: string) {
