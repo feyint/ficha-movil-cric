@@ -38,7 +38,7 @@ export enum DataBaseSchemas {
   FNCPUEINDSCHEMA = 'FNCPUEIND',
   FNCORGANISCHEMA = 'FNCORGANI',
 }
-export const schemaVersion = 1;
+export const schemaVersion = 2;
 export const UserSchema = {
   name: DataBaseSchemas.UserSchema,
   properties: {
