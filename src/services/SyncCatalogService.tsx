@@ -117,6 +117,7 @@ export default class SyncCatalogService {
         realm.delete(itemFNCOCUPAC);
         realm.delete(itemFNCPAREN);
         realm.delete(itemFNCTIPIDE);
+        realm.close();
       });
     });
   }
@@ -520,8 +521,8 @@ export default class SyncCatalogService {
               realm.create(type, item);
             } catch (error) {}
           }
+          realm.close();
         });
-        console.log('couuunt ', realm.objects(type).length);
       });
     }
   }
@@ -533,6 +534,7 @@ export default class SyncCatalogService {
       })
         .then((realm) => {
           let servicios = realm.objects('FVCCONVIV');
+          realm.close();
           resolve(servicios);
         })
         .catch((error) => {})
