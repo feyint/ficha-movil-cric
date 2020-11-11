@@ -23,6 +23,15 @@ import {
   FUCTIPTERSCHEMA,
 } from '../../../providers/DataBaseProvider';
 import {FieldValidator} from '../../../providers';
+import {
+  useFUCBARVER,
+  useFUCDEPART,
+  useFUCMUNICI,
+  useFUCRESGUA,
+  useFUCTIPTER,
+  useFUCUNICUI,
+} from '../../../hooks';
+import {getSelectSchema} from '../../../core/utils/utils';
 
 interface GeolocationData {
   latitude: string;
@@ -48,9 +57,16 @@ const _HomeLocationForm = (props: any) => {
     latitude: '',
     longitude: '',
   });
-  const {handleSubmit, control, errors, getValues, setValue} = useForm({
+  const {handleSubmit, control, errors, setValue} = useForm({
     resolver: yupResolver(schemaForm),
   });
+  const {listFUCDEPART, getAllFUCDEPART} = useFUCDEPART();
+  const {listFUCMUNICI, getFUCMUNICIFromDept} = useFUCMUNICI();
+  const {listFUCTIPTER, getAllFUCTIPTER} = useFUCTIPTER();
+  const {listFUCRESGUA, getFilterFUCRESGUA} = useFUCRESGUA();
+  const {listFUCBARVER, filterFUCBARVER} = useFUCBARVER();
+
+  const {listFUCUNICUI, filterFUCUNICUI} = useFUCUNICUI();
   const [department, setDepartment] = useState('');
   const [municipio, setMunicipio] = useState('');
   const [originalhouseCode, setoriginalHouseCode] = useState('');
@@ -82,21 +98,40 @@ const _HomeLocationForm = (props: any) => {
     fetchQuestions();
   }, []);
   useEffect(() => {
+    let result = getSelectSchema(listFUCDEPART);
+    setDepartamentoSelect(result);
+  }, [listFUCDEPART]);
+  useEffect(() => {
+    setMunicipioSelect(getSelectSchema(listFUCMUNICI));
+  }, [listFUCMUNICI]);
+  useEffect(() => {
+    setrescentropSelect(getSelectSchema(listFUCRESGUA));
+  }, [listFUCRESGUA]);
+  useEffect(() => {
+    setBarrioVeredaSelect(getSelectSchema(listFUCBARVER));
+  }, [listFUCBARVER]);
+  useEffect(() => {
+    setTipoterritorioSelect(getSelectSchema(listFUCTIPTER));
+  }, [listFUCTIPTER]);
+
+  useEffect(() => {
     // useMunicipio();
   }, [municipio]);
   async function fetchQuestions() {
-    let FUCDEPART = await props.getEntitySelect('FUCDEPART', FUCDEPARTSCHEMA);
-    let FUCTIPTER = await props.getEntitySelect('FUCTIPTER', FUCTIPTERSCHEMA);
-    let FUCMUNICI = await props.getEntitySelect(
-      'FUCMUNICI',
-      FUCMUNICISCHEMA,
-      'FUCDEPART_ID',
-      getValues().department,
-    );
-    setDepartamentoSelect(FUCDEPART);
-    setTipoterritorioSelect(FUCTIPTER);
-    setMunicipioSelect(FUCMUNICI);
-    getDefaultValues();
+    getAllFUCDEPART();
+    getAllFUCTIPTER();
+    // let FUCDEPART = await props.getEntitySelect('FUCDEPART', FUCDEPARTSCHEMA);
+    // let FUCTIPTER = await props.getEntitySelect('FUCTIPTER', FUCTIPTERSCHEMA);
+    // let FUCMUNICI = await props.getEntitySelect(
+    //   'FUCMUNICI',
+    //   FUCMUNICISCHEMA,
+    //   'FUCDEPART_ID',
+    //   getValues().department,
+    // );
+    // setDepartamentoSelect(FUCDEPART);
+    // setTipoterritorioSelect(FUCTIPTER);
+    // setMunicipioSelect(FUCMUNICI);
+    // getDefaultValues();
   }
 
   async function getDefaultValues() {
@@ -205,28 +240,14 @@ const _HomeLocationForm = (props: any) => {
     );
   }
   async function onChangeDept(idDept: any) {
-    let FUCMUNICI = await props.getEntitySelect(
-      'FUCMUNICI',
-      FUCMUNICISCHEMA,
-      'FUCDEPART_ID',
-      idDept,
-    );
-    setMunicipioSelect(FUCMUNICI);
+    getFUCMUNICIFromDept(idDept);
     setValue('municipality', '-1');
     setMunicipio('-1');
-    await onChangeMuni('null', 'null');
+    await onChangeMuni(null, null);
     onChangeCentroOResgua('null');
   }
-  async function onChangeMuni(munid: string, typeid: string) {
-    let FUCRESGUA = await props.getEntitySelect(
-      'FUCRESGUA',
-      FUCRESGUASCHEMA,
-      'FUCMUNICI_ID',
-      munid,
-      'FUCTIPRES_ID',
-      typeid,
-    );
-    setrescentropSelect(FUCRESGUA);
+  async function onChangeMuni(munid: any, typeid: any) {
+    getFilterFUCRESGUA(munid, typeid);
     setValue('shelterOrCouncil', '');
     setCentropoblado('');
   }
@@ -249,20 +270,15 @@ const _HomeLocationForm = (props: any) => {
   }
   async function onChangeCentroOResgua(resguaId: any) {
     if (resguaId) {
-      let FUCBARVER = await props.getEntitySelect(
-        'FUCBARVER',
-        FUCBARVERSCHEMA,
-        'FUCRESGUA_ID',
-        resguaId,
-      );
-      setBarrioVeredaSelect(FUCBARVER);
+      filterFUCBARVER(resguaId);
       for (let i = 0; i < rescentropSelect.length; i++) {
         const item: any = rescentropSelect[i];
         if (item.item && item.item.ID == resguaId) {
           let ress = await props.getLasHouseCode(item.item.CODIGO);
           setHouseCode(`${item.item.CODIGO}-${ress}`);
           setValue('housingCode', `${item.item.CODIGO}-${ress}`);
-          if (FUCBARVER.children.length == 1) {
+          if (listFUCBARVER.length == 1) {
+            setBarrioVereda('');
             setValue('sidewalk', '', {shouldValidate: true});
             setBarrioVereda('');
           }

@@ -18,14 +18,18 @@ import {
   HousingQuestionOption,
 } from '../modules/housing/state/types';
 import {FNBNUCVIV_FVCCONVIV, FUBUBIVIV, FNBNUCVIV} from '../state/house/types';
-import {SelectSchema, MultiSelectSchema, PickerType} from '../core/utils/types';
-import {capitalizeFirstLetter} from '../core/utils/utils';
+import {MultiSelectSchema, PickerType} from '../core/utils/types';
+import {capitalizeFirstLetter, cloneResult} from '../core/utils/utils';
 import {UtilsService} from '.';
 import {FNCPERSON} from '../state/person/types';
 import {FUCZONCUI} from '../modules/location/state/types';
 import {PersonParametersConst} from '../core/utils/SystemParameters';
 const HOUSECODE_INCREMENT = '0000';
 export default class HousingService {
+  utils: UtilsService;
+  constructor() {
+    this.utils = new UtilsService();
+  }
   async getFamilies(HouseID: number) {
     const result = await Realm.open({
       schema: [FNBNUCVIVSCHEMA],
@@ -33,12 +37,10 @@ export default class HousingService {
     })
       .then((realm) => {
         let items = realm
-          .objects('FNBNUCVIV')
+          .objects<FNBNUCVIV>('FNBNUCVIV')
           .filtered(`FUBUBIVIV_ID = ${HouseID}`);
-        if (items.length > 0) {
-          return items;
-        }
-        return [];
+        let rItems = cloneResult(items);
+        return rItems;
       })
       .catch((error) => {
         return error;
@@ -52,7 +54,8 @@ export default class HousingService {
     })
       .then((realm) => {
         let items = realm.objects('FUBUBIVIV');
-        return items;
+        let rItems = cloneResult(items);
+        return rItems;
       })
       .catch((error) => {
         return error;
@@ -60,8 +63,7 @@ export default class HousingService {
     return result;
   }
   async SaveHouse(item: FUBUBIVIV) {
-    let utils = new UtilsService();
-    let FUBUBIVIV_ID = await utils.getLastEntityID(
+    let FUBUBIVIV_ID = await this.utils.getLastEntityID(
       DataBaseSchemas.FUBUBIVIVSCHEMA,
     );
     item.ID = FUBUBIVIV_ID;
@@ -107,8 +109,7 @@ export default class HousingService {
     return result;
   }
   async SaveFNBNUCVIV(item: FNBNUCVIV) {
-    let utils = new UtilsService();
-    let FNBNUCVIV_ID = await utils.getLastEntityID(
+    let FNBNUCVIV_ID = await this.utils.getLastEntityID(
       DataBaseSchemas.FNBNUCVIVSCHEMA,
     );
     item.ID = FNBNUCVIV_ID;
@@ -228,8 +229,9 @@ export default class HousingService {
           let person: any = realm
             .objects(DataBaseSchemas.FNCPERSONSCHEMA)
             .filtered(`ID = ${i.FNCPERSON_ID}`)[0];
-          if (person) {
-            persons.push(person);
+          let rItems = cloneResult(person, true);
+          if (rItems) {
+            persons.push(rItems);
           }
         }
         return persons;
@@ -316,14 +318,17 @@ export default class HousingService {
           const query = questionsQuery
             .map((id) => `CODIGO = "${id}"`)
             .join(' OR ');
-          servicios = realm.objects('FVCELEVIV').filtered(`${query}`);
+          let rItems = realm.objects('FVCELEVIV').filtered(`${query}`);
+          servicios = cloneResult(rItems);
         } else {
-          servicios = realm.objects('FVCELEVIV');
+          let rItems = realm.objects('FVCELEVIV');
+          servicios = cloneResult(rItems);
         }
         return servicios;
       })
       .catch((error) => {
-        return error;
+        console.error(error);
+        return [];
       });
     for (let i = 0; i < result.length; i++) {
       let questionItem: HousingQuestion = {

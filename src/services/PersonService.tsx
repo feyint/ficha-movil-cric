@@ -16,7 +16,7 @@ import {
   PersonQuestionOption,
 } from '../modules/person/manage/state/types';
 import {SelectSchema, MultiSelectSchema} from '../core/utils/types';
-import {capitalizeFirstLetter} from '../core/utils/utils';
+import {capitalizeFirstLetter, cloneResult} from '../core/utils/utils';
 import {FNBINFSAL_FNCCONSAL, FNBNUCVIV_FNCPERSON, FNCPERSON} from '../state/person/types';
 import {UtilsService} from '.';
 import PersonRelationService from './PersonRelationService';
@@ -36,35 +36,39 @@ export default class PersonService {
       schemaVersion: schemaVersion,
     })
       .then((realm) => {
-        realm.write(() => {
-          let inserted = realm.create('FNCPERSON', item);
-          if (inserted) {
-            try {
-              let nucleoPersona: FNBNUCVIV_FNCPERSON = {
-                FNBNUCVIV_ID: familyID,
-                FNCPERSON_ID: inserted.ID,
-                ID: -1,
-              };
-              let personRelation: PersonRelationService = new PersonRelationService();
-              let asociated = personRelation.SaveFNBNUCVIV_FNCPERSON(
-                nucleoPersona,
-              );
-              if (!asociated) {
+        return new Promise((resolve, reject) => {
+          realm.write(() => {
+            let inserted = realm.create('FNCPERSON', item);
+            if (inserted) {
+              try {
+                let nucleoPersona: FNBNUCVIV_FNCPERSON = {
+                  FNBNUCVIV_ID: familyID,
+                  FNCPERSON_ID: inserted.ID,
+                  ID: -1,
+                };
+                let personRelation: PersonRelationService = new PersonRelationService();
+                let asociated = personRelation.SaveFNBNUCVIV_FNCPERSON(
+                  nucleoPersona,
+                );
+                if (!asociated) {
+                  realm.delete(inserted);
+                  return null;
+                }
+              } catch (error) {
+                console.error(error);
                 realm.delete(inserted);
+                reject(null);
               }
-            } catch (error) {
-              console.error(error);
-              realm.delete(inserted);
             }
-          }
-          return inserted;
+            resolve(cloneResult(inserted, true));
+          });
         });
       })
       .catch((error) => {
         console.error(error);
-        return error;
+        return null;
       });
-    return item;
+    return result;
   }
   async UpdateFNCPERSON(item: any) {
     await Realm.open({

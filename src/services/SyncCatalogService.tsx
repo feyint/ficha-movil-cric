@@ -30,12 +30,14 @@ import Realm from 'realm';
 import {HttpProvider} from '../providers';
 
 export default class SyncCatalogService {
-  async getEntity(data: any) {
+  async getEntity(name: string): Promise<{totalItems: number; data: any[]}> {
     try {
-      return await HttpProvider.post('common/v1/entity', data);
+      return await HttpProvider.post('common/v1/entity', {
+        entityName: name,
+      });
     } catch (error) {
       console.log(error);
-      return {data: []};
+      return {totalItems: 0, data: []};
     }
   }
   async countEntities(entity: string) {
@@ -118,6 +120,7 @@ export default class SyncCatalogService {
         realm.delete(itemFNCPAREN);
         realm.delete(itemFNCTIPIDE);
       });
+      realm.close();
     });
   }
   async syncEntities() {
@@ -521,7 +524,7 @@ export default class SyncCatalogService {
             } catch (error) {}
           }
         });
-        console.log('couuunt ', realm.objects(type).length);
+        realm.close();
       });
     }
   }
@@ -535,7 +538,6 @@ export default class SyncCatalogService {
           let servicios = realm.objects('FVCCONVIV');
           resolve(servicios);
         })
-        .catch((error) => {})
         .catch((error) => {
           console.log('Error listando');
           reject(error);

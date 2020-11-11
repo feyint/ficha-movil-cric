@@ -7,10 +7,9 @@ import {Appbar, withTheme} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {SyncCatalogService} from '../../../services';
 import {Paragraph} from 'react-native-paper';
-
 interface Props {
   navigation: NavigationProp<any>;
-  theme: ReactNativePaper.Theme;
+  theme: any;
 }
 
 interface State {
@@ -43,6 +42,7 @@ interface State {
 }
 
 class SyncScreen extends Component<Props, State> {
+  database = useDatabase();
   syncCatalogService = new SyncCatalogService();
   constructor(props: Props) {
     super(props);
@@ -214,7 +214,6 @@ class SyncScreen extends Component<Props, State> {
   async syncCatalogs() {
     await this.clearPollEntities();
     await this.syncEntities();
-    
     Alert.alert(
       'Sincronización terminada',
       'La sincronización ha finalizado con éxito',
@@ -224,9 +223,10 @@ class SyncScreen extends Component<Props, State> {
         },
       ],
     );
-    this.countEntity();
+    // this.countEntity();
   }
   async countEntity() {
+    console.error('countEntity');
     let countFVCCONVIV = await this.syncCatalogService.countEntities(
       'FVCCONVIV',
     );
@@ -326,7 +326,7 @@ class SyncScreen extends Component<Props, State> {
   }
   async clearPollEntities() {
     await this.syncCatalogService.clearEntities();
-    this.countEntity();
+    //this.countEntity();
   }
   async syncEntities() {
     await this.syncCatalogService.syncEntities();

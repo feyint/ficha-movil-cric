@@ -1,0 +1,10 @@
+export type {FUCDEPART} from './FUCDEPART';
+export type {FUCMUNICI} from './FUCMUNICI';
+export type {FVCELEVIV} from './FVCELEVIV';
+export type {FVCCONVIV} from './FVCCONVIV';
+export type {FUCTIPTER} from './FUCTIPTER';
+export type {FUCBARVER} from './FUCBARVER';
+export type {FUCZONCUI_FUCBARVER} from './FUCZONCUI_FUCBARVER';
+export type {FUCRESGUA} from './FUCRESGUA';
+export type {FUCUNICUI} from './FUCUNICUI';
+export type {FUCZONCUI} from './FUCZONCUI';
