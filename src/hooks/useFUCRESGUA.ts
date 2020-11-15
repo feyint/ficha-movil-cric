@@ -15,9 +15,14 @@ export function useFUCRESGUA() {
   function getAllFUCRESGUA() {
     return database.getAllFromEntity('FUCRESGUA').then(setItem);
   }
-  function getFilterFUCRESGUA(FUCMUNICI: number, FUCTIPRES: number) {
-    let statement = `SELECT * FROM {0} WHERE FUCMUNICI_ID = ${FUCMUNICI} 
-    AND FUCTIPRES_ID = ${FUCTIPRES}`;
+  function getFilterFUCRESGUA(
+    FUCMUNICI: number,
+    FUCTIPTER: number,
+    single = false,
+  ) {
+    let statement = `SELECT f.* FROM FUCTIPTER_FUCRESGUA ff
+    INNER JOIN FUCRESGUA f ON f.ID  = ff.FUCRESGUA_ID 
+    WHERE  ff.FUCTIPTER_ID  = ${FUCTIPTER} AND FUCMUNICI_ID = ${FUCMUNICI}`;
     database.executeQuery('FUCRESGUA', statement).then((results) => {
       const count = results.rows.length;
       const items: FUCRESGUA[] = [];
@@ -44,7 +49,11 @@ export function useFUCRESGUA() {
           FUCTERCRI_ID: FUCTERCRI_ID,
         });
       }
-      setItem(items);
+      if (single) {
+        setFUCRESGUA(items[0]);
+      } else {
+        setItem(items);
+      }
     });
   }
   async function createFUCRESGUA(newItem: FUCRESGUA): Promise<void> {

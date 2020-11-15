@@ -1,4 +1,5 @@
-import React, {Component} from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, {useEffect, useState} from 'react';
 import {View} from 'react-native';
 import {Appbar} from 'react-native-paper';
 import {FamilyList} from '../form';
@@ -9,73 +10,69 @@ import {setConditionQuestionWithOptions} from '../../../state/ConditionPerson/ac
 import {setQuestionWithOptions} from '../../../state/person/actions';
 import {setSexAndRepHealthQuestionWithOptions} from '../../../state/SexAndRepHealthPerson/actions';
 import BFabButton from '../../../core/components/BFabButton';
+import {FNBNUCVIV} from '../../../types/FNBNUCVIV';
+import {useNavigation} from '@react-navigation/native';
+import {useFNBNUCVIV} from '../../../hooks';
 
-interface State {
-  families: any[];
-}
-class FamilyScreen extends Component<any, State> {
-  public _unsubscribe: any;
-  constructor(props: any) {
-    super(props);
-    this.state = {
-      families: [],
-    };
-  }
-  componentDidMount() {
-    this._unsubscribe = this.props.navigation.addListener('focus', () => {
-      this.fetchFamilies();
+const FamilyScreen = (props: any) => {
+  const [families, setFamilies] = useState<FNBNUCVIV[]>([]);
+  const navigation = useNavigation();
+  const {listFNBNUCVIV, filterFNBNUCVIV} = useFNBNUCVIV();
+
+  useEffect(() => {
+    // setHouses(listFUBUBIVIV);
+  }, [families]);
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      fetchFamilies();
     });
-  }
-  componentWillUnmount() {
-    this._unsubscribe();
-  }
+    return unsubscribe;
+  }, [navigation]);
+
   //TODO añadir el back interceptor
-  _goBack() {
-    this.props.navigation.goBack();
+  function _goBack() {
+    props.navigation.goBack();
   }
-  async UNSAFE_componentWillMount() {
-    //this.props.setQuestionWithOptions();
-    this.props.setConditionQuestionWithOptions();
-    this.props.setSexAndRepHealthQuestionWithOptions();
-    await this.fetchFamilies();
+  // async function UNSAFE_componentWillMount() {
+  //   //props.setQuestionWithOptions();
+  //   //props.setConditionQuestionWithOptions();
+  //   //props.setSexAndRepHealthQuestionWithOptions();
+  // }
+
+  return (
+    <View style={{flex: 1}}>
+      <Appbar.Header>
+        <Appbar.BackAction onPress={() => _goBack()} />
+        <Appbar.Content title="Nucleo Familiar" />
+      </Appbar.Header>
+      <FamilyList
+        families={listFNBNUCVIV}
+        onPress={(family: any) => {
+          goHouseMenuScreen(family);
+        }}
+      />
+      <BFabButton onPress={() => createNewNF()} />
+    </View>
+  );
+
+  async function fetchFamilies() {
+    // console.error(props.FUBUBIVIV.ID);
+    filterFNBNUCVIV(props.FUBUBIVIV.ID);
   }
-  render() {
-    return (
-      <View style={{flex: 1}}>
-        <Appbar.Header>
-          <Appbar.BackAction onPress={() => this._goBack()} />
-          <Appbar.Content title="Nucleo Familiar" />
-        </Appbar.Header>
-        <FamilyList
-          families={this.state.families}
-          onPress={(family: any) => {
-            this.goHouseMenuScreen(family);
-          }}
-        />
-        <BFabButton onPress={() => this.createNewNF()} />
-      </View>
-    );
+  function createNewNF() {
+    props.clearFNBNUCVIV();
+    props.navigation.navigate('HouseMenuScreen');
+    // props.navigation.navigate('HouseMenuScreen', {
+    //   onGoBack: async () => {
+    //     await fetchFamilies();
+    //   },
+    // });
   }
-  async fetchFamilies() {
-    let syncHousingService = new HousingService();
-    let result = await syncHousingService.getFamilies(this.props.FUBUBIVIV.ID);
-    if (result) {
-      this.setState({families: result});
-    }
+  async function goHouseMenuScreen(family: any) {
+    await props.setFNBNUCVIV(family);
+    props.navigation.navigate('HouseMenuScreen');
   }
-  createNewNF() {
-    this.props.clearFNBNUCVIV();
-    this.props.navigation.navigate('HouseMenuScreen', {
-      onGoBack: async () => {
-        await this.fetchFamilies();
-      },
-    });
-  }
-  async goHouseMenuScreen(family: any) {
-    await this.props.setFNBNUCVIV(family);
-    this.props.navigation.navigate('HouseMenuScreen');
-  }
-}
+};
 const mapDispatchToProps = {
   setFNBNUCVIV,
   clearFNBNUCVIV,

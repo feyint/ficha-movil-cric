@@ -4,4 +4,5 @@ export interface FVCCONVIV {
   NOMBRE: string;
   ESTADO: boolean;
   FVCELEVIV_ID: number;
+  QUESTIONCODE?: string;
 }

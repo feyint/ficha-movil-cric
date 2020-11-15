@@ -13,7 +13,11 @@ export interface Database {
   countEntity(entity: string): Promise<number>;
   // Read
   getAllFVCELEVIVs(): Promise<FVCELEVIV[]>;
-  getAllFromEntity(entity: string): Promise<any[]>;
+  getAllFromEntity(
+    entity: string,
+    orderBy?: string,
+    order?: 'ASC' | 'DESC',
+  ): Promise<any[]>;
   // Delete
   clearEntity(entity: string): Promise<void>;
   // Delete
@@ -54,7 +58,7 @@ async function executeQuery(
   table: string,
   statement: string,
   params?: any[] | undefined,
-): Promise<any> {
+): Promise<SQLite.ResultSet> {
   return getDatabase()
     .then((db) => db.executeSql(statement.replace('{0}', table), params))
     .then(([results]) => {
@@ -90,12 +94,17 @@ async function getAllFVCELEVIVs(): Promise<FVCELEVIV[]> {
       return FVCELEVIVs;
     });
 }
-async function getAllFromEntity(entity: string): Promise<any[]> {
+async function getAllFromEntity(
+  entity: string,
+  orderBy: string | undefined = undefined,
+  order: 'ASC' | 'DESC' | undefined = undefined,
+): Promise<any[]> {
   console.log(`[db] Fetching ${entity} from the db...`);
+  let orderQuery = orderBy ? `ORDER BY ${orderBy} ${order}` : '';
   return getDatabase()
     .then((db) =>
       // Get all the FVCELEVIVs, ordered by newest FVCELEVIVs first
-      db.executeSql(`SELECT * FROM ${entity} ORDER BY NOMBRE DESC;`),
+      db.executeSql(`SELECT * FROM ${entity} ${orderQuery};`),
     )
     .then(([results]) => {
       if (results === undefined) {

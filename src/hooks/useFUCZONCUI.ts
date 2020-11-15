@@ -15,8 +15,12 @@ export function useFUCZONCUI() {
   function getAllFUCZONCUI() {
     return database.getAllFromEntity('FUCZONCUI').then(setItem);
   }
-  function filterFUCZONCUI(FUBSEDCUI: number) {
-    let statement = `SELECT * FROM {0} WHERE FUBSEDCUI_ID = ${FUBSEDCUI}`;
+  function filterFUCZONCUI(FUCBARVER: number) {
+    let statement = `
+     SELECT FUCZONCUI.* FROM {0}
+     INNER JOIN FUCZONCUI_FUCBARVER ON 
+     FUCZONCUI_FUCBARVER.FUCZONCUI_ID = FUCZONCUI.ID
+     WHERE FUCBARVER_ID = ${FUCBARVER}`;
     database.executeQuery('FUCZONCUI', statement).then((results) => {
       const count = results.rows.length;
       const items: FUCZONCUI[] = [];

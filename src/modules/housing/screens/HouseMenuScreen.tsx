@@ -1,131 +1,123 @@
-import React, {Component} from 'react';
-import {BHeader} from '../../../core/components';
-import {FamiliarNucleus, Department, SafeForm, CareZone} from '../components';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, {useEffect, useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {Appbar} from 'react-native-paper';
 import {List} from 'react-native-paper';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
-import {saveFNBNUCVIV} from '../../../state/house/actions';
-import {HousingService} from '../../../services';
+import {setFNBNUCVIV} from '../../../state/house/actions';
 import {theme} from '../../../core/style/theme';
+import {useFNBNUCVIV} from '../../../hooks';
+import {FNBNUCVIV} from '../../../types';
 
-interface Props {
-  navigation: NavigationProp<any>;
-}
-interface State {
-  CODIGO: string;
-}
-class HouseMenuScreen extends Component<any, State> {
-  constructor(props: any) {
-    super(props);
-    this.state = {
-      CODIGO: this.props.FUBUBIVIV.CODIGO,
-    };
-  }
-  async componentDidMount() {
-    this.inicialize();
-  }
-  async inicialize() {
-    if (this.props.FNBNUCVIV.CODIGO == '') {
-      const syncCatalogService = new HousingService();
-      let NFCODIGO = await syncCatalogService.getLastNucleoCode(
-        this.props.FUBUBIVIV.CODIGO,
+const HouseMenuScreen = (props: any) => {
+  const [CODIGO, setCodigo] = useState('');
+  const {
+    itemFNBNUCVIV,
+    loadingFNBNUCVIV,
+    getLastNucleoCode,
+    createFNBNUCVIV,
+    getFNBNUCVIVbyID,
+  } = useFNBNUCVIV();
+  const navigation = useNavigation();
+  useEffect(() => {
+    inicialize();
+  }, []);
+  useEffect(() => {
+    if (itemFNBNUCVIV) {
+      setFNBNUCVIV(itemFNBNUCVIV);
+      setCodigo(itemFNBNUCVIV.CODIGO);
+    }
+  }, [itemFNBNUCVIV]);
+  async function inicialize() {
+    if (props.FNBNUCVIV.CODIGO == '') {
+      let NFCODIGO = await getLastNucleoCode(
+        props.FUBUBIVIV.ID,
+        props.FUBUBIVIV.CODIGO,
       );
-      let fNBNUCVIV: any = {
-        CODIGO: this.props.FUBUBIVIV.CODIGO + '-' + NFCODIGO,
-        FUBUBIVIV_ID: this.props.FUBUBIVIV.ID,
+      let fNBNUCVIV: FNBNUCVIV = {
+        CODIGO: NFCODIGO,
+        FUBUBIVIV_ID: props.FUBUBIVIV.ID,
       };
-      let insert = await this.props.saveFNBNUCVIV(fNBNUCVIV);
-      this.setState({
-        CODIGO: insert.CODIGO,
-      });
+      createFNBNUCVIV(fNBNUCVIV);
     } else {
-      this.setState({
-        CODIGO: this.props.FNBNUCVIV.CODIGO,
-      });
+      getFNBNUCVIVbyID(props.FNBNUCVIV.ID);
     }
   }
-  _goBack() {
-    this.props.navigation.goBack();
+  function _goBack() {
+    navigation.goBack();
   }
-  render() {
-    return (
-      <View>
-        <Appbar.Header>
-          <Appbar.BackAction onPress={() => this._goBack()} />
-          <Appbar.Content title="Vivienda" subtitle={this.state.CODIGO} />
-        </Appbar.Header>
-        <List.Section>
-          <List.Item
-            key="vivienda"
-            title="Vivienda"
-            left={() => <List.Icon icon="home" color={theme.colors.gray} />}
-            onPress={() => this.goHouseScreen()}
-          />
-          <View style={styles.divisor} />
-          <List.Item
-            key="Estado"
-            title="Estado de la vivienda"
-            left={() => (
-              <List.Icon icon="home-alert" color={theme.colors.gray} />
-            )}
-            onPress={() => this.goHousingStatusScreen()}
-          />
-          <View style={styles.divisor} />
-          <List.Item
-            key="condiciones"
-            title="Condiciones de la vivienda"
-            left={() => (
-              <List.Icon icon="home-heart" color={theme.colors.gray} />
-            )}
-            onPress={() => this.goHouseContitionsScreen()}
-          />
-          <View style={styles.divisor} />
-          <List.Item
-            key="datos"
-            title="Datos del encuestador"
-            left={() => <List.Icon icon="account" color={theme.colors.gray} />}
-            onPress={() => this.goPollsterScreen()}
-          />
-          <View style={styles.divisor} />
-          <List.Item
-            key="managep"
-            title="Administrar personas"
-            left={() => (
-              <List.Icon icon="account-group" color={theme.colors.gray} />
-            )}
-            onPress={() => this.goPersonManageScreen()}
-          />
-          <View style={styles.divisor} />
-        </List.Section>
-      </View>
-    );
+  return (
+    <View>
+      <Appbar.Header>
+        <Appbar.BackAction onPress={() => _goBack()} />
+        <Appbar.Content title="Vivienda" subtitle={CODIGO} />
+      </Appbar.Header>
+      <List.Section>
+        <List.Item
+          key="vivienda"
+          title="Vivienda"
+          left={() => <List.Icon icon="home" color={theme.colors.gray} />}
+          onPress={() => goHouseScreen()}
+        />
+        <View style={styles.divisor} />
+        <List.Item
+          key="Estado"
+          title="Estado de la vivienda"
+          left={() => <List.Icon icon="home-alert" color={theme.colors.gray} />}
+          onPress={() => goHousingStatusScreen()}
+        />
+        <View style={styles.divisor} />
+        <List.Item
+          key="condiciones"
+          title="Condiciones de la vivienda"
+          left={() => <List.Icon icon="home-heart" color={theme.colors.gray} />}
+          onPress={() => goHouseContitionsScreen()}
+        />
+        <View style={styles.divisor} />
+        <List.Item
+          key="datos"
+          title="Datos del encuestador"
+          left={() => <List.Icon icon="account" color={theme.colors.gray} />}
+          onPress={() => goPollsterScreen()}
+        />
+        <View style={styles.divisor} />
+        <List.Item
+          key="managep"
+          title="Administrar personas"
+          left={() => (
+            <List.Icon icon="account-group" color={theme.colors.gray} />
+          )}
+          onPress={() => goPersonManageScreen()}
+        />
+        <View style={styles.divisor} />
+      </List.Section>
+    </View>
+  );
+  function goHomeLocation() {
+    props.navigation.navigate('HomeLocationScreen');
   }
-  goHomeLocation() {
-    this.props.navigation.navigate('HomeLocationScreen');
+  function goPollsterScreen() {
+    props.navigation.navigate('PollsterScreen');
   }
-  goPollsterScreen() {
-    this.props.navigation.navigate('PollsterScreen');
+  function goHouseScreen() {
+    props.navigation.navigate('HouseScreen');
   }
-  goHouseScreen() {
-    this.props.navigation.navigate('HouseScreen');
+  function goHousingStatusScreen() {
+    props.navigation.navigate('HousingStatusScreen');
   }
-  goHousingStatusScreen() {
-    this.props.navigation.navigate('HousingStatusScreen');
+  function goHouseContitionsScreen() {
+    props.navigation.navigate('HouseConditionsScreen');
   }
-  goHouseContitionsScreen() {
-    this.props.navigation.navigate('HouseConditionsScreen');
+  function goPersonManageScreen() {
+    props.navigation.navigate('PersonManageScreen');
   }
-  goPersonManageScreen() {
-    this.props.navigation.navigate('PersonManageScreen');
-  }
-}
+};
 const styles = StyleSheet.create({
   divisor: {height: 1, backgroundColor: theme.colors.light},
 });
 const mapDispatchToProps = {
-  saveFNBNUCVIV,
+  setFNBNUCVIV,
 };
 const mapStateToProps = (housing: any) => {
   return {

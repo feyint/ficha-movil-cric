@@ -1,9 +1,9 @@
 import {useState, useEffect} from 'react';
 import {useDatabase} from '../context/DatabaseContext';
+import {PickerType} from '../core/utils/types';
 import {SyncCatalogService} from '../services';
 import {FVCCONVIV} from '../types';
 
-// Hook for managing and accessing (CRUD)
 export function useFVCCONVIV() {
   const [listFVCCONVIV, setlist] = useState<FVCCONVIV[]>([]);
   const [itemFVCCONVIV, setFVCCONVIV] = useState<FVCCONVIV>();
@@ -47,6 +47,46 @@ export function useFVCCONVIV() {
   async function selectFVCCONVIV(list: FVCCONVIV) {
     setFVCCONVIV(list);
   }
+  function getQuestionsOptions(questionCodes: string[]) {
+    let inQuery = questionCodes.toString();
+    inQuery = inQuery.replace('[', '');
+    inQuery = inQuery.replace(']', '');
+    let statement = `
+    SELECT q.CODIGO as QUESTIONCODE, o.* FROM FVCELEVIV q 
+    INNER JOIN FVCCONVIV o ON q.ID = o.FVCELEVIV_ID
+    WHERE q.CODIGO  in (${inQuery})`;
+    database.executeQuery('FVCELEVIV', statement).then((results) => {
+      const count = results.rows.length;
+      const items: FVCCONVIV[] = [];
+      for (let i = 0; i < count; i++) {
+        const row = results.rows.item(i);
+        const {ID, CODIGO, ESTADO, NOMBRE, FVCELEVIV_ID, QUESTIONCODE} = row;
+        items.push({
+          ID: ID,
+          CODIGO: CODIGO,
+          ESTADO: ESTADO,
+          NOMBRE: NOMBRE,
+          FVCELEVIV_ID: FVCELEVIV_ID,
+          QUESTIONCODE: QUESTIONCODE,
+        });
+      }
+      setlist(items);
+    });
+  }
+  function getFVCCONVIVpicker(code: string) {
+    let item: PickerType[] = [];
+    for (let i = 0; i < listFVCCONVIV.length; i++) {
+      if (listFVCCONVIV[i].QUESTIONCODE == code) {
+        item.push({
+          value: listFVCCONVIV[i].ID.toString(),
+          label: listFVCCONVIV[i].NOMBRE,
+          item: listFVCCONVIV[i],
+        });
+      }
+    }
+    item.unshift({value: '-1', label: 'Seleccione', item: null});
+    return item;
+  }
   async function syncFVCCONVIV() {
     setLoading(true);
     let service = new SyncCatalogService();
@@ -71,5 +111,7 @@ export function useFVCCONVIV() {
     deleteFVCCONVIV,
     selectFVCCONVIV,
     syncFVCCONVIV,
+    getQuestionsOptions,
+    getFVCCONVIVpicker,
   };
 }

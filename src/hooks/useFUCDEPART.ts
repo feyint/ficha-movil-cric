@@ -14,7 +14,6 @@ export function useFUCDEPART() {
     countEntity();
   }, []);
   function getAllFUCDEPART() {
-    // Query all  from the DB, then store them as state
     return database.getAllFromEntity('FUCDEPART').then(setlist);
   }
   async function createFUCDEPART(newItem: FUCDEPART): Promise<void> {

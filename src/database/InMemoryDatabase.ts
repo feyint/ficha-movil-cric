@@ -23,6 +23,7 @@ async function deleteFVCELEVIV(itemToDelete: FVCELEVIV): Promise<void> {
   lists = lists.filter((item) => item.ID !== itemToDelete.ID);
 }
 async function executeQuery(
+  table: string,
   statement: string,
   params?: any[] | undefined,
 ): Promise<any> {

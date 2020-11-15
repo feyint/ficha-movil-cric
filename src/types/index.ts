@@ -8,3 +8,7 @@ export type {FUCZONCUI_FUCBARVER} from './FUCZONCUI_FUCBARVER';
 export type {FUCRESGUA} from './FUCRESGUA';
 export type {FUCUNICUI} from './FUCUNICUI';
 export type {FUCZONCUI} from './FUCZONCUI';
+export type {FUBUBIVIV, FUBUBIVIVDETAILS} from './FUBUBIVIV';
+export type {FUCTIPTER_FUCRESGUA} from './FUCTIPTER_FUCRESGUA';
+export type {FNBNUCVIV} from './FNBNUCVIV';
+export type {FNBNUCVIV_FVCCONVIV} from './FNBNUCVIV_FVCCONVIV';
