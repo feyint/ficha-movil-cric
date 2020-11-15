@@ -24,13 +24,13 @@ const SyncParametersScreen = () => {
   const {countFUCZONCUI, syncFUCZONCUI, loadingFUCZONCUI} = useFUCZONCUI();
   useEffect(() => {}, []);
   function syncCatalogs() {
-    // syncFVCELEVIV();
-    // syncFVCCONVIV();
-    // syncFUCDEPART();
-    // syncFUCMUNICI();
-    // syncFUCTIPTER();
-    // syncFUCBARVER();
-    //syncFUCRESGUA();
+    syncFVCELEVIV();
+    syncFVCCONVIV();
+    syncFUCDEPART();
+    syncFUCMUNICI();
+    syncFUCTIPTER();
+    syncFUCBARVER();
+    syncFUCRESGUA();
     syncFUCZONCUI();
     //await this.clearPollEntities();
     // this.countEntity();
