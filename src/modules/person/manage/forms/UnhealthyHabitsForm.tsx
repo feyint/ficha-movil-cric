@@ -42,6 +42,8 @@ const _UnhealthyHabitsForm = (props: any) => {
 
   const navigation = useNavigation();
 
+  const [editable, setEditable] = useState(false);
+
   const { handleSubmit, control, errors, setValue } = useForm({
     resolver: yupResolver(schemaForm),
   });
@@ -79,21 +81,23 @@ const _UnhealthyHabitsForm = (props: any) => {
   function onSubmit(data: any) {
     navigation.goBack();
   }
-  
+
   function alert(data: any) {
-    Alert.alert(
-      'Volver!!!',
-      'Esta seguro?',
-      [
-        {
-          text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
-          style: 'cancel',
-        },
-        {text: 'Aceptar', onPress: () => navigation.goBack()},
-      ],
-      {cancelable: false},
-    );
+    editable
+      ? Alert.alert(
+          '',
+          '¿Desea cancelar el proceso?.',
+          [
+            {
+              text: 'NO',
+              onPress: () => console.log('Cancel Pressed'),
+              style: 'cancel',
+            },
+            {text: 'SI', onPress: () => navigation.goBack()},
+          ],
+          {cancelable: false},
+        )
+      : navigation.goBack();
   }
 
   return (
@@ -107,6 +111,7 @@ const _UnhealthyHabitsForm = (props: any) => {
               onBlur={onBlur}
               error={errors.Fuma}
               onChange={(value: any) => {
+                setEditable(true);
                 onChange(value);
                 props.saveAnswerLocal(
                   QuestionTypes.selectOne,
@@ -138,6 +143,7 @@ const _UnhealthyHabitsForm = (props: any) => {
               onBlur={onBlur}
               error={errors.ConsumeBebidasAlcoholicas}
               onChange={(value: any) => {
+                setEditable(true);
                 onChange(value);
                 props.saveAnswerLocal(
                   QuestionTypes.selectOne,
@@ -169,6 +175,7 @@ const _UnhealthyHabitsForm = (props: any) => {
               onBlur={onBlur}
               error={errors.EvidenciaConsumoSustanciasPsicoactivas}
               onChange={(value: any) => {
+                setEditable(true);
                 onChange(value);
                 props.saveAnswerLocal(
                   QuestionTypes.selectOne,
@@ -202,6 +209,7 @@ const _UnhealthyHabitsForm = (props: any) => {
               onBlur={onBlur}
               error={errors.EvidenciaViolencia}
               onChange={(values: any) => {
+                setEditable(true);
                 onChange(values);
                 props.saveAnswerLocal(
                   QuestionTypes.multiSelect,

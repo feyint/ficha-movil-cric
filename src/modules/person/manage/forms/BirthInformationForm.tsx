@@ -122,19 +122,21 @@ const _BirthInformationForm = (props: any) => {
     }
   };
   function alert(data: any) {
-    Alert.alert(
-      'Volver!!!',
-      'Esta seguro?',
-      [
-        {
-          text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
-          style: 'cancel',
-        },
-        {text: 'Aceptar', onPress: () => navigation.goBack()},
-      ],
-      {cancelable: false},
-    );
+    editable
+      ? Alert.alert(
+          '',
+          '¿Desea cancelar el proceso?.',
+          [
+            {
+              text: 'NO',
+              onPress: () => console.log('Cancel Pressed'),
+              style: 'cancel',
+            },
+            {text: 'SI', onPress: () => navigation.goBack()},
+          ],
+          {cancelable: false},
+        )
+      : navigation.goBack();
   }
   const onSubmit = async (data: any) => {
     navigation.goBack();
@@ -209,6 +211,7 @@ const _BirthInformationForm = (props: any) => {
               label="País"
               error={errors.fucpais}
               onChange={(value: any) => {
+                setEditable(true);
                 onChange(value);
                 setfucpais(value);
                 if (value) {
@@ -229,6 +232,7 @@ const _BirthInformationForm = (props: any) => {
               label="Departamento"
               error={errors.fucdepat}
               onChange={(value: any) => {
+                setEditable(true);
                 onChange(value);
                 setfucdepat(value);
                 if (value) {
@@ -249,6 +253,7 @@ const _BirthInformationForm = (props: any) => {
               label="Municipio"
               error={errors.fucmunici}
               onChange={(value: any) => {
+                setEditable(true);
                 onChange(value);
                 setfucmunici(value);
               }}
@@ -266,6 +271,7 @@ const _BirthInformationForm = (props: any) => {
               label="Luna occidental en la que nació"
               error={errors.fnclunocci}
               onChange={(value: any) => {
+                setEditable(true);
                 onChange(value);
               }}
               onLoad={() => {
@@ -287,6 +293,7 @@ const _BirthInformationForm = (props: any) => {
               label="Luna indígena en la que nació"
               error={errors.fnclunind}
               onChange={(value: any) => {
+                setEditable(true);
                 onChange(value);
                 setfnclunind(value);
               }}
@@ -305,6 +312,7 @@ const _BirthInformationForm = (props: any) => {
                 label="Lactancia materna"
                 error={errors.lacmaterna}
                 onChange={(value: any) => {
+                  setEditable(true);
                   onChange(value);
                 }}
                 selectedValue={value}

@@ -756,6 +756,7 @@ export default class DataBaseProvider {
         FNCCONREPSCHEMA,
         FUCPAISSCHEMA,
         FNCLUNINDSCHEMA,
+        FNCGENEROSCHEMA,
       ],
     }).then((realm) => {
       let count = realm.objects(entity).length;

@@ -61,6 +61,8 @@ const _AnotherReproductiveSexualHealtForm = (props: any) => {
 
   const navigation = useNavigation();
 
+  const [editable, setEditable] = useState(false);
+
   const getItemsForQuestionSelect = (code: string) => {
     return syncCatalogService.getItemsForQuestionSelect(code, state.questions);
   };
@@ -104,19 +106,21 @@ const _AnotherReproductiveSexualHealtForm = (props: any) => {
   };
 
   function alert(data: any) {
-    Alert.alert(
-      'Volver!!!',
-      'Esta seguro?',
-      [
-        {
-          text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
-          style: 'cancel',
-        },
-        {text: 'Aceptar', onPress: () => navigation.goBack()},
-      ],
-      {cancelable: false},
-    );
+    editable
+      ? Alert.alert(
+          '',
+          '¿Desea cancelar el proceso?.',
+          [
+            {
+              text: 'NO',
+              onPress: () => console.log('Cancel Pressed'),
+              style: 'cancel',
+            },
+            {text: 'SI', onPress: () => navigation.goBack()},
+          ],
+          {cancelable: false},
+        )
+      : navigation.goBack();
   }
 
   function onSubmit(data: any) {
@@ -135,6 +139,7 @@ const _AnotherReproductiveSexualHealtForm = (props: any) => {
               onBlur={onBlur}
               error={errors.MetodoDelPlaneacionFamiliar}
               onChange={(values: any) => {
+                setEditable(true);
                 onChange(values);
                 props.saveAnswerLocal(
                   QuestionTypes.multiSelect,
@@ -167,6 +172,7 @@ const _AnotherReproductiveSexualHealtForm = (props: any) => {
               onBlur={onBlur}
               error={errors.SaludSexual}
               onChange={(value: any) => {
+                setEditable(true);
                 onChange(value);
                 props.saveAnswerLocal(
                   QuestionTypes.selectOne,
@@ -192,7 +198,7 @@ const _AnotherReproductiveSexualHealtForm = (props: any) => {
           )}
           name="Fuma"
         />
-       {/* <Controller
+        {/* <Controller
           control={control}
           render={({onChange, onBlur, value}) => (
             <BPicker
@@ -275,6 +281,7 @@ const _AnotherReproductiveSexualHealtForm = (props: any) => {
               onBlur={onBlur}
               error={errors.ExamenDeProstata}
               onChange={(value: any) => {
+                setEditable(true);
                 onChange(value);
                 props.saveAnswerLocal(
                   QuestionTypes.selectOne,
@@ -310,6 +317,7 @@ const _AnotherReproductiveSexualHealtForm = (props: any) => {
               error={errors.ResultadoDelExamen}
               items={logicOption}
               onChange={(value: any) => {
+                setEditable(true);
                 if (value) {
                   onChange(value);
                   //props.saveFNBNUCVIVPropiety('HUMO_CASA', JSON.parse(value));
@@ -329,6 +337,7 @@ const _AnotherReproductiveSexualHealtForm = (props: any) => {
               error={errors.TomoAccionesAnteResultado}
               items={examOption}
               onChange={(value: any) => {
+                setEditable(true);
                 if (value) {
                   onChange(value);
                   //props.saveFNBNUCVIVPropiety('HUMO_CASA', JSON.parse(value));

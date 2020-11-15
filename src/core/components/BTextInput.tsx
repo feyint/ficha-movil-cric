@@ -20,6 +20,8 @@ interface Props {
   isPassword?: boolean;
   onBlur?: any;
   icon?: any;
+  contextMenuHidden?: boolean;
+  maxLength?: any;
 }
 export default class BTextInput extends Component<Props, State> {
   render() {
@@ -36,6 +38,8 @@ export default class BTextInput extends Component<Props, State> {
           disabled={this.props.disabled}
           multiline={this.props.multiline}
           numberOfLines={this.props.numberOfLines}
+          contextMenuHidden={false}
+          maxLength={50}
         />
         {this.props.error ? (
           <HelperText type="error">
