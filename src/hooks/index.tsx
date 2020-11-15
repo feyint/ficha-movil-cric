@@ -7,3 +7,8 @@ export {useFUCBARVER} from './useFUCBARVER';
 export {useFUCRESGUA} from './useFUCRESGUA';
 export {useFUCUNICUI} from './useFUCUNICUI';
 export {useFUCZONCUI} from './useFUCZONCUI';
+export {useFUCZONCUI_FUCBARVER} from './useFUCZONCUI_FUCBARVER';
+export {useFUBUBIVIV} from './useFUBUBIVIV';
+export {useFUCTIPTER_FUCRESGUA} from './useFUCTIPTER_FUCRESGUA';
+export {useFNBNUCVIV} from './useFNBNUCVIV';
+export {useFNBNUCVIV_FVCCONVIV} from './useFNBNUCVIV_FVCCONVIV';

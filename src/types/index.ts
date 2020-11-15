@@ -20,3 +20,6 @@ export type {FUCTIPMUN} from './FUCTIPMUN';
 export type {FUCTIPRES} from './FUCTIPRES';
 export type {FUCTIPTER_FUCRESGUA} from './FUCTIPTER_FUCRESGUA';
 export type {FUCZONA} from './FUCZONA';
+export type {FUBUBIVIV, FUBUBIVIVDETAILS} from './FUBUBIVIV';
+export type {FNBNUCVIV} from './FNBNUCVIV';
+export type {FNBNUCVIV_FVCCONVIV} from './FNBNUCVIV_FVCCONVIV';

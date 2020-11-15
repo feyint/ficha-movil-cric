@@ -36,6 +36,26 @@ export function useFUCBARVER() {
       setItem(items);
     });
   }
+  function getFUCBARVERbyID(_id: number) {
+    let statement = `SELECT * FROM {0} WHERE ID = ${_id}`;
+    database.executeQuery('FUCBARVER', statement).then((results) => {
+      const count = results.rows.length;
+      const items: FUCBARVER[] = [];
+      for (let i = 0; i < count; i++) {
+        const row = results.rows.item(i);
+        const {ID, CODIGO, NOMBRE, ESTADO, FUCRESGUA_ID, FUCZONA_ID} = row;
+        items.push({
+          ID: ID,
+          CODIGO: CODIGO,
+          NOMBRE: NOMBRE,
+          ESTADO: ESTADO,
+          FUCRESGUA_ID: FUCRESGUA_ID,
+          FUCZONA_ID: FUCZONA_ID,
+        });
+      }
+      setFUCBARVER(items[0]);
+    });
+  }
   async function createFUCBARVER(newItem: FUCBARVER): Promise<void> {
     let statement = `INSERT INTO {0} 
     (ID, CODIGO, NOMBRE, ESTADO, FUCRESGUA_ID, FUCZONA_ID) 
@@ -88,6 +108,7 @@ export function useFUCBARVER() {
     listFUCBARVER,
     countFUCBARVER,
     loadingFUCBARVER,
+    getFUCBARVERbyID,
     createFUCBARVER,
     deleteFUCBARVER,
     selectFUCBARVER,

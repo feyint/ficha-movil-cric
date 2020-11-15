@@ -8,7 +8,9 @@ import {
   useFUCMUNICI,
   useFUCRESGUA,
   useFUCTIPTER,
+  useFUCTIPTER_FUCRESGUA,
   useFUCZONCUI,
+  useFUCZONCUI_FUCBARVER,
   useFVCCONVIV,
   useFVCELEVIV,
 } from '../../../hooks';
@@ -22,6 +24,12 @@ const SyncParametersScreen = () => {
   const {countFUCBARVER, syncFUCBARVER, loadingFUCBARVER} = useFUCBARVER();
   const {countFUCRESGUA, syncFUCRESGUA, loadingFUCRESGUA} = useFUCRESGUA();
   const {countFUCZONCUI, syncFUCZONCUI, loadingFUCZONCUI} = useFUCZONCUI();
+  const {
+    countFUCZONCUI_FUCBARVER,
+    syncFUCZONCUI_FUCBARVER,
+    loadingFUCZONCUI_FUCBARVER,
+  } = useFUCZONCUI_FUCBARVER();
+  const {countFUCTIPTER_FUCRESGUA, loadingFUCTIPTER_FUCRESGUA} = useFUCTIPTER_FUCRESGUA();
   useEffect(() => {}, []);
   function syncCatalogs() {
     syncFVCELEVIV();
@@ -77,6 +85,14 @@ const SyncParametersScreen = () => {
       <Paragraph>
         FUCZONCUI (Zona de cuidado):{' '}
         {loadingFUCZONCUI ? 'Cargando..' : countFUCZONCUI}
+      </Paragraph>
+      <Paragraph>
+        (Zona de cuidado relacion barrios/veredas):{' '}
+        {loadingFUCZONCUI_FUCBARVER ? 'Cargando..' : countFUCZONCUI_FUCBARVER}
+      </Paragraph>
+      <Paragraph>
+       FUCTIPTER_FUCRESGUA ():{' '}
+        {loadingFUCTIPTER_FUCRESGUA ? 'Cargando..' : countFUCTIPTER_FUCRESGUA}
       </Paragraph>
     </View>
   );

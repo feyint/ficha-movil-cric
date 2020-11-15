@@ -62,8 +62,6 @@ export class DatabaseInitialization {
         ID INTEGER PRIMARY KEY NOT NULL,
         CODIGO TEXT,
         NOMBRE TEXT,
-        DIRECCION TEXT,
-        PRINCIPAL INTEGER,
         ESTADO INTEGER,
         FVCELEVIV_ID INTEGER,
         FOREIGN KEY ( FVCELEVIV_ID ) REFERENCES FVCELEVIV ( ID )
@@ -189,6 +187,14 @@ export class DatabaseInitialization {
       );
     `);
     transaction.executeSql(`
+      CREATE TABLE IF NOT EXISTS FNBNUCVIV_FVCCONVIV(
+        ID INTEGER PRIMARY KEY AUTOINCREMENT,
+        FNBNUCVIV_ID INTEGER,
+        FVCCONVIV_ID INTEGER,
+        FVCELEVIV_ID INTEGER
+      );
+    `);
+    transaction.executeSql(`
       CREATE TABLE IF NOT EXISTS FUBUBIVIV(
         ID INTEGER PRIMARY KEY AUTOINCREMENT,
         CODIGO TEXT,
@@ -201,6 +207,7 @@ export class DatabaseInitialization {
       );
     `);
     transaction.executeSql(`
+<<<<<<< HEAD
       CREATE TABLE IF NOT EXISTS FNCELESAL(
         ID INTEGER PRIMARY KEY NOT NULL,
         CODIGO TEXT,
@@ -299,7 +306,27 @@ export class DatabaseInitialization {
         ESTADO INTEGER
       );
     `);
-
+    transaction.executeSql(`
+      CREATE TABLE IF NOT EXISTS FNBNUCVIV(
+        ID INTEGER PRIMARY KEY AUTOINCREMENT,
+        CODIGO TEXT,
+        OBSERVACION TEXT,
+        HUMO_CASA BOOLEAN,
+        HUMO_DENTRO BOOLEAN,
+        ACCESO_INTERNET BOOLEAN,
+        RIESGO BOOLEAN,
+        RESIDUO_BOR TEXT,
+        RESIDUO_PELIGROSO TEXT,
+        ANIMAL_VACUNADO INTEGER,
+        ANIMAL_NOVACUNADO INTEGER,
+        TOTAL_ANIMAL INTEGER,
+        FVBENCUES_ID INTEGER,
+        LUGAR_COCINA TEST,
+        FUBUBIVIV_ID INTEGER,
+        ESTADO INTEGER DEFAULT 0,
+        FOREIGN KEY ( FUBUBIVIV_ID ) REFERENCES FUBUBIVIV ( ID )
+      );
+    `);
 
     // Version table
     transaction.executeSql(`

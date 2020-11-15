@@ -12,7 +12,7 @@ export type FUBUBIVIV = {
   FUCZONCUI_ID: number;
 };
 export type FNBNUCVIV = {
-  ID: number;
+  ID?: number;
   CODIGO: string;
   HUMO_CASA: boolean;
   ORIGEN_DATA: string;

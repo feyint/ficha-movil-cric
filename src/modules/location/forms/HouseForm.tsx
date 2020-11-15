@@ -11,9 +11,6 @@ import {
   BPicker,
   BRadioButton,
 } from '../../../core/components';
-import {useNavigation} from '@react-navigation/native';
-import {HousingService} from '../../../services';
-import {HousingQuestion} from '../../housing/state/types';
 import {
   QuestionFamilyCodes,
   logicOption,
@@ -28,7 +25,7 @@ import {
 } from '../../../state/house/actions';
 import {connect} from 'react-redux';
 import {FieldValidator} from '../../../providers';
-import {PickerType} from '../../../core/utils/types';
+import {useFVCCONVIV} from '../../../hooks';
 const schemaForm = yup.object().shape({
   housecode: FieldValidator.required(yup, 'Código vivienda'),
   MaterialTecho: FieldValidator.required(yup, 'Material Techo'),
@@ -66,34 +63,12 @@ const listCocinaseEncuentra = [
 ];
 
 const _HouseForm = (props: any) => {
-  const syncCatalogService = new HousingService();
+  const {
+    listFVCCONVIV,
+    getQuestionsOptions,
+    getFVCCONVIVpicker,
+  } = useFVCCONVIV();
   const [internetaccess, setInternetaccess] = useState<boolean>();
-  const [questionsItems, setQuestionsItems] = useState<HousingQuestion[]>([]);
-  const [materialTechSelect, setmaterialTechSelect] = useState<PickerType[]>(
-    [],
-  );
-  const [MaterialPisoSelect, setMaterialPisoSelect] = useState<PickerType[]>(
-    [],
-  );
-  const [MaterialParedSelect, setMaterialParedSelect] = useState<PickerType[]>(
-    [],
-  );
-  const [TenenciaviviendaSelect, setTenenciaviviendaSelect] = useState<
-    PickerType[]
-  >([]);
-  const [TipodeAlumbradoSelect, setTipodeAlumbradoSelect] = useState<
-    PickerType[]
-  >([]);
-  const [CocinaConSelect, setCocinaConSelect] = useState<PickerType[]>([]);
-  const [
-    HabitacionesenlaviviendaSelect,
-    setHabitacionesenlaviviendaSelect,
-  ] = useState<PickerType[]>([]);
-  const [
-    NumerodepersonaspordormitorioSelect,
-    setNumerodepersonaspordormitorioSelect,
-  ] = useState<PickerType[]>([]);
-
   const {handleSubmit, control, errors, setValue} = useForm({
     resolver: yupResolver(schemaForm),
   });
@@ -102,130 +77,78 @@ const _HouseForm = (props: any) => {
   }, []);
   useEffect(() => {
     getAnswersFNBNUCVIV();
-  }, [questionsItems]);
-  useEffect(() => {
-    getAnswers(
-      QuestionTypes.selectOne,
-      QuestionFamilyCodes.MaterialTecho,
-      'MaterialTecho',
-    );
-  }, [materialTechSelect]);
-  useEffect(() => {
-    getAnswers(
-      QuestionTypes.selectOne,
-      QuestionFamilyCodes.MaterialPiso,
-      'MaterialPiso',
-    );
-  }, [MaterialPisoSelect]);
-  useEffect(() => {
-    getAnswers(
-      QuestionTypes.selectOne,
-      QuestionFamilyCodes.MaterialPared,
-      'MaterialPared',
-    );
-  }, [MaterialParedSelect]);
-  useEffect(() => {
-    getAnswers(
-      QuestionTypes.selectOne,
-      QuestionFamilyCodes.Tenenciavivienda,
-      'Tenenciavivienda',
-    );
-  }, [TenenciaviviendaSelect]);
-  useEffect(() => {
-    getAnswers(
-      QuestionTypes.selectOne,
-      QuestionFamilyCodes.Cocinacon,
-      'Cocinacon',
-    );
-  }, [CocinaConSelect]);
-  useEffect(() => {
-    getAnswers(
-      QuestionTypes.selectOne,
-      QuestionFamilyCodes.Numerodepersonaspordormitorio,
-      'Numerodepersonaspordormitorio',
-    );
-    let HabitacionesenlaviviendaQuestion = syncCatalogService.getItemsForQuestionSelect(
-      QuestionFamilyCodes.Habitacionesenlavivienda,
-      questionsItems,
-    );
-    setHabitacionesenlaviviendaSelect(HabitacionesenlaviviendaQuestion);
-  }, [NumerodepersonaspordormitorioSelect]);
-  useEffect(() => {
-    getAnswers(
-      QuestionTypes.selectOne,
-      QuestionFamilyCodes.Habitacionesenlavivienda,
-      'Habitacionesenlavivienda',
-    );
-    let TipodeAlumbradoQuestion = syncCatalogService.getItemsForQuestionSelect(
-      QuestionFamilyCodes.TipodeAlumbrado,
-      questionsItems,
-    );
-    setTipodeAlumbradoSelect(TipodeAlumbradoQuestion);
-  }, [HabitacionesenlaviviendaSelect]);
-  useEffect(() => {
-    getAnswers(
-      QuestionTypes.selectOne,
-      QuestionFamilyCodes.TipodeAlumbrado,
-      'TipodeAlumbrado',
-    );
-  }, [TipodeAlumbradoSelect]);
+  }, [listFVCCONVIV]);
+  // useEffect(() => {
+  //   getAnswers(
+  //     QuestionTypes.selectOne,
+  //     QuestionFamilyCodes.MaterialPiso,
+  //     'MaterialPiso',
+  //   );
+  // }, [MaterialPisoSelect]);
+  // useEffect(() => {
+  //   getAnswers(
+  //     QuestionTypes.selectOne,
+  //     QuestionFamilyCodes.MaterialPared,
+  //     'MaterialPared',
+  //   );
+  // }, [MaterialParedSelect]);
+  // useEffect(() => {
+  //   getAnswers(
+  //     QuestionTypes.selectOne,
+  //     QuestionFamilyCodes.Tenenciavivienda,
+  //     'Tenenciavivienda',
+  //   );
+  // }, [TenenciaviviendaSelect]);
+  // useEffect(() => {
+  //   getAnswers(
+  //     QuestionTypes.selectOne,
+  //     QuestionFamilyCodes.Cocinacon,
+  //     'Cocinacon',
+  //   );
+  // }, [CocinaConSelect]);
+  // useEffect(() => {
+  //   getAnswers(
+  //     QuestionTypes.selectOne,
+  //     QuestionFamilyCodes.Numerodepersonaspordormitorio,
+  //     'Numerodepersonaspordormitorio',
+  //   );
+  // }, [NumerodepersonaspordormitorioSelect]);
+  // useEffect(() => {
+  //   getAnswers(
+  //     QuestionTypes.selectOne,
+  //     QuestionFamilyCodes.Habitacionesenlavivienda,
+  //     'Habitacionesenlavivienda',
+  //   );
+  // }, [HabitacionesenlaviviendaSelect]);
+  // useEffect(() => {
+  //   getAnswers(
+  //     QuestionTypes.selectOne,
+  //     QuestionFamilyCodes.TipodeAlumbrado,
+  //     'TipodeAlumbrado',
+  //   );
+  // }, [TipodeAlumbradoSelect]);
   const fetchQuestions = async () => {
-    let result = await syncCatalogService.getQuestionWithOptions(questions);
-    if (result) {
-      setQuestionsItems(result);
-    }
+    getQuestionsOptions(questions);
   };
   async function getAnswers(type: number, code: string, prop: string) {
     let question = await props.getQuestionAnswer(type, code);
     setValue(prop, question);
   }
   async function getAnswersFNBNUCVIV() {
-    // questions.forEach(QuestionCode => {
-    //   let result = syncCatalogService.getItemsForQuestionSelect(
-    //     QuestionFamilyCodes.MaterialTecho,
-    //     questionsItems,
-    //   );
-    // });
-    let MaterialTechoQuestion = syncCatalogService.getItemsForQuestionSelect(
-      QuestionFamilyCodes.MaterialTecho,
-      questionsItems,
-    );
-    setmaterialTechSelect(MaterialTechoQuestion);
-    let MaterialPisoQuestion = syncCatalogService.getItemsForQuestionSelect(
-      QuestionFamilyCodes.MaterialPiso,
-      questionsItems,
-    );
-    setMaterialPisoSelect(MaterialPisoQuestion);
-    let MaterialParedQuestion = syncCatalogService.getItemsForQuestionSelect(
-      QuestionFamilyCodes.MaterialPared,
-      questionsItems,
-    );
-    setMaterialParedSelect(MaterialParedQuestion);
-    let TenenciaviviendaQuestion = syncCatalogService.getItemsForQuestionSelect(
-      QuestionFamilyCodes.Tenenciavivienda,
-      questionsItems,
-    );
-    setTenenciaviviendaSelect(TenenciaviviendaQuestion);
-    let CocinaConQuestion = syncCatalogService.getItemsForQuestionSelect(
-      QuestionFamilyCodes.Cocinacon,
-      questionsItems,
-    );
-    setCocinaConSelect(CocinaConQuestion);
-    let NumerodepersonaspordormitorioQuestion = syncCatalogService.getItemsForQuestionSelect(
-      QuestionFamilyCodes.Numerodepersonaspordormitorio,
-      questionsItems,
-    );
-    setNumerodepersonaspordormitorioSelect(
-      NumerodepersonaspordormitorioQuestion,
-    );
     setValue('housecode', props.FNBNUCVIV.CODIGO);
     setValue('smokeinsidehouse', props.FNBNUCVIV.HUMO_DENTRO);
     setValue('kitchenislocated', props.FNBNUCVIV.LUGAR_COCINA);
     setValue('internetaccess', props.FNBNUCVIV.ACCESO_INTERNET);
     setInternetaccess(props.FNBNUCVIV.ACCESO_INTERNET);
+    getAnswers(
+      QuestionTypes.selectOne,
+      QuestionFamilyCodes.MaterialTecho,
+      'MaterialTecho',
+    );
   }
-  const onSubmit = () => {
-    props.goBack();
+  const onSubmit = (data: any) => {
+    console.error(data);
+    // props.goBack();
   };
 
   return (
@@ -263,7 +186,7 @@ const _HouseForm = (props: any) => {
                 }
               }}
               selectedValue={value}
-              items={materialTechSelect}
+              items={getFVCCONVIVpicker(QuestionFamilyCodes.MaterialTecho)}
             />
           )}
           name="MaterialTecho"
@@ -285,7 +208,7 @@ const _HouseForm = (props: any) => {
                 }
               }}
               selectedValue={value}
-              items={MaterialPisoSelect}
+              items={getFVCCONVIVpicker(QuestionFamilyCodes.MaterialPiso)}
             />
           )}
           name="MaterialPiso"
@@ -307,7 +230,7 @@ const _HouseForm = (props: any) => {
                 }
               }}
               selectedValue={value}
-              items={MaterialParedSelect}
+              items={getFVCCONVIVpicker(QuestionFamilyCodes.MaterialPared)}
             />
           )}
           name="MaterialPared"
@@ -329,7 +252,7 @@ const _HouseForm = (props: any) => {
                 }
               }}
               selectedValue={value}
-              items={TenenciaviviendaSelect}
+              items={getFVCCONVIVpicker(QuestionFamilyCodes.Tenenciavivienda)}
             />
           )}
           name="Tenenciavivienda"
@@ -388,7 +311,7 @@ const _HouseForm = (props: any) => {
                 }
               }}
               selectedValue={value}
-              items={CocinaConSelect}
+              items={getFVCCONVIVpicker(QuestionFamilyCodes.Cocinacon)}
             />
           )}
           name="Cocinacon"
@@ -410,7 +333,9 @@ const _HouseForm = (props: any) => {
                 }
               }}
               selectedValue={value}
-              items={NumerodepersonaspordormitorioSelect}
+              items={getFVCCONVIVpicker(
+                QuestionFamilyCodes.Numerodepersonaspordormitorio,
+              )}
             />
           )}
           name="Numerodepersonaspordormitorio"
@@ -432,7 +357,9 @@ const _HouseForm = (props: any) => {
                 }
               }}
               selectedValue={value}
-              items={HabitacionesenlaviviendaSelect}
+              items={getFVCCONVIVpicker(
+                QuestionFamilyCodes.Habitacionesenlavivienda,
+              )}
             />
           )}
           name="Habitacionesenlavivienda"
@@ -454,7 +381,7 @@ const _HouseForm = (props: any) => {
                 }
               }}
               selectedValue={value}
-              items={TipodeAlumbradoSelect}
+              items={getFVCCONVIVpicker(QuestionFamilyCodes.TipodeAlumbrado)}
             />
           )}
           name="TipodeAlumbrado"
