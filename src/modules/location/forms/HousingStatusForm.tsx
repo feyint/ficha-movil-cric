@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useState, useEffect} from 'react';
+import React, {useEffect} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
@@ -8,18 +8,14 @@ import * as yup from 'yup';
 import {BButton, BPicker} from '../../../core/components';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
-import {HousingService} from '../../../services';
-import {HousingQuestion} from '../../housing/state/types';
-import {
-  QuestionFamilyCodes,
-  QuestionTypes,
-} from '../../../core/utils/HousingTypes';
+import {QuestionFamilyCodes} from '../../../core/utils/HousingTypes';
 import {
   saveAnswerLocal,
   getQuestionAnswer,
   getQuestionWithOptions,
 } from '../../../state/house/actions';
-import { PickerType } from '../../../core/utils/types';
+import {useFNBNUCVIV_FVCCONVIV, useFVCCONVIV} from '../../../hooks';
+import {FVCCONVIV} from '../../../types';
 const schemaForm = yup.object().shape({
   Techo: yup.number().required(),
   Piso: yup.number().required(),
@@ -36,13 +32,12 @@ const questions = [
 ];
 const _HousingStatusForm = (props: any) => {
   const navigation = useNavigation();
-  const syncCatalogService = new HousingService();
-  const [TechoSelect, setTechoSelect] = useState<PickerType[]>([]);
-  const [PisoSelect, setPisoSelect] = useState<PickerType[]>([]);
-  const [ParedSelect, setParedSelect] = useState<PickerType[]>([]);
-  const [VentilacionSelect, setVentilacionSelect] = useState<PickerType[]>([]);
-  const [IluminacionSelect, setIluminacionSelect] = useState<PickerType[]>([]);
-  const [questionsItems, setquestionsItems] = useState<HousingQuestion[]>([]);
+  const {
+    listFVCCONVIV,
+    getQuestionsOptions,
+    getFVCCONVIVpicker,
+  } = useFVCCONVIV();
+  const {saveAnswer, getAnswerquestion} = useFNBNUCVIV_FVCCONVIV();
   const {handleSubmit, control, errors, setValue} = useForm({
     resolver: yupResolver(schemaForm),
   });
@@ -51,70 +46,53 @@ const _HousingStatusForm = (props: any) => {
   }, []);
   useEffect(() => {
     getAnswersFNBNUCVIV();
-  }, [questionsItems]);
-  useEffect(() => {
-    getAnswers(QuestionTypes.selectOne, QuestionFamilyCodes.Techo, 'Techo');
-  }, [TechoSelect]);
-  useEffect(() => {
-    getAnswers(QuestionTypes.selectOne, QuestionFamilyCodes.Piso, 'Piso');
-  }, [PisoSelect]);
-  useEffect(() => {
-    getAnswers(QuestionTypes.selectOne, QuestionFamilyCodes.Pared, 'Pared');
-  }, [ParedSelect]);
-  useEffect(() => {
-    getAnswers(
-      QuestionTypes.selectOne,
-      QuestionFamilyCodes.Ventilacion,
-      'Ventilacion',
-    );
-  }, [VentilacionSelect]);
-  useEffect(() => {
-    getAnswers(
-      QuestionTypes.selectOne,
-      QuestionFamilyCodes.Iluminacion,
-      'Iluminacion',
-    );
-  }, [IluminacionSelect]);
+  }, [listFVCCONVIV]);
 
   async function fetchQuestions() {
-    let result = await props.getQuestionWithOptions(questions);
-    if (result) {
-      setquestionsItems(result);
-    }
+    getQuestionsOptions(questions);
   }
   async function getAnswersFNBNUCVIV() {
-    let TechoQuestion = syncCatalogService.getItemsForQuestionSelect(
-      QuestionFamilyCodes.Techo,
-      questionsItems,
-    );
-    setTechoSelect(TechoQuestion);
-    let PisoQuestion = syncCatalogService.getItemsForQuestionSelect(
-      QuestionFamilyCodes.Piso,
-      questionsItems,
-    );
-    setPisoSelect(PisoQuestion);
-    let ParedQuestion = syncCatalogService.getItemsForQuestionSelect(
-      QuestionFamilyCodes.Pared,
-      questionsItems,
-    );
-    setParedSelect(ParedQuestion);
-    let VentilacionQuestion = syncCatalogService.getItemsForQuestionSelect(
-      QuestionFamilyCodes.Ventilacion,
-      questionsItems,
-    );
-    setVentilacionSelect(VentilacionQuestion);
-    let IluminacionQuestion = syncCatalogService.getItemsForQuestionSelect(
-      QuestionFamilyCodes.Iluminacion,
-      questionsItems,
-    );
-    setIluminacionSelect(IluminacionQuestion);
+    getAnswers(QuestionFamilyCodes.Techo, 'Techo');
+    getAnswers(QuestionFamilyCodes.Piso, 'Piso');
+    getAnswers(QuestionFamilyCodes.Pared, 'Pared');
+    getAnswers(QuestionFamilyCodes.Ventilacion, 'Ventilacion');
+    getAnswers(QuestionFamilyCodes.Iluminacion, 'Iluminacion');
   }
-  async function getAnswers(type: number, code: string, prop: string) {
-    let question = await props.getQuestionAnswer(type, code);
-    setValue(prop, question);
-  }
-  function onSubmit() {
+  function onSubmit(data: any) {
+    SaveAnswers(QuestionFamilyCodes.Techo, data.Techo);
+    SaveAnswers(QuestionFamilyCodes.Piso, data.Piso);
+    SaveAnswers(QuestionFamilyCodes.Pared, data.Pared);
+    SaveAnswers(QuestionFamilyCodes.Ventilacion, data.Ventilacion);
+    SaveAnswers(QuestionFamilyCodes.Iluminacion, data.Iluminacion);
     navigation.goBack();
+  }
+
+  async function SaveAnswers(
+    questionCode: string,
+    answer: any,
+    type: 1 | 2 = 1,
+  ) {
+    let question = listFVCCONVIV.find((item: FVCCONVIV) => {
+      return item.QUESTIONCODE === questionCode;
+    });
+    if (question) {
+      const {ID} = props.FNBNUCVIV;
+      saveAnswer(type, answer, ID, question.FVCELEVIV_ID);
+    }
+  }
+  async function getAnswers(
+    questionCode: string,
+    prop: string,
+    type: 1 | 2 = 1,
+  ) {
+    let question = listFVCCONVIV.find((item: FVCCONVIV) => {
+      return item.QUESTIONCODE === questionCode;
+    });
+    if (question) {
+      const {ID} = props.FNBNUCVIV;
+      let ans = await getAnswerquestion(ID, question.FVCELEVIV_ID, type);
+      setValue(prop, '' + ans);
+    }
   }
   return (
     <KeyboardAwareScrollView>
@@ -129,14 +107,9 @@ const _HousingStatusForm = (props: any) => {
               error={errors.Techo}
               onChange={(vlue: any) => {
                 onChange(vlue);
-                props.saveAnswerLocal(
-                  QuestionTypes.selectOne,
-                  QuestionFamilyCodes.Techo,
-                  vlue,
-                );
               }}
               selectedValue={value}
-              items={TechoSelect}
+              items={getFVCCONVIVpicker(QuestionFamilyCodes.Techo)}
             />
           )}
           name="Techo"
@@ -151,14 +124,9 @@ const _HousingStatusForm = (props: any) => {
               error={errors.Piso}
               onChange={(vlue: any) => {
                 onChange(vlue);
-                props.saveAnswerLocal(
-                  QuestionTypes.selectOne,
-                  QuestionFamilyCodes.Piso,
-                  vlue,
-                );
               }}
               selectedValue={value}
-              items={PisoSelect}
+              items={getFVCCONVIVpicker(QuestionFamilyCodes.Piso)}
             />
           )}
           name="Piso"
@@ -173,14 +141,9 @@ const _HousingStatusForm = (props: any) => {
               error={errors.Pared}
               onChange={(vlue: any) => {
                 onChange(vlue);
-                props.saveAnswerLocal(
-                  QuestionTypes.selectOne,
-                  QuestionFamilyCodes.Pared,
-                  vlue,
-                );
               }}
               selectedValue={value}
-              items={ParedSelect}
+              items={getFVCCONVIVpicker(QuestionFamilyCodes.Pared)}
             />
           )}
           name="Pared"
@@ -195,14 +158,9 @@ const _HousingStatusForm = (props: any) => {
               error={errors.Ventilacion}
               onChange={(vlue: any) => {
                 onChange(vlue);
-                props.saveAnswerLocal(
-                  QuestionTypes.selectOne,
-                  QuestionFamilyCodes.Ventilacion,
-                  vlue,
-                );
               }}
               selectedValue={value}
-              items={VentilacionSelect}
+              items={getFVCCONVIVpicker(QuestionFamilyCodes.Ventilacion)}
             />
           )}
           name="Ventilacion"
@@ -217,14 +175,9 @@ const _HousingStatusForm = (props: any) => {
               error={errors.Iluminacion}
               onChange={(vlue: any) => {
                 onChange(vlue);
-                props.saveAnswerLocal(
-                  QuestionTypes.selectOne,
-                  QuestionFamilyCodes.Iluminacion,
-                  vlue,
-                );
               }}
               selectedValue={value}
-              items={IluminacionSelect}
+              items={getFVCCONVIVpicker(QuestionFamilyCodes.Iluminacion)}
             />
           )}
           name="Iluminacion"
@@ -259,9 +212,9 @@ const mapDispatchToProps = {
   getQuestionAnswer,
   getQuestionWithOptions,
 };
-const mapStateToProps = (session) => {
+const mapStateToProps = (store: any) => {
   return {
-    user: session.session.user,
+    FNBNUCVIV: store.housing.FNBNUCVIV,
   };
 };
 export default connect(mapStateToProps, mapDispatchToProps)(_HousingStatusForm);

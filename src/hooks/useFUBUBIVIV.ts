@@ -1,7 +1,7 @@
 import {useState, useEffect} from 'react';
 import {useDatabase} from '../context/DatabaseContext';
 import {FUBUBIVIV, FUBUBIVIVDETAILS} from '../types';
-
+const HOUSECODE_INCREMENT = '0000';
 export function useFUBUBIVIV() {
   const [listFUBUBIVIV, setItem] = useState<FUBUBIVIV[]>([]);
   const [itemFUBUBIVIV, setFUBUBIVIV] = useState<FUBUBIVIV>();
@@ -19,6 +19,34 @@ export function useFUBUBIVIV() {
   }
   function clearAllFUBUBIVIV() {
     return database.executeQuery('FUBUBIVIV', 'delete from {0}');
+  }
+  async function getLastCode(FUBUBIVIVCODE: string) {
+    let NEWCODIGO = '';
+    let statement = ` SELECT * FROM FUBUBIVIV 
+    WHERE CODIGO LIKE '%${FUBUBIVIVCODE}%' ORDER BY ID DESC LIMIT 1;`;
+    await database.executeQuery('FNBNUCVIV', statement).then((results) => {
+      const count = results.rows.length;
+      if (count === 0) {
+        NEWCODIGO = FUBUBIVIVCODE + '-' + incrementNumber('0');
+      }
+      for (let i = 0; i < count; i++) {
+        const row = results.rows.item(i);
+        const {CODIGO} = row;
+        let values = CODIGO.split('-');
+        let increment = incrementNumber(values[1]);
+        NEWCODIGO = FUBUBIVIVCODE + '-' + increment;
+      }
+    });
+    return NEWCODIGO;
+  }
+  function incrementNumber(numberstring) {
+    let number = parseInt(numberstring, 10) + 1;
+    let initial = HOUSECODE_INCREMENT.substring(
+      0,
+      HOUSECODE_INCREMENT.length - number.toString().length,
+    );
+    let code = initial + number;
+    return code;
   }
 
   function filterFUBUBIVIV(_fububiviv: number, single = false) {
@@ -115,6 +143,31 @@ export function useFUBUBIVIV() {
         filterFUBUBIVIV(insertId, true);
       });
   }
+  async function updateFUBUBIVIV(item: FUBUBIVIV): Promise<void> {
+    setLoading(true);
+    let statement = `UPDATE {0}  SET
+      CODIGO = ?, 
+      COORDENADA_X= ?, 
+      COORDENADA_Y= ?, 
+      DIRECCION= ?, 
+      FUCZONCUI_FUCBARVER_ID= ?
+    WHERE ID = ${item.ID}`;
+    let params = [
+      item.CODIGO,
+      item.COORDENADA_X,
+      item.COORDENADA_Y,
+      item.DIRECCION,
+      item.FUCZONCUI_FUCBARVER_ID,
+    ];
+    return await database
+      .executeQuery('FUBUBIVIV', statement, params)
+      .then((results) => {
+        filterFUBUBIVIV(item.ID, true);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }
   async function countEntity(): Promise<void> {
     return database.countEntity('FUBUBIVIV').then(setCount);
   }
@@ -135,8 +188,10 @@ export function useFUBUBIVIV() {
     listFUBUBIVIV,
     countFUBUBIVIV,
     loadingFUBUBIVIV,
+    getLastCode,
     getFUBUBIVIVDETAILS,
     createFUBUBIVIV,
+    updateFUBUBIVIV,
     deleteFUBUBIVIV,
     selectFUBUBIVIV,
     getAllFUBUBIVIV,

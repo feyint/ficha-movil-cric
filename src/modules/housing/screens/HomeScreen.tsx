@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
 import {BSearchBarV2} from '../../../core/components';
@@ -12,11 +13,7 @@ import CardView from 'react-native-cardview';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {useFUBUBIVIV} from '../../../hooks';
 
-interface FormData {
-  clearFUBUBIVIV: any;
-  setFUBUBIVIV: any;
-}
-const HomeScreen = (props: FormData) => {
+const HomeScreen = (props: any) => {
   // TODO ajustar el filtro por queries y grupos, agregar fecha de creacion a ficha
   const [houses, setHouses] = useState<any[]>([]);
   const [filteredHouses, setfilteredHouses] = useState<any[]>([]);

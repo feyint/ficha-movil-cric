@@ -25,7 +25,7 @@ const HouseMenuScreen = (props: any) => {
   }, []);
   useEffect(() => {
     if (itemFNBNUCVIV) {
-      setFNBNUCVIV(itemFNBNUCVIV);
+      props.setFNBNUCVIV(itemFNBNUCVIV);
       setCodigo(itemFNBNUCVIV.CODIGO);
     }
   }, [itemFNBNUCVIV]);

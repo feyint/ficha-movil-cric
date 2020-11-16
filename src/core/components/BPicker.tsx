@@ -30,7 +30,7 @@ class BPicker extends Component<Props, any> {
   }
   renderItems() {
     let listItems: any = [];
-    if (this.props.items) {
+    if (this.props && this.props.items && this.props.items.length > 0) {
       this.props.items.forEach((item) => {
         listItems.push(
           <Picker.Item
