@@ -1,7 +1,7 @@
 import {useState, useEffect} from 'react';
 import {useDatabase} from '../context/DatabaseContext';
 import {MultiSelectSchema, PickerType} from '../core/utils/types';
-import { capitalizeFirstLetter } from '../core/utils/utils';
+import {capitalizeFirstLetter} from '../core/utils/utils';
 import {SyncCatalogService} from '../services';
 import {FVCCONVIV, FVCELEVIV} from '../types';
 

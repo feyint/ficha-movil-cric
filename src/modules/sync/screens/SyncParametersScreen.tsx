@@ -14,6 +14,7 @@ import {
   useFUCBARVER,
   useFUCDEPART,
   useFUCMUNICI,
+  useFUCPAIS,
   useFUCRESGUA,
   useFUCTIPTER,
   useFUCTIPTER_FUCRESGUA,
@@ -40,6 +41,7 @@ const SyncParametersScreen = () => {
   const {countFNCGENERO, syncFNCGENERO, loadingFNCGENERO} = useFNCGENERO();
   const {countFNCELEPER, syncFNCELEPER, loadingFNCELEPER} = useFNCELEPER();
   const {countFNCCONPER, syncFNCCONPER, loadingFNCCONPER} = useFNCCONPER();
+  const {countFUCPAIS, syncFUCPAIS, loadingFUCPAIS} = useFUCPAIS();
   const {
     countFUCZONCUI_FUCBARVER,
     loadingFUCZONCUI_FUCBARVER,
@@ -66,6 +68,7 @@ const SyncParametersScreen = () => {
     syncFNCGENERO();
     syncFNCELEPER();
     syncFNCCONPER();
+    syncFUCPAIS();
     //await this.clearPollEntities();
     // this.countEntity();
   }
@@ -87,6 +90,9 @@ const SyncParametersScreen = () => {
       <Paragraph>
         FVCCONVIV (Opciones de Respuestas Nucleo familiar) :{' '}
         {loadingFVCCONVIV ? 'Cargando..' : countFVCCONVIV}
+      </Paragraph>
+      <Paragraph>
+        FUCPAIS (Departamentos) : {loadingFUCPAIS ? 'Cargando..' : countFUCPAIS}
       </Paragraph>
       <Paragraph>
         FUCDEPART (Departamentos) :{' '}

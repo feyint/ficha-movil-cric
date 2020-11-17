@@ -1,5 +1,6 @@
 import {useState, useEffect} from 'react';
 import {useDatabase} from '../context/DatabaseContext';
+import { PersonParametersConst } from '../core/utils/SystemParameters';
 import {FNBNUCVIV, FUBUBIVIVDETAILS} from '../types';
 
 export function useFNBNUCVIV() {
@@ -18,7 +19,7 @@ export function useFNBNUCVIV() {
     //   FUBUBIVIV_ID: 12,
     //   CODIGO: 'PRUEBA-UNO-1',
     // });
-    countEntity();
+    // countEntity();
   }, []);
   function getAllFNBNUCVIV() {
     return database.getAllFromEntity('FNBNUCVIV').then(setItem);
@@ -202,6 +203,26 @@ export function useFNBNUCVIV() {
   async function selectFNBNUCVIV(list: FNBNUCVIV) {
     setFNBNUCVIV(list);
   }
+  async function alreadyexistParent(FNBNUCVIV_ID: number) {
+    let statement = `
+    SELECT prnt.ID FROM FNCPERSON p 
+    INNER JOIN FNBNUCVIV_FNCPERSON np ON np.FNCPERSON_ID  = p.ID
+    LEFT JOIN FNCPAREN prnt ON prnt.ID = p.FNCPAREN_ID 
+    WHERE  np .FNBNUCVIV_ID = ${FNBNUCVIV_ID} AND prnt.CODIGO = '${PersonParametersConst.fncpersonparentheadercode}'`;
+    return await database
+      .executeQuery('FNCPERSON', statement)
+      .then((results) => {
+        let _id = null;
+        const count = results.rows.length;
+        for (let i = 0; i < count; i++) {
+          const row = results.rows.item(i);
+          const {ID} = row;
+          console.error('PARENT ID', ID);
+          _id = ID;
+        }
+        return _id;
+      });
+  }
   return {
     itemFUBUBIVIVDETAILS,
     itemFNBNUCVIV,
@@ -209,6 +230,7 @@ export function useFNBNUCVIV() {
     countFNBNUCVIV,
     loadingFNBNUCVIV,
     getLastNucleoCode,
+    alreadyexistParent,
     getFNBNUCVIVbyID,
     createFNBNUCVIV,
     deleteFNBNUCVIV,

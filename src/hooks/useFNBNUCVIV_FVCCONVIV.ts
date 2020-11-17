@@ -12,9 +12,6 @@ export function useFNBNUCVIV_FVCCONVIV() {
   const [countFNBNUCVIV_FVCCONVIV, setCount] = useState<number>(0);
   const [loadingFNBNUCVIV_FVCCONVIV, setLoading] = useState<boolean>(false);
   const database = useDatabase();
-  useEffect(() => {
-    countEntity();
-  }, []);
   async function saveAnswer(
     type: 1 | 2,
     answer: any,

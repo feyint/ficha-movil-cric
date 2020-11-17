@@ -1,5 +1,6 @@
 import {useState, useEffect} from 'react';
 import {useDatabase} from '../context/DatabaseContext';
+import {MultiSelectSchema, PickerType} from '../core/utils/types';
 import {SyncCatalogService} from '../services';
 import {FNCCONPER} from '../types';
 
@@ -8,12 +9,41 @@ export function useFNCCONPER() {
   const [itemFNCCONPER, setFNCCONPER] = useState<FNCCONPER>();
   const [countFNCCONPER, setCount] = useState<number>(0);
   const [loadingFNCCONPER, setLoading] = useState<boolean>(false);
+
   const database = useDatabase();
   useEffect(() => {
-    countEntity();
+    // countEntity();
   }, []);
   function getAllFNCCONPER() {
     return database.getAllFromEntity('FNCCONPER').then(setlist);
+  }
+  async function getQuestionsOptions(questionCodes: string[]) {
+    setLoading(true);
+    let inQuery = questionCodes.toString();
+    inQuery = inQuery.replace('[', '');
+    inQuery = inQuery.replace(']', '');
+    let statement = `
+    SELECT q.CODIGO as QUESTIONCODE, o.* FROM FNCELEPER q 
+    INNER JOIN FNCCONPER o ON q.ID = o.FNCELEPER_ID
+    WHERE q.CODIGO  in (${inQuery})`;
+    await database.executeQuery('FNCCONPER', statement).then((results) => {
+      const count = results.rows.length;
+      const items: FNCCONPER[] = [];
+      for (let i = 0; i < count; i++) {
+        const row = results.rows.item(i);
+        const {ID, CODIGO, ESTADO, NOMBRE, FNCELEPER_ID, QUESTIONCODE} = row;
+        items.push({
+          ID: ID,
+          CODIGO: CODIGO,
+          ESTADO: ESTADO,
+          NOMBRE: NOMBRE,
+          FNCELEPER_ID: FNCELEPER_ID,
+          QUESTIONCODE: QUESTIONCODE,
+        });
+      }
+      setlist(items);
+      setLoading(false);
+    });
   }
   async function createFNCCONPER(newItem: FNCCONPER): Promise<void> {
     let statement = `INSERT INTO {0} 
@@ -39,6 +69,34 @@ export function useFNCCONPER() {
     }
     // otherwise:
     return Promise.reject(Error('Could not delete an undefined item'));
+  }
+  function getMultiselect(code: string) {
+    let item: MultiSelectSchema = {name: '', id: 0, children: []};
+    item.id = parseInt(code, 10);
+    for (let i = 0; i < listFNCCONPER.length; i++) {
+      if (listFNCCONPER[i].QUESTIONCODE === code) {
+        item.children.push({
+          id: listFNCCONPER[i].ID,
+          name: listFNCCONPER[i].NOMBRE,
+          item: listFNCCONPER[i],
+        });
+      }
+    }
+    return item;
+  }
+  function getPicker(code: string) {
+    let item: PickerType[] = [];
+    for (let i = 0; i < listFNCCONPER.length; i++) {
+      if (listFNCCONPER[i].QUESTIONCODE == code) {
+        item.push({
+          value: listFNCCONPER[i].ID.toString(),
+          label: listFNCCONPER[i].NOMBRE,
+          item: listFNCCONPER[i],
+        });
+      }
+    }
+    item.unshift({value: '-1', label: 'Seleccione', item: null});
+    return item;
   }
   async function selectFNCCONPER(list: FNCCONPER) {
     setFNCCONPER(list);
@@ -67,7 +125,10 @@ export function useFNCCONPER() {
     createFNCCONPER,
     deleteFNCCONPER,
     selectFNCCONPER,
+    getPicker,
     syncFNCCONPER,
     getAllFNCCONPER,
+    getQuestionsOptions,
+    getMultiselect,
   };
 }

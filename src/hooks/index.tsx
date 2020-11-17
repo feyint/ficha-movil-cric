@@ -21,3 +21,6 @@ export {useFNCLUNIND} from './useFNCLUNIND';
 export {useFNCGENERO} from './useFNCGENERO';
 export {useFNCELEPER} from './useFNCELEPER';
 export {useFNCCONPER} from './useFNCCONPER';
+export {useFNBNUCVIV_FNCPERSON} from './useFNBNUCVIV_FNCPERSON';
+export {useFNCPERSON_FNCCONPER} from './useFNCPERSON_FNCCONPER';
+export {useFUCPAIS} from './useFUCPAIS';

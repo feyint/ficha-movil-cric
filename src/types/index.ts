@@ -22,3 +22,6 @@ export type {FNCELEPER} from './FNCELEPER';
 export type {FNCCONPER} from './FNCCONPER';
 export type {FNCOCUPAC} from './FNCOCUPAC';
 export type {FNCPUEIND} from './FNCPUEIND';
+export type {FNBNUCVIV_FNCPERSON} from './FNBNUCVIV_FNCPERSON';
+export type {FNCPERSON_FNCCONPER} from './FNCPERSON_FNCCONPER';
+export type {FUCPAIS} from './FUCPAIS';

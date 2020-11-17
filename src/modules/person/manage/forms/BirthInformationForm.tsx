@@ -7,15 +7,11 @@ import {yupResolver} from '@hookform/resolvers';
 import * as yup from 'yup';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
-import {BButton, BDatePickerModal, BPicker} from '../../../../core/components';
-import {ConditionPersonService, UtilsService} from '../../../../services';
+import {BButton, BPicker} from '../../../../core/components';
 import {updateFNCPERSON} from '../../../../state/person/actions';
 import {
-  DataBaseSchemas,
-  FNCLUNINDSCHEMA,
   FUCDEPARTSCHEMA,
   FUCMUNICISCHEMA,
-  FUCPAISSCHEMA,
 } from '../../../../providers/DataBaseProvider';
 import {
   saveAnswerLocal,
@@ -29,8 +25,15 @@ import {
 import moment from 'moment';
 import {PersonParametersConst} from '../../../../core/utils/SystemParameters';
 import {Text} from 'react-native-paper';
-import {colors} from 'react-native-elements';
 import {theme} from '../../../../core/style/theme';
+import {
+  useFNCCONPER,
+  useFNCPERSON_FNCCONPER,
+  useFUCDEPART,
+  useFUCPAIS,
+} from '../../../../hooks';
+import {FNCCONPER} from '../../../../types';
+import { getSelectSchema } from '../../../../core/utils/utils';
 
 const schemaForm = yup.object().shape({
   fucmunici: yup.number().required(),
@@ -40,14 +43,19 @@ const schemaForm = yup.object().shape({
   fnclunocci: yup.number().optional(),
   lacmaterna: yup.number().optional(),
 });
+const questions = [
+  QuestionConditionPersonCodes.LunaOccidental,
+  QuestionConditionPersonCodes.LactanciaMaterna,
+];
 const _BirthInformationForm = (props: any) => {
   const navigation = useNavigation();
   const {handleSubmit, control, errors, setValue} = useForm({
     resolver: yupResolver(schemaForm),
   });
-  const [fucpaisSelect, setfucpaisSelect] = useState<
-    {label: any; value: any}[]
-  >([]);
+  const {listFNCCONPER, getQuestionsOptions, getPicker} = useFNCCONPER();
+  const {saveAnswer, getAnswerquestion} = useFNCPERSON_FNCCONPER();
+  const {listFUCPAIS, getAllFUCPAIS} = useFUCPAIS();
+  const {listFUCDEPART, getAllFUCDEPART} = useFUCDEPART();
   const [fnclunindselect, setfnclunindselect] = useState<
     {label: any; value: any}[]
   >([]);
@@ -98,63 +106,66 @@ const _BirthInformationForm = (props: any) => {
     }
   }, [fucmuniciSelect]);
   const fetchQuestions = async () => {
-    let paises = await props.getEntitySelect('FUCPAIS', FUCPAISSCHEMA);
-    let fncluninds = await props.getEntitySelect('FNCLUNIND', FNCLUNINDSCHEMA);
-    setfucpaisSelect(paises);
-    setfnclunindselect(fncluninds);
-    if (props.FNCPERSON.ID) {
-      if (props.FNCPERSON.FNCLUNIND_ID) {
-        setValue('fnclunind', props.FNCPERSON.FNCLUNIND_ID);
-        setfnclunind('' + props.FNCPERSON.FNCLUNIND_ID);
-      }
-      if (props.FNCPERSON.FUCMUNICI_ID) {
-        let service: UtilsService = new UtilsService();
-        let munici = await service.getFilterEntity(
-          DataBaseSchemas.FUCMUNICISCHEMA,
-          FUCMUNICISCHEMA,
-          'ID',
-          props.FNCPERSON.FUCMUNICI_ID,
-          null,
-          null,
-          true,
-        );
-        let dept = await service.getFilterEntity(
-          DataBaseSchemas.FUCDEPARTSCHEMA,
-          FUCDEPARTSCHEMA,
-          'ID',
-          munici.FUCDEPART_ID,
-          null,
-          null,
-          true,
-        );
-        setValue('fucpais', dept.FUCPAIS_ID);
-        setfucpais('' + dept.FUCPAIS_ID);
-        let departsm = await props.getEntitySelect(
-          'FUCDEPART',
-          FUCDEPARTSCHEMA,
-          'FUCPAIS_ID',
-          dept.FUCPAIS_ID,
-        );
-        setfucdepatSelect(departsm);
-        setValue('fucdepat', dept.ID);
-        setfucdepat('' + dept.ID);
-        let municipios = await props.getEntitySelect(
-          'FUCMUNICI',
-          FUCMUNICISCHEMA,
-          'FUCDEPART_ID',
-          dept.ID,
-        );
-        setfucmuniciSelect(municipios);
-        setValue('fucmunici', props.FNCPERSON.FUCMUNICI_ID);
-        setfucmunici('' + props.FNCPERSON.FUCMUNICI_ID);
-      }
-    }
+    getQuestionsOptions(questions);
+    getAllFUCPAIS();
+    // getAllFUCDEPART();
+    // let paises = await props.getEntitySelect('FUCPAIS', FUCPAISSCHEMA);
+    // let fncluninds = await props.getEntitySelect('FNCLUNIND', FNCLUNINDSCHEMA);
+    // setfucpaisSelect(paises);
+    // setfnclunindselect(fncluninds);
+    // if (props.FNCPERSON.ID) {
+    //   if (props.FNCPERSON.FNCLUNIND_ID) {
+    //     setValue('fnclunind', props.FNCPERSON.FNCLUNIND_ID);
+    //     setfnclunind('' + props.FNCPERSON.FNCLUNIND_ID);
+    //   }
+    //   if (props.FNCPERSON.FUCMUNICI_ID) {
+    //     let service: UtilsService = new UtilsService();
+    //     let munici = await service.getFilterEntity(
+    //       DataBaseSchemas.FUCMUNICISCHEMA,
+    //       FUCMUNICISCHEMA,
+    //       'ID',
+    //       props.FNCPERSON.FUCMUNICI_ID,
+    //       null,
+    //       null,
+    //       true,
+    //     );
+    //     let dept = await service.getFilterEntity(
+    //       DataBaseSchemas.FUCDEPARTSCHEMA,
+    //       FUCDEPARTSCHEMA,
+    //       'ID',
+    //       munici.FUCDEPART_ID,
+    //       null,
+    //       null,
+    //       true,
+    //     );
+    //     setValue('fucpais', dept.FUCPAIS_ID);
+    //     setfucpais('' + dept.FUCPAIS_ID);
+    //     let departsm = await props.getEntitySelect(
+    //       'FUCDEPART',
+    //       FUCDEPARTSCHEMA,
+    //       'FUCPAIS_ID',
+    //       dept.FUCPAIS_ID,
+    //     );
+    //     setfucdepatSelect(departsm);
+    //     setValue('fucdepat', dept.ID);
+    //     setfucdepat('' + dept.ID);
+    //     let municipios = await props.getEntitySelect(
+    //       'FUCMUNICI',
+    //       FUCMUNICISCHEMA,
+    //       'FUCDEPART_ID',
+    //       dept.ID,
+    //     );
+    //     setfucmuniciSelect(municipios);
+    //     setValue('fucmunici', props.FNCPERSON.FUCMUNICI_ID);
+    //     setfucmunici('' + props.FNCPERSON.FUCMUNICI_ID);
+    //   }
+    // }
   };
 
-  const getItemsForQuestionSelect = (code: string) => {
-    let service = new ConditionPersonService();
-    return service.getItemsForQuestionSelect(code, props.questions);
-  };
+  // const getItemsForQuestionSelect = (code: string) => {
+  //   let service = new ConditionPersonService();
+  //   return service.getItemsForQuestionSelect(code, questions);
+  // };
   function alert(data: any) {
     Alert.alert(
       'Volver!!!',
@@ -195,9 +206,38 @@ const _BirthInformationForm = (props: any) => {
     setValue('fucmunici', '');
     setfucmunici(null);
   }
-  async function getAnswers(type: number, code: string, prop: string) {
-    let question = await props.getQuestionAnswer(type, code);
-    setValue(prop, question);
+  async function getAnswers(
+    questionCode: string,
+    prop: string,
+    type: 1 | 2 = 1,
+  ) {
+    let question = listFNCCONPER.find((item: FNCCONPER) => {
+      return item.QUESTIONCODE === questionCode;
+    });
+    if (question) {
+      const {ID} = props.FNCPERSON;
+      let ans = await getAnswerquestion(ID, question.FNCELEPER_ID, type);
+      if (ans) {
+        if (type == 1) {
+          setValue(prop, '' + ans);
+        } else {
+          setValue(prop, ans);
+        }
+      }
+    }
+  }
+  async function SaveAnswers(
+    questionCode: string,
+    answer: any,
+    type: 1 | 2 = 1,
+  ) {
+    let question = listFNCCONPER.find((item: FNCCONPER) => {
+      return item.QUESTIONCODE === questionCode;
+    });
+    if (question) {
+      const {ID} = props.FNCPERSON;
+      saveAnswer(type, answer, ID, question.FNCELEPER_ID);
+    }
   }
   return (
     <KeyboardAwareScrollView>
@@ -219,7 +259,7 @@ const _BirthInformationForm = (props: any) => {
               }}
               onLoad={() => {}}
               selectedValue={fucpais}
-              items={fucpaisSelect}
+              items={getSelectSchema(listFUCPAIS)}
             />
           )}
           name="fucpais"
@@ -239,7 +279,7 @@ const _BirthInformationForm = (props: any) => {
               }}
               onLoad={() => {}}
               selectedValue={fucdepat}
-              items={fucdepatSelect}
+              items={getSelectSchema(listFUCDEPART)}
             />
           )}
           name="fucdepat"
@@ -284,17 +324,17 @@ const _BirthInformationForm = (props: any) => {
               }}
               onLoad={() => {
                 getAnswers(
-                  QuestionTypes.selectOne,
                   QuestionConditionPersonCodes.LunaOccidental,
                   'fnclunocci',
                 );
+                getAnswers(
+                  QuestionConditionPersonCodes.LunaOccidental,
+                  'fnclunocci',
+                  2,
+                );
               }}
               selectedValue={value}
-              items={
-                getItemsForQuestionSelect(
-                  QuestionConditionPersonCodes.LunaOccidental,
-                ).children
-              }
+              items={getPicker(QuestionConditionPersonCodes.LunaOccidental)}
             />
           )}
           name="fnclunocci"
@@ -339,14 +379,9 @@ const _BirthInformationForm = (props: any) => {
                   }
                 }}
                 selectedValue={value}
-                items={
-                  getItemsForQuestionSelect(
-                    QuestionConditionPersonCodes.LactanciaMaterna,
-                  ).children
-                }
+                items={getPicker(QuestionConditionPersonCodes.LactanciaMaterna)}
                 onLoad={() => {
                   getAnswers(
-                    QuestionTypes.selectOne,
                     QuestionConditionPersonCodes.LactanciaMaterna,
                     'lacmaterna',
                   );

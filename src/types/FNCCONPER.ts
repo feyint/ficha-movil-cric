@@ -4,4 +4,5 @@ export interface FNCCONPER {
   NOMBRE: string;
   ESTADO: boolean;
   FNCELEPER_ID: number;
+  QUESTIONCODE?: string;
 }
