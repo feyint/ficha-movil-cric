@@ -3,12 +3,9 @@ import {View} from 'react-native';
 import {Appbar} from 'react-native-paper';
 import {NavigationProp} from '@react-navigation/native';
 import {BirthInformationForm} from '../forms';
-import {connect} from 'react-redux';
-
 interface Props {
   navigation: NavigationProp<any>;
 }
-
 class BirthInformationScreen extends Component<Props, any> {
   constructor(props: Props) {
     super(props);

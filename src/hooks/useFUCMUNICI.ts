@@ -37,6 +37,26 @@ export function useFUCMUNICI() {
       setlist(items);
     });
   }
+  function getDetails(_ID: number) {
+    let statement = `
+    SELECT m.ID, m.FUCDEPART_ID , d.FUCPAIS_ID FROM FUCMUNICI m 
+    INNER JOIN FUCDEPART d ON m.FUCDEPART_ID = d.ID 
+    WHERE  m.ID = ${_ID}`;
+    return database.executeQuery('FUCMUNICI', statement).then((results) => {
+      const count = results.rows.length;
+      const items: FUCMUNICI[] = [];
+      for (let i = 0; i < count; i++) {
+        const row = results.rows.item(i);
+        const {FUCDEPART_ID, FUCPAIS_ID, ID} = row;
+        items.push({
+          ID: ID,
+          FUCDEPART_ID: FUCDEPART_ID,
+          FUCPAIS_ID: FUCPAIS_ID,
+        });
+      }
+      return items[0];
+    });
+  }
   async function createFUCMUNICI(newItem: FUCMUNICI): Promise<void> {
     let statement = `INSERT INTO {0} 
     (ID, CODIGO, NOMBRE, ESTADO, FUCTIPMUN_ID, FUCDEPART_ID) 
@@ -94,6 +114,7 @@ export function useFUCMUNICI() {
     selectFUCMUNICI,
     syncFUCMUNICI,
     getAllFUCMUNICI,
+    getDetails,
     getFUCMUNICIFromDept,
   };
 }

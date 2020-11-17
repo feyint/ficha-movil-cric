@@ -28,8 +28,10 @@ import {Text} from 'react-native-paper';
 import {theme} from '../../../../core/style/theme';
 import {
   useFNCCONPER,
+  useFNCLUNIND,
   useFNCPERSON_FNCCONPER,
   useFUCDEPART,
+  useFUCMUNICI,
   useFUCPAIS,
 } from '../../../../hooks';
 import {FNCCONPER} from '../../../../types';
@@ -55,16 +57,9 @@ const _BirthInformationForm = (props: any) => {
   const {listFNCCONPER, getQuestionsOptions, getPicker} = useFNCCONPER();
   const {saveAnswer, getAnswerquestion} = useFNCPERSON_FNCCONPER();
   const {listFUCPAIS, getAllFUCPAIS} = useFUCPAIS();
-  const {listFUCDEPART, getAllFUCDEPART} = useFUCDEPART();
-  const [fnclunindselect, setfnclunindselect] = useState<
-    {label: any; value: any}[]
-  >([]);
-  const [fucdepatSelect, setfucdepatSelect] = useState<
-    {label: any; value: any}[]
-  >([]);
-  const [fucmuniciSelect, setfucmuniciSelect] = useState<
-    {label: any; value: any}[]
-  >([]);
+  const {listFUCDEPART, getDeptfromPais} = useFUCDEPART();
+  const {listFUCMUNICI, getFUCMUNICIFromDept, getDetails} = useFUCMUNICI();
+  const {listFNCLUNIND, getAllFNCLUNIND} = useFNCLUNIND();
   const [fucmunici, setfucmunici] = useState<string>();
   const [fucdepat, setfucdepat] = useState<string>();
   const [fucpais, setfucpais] = useState<string>();
@@ -74,9 +69,30 @@ const _BirthInformationForm = (props: any) => {
   useEffect(() => {
     fetchQuestions();
   }, []);
-  useEffect(() => {
+  const fetchQuestions = async () => {
+    getQuestionsOptions(questions);
+    getAllFUCPAIS();
+    getAllFNCLUNIND();
+    if (props.FNCPERSON.ID) {
+      if (props.FNCPERSON.FNCLUNIND_ID) {
+        setValue('fnclunind', props.FNCPERSON.FNCLUNIND_ID);
+        setfnclunind('' + props.FNCPERSON.FNCLUNIND_ID);
+      }
+      if (props.FNCPERSON.FUCMUNICI_ID) {
+        let details = await getDetails(props.FNCPERSON.FUCMUNICI_ID);
+        getDeptfromPais(details.FUCPAIS_ID);
+        getFUCMUNICIFromDept(details.FUCDEPART_ID);
+        setValue('fucpais', details.FUCPAIS_ID);
+        setfucpais('' + details.FUCPAIS_ID);
+        setValue('fucdepat', details.FUCDEPART_ID);
+        setfucdepat('' + details.FUCDEPART_ID);
+        setValue('fucmunici', props.FNCPERSON.FUCMUNICI_ID);
+        setfucmunici('' + props.FNCPERSON.FUCMUNICI_ID);
+      }
+    }
     if (props.FNCPERSON.ID) {
       let birthDate = props.FNCPERSON.FECHA_NACIMIENTO;
+      console.error('llega a', birthDate);
       var years = moment().diff(moment(birthDate, 'DD-MM-YYYY'), 'years');
       var days = moment().diff(moment(birthDate, 'DD-MM-YYYY'), 'days');
       var a = moment(new Date());
@@ -104,68 +120,7 @@ const _BirthInformationForm = (props: any) => {
         );
       }
     }
-  }, [fucmuniciSelect]);
-  const fetchQuestions = async () => {
-    getQuestionsOptions(questions);
-    getAllFUCPAIS();
-    // getAllFUCDEPART();
-    // let paises = await props.getEntitySelect('FUCPAIS', FUCPAISSCHEMA);
-    // let fncluninds = await props.getEntitySelect('FNCLUNIND', FNCLUNINDSCHEMA);
-    // setfucpaisSelect(paises);
-    // setfnclunindselect(fncluninds);
-    // if (props.FNCPERSON.ID) {
-    //   if (props.FNCPERSON.FNCLUNIND_ID) {
-    //     setValue('fnclunind', props.FNCPERSON.FNCLUNIND_ID);
-    //     setfnclunind('' + props.FNCPERSON.FNCLUNIND_ID);
-    //   }
-    //   if (props.FNCPERSON.FUCMUNICI_ID) {
-    //     let service: UtilsService = new UtilsService();
-    //     let munici = await service.getFilterEntity(
-    //       DataBaseSchemas.FUCMUNICISCHEMA,
-    //       FUCMUNICISCHEMA,
-    //       'ID',
-    //       props.FNCPERSON.FUCMUNICI_ID,
-    //       null,
-    //       null,
-    //       true,
-    //     );
-    //     let dept = await service.getFilterEntity(
-    //       DataBaseSchemas.FUCDEPARTSCHEMA,
-    //       FUCDEPARTSCHEMA,
-    //       'ID',
-    //       munici.FUCDEPART_ID,
-    //       null,
-    //       null,
-    //       true,
-    //     );
-    //     setValue('fucpais', dept.FUCPAIS_ID);
-    //     setfucpais('' + dept.FUCPAIS_ID);
-    //     let departsm = await props.getEntitySelect(
-    //       'FUCDEPART',
-    //       FUCDEPARTSCHEMA,
-    //       'FUCPAIS_ID',
-    //       dept.FUCPAIS_ID,
-    //     );
-    //     setfucdepatSelect(departsm);
-    //     setValue('fucdepat', dept.ID);
-    //     setfucdepat('' + dept.ID);
-    //     let municipios = await props.getEntitySelect(
-    //       'FUCMUNICI',
-    //       FUCMUNICISCHEMA,
-    //       'FUCDEPART_ID',
-    //       dept.ID,
-    //     );
-    //     setfucmuniciSelect(municipios);
-    //     setValue('fucmunici', props.FNCPERSON.FUCMUNICI_ID);
-    //     setfucmunici('' + props.FNCPERSON.FUCMUNICI_ID);
-    //   }
-    // }
   };
-
-  // const getItemsForQuestionSelect = (code: string) => {
-  //   let service = new ConditionPersonService();
-  //   return service.getItemsForQuestionSelect(code, questions);
-  // };
   function alert(data: any) {
     Alert.alert(
       'Volver!!!',
@@ -183,28 +138,31 @@ const _BirthInformationForm = (props: any) => {
   }
   const onSubmit = async (data: any) => {
     navigation.goBack();
+    /**
+     * props.saveAnswerLocal(
+      QuestionTypes.selectOne,
+      QuestionConditionPersonCodes.LunaOccidental,
+      value,
+    );
+    props.updateFNCPERSON({
+      FNCLUNIND_ID: parseInt(value, 10),
+    });
+    props.saveAnswerLocal(
+        QuestionTypes.selectOne,
+        QuestionConditionPersonCodes.LactanciaMaterna,
+        value,
+      );
+     */
   };
   async function onChangePais(fucpais_id: any) {
-    let FUCDEPART = await props.getEntitySelect(
-      'FUCDEPART',
-      FUCDEPARTSCHEMA,
-      'FUCPAIS_ID',
-      fucpais_id,
-    );
-    setfucdepatSelect(FUCDEPART);
+    getDeptfromPais(fucpais_id);
     setValue('fucdepat', '');
     setfucdepat('');
   }
   async function onChangeDept(idDept: any) {
-    let FUCMUNICI = await props.getEntitySelect(
-      'FUCMUNICI',
-      FUCMUNICISCHEMA,
-      'FUCDEPART_ID',
-      idDept,
-    );
-    setfucmuniciSelect(FUCMUNICI);
+    getFUCMUNICIFromDept(idDept);
     setValue('fucmunici', '');
-    setfucmunici(null);
+    setfucmunici('');
   }
   async function getAnswers(
     questionCode: string,
@@ -293,15 +251,10 @@ const _BirthInformationForm = (props: any) => {
               onChange={(value: any) => {
                 onChange(value);
                 setfucmunici(value);
-                if (value) {
-                  props.updateFNCPERSON({
-                    FUCMUNICI_ID: parseInt(value, 10),
-                  });
-                }
               }}
               onLoad={() => {}}
               selectedValue={fucmunici}
-              items={fucmuniciSelect}
+              items={getSelectSchema(listFUCMUNICI)}
             />
           )}
           name="fucmunici"
@@ -314,23 +267,11 @@ const _BirthInformationForm = (props: any) => {
               error={errors.fnclunocci}
               onChange={(value: any) => {
                 onChange(value);
-                if (value) {
-                  props.saveAnswerLocal(
-                    QuestionTypes.selectOne,
-                    QuestionConditionPersonCodes.LunaOccidental,
-                    value,
-                  );
-                }
               }}
               onLoad={() => {
                 getAnswers(
                   QuestionConditionPersonCodes.LunaOccidental,
                   'fnclunocci',
-                );
-                getAnswers(
-                  QuestionConditionPersonCodes.LunaOccidental,
-                  'fnclunocci',
-                  2,
                 );
               }}
               selectedValue={value}
@@ -348,15 +289,10 @@ const _BirthInformationForm = (props: any) => {
               onChange={(value: any) => {
                 onChange(value);
                 setfnclunind(value);
-                if (value) {
-                  props.updateFNCPERSON({
-                    FNCLUNIND_ID: parseInt(value, 10),
-                  });
-                }
               }}
               onLoad={() => {}}
               selectedValue={fnclunind}
-              items={fnclunindselect}
+              items={getSelectSchema(listFNCLUNIND)}
             />
           )}
           name="fnclunind"
@@ -370,13 +306,6 @@ const _BirthInformationForm = (props: any) => {
                 error={errors.lacmaterna}
                 onChange={(value: any) => {
                   onChange(value);
-                  if (value) {
-                    props.saveAnswerLocal(
-                      QuestionTypes.selectOne,
-                      QuestionConditionPersonCodes.LactanciaMaterna,
-                      value,
-                    );
-                  }
                 }}
                 selectedValue={value}
                 items={getPicker(QuestionConditionPersonCodes.LactanciaMaterna)}
@@ -391,8 +320,7 @@ const _BirthInformationForm = (props: any) => {
             name="lacmaterna"
           />
         )}
-        <View
-          style={{display: 'flex', flexDirection: 'row', marginLeft: '20%'}}>
+        <View style={styles.bottoms}>
           <BButton
             style={styles.aceptButon}
             color="secondary"
@@ -425,6 +353,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: theme.colors.primary,
   },
+  bottoms: {display: 'flex', flexDirection: 'row', marginLeft: '20%'},
   cancelButon: {
     //left: 500,
     //position: 'relative',
