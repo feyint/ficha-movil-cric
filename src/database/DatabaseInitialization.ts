@@ -170,6 +170,64 @@ export class DatabaseInitialization {
       );
     `);
     transaction.executeSql(`
+      CREATE TABLE IF NOT EXISTS FNCPAREN(
+        ID INTEGER PRIMARY KEY NOT NULL,
+        CODIGO TEXT,
+        CODIGO_FF TEXT,
+        NOMBRE TEXT,
+        ESTADO INTEGER
+      );
+    `);
+    transaction.executeSql(`
+      CREATE TABLE IF NOT EXISTS FNCTIPIDE(
+        ID INTEGER PRIMARY KEY NOT NULL,
+        CODIGO TEXT,
+        CODIGO_FF TEXT,
+        NOMBRE TEXT,
+        ESTADO INTEGER
+      );
+    `);
+    transaction.executeSql(`
+      CREATE TABLE IF NOT EXISTS FNCGENERO(
+        ID INTEGER PRIMARY KEY NOT NULL,
+        CODIGO TEXT,
+        CODIGO_FF TEXT,
+        NOMBRE TEXT,
+        COD_FF TEXT,
+        ESTADO INTEGER
+      );
+    `);
+    transaction.executeSql(`
+      CREATE TABLE IF NOT EXISTS FNCLUNIND(
+        ID INTEGER PRIMARY KEY NOT NULL,
+        CODIGO TEXT,
+        NOMBRE TEXT,
+        COD_FF TEXT,
+        ESTADO INTEGER,
+        FNCPUEIND_ID INTEGER
+      );
+    `);
+    transaction.executeSql(`
+      CREATE TABLE IF NOT EXISTS FNCPUEIND(
+        ID INTEGER PRIMARY KEY NOT NULL,
+        CODIGO TEXT,
+        NOMBRE TEXT,
+        COD_FF TEXT,
+        ESTADO INTEGER
+      );
+    `);
+    transaction.executeSql(`
+      CREATE TABLE IF NOT EXISTS FNCOCUPAC(
+        ID INTEGER PRIMARY KEY NOT NULL,
+        CODIGO TEXT,
+        CODIGO_FF TEXT,
+        NOMBRE TEXT,
+        COD_FF TEXT,
+        ESTADO INTEGER,
+        FNCOCUSUB_ID INTEGER
+      );
+    `);
+    transaction.executeSql(`
       CREATE TABLE IF NOT EXISTS FUCZONCUI(
         ID INTEGER PRIMARY KEY NOT NULL,
         CODIGO TEXT,
@@ -180,10 +238,48 @@ export class DatabaseInitialization {
       );
     `);
     transaction.executeSql(`
+      CREATE TABLE IF NOT EXISTS FNCOCUSUB(
+        ID INTEGER PRIMARY KEY NOT NULL,
+        CODIGO TEXT,
+        CODIGO_FF TEXT,
+        NOMBRE TEXT,
+        ESTADO INTEGER,
+        FNCOCUSUP_ID INTEGER
+      );
+    `);
+    transaction.executeSql(`
+      CREATE TABLE IF NOT EXISTS FNCELEPER(
+        ID INTEGER PRIMARY KEY NOT NULL,
+        CODIGO TEXT,
+        CODIGO_FF TEXT,
+        NOMBRE TEXT,
+        ESTADO INTEGER,
+        SECCION TEXT
+      );
+    `);
+    transaction.executeSql(`
+      CREATE TABLE IF NOT EXISTS FNCCONPER(
+        ID INTEGER PRIMARY KEY NOT NULL,
+        CODIGO TEXT,
+        CODIGO_FF TEXT,
+        NOMBRE TEXT,
+        ESTADO INTEGER,
+        FNCELEPER_ID INTEGER
+      );
+    `);
+    transaction.executeSql(`
       CREATE TABLE IF NOT EXISTS FUCZONCUI_FUCBARVER(
         ID INTEGER PRIMARY KEY NOT NULL,
         FUCZONCUI_ID INTEGER,
         FUCBARVER_ID INTEGER
+      );
+    `);
+    transaction.executeSql(`
+      CREATE TABLE IF NOT EXISTS FNCPERSON_FNCCONPER(
+        ID INTEGER PRIMARY KEY AUTOINCREMENT,
+        FNCPERSON_ID INTEGER,
+        FNCCONPER_ID INTEGER,
+        FNCELEPER_ID INTEGER
       );
     `);
     transaction.executeSql(`
@@ -192,6 +288,13 @@ export class DatabaseInitialization {
         FNBNUCVIV_ID INTEGER,
         FVCCONVIV_ID INTEGER,
         FVCELEVIV_ID INTEGER
+      );
+    `);
+    transaction.executeSql(`
+      CREATE TABLE IF NOT EXISTS FNBNUCVIV_FNCPERSON(
+        ID INTEGER PRIMARY KEY AUTOINCREMENT,
+        FNBNUCVIV_ID INTEGER,
+        FNCPERSON_ID INTEGER
       );
     `);
     transaction.executeSql(`
@@ -207,7 +310,6 @@ export class DatabaseInitialization {
       );
     `);
     transaction.executeSql(`
-<<<<<<< HEAD
       CREATE TABLE IF NOT EXISTS FNCELESAL(
         ID INTEGER PRIMARY KEY NOT NULL,
         CODIGO TEXT,
@@ -327,6 +429,42 @@ export class DatabaseInitialization {
         FOREIGN KEY ( FUBUBIVIV_ID ) REFERENCES FUBUBIVIV ( ID )
       );
     `);
+    transaction.executeSql(`
+      CREATE TABLE IF NOT EXISTS FNCPERSON(
+        ID INTEGER PRIMARY KEY AUTOINCREMENT,
+        CODIGO TEXT,
+        IDENTIFICACION TEXT,
+        PRIMER_NOMBRE TEXT,
+        SEGUNDO_NOMBRE TEXT,
+        PRIMER_APELLIDO TEXT,
+        SEGUNDO_APELLIDO TEXT,
+        FECHA_NACIMIENTO TEXT,
+        TEL_CELULAR TEXT,
+        TEL_ALTERNO TEXT,
+        CORREO_ELECTRONICO TEXT,
+        FECHA_ACTIVIDAD TEXT,
+        FECHA_CREACION TEXT,
+        FNCTIPIDE_ID INTEGER,
+        FNCORGANI_ID INTEGER,
+        FNCLUNIND_ID INTEGER,
+        FNCOCUPAC_ID INTEGER,
+        FUCMUNICI_ID INTEGER,
+        FNCPAREN_ID INTEGER,
+        FNCGENERO_ID INTEGER,
+        FVBENCUES_ID INTEGER,
+        FNCPUEIND_ID INTEGER
+      );
+    `);
+    // ListItem table
+    // transaction.executeSql(`
+    //   CREATE TABLE IF NOT EXISTS ListItem(
+    //     item_id INTEGER PRIMARY KEY NOT NULL,
+    //     list_id INTEGER,
+    //     text TEXT,
+    //     done INTEGER DEFAULT 0,
+    //     FOREIGN KEY ( list_id ) REFERENCES List ( list_id )
+    //   );
+    // `);
 
     // Version table
     transaction.executeSql(`

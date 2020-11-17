@@ -43,6 +43,25 @@ export function useFUCDEPART() {
     // otherwise:
     return Promise.reject(Error('Could not delete an undefined item'));
   }
+  function getDeptfromPais(PAIS_ID: number) {
+    let statement = `SELECT * FROM {0} WHERE FUCPAIS_ID = ${PAIS_ID}`;
+    database.executeQuery('FUCDEPART', statement).then((results) => {
+      const count = results.rows.length;
+      const items: FUCDEPART[] = [];
+      for (let i = 0; i < count; i++) {
+        const row = results.rows.item(i);
+        const {ID, CODIGO, NOMBRE, ESTADO, FUCPAIS_ID} = row;
+        items.push({
+          ID: ID,
+          CODIGO: CODIGO,
+          NOMBRE: NOMBRE,
+          ESTADO: ESTADO,
+          FUCPAIS_ID: FUCPAIS_ID,
+        });
+      }
+      setlist(items);
+    });
+  }
   async function selectFUCDEPART(list: FUCDEPART) {
     setFUCDEPART(list);
   }
@@ -71,5 +90,6 @@ export function useFUCDEPART() {
     selectFUCDEPART,
     syncFUCDEPART,
     getAllFUCDEPART,
+    getDeptfromPais,
   };
 }

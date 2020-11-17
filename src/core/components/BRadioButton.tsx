@@ -13,6 +13,9 @@ interface Props {
 class BRadioButton extends Component<Props, any> {
   constructor(props: Props) {
     super(props);
+    if (props.value && props.onChange && props.value.length > 0) {
+      props.onChange(props.value);
+    }
   }
   renderLabel() {
     return (

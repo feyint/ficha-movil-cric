@@ -9,16 +9,9 @@ import {BTextInput, BPicker, BButton} from '../../../core/components';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {getEntitySelect, getLasHouseCode} from '../state/actions';
-import {PickerType, SelectSchema} from '../../../core/utils/types';
+import {PickerType} from '../../../core/utils/types';
 import Geolocation from '@react-native-community/geolocation';
 import {setFUBUBIVIV} from '../../../state/house/actions';
-import {
-  DataBaseSchemas,
-  FUCBARVERSCHEMA,
-  FUCDEPARTSCHEMA,
-  FUCMUNICISCHEMA,
-  FUCRESGUASCHEMA,
-} from '../../../providers/DataBaseProvider';
 import {FieldValidator} from '../../../providers';
 import {
   useFUBUBIVIV,
@@ -28,7 +21,6 @@ import {
   useFUCRESGUA,
   useFUCTIPTER,
   useFUCZONCUI,
-  useFUCZONCUI_FUCBARVER,
 } from '../../../hooks';
 import {getSelectSchema} from '../../../core/utils/utils';
 import {FUBUBIVIV} from '../../../types';
@@ -74,6 +66,8 @@ const _HomeLocationForm = (props: any) => {
     itemFUBUBIVIV,
     itemFUBUBIVIVDETAILS,
     createFUBUBIVIV,
+    updateFUBUBIVIV,
+    getLastCode,
     getFUBUBIVIVDETAILS,
   } = useFUBUBIVIV();
   //OLD
@@ -108,23 +102,41 @@ const _HomeLocationForm = (props: any) => {
     fetchQuestions();
   }, []);
   useEffect(() => {
-    let result = getSelectSchema(listFUCDEPART);
-    setDepartamentoSelect(result);
+    if (itemFUBUBIVIV) {
+      props.setFUBUBIVIV(itemFUBUBIVIV);
+      navigation.goBack();
+    }
+  }, [itemFUBUBIVIV]);
+  useEffect(() => {
+    if (listFUCDEPART) {
+      let result = getSelectSchema(listFUCDEPART);
+      setDepartamentoSelect(result);
+    }
   }, [listFUCDEPART]);
   useEffect(() => {
-    setMunicipioSelect(getSelectSchema(listFUCMUNICI));
+    if (listFUCMUNICI) {
+      setMunicipioSelect(getSelectSchema(listFUCMUNICI));
+    }
   }, [listFUCMUNICI]);
   useEffect(() => {
-    setrescentropSelect(getSelectSchema(listFUCRESGUA));
+    if (listFUCRESGUA) {
+      setrescentropSelect(getSelectSchema(listFUCRESGUA));
+    }
   }, [listFUCRESGUA]);
   useEffect(() => {
-    setBarrioVeredaSelect(getSelectSchema(listFUCBARVER));
+    if (listFUCBARVER) {
+      setBarrioVeredaSelect(getSelectSchema(listFUCBARVER));
+    }
   }, [listFUCBARVER]);
   useEffect(() => {
-    setTipoterritorioSelect(getSelectSchema(listFUCTIPTER));
+    if (listFUCTIPTER) {
+      setTipoterritorioSelect(getSelectSchema(listFUCTIPTER));
+    }
   }, [listFUCTIPTER]);
   useEffect(() => {
-    setFUCZONCUIItems(getSelectSchema(listFUCZONCUI));
+    if (listFUCZONCUI) {
+      setFUCZONCUIItems(getSelectSchema(listFUCZONCUI));
+    }
   }, [listFUCZONCUI]);
   useEffect(() => {
     if (itemFUCBARVER) {
@@ -143,10 +155,10 @@ const _HomeLocationForm = (props: any) => {
         itemFUBUBIVIVDETAILS.FUCMUNICI_ID,
         itemFUBUBIVIVDETAILS.FUCTIPTER_ID,
       );
+      getAllFUCDEPART();
       setCentropoblado('' + itemFUBUBIVIVDETAILS.FUCRESGUA_ID);
       getFUCMUNICIFromDept(itemFUBUBIVIVDETAILS.FUCDEPART_ID);
       setMunicipio('' + itemFUBUBIVIVDETAILS.FUCMUNICI_ID);
-      getAllFUCDEPART();
       setDepartment('' + itemFUBUBIVIVDETAILS.FUCDEPART_ID);
       setValue('carezone', '' + itemFUBUBIVIVDETAILS.FUCZONCUI_ID);
       setValue('department', '' + itemFUBUBIVIVDETAILS.FUCDEPART_ID);
@@ -156,12 +168,6 @@ const _HomeLocationForm = (props: any) => {
       setValue('shelterOrCouncil', '' + itemFUBUBIVIVDETAILS.FUCBARVER_ID);
     }
   }, [itemFUBUBIVIVDETAILS]);
-  useEffect(() => {
-    if (itemFUBUBIVIV) {
-      props.setFUBUBIVIV(itemFUBUBIVIV);
-      navigation.goBack();
-    }
-  }, [itemFUBUBIVIV, navigation.goBack, props.setFUBUBIVIV]);
   async function fetchQuestions() {
     getAllFUCDEPART();
     getAllFUCTIPTER();
@@ -197,35 +203,36 @@ const _HomeLocationForm = (props: any) => {
     );
   }
   async function onChangeDept(idDept: any) {
-    setValue('municipality', '');
-    setMunicipio('');
-    setValue('shelterOrCouncil', '');
-    setCentropoblado('');
-    setBarrioVereda('');
-    setValue('sidewalk', '');
-    setZonacuidado('');
-    setValue('carezone', '');
     getFUCMUNICIFromDept(idDept);
+    onChangeMuni(null, null);
   }
   async function onChangeMuni(munid: any, typeid: any) {
-    getFilterFUCRESGUA(munid, typeid);
-    setValue('shelterOrCouncil', '');
-    setBarrioVereda('');
-    setValue('sidewalk', '');
-    setZonacuidado('');
-    setBarrioVeredaSelect([]);
-    setFUCZONCUIItems([]);
-    setValue('carezone', '');
-    setCentropoblado('');
+    if (munid && typeid) {
+      getFilterFUCRESGUA(munid, typeid);
+      setValue('shelterOrCouncil', '');
+      setBarrioVereda('');
+      setValue('sidewalk', '');
+      setZonacuidado('');
+      setBarrioVeredaSelect([]);
+      setFUCZONCUIItems([]);
+      setValue('carezone', '');
+      setCentropoblado('');
+    } else {
+      setValue('municipality', '');
+      setMunicipio('');
+      setrescentropSelect(getSelectSchema([]));
+      onChangeCentroOResgua(null);
+    }
   }
   async function onChangeTypeTerr(typeid: any) {
-    onChangeMuni(municipio, typeid);
+    getFilterFUCRESGUA(parseInt(municipio, 10), typeid);
     setValue('shelterOrCouncil', '');
     setBarrioVereda('');
     setValue('sidewalk', '');
     setZonacuidado('');
     setValue('carezone', '');
     setCentropoblado('');
+    onChangeCentroOResgua(null);
     await changeLabelType(typeid);
   }
   async function changeLabelType(codigo: string) {
@@ -241,43 +248,36 @@ const _HomeLocationForm = (props: any) => {
       for (let i = 0; i < rescentropSelect.length; i++) {
         const item: any = rescentropSelect[i];
         if (item.item && item.item.ID == resguaId) {
-          let ress = await props.getLasHouseCode(item.item.CODIGO);
-          setHouseCode(`${item.item.CODIGO}-${ress}`);
-          setValue('housingCode', `${item.item.CODIGO}-${ress}`);
+          let newCode = await getLastCode(item.item.CODIGO);
+          setHouseCode(newCode);
+          setValue('housingCode', `${newCode}`);
         }
       }
     } else {
+      setBarrioVeredaSelect(getSelectSchema([]));
       setBarrioVereda('');
       setValue('sidewalk', '', {shouldValidate: true});
       setBarrioVereda('');
+      onChangeBarrioVereda(null);
     }
   }
-  async function onChangeBarrioVereda(FUCBARVER_ID: string) {
-    let items: {label: string; value: string}[] = [];
+  async function onChangeBarrioVereda(FUCBARVER_ID: any) {
     if (FUCBARVER_ID) {
       filterFUCZONCUI(parseInt(FUCBARVER_ID, 10));
     } else {
-      items.unshift({value: '-1', label: 'Seleccione...'});
       setZonacuidado('-1');
       setValue('carezone', '');
-      setFUCZONCUIItems(items);
+      setFUCZONCUIItems(getSelectSchema([]));
     }
   }
   const onSubmit = async (data: any) => {
-    console.error(data);
     if (props.FUBUBIVIV.CODIGO !== '') {
-      // let item: FUBUBIVIV = {
-      //   ID: props.FUBUBIVIV.ID,
-      //   CODIGO: houseCode,
-      //   COORDENADA_X: position.latitude,
-      //   COORDENADA_Y: position.longitude,
-      //   DIRECCION: data.address,
-      //   FUCBARVER_ID: JSON.parse(data.sidewalk),
-      //   //FUCZONCUI_ID: JSON.parse(data.carezone),
-      //   FUCZONCUI_ID: 1,
-      // };
-      // await props.updateFUBUBIVIV(item, originalhouseCode);
-      // navigation.goBack();
+      let _item: FUBUBIVIV = props.FUBUBIVIV;
+      _item.COORDENADA_X = position.latitude;
+      _item.COORDENADA_Y = position.longitude;
+      _item.DIRECCION = data.address;
+      _item.FUCZONCUI_FUCBARVER_ID = JSON.parse(data.carezone);
+      updateFUBUBIVIV(_item);
     } else {
       // SAVE
       let item: FUBUBIVIV = {
@@ -289,7 +289,6 @@ const _HomeLocationForm = (props: any) => {
         FUCZONCUI_FUCBARVER_ID: JSON.parse(data.carezone),
       };
       createFUBUBIVIV(item);
-      //await props.saveFUBUBIVIV(item);
     }
   };
   return (
@@ -347,7 +346,9 @@ const _HomeLocationForm = (props: any) => {
               onChange={(value: any) => {
                 onChange(value);
                 setMunicipio(value);
-                onChangeMuni(value, tipoterritorio);
+                if (value) {
+                  onChangeMuni(value, tipoterritorio);
+                }
               }}
               selectedValue={municipio}
               items={municipioSelect}

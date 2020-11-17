@@ -1,8 +1,7 @@
-export interface FNCELEPER {
+export interface FNCLUNIND {
   ID: number;
   CODIGO: string;
   NOMBRE: string;
   ESTADO: boolean;
-  SECCION?: string;
-  REQUERIDO: number;
+  FNCPUEIND_ID: number;
 }

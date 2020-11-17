@@ -3,9 +3,18 @@ import {View} from 'react-native';
 import {Appbar, Paragraph} from 'react-native-paper';
 import {BButton} from '../../../core/components';
 import {
+  useFNCCONPER,
+  useFNCELEPER,
+  useFNCGENERO,
+  useFNCLUNIND,
+  useFNCOCUPAC,
+  useFNCPAREN,
+  useFNCPUEIND,
+  useFNCTIPIDE,
   useFUCBARVER,
   useFUCDEPART,
   useFUCMUNICI,
+  useFUCPAIS,
   useFUCRESGUA,
   useFUCTIPTER,
   useFUCTIPTER_FUCRESGUA,
@@ -24,12 +33,23 @@ const SyncParametersScreen = () => {
   const {countFUCBARVER, syncFUCBARVER, loadingFUCBARVER} = useFUCBARVER();
   const {countFUCRESGUA, syncFUCRESGUA, loadingFUCRESGUA} = useFUCRESGUA();
   const {countFUCZONCUI, syncFUCZONCUI, loadingFUCZONCUI} = useFUCZONCUI();
+  const {countFNCTIPIDE, syncFNCTIPIDE, loadingFNCTIPIDE} = useFNCTIPIDE();
+  const {countFNCPAREN, syncFNCPAREN, loadingFNCPAREN} = useFNCPAREN();
+  const {countFNCOCUPAC, syncFNCOCUPAC, loadingFNCOCUPAC} = useFNCOCUPAC();
+  const {countFNCPUEIND, syncFNCPUEIND, loadingFNCPUEIND} = useFNCPUEIND();
+  const {countFNCLUNIND, syncFNCLUNIND, loadingFNCLUNIND} = useFNCLUNIND();
+  const {countFNCGENERO, syncFNCGENERO, loadingFNCGENERO} = useFNCGENERO();
+  const {countFNCELEPER, syncFNCELEPER, loadingFNCELEPER} = useFNCELEPER();
+  const {countFNCCONPER, syncFNCCONPER, loadingFNCCONPER} = useFNCCONPER();
+  const {countFUCPAIS, syncFUCPAIS, loadingFUCPAIS} = useFUCPAIS();
   const {
     countFUCZONCUI_FUCBARVER,
-    syncFUCZONCUI_FUCBARVER,
     loadingFUCZONCUI_FUCBARVER,
   } = useFUCZONCUI_FUCBARVER();
-  const {countFUCTIPTER_FUCRESGUA, loadingFUCTIPTER_FUCRESGUA} = useFUCTIPTER_FUCRESGUA();
+  const {
+    countFUCTIPTER_FUCRESGUA,
+    loadingFUCTIPTER_FUCRESGUA,
+  } = useFUCTIPTER_FUCRESGUA();
   useEffect(() => {}, []);
   function syncCatalogs() {
     syncFVCELEVIV();
@@ -40,6 +60,15 @@ const SyncParametersScreen = () => {
     syncFUCBARVER();
     syncFUCRESGUA();
     syncFUCZONCUI();
+    syncFNCTIPIDE();
+    syncFNCPAREN();
+    syncFNCOCUPAC();
+    syncFNCPUEIND();
+    syncFNCLUNIND();
+    syncFNCGENERO();
+    syncFNCELEPER();
+    syncFNCCONPER();
+    syncFUCPAIS();
     //await this.clearPollEntities();
     // this.countEntity();
   }
@@ -61,6 +90,9 @@ const SyncParametersScreen = () => {
       <Paragraph>
         FVCCONVIV (Opciones de Respuestas Nucleo familiar) :{' '}
         {loadingFVCCONVIV ? 'Cargando..' : countFVCCONVIV}
+      </Paragraph>
+      <Paragraph>
+        FUCPAIS (Departamentos) : {loadingFUCPAIS ? 'Cargando..' : countFUCPAIS}
       </Paragraph>
       <Paragraph>
         FUCDEPART (Departamentos) :{' '}
@@ -91,8 +123,38 @@ const SyncParametersScreen = () => {
         {loadingFUCZONCUI_FUCBARVER ? 'Cargando..' : countFUCZONCUI_FUCBARVER}
       </Paragraph>
       <Paragraph>
-       FUCTIPTER_FUCRESGUA ():{' '}
+        FUCTIPTER_FUCRESGUA ():{' '}
         {loadingFUCTIPTER_FUCRESGUA ? 'Cargando..' : countFUCTIPTER_FUCRESGUA}
+      </Paragraph>
+      <Paragraph>
+        FNCTIPIDE (tipo identificacion):{' '}
+        {loadingFNCTIPIDE ? 'Cargando..' : countFNCTIPIDE}
+      </Paragraph>
+      <Paragraph>
+        FNCPAREN (parentezco): {loadingFNCPAREN ? 'Cargando..' : countFNCPAREN}
+      </Paragraph>
+      <Paragraph>
+        FNCOCUPAC (ocupación):{loadingFNCOCUPAC ? 'Cargando..' : countFNCOCUPAC}
+      </Paragraph>
+      <Paragraph>
+        FNCPUEIND (pueblo indigena):
+        {loadingFNCPUEIND ? 'Cargando..' : countFNCPUEIND}
+      </Paragraph>
+      <Paragraph>
+        FNCLUNIND (luna indigena):
+        {loadingFNCLUNIND ? 'Cargando..' : countFNCLUNIND}
+      </Paragraph>
+      <Paragraph>
+        FNCGENERO(genero):
+        {loadingFNCGENERO ? 'Cargando..' : countFNCGENERO}
+      </Paragraph>
+      <Paragraph>
+        FNCELEPER(Person question):
+        {loadingFNCELEPER ? 'Cargando..' : countFNCELEPER}
+      </Paragraph>
+      <Paragraph>
+        FNCCONPER(Person options):
+        {loadingFNCCONPER ? 'Cargando..' : countFNCCONPER}
       </Paragraph>
     </View>
   );

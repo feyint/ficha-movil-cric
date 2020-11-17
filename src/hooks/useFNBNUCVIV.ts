@@ -1,5 +1,6 @@
 import {useState, useEffect} from 'react';
 import {useDatabase} from '../context/DatabaseContext';
+import { PersonParametersConst } from '../core/utils/SystemParameters';
 import {FNBNUCVIV, FUBUBIVIVDETAILS} from '../types';
 
 export function useFNBNUCVIV() {
@@ -18,7 +19,7 @@ export function useFNBNUCVIV() {
     //   FUBUBIVIV_ID: 12,
     //   CODIGO: 'PRUEBA-UNO-1',
     // });
-    countEntity();
+    // countEntity();
   }, []);
   function getAllFNBNUCVIV() {
     return database.getAllFromEntity('FNBNUCVIV').then(setItem);
@@ -32,7 +33,6 @@ export function useFNBNUCVIV() {
     SELECT * FROM {0} WHERE FUBUBIVIV_ID = ${FUBUBIVIV} ORDER BY ID DESC LIMIT 1;`;
     await database.executeQuery('FNBNUCVIV', statement).then((results) => {
       const count = results.rows.length;
-      console.error(count);
       if (count === 0) {
         NEWCODIGO = FUBUBIVIVCODE + '-' + '1';
       }
@@ -44,7 +44,6 @@ export function useFNBNUCVIV() {
         NEWCODIGO = FUBUBIVIVCODE + '-' + increment;
       }
     });
-    console.error(NEWCODIGO);
     return NEWCODIGO;
   }
   function filterFNBNUCVIV(FUBUBIVIV: number, single = false) {
@@ -71,7 +70,7 @@ export function useFNBNUCVIV() {
   }
   function getFNBNUCVIVbyID(FNBNUCVIVID: number) {
     let statement = `
-     SELECT CODIGO ,* FROM {0} WHERE ID = ${FNBNUCVIVID}`;
+     SELECT * FROM {0} WHERE ID = ${FNBNUCVIVID}`;
     database.executeQuery('FNBNUCVIV', statement).then((results) => {
       const count = results.rows.length;
       const items: FNBNUCVIV[] = [];
@@ -111,47 +110,6 @@ export function useFNBNUCVIV() {
         });
       }
       setFNBNUCVIV(items[0]);
-    });
-  }
-  function getFUBUBIVIVDETAILS(_FNBNUCVIV: number) {
-    let statement = `
-    SELECT ff.FUCBARVER_ID , ff.FUCZONCUI_ID,bv.FUCRESGUA_ID, tipregu.FUCTIPTER_ID, tipt.CODIGO as CODIGOTERRITORIO, re.FUCMUNICI_ID, mu.FUCDEPART_ID ,  f.*  FROM FNBNUCVIV f 
-    LEFT JOIN FUCZONCUI_FUCBARVER ff  ON ff.ID = f.FUCZONCUI_FUCBARVER_ID 
-    LEFT JOIN FUCZONCUI zc ON zc.ID = ff.FUCZONCUI_ID 
-    LEFT JOIN FUCBARVER bv ON bv.ID  = ff.FUCBARVER_ID 
-    LEFT JOIN FUCRESGUA re ON re.ID = bv.FUCRESGUA_ID 
-    LEFT JOIN FUCMUNICI mu ON mu.ID  = re.FUCMUNICI_ID 
-    LEFT JOIN FUCTIPTER_FUCRESGUA tipregu ON tipregu.FUCRESGUA_ID =  re.ID 
-    LEFT JOIN FUCTIPTER tipt ON tipt.ID  = tipregu.FUCTIPTER_ID 
-    LEFT JOIN FUCDEPART dep ON dep.ID = mu.FUCDEPART_ID 
-    WHERE f.ID = ${_FNBNUCVIV};`;
-    database.executeQuery('FNBNUCVIV', statement).then((results) => {
-      const count = results.rows.length;
-      const items: FUBUBIVIVDETAILS[] = [];
-      for (let i = 0; i < count; i++) {
-        const row = results.rows.item(i);
-        const {
-          ID,
-          FUCBARVER_ID,
-          FUCZONCUI_ID,
-          FUCRESGUA_ID,
-          FUCTIPTER_ID,
-          FUCMUNICI_ID,
-          FUCDEPART_ID,
-          CODIGOTERRITORIO,
-        } = row;
-        items.push({
-          ID: ID,
-          FUCBARVER_ID: FUCBARVER_ID,
-          FUCZONCUI_ID: FUCZONCUI_ID,
-          FUCRESGUA_ID: FUCRESGUA_ID,
-          FUCTIPTER_ID: FUCTIPTER_ID,
-          FUCMUNICI_ID: FUCMUNICI_ID,
-          FUCDEPART_ID: FUCDEPART_ID,
-          CODIGOTERRITORIO: CODIGOTERRITORIO,
-        });
-      }
-      setFUBUBIVIVDETAILS(items[0]);
     });
   }
   async function createFNBNUCVIV(newItem: FNBNUCVIV): Promise<void> {
@@ -194,6 +152,43 @@ export function useFNBNUCVIV() {
         setLoading(false);
       });
   }
+  async function updateFNBNUCVIV(item: FNBNUCVIV): Promise<void> {
+    setLoading(true);
+    let statement = `UPDATE {0}  SET
+      CODIGO = ?, 
+      HUMO_CASA= ?, 
+      RESIDUO_BOR= ?, 
+      RESIDUO_PELIGROSO= ?, 
+      ANIMAL_VACUNADO= ?, 
+      ANIMAL_NOVACUNADO= ?, 
+      RIESGO= ?, 
+      OBSERVACION= ?, 
+      LUGAR_COCINA= ?, 
+      HUMO_DENTRO= ?, 
+      ACCESO_INTERNET= ?
+    WHERE ID = ${item.ID}`;
+    let params = [
+      item.CODIGO,
+      item.HUMO_CASA,
+      item.RESIDUO_BOR,
+      item.RESIDUO_PELIGROSO,
+      item.ANIMAL_VACUNADO,
+      item.ANIMAL_NOVACUNADO,
+      item.RIESGO,
+      item.OBSERVACION,
+      item.LUGAR_COCINA,
+      item.HUMO_DENTRO,
+      item.ACCESO_INTERNET,
+    ];
+    return await database
+      .executeQuery('FNBNUCVIV', statement, params)
+      .then((results) => {
+        getFNBNUCVIVbyID(item.ID);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }
   async function countEntity(): Promise<void> {
     return database.countEntity('FNBNUCVIV').then(setCount);
   }
@@ -208,6 +203,26 @@ export function useFNBNUCVIV() {
   async function selectFNBNUCVIV(list: FNBNUCVIV) {
     setFNBNUCVIV(list);
   }
+  async function alreadyexistParent(FNBNUCVIV_ID: number) {
+    let statement = `
+    SELECT prnt.ID FROM FNCPERSON p 
+    INNER JOIN FNBNUCVIV_FNCPERSON np ON np.FNCPERSON_ID  = p.ID
+    LEFT JOIN FNCPAREN prnt ON prnt.ID = p.FNCPAREN_ID 
+    WHERE  np .FNBNUCVIV_ID = ${FNBNUCVIV_ID} AND prnt.CODIGO = '${PersonParametersConst.fncpersonparentheadercode}'`;
+    return await database
+      .executeQuery('FNCPERSON', statement)
+      .then((results) => {
+        let _id = null;
+        const count = results.rows.length;
+        for (let i = 0; i < count; i++) {
+          const row = results.rows.item(i);
+          const {ID} = row;
+          console.error('PARENT ID', ID);
+          _id = ID;
+        }
+        return _id;
+      });
+  }
   return {
     itemFUBUBIVIVDETAILS,
     itemFNBNUCVIV,
@@ -215,12 +230,13 @@ export function useFNBNUCVIV() {
     countFNBNUCVIV,
     loadingFNBNUCVIV,
     getLastNucleoCode,
-    getFUBUBIVIVDETAILS,
+    alreadyexistParent,
     getFNBNUCVIVbyID,
     createFNBNUCVIV,
     deleteFNBNUCVIV,
     selectFNBNUCVIV,
     getAllFNBNUCVIV,
     filterFNBNUCVIV,
+    updateFNBNUCVIV,
   };
 }

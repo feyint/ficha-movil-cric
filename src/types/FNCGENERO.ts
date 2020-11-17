@@ -1,8 +1,7 @@
-export interface FNCELEPER {
+export interface FNCGENERO {
   ID: number;
   CODIGO: string;
   NOMBRE: string;
   ESTADO: boolean;
-  SECCION?: string;
-  REQUERIDO: number;
+  COD_FF: string;
 }

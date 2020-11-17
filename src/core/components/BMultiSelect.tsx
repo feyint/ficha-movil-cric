@@ -14,7 +14,7 @@ interface Props {
   selectedItems?: any[];
   items?: MultiSelectSchema;
   errorText?: string;
-  error?: boolean;
+  error?: any;
   onBlur?: any;
   onChange?: any;
   onLoad?: any;
@@ -86,7 +86,9 @@ class BMultiSelect extends Component<Props, State> {
         </View>
         {this.props.error ? (
           <HelperText type="error">
-            {this.props.errorText ? this.props.errorText : 'El campo es requerido'}
+            {this.props.errorText
+              ? this.props.errorText
+              : 'El campo es requerido'}
           </HelperText>
         ) : null}
       </View>

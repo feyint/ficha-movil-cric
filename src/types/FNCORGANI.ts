@@ -1,8 +1,7 @@
-export interface FNCELEPER {
+export interface FNCORGANI {
   ID: number;
   CODIGO: string;
   NOMBRE: string;
   ESTADO: boolean;
-  SECCION?: string;
-  REQUERIDO: number;
+  FNCREGION_ID: number;
 }
