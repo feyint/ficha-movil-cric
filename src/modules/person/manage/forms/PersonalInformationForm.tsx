@@ -35,7 +35,7 @@ import {
 import {getSelectSchema} from '../../../../core/utils/utils';
 import {FNCCONPER, FNCPERSON} from '../../../../types';
 import moment from 'moment';
-
+// TODO ERROR AL GUARDAR PUEBLO INDIGENA EN LA CREACIÓN
 const schemaForm = yup.object().shape({
   parentezcoGrupoFamiliar: yup.string().required(),
   firstname: yup.string().required(),
@@ -118,7 +118,7 @@ const _PersonalInformationForm = (props: any) => {
       setIdentification(person.IDENTIFICACION);
       setValue('birthdate', moment(person.FECHA_NACIMIENTO).toDate());
       if (person.FECHA_NACIMIENTO) {
-        setbirthDate(person.FECHA_NACIMIENTO);
+        setbirthDate(moment(person.FECHA_NACIMIENTO).toDate());
       }
       setValue('parentezcoGrupoFamiliar', '' + props.FNCPERSON.FNCPAREN_ID);
       setParentezcoGrupoFamiliar('' + props.FNCPERSON.FNCPAREN_ID);
@@ -126,7 +126,7 @@ const _PersonalInformationForm = (props: any) => {
       setIdentificationType('' + props.FNCPERSON.FNCTIPIDE_ID);
       setValue('gender', '' + props.FNCPERSON.FNCGENERO_ID);
       setGender('' + props.FNCPERSON.FNCGENERO_ID);
-      getAnswers(QuestionConditionPersonCodes.GrupoEtnico, 'GrupoEtnico');
+      // getAnswers(QuestionConditionPersonCodes.GrupoEtnico, 'GrupoEtnico');
     }
   }, [person]);
   const fetchQuestions = async () => {
@@ -183,7 +183,12 @@ const _PersonalInformationForm = (props: any) => {
       };
       let inserted = await createFNCPERSON(item, props.FNBNUCVIV.ID);
       if (inserted) {
-        SaveAnswers(QuestionConditionPersonCodes.GrupoEtnico, data.GrupoEtnico);
+        SaveAnswers(
+          QuestionConditionPersonCodes.GrupoEtnico,
+          data.GrupoEtnico,
+          1,
+          inserted,
+        );
       }
     }
     navigation.goBack();
@@ -212,18 +217,15 @@ const _PersonalInformationForm = (props: any) => {
   function onChangeIdentification() {
     const delayDebounceFn = setTimeout(async () => {
       //TODO validar solo numero de identificacion
-      console.error('padam', person);
       if (person && person.ID && person.IDENTIFICACION == identification) {
       } else if (identification && identificationType) {
         let item = await getByIdentification(
           identificationType,
           identification,
         );
-        console.error('item', item);
         if (item) {
           //valida que no exista en el nucleo familiar actual
           let exist = await validateExist(props.FNBNUCVIV.ID, item.ID);
-          console.error('await', person);
           if (exist) {
             setIdentification('');
             Alert.alert(
@@ -338,12 +340,16 @@ const _PersonalInformationForm = (props: any) => {
     questionCode: string,
     answer: any,
     type: 1 | 2 = 1,
+    personid = 0,
   ) {
     let question = listFNCCONPER.find((item: FNCCONPER) => {
       return item.QUESTIONCODE === questionCode;
     });
     if (question) {
-      const {ID} = props.FNCPERSON;
+      let ID = props.FNCPERSON.ID;
+      if (personid > 0) {
+        ID = personid;
+      }
       saveAnswer(type, answer, ID, question.FNCELEPER_ID);
     }
   }

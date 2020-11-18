@@ -217,7 +217,6 @@ export function useFNBNUCVIV() {
         for (let i = 0; i < count; i++) {
           const row = results.rows.item(i);
           const {ID} = row;
-          console.error('PARENT ID', ID);
           _id = ID;
         }
         return _id;

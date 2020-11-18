@@ -274,7 +274,6 @@ export function useFNCPERSON() {
             for (let i = 0; i < count; i++) {
               const row = results.rows.item(i);
               const {total} = row;
-              console.error(' total > 0', total > 0);
               return total > 0;
             }
           });

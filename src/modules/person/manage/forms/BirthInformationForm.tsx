@@ -8,34 +8,24 @@ import * as yup from 'yup';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {BButton, BPicker} from '../../../../core/components';
-import {updateFNCPERSON} from '../../../../state/person/actions';
-import {
-  FUCDEPARTSCHEMA,
-  FUCMUNICISCHEMA,
-} from '../../../../providers/DataBaseProvider';
-import {
-  saveAnswerLocal,
-  getQuestionAnswer,
-} from '../../../../state/ConditionPerson/actions';
-import {getEntitySelect} from '../../../location/state/actions';
-import {
-  QuestionConditionPersonCodes,
-  QuestionTypes,
-} from '../../../../core/utils/PersonTypes';
+import {QuestionConditionPersonCodes} from '../../../../core/utils/PersonTypes';
 import moment from 'moment';
 import {PersonParametersConst} from '../../../../core/utils/SystemParameters';
 import {Text} from 'react-native-paper';
 import {theme} from '../../../../core/style/theme';
+import {setFNCPERSON} from '../../../../state/person/actions';
+
 import {
   useFNCCONPER,
   useFNCLUNIND,
+  useFNCPERSON,
   useFNCPERSON_FNCCONPER,
   useFUCDEPART,
   useFUCMUNICI,
   useFUCPAIS,
 } from '../../../../hooks';
-import {FNCCONPER} from '../../../../types';
-import { getSelectSchema } from '../../../../core/utils/utils';
+import {FNCCONPER, FNCPERSON} from '../../../../types';
+import {getSelectSchema} from '../../../../core/utils/utils';
 
 const schemaForm = yup.object().shape({
   fucmunici: yup.number().required(),
@@ -58,6 +48,7 @@ const _BirthInformationForm = (props: any) => {
   const {saveAnswer, getAnswerquestion} = useFNCPERSON_FNCCONPER();
   const {listFUCPAIS, getAllFUCPAIS} = useFUCPAIS();
   const {listFUCDEPART, getDeptfromPais} = useFUCDEPART();
+  const {itemFNCPERSON, updateFNCPERSON} = useFNCPERSON();
   const {listFUCMUNICI, getFUCMUNICIFromDept, getDetails} = useFUCMUNICI();
   const {listFNCLUNIND, getAllFNCLUNIND} = useFNCLUNIND();
   const [fucmunici, setfucmunici] = useState<string>();
@@ -67,10 +58,17 @@ const _BirthInformationForm = (props: any) => {
   const [enablelacmaterna, setenablelacmaterna] = useState<boolean>(false);
   const [ageActual, setageActual] = useState<string>('');
   useEffect(() => {
-    fetchQuestions();
-  }, []);
-  const fetchQuestions = async () => {
     getQuestionsOptions(questions);
+  }, []);
+  useEffect(() => {
+    fetchQuestions();
+  }, [listFNCCONPER]);
+  useEffect(() => {
+    if (itemFNCPERSON) {
+      props.setFNCPERSON(itemFNCPERSON);
+    }
+  }, [itemFNCPERSON]);
+  const fetchQuestions = async () => {
     getAllFUCPAIS();
     getAllFNCLUNIND();
     if (props.FNCPERSON.ID) {
@@ -88,11 +86,12 @@ const _BirthInformationForm = (props: any) => {
         setfucdepat('' + details.FUCDEPART_ID);
         setValue('fucmunici', props.FNCPERSON.FUCMUNICI_ID);
         setfucmunici('' + props.FNCPERSON.FUCMUNICI_ID);
+        getAnswers(QuestionConditionPersonCodes.LactanciaMaterna, 'lacmaterna');
+        getAnswers(QuestionConditionPersonCodes.LunaOccidental, 'fnclunocci');
       }
     }
-    if (props.FNCPERSON.ID) {
-      let birthDate = props.FNCPERSON.FECHA_NACIMIENTO;
-      console.error('llega a', birthDate);
+    if (props.FNCPERSON.ID && props.FNCPERSON.FECHA_NACIMIENTO) {
+      let birthDate = moment(props.FNCPERSON.FECHA_NACIMIENTO).toDate();
       var years = moment().diff(moment(birthDate, 'DD-MM-YYYY'), 'years');
       var days = moment().diff(moment(birthDate, 'DD-MM-YYYY'), 'days');
       var a = moment(new Date());
@@ -119,6 +118,8 @@ const _BirthInformationForm = (props: any) => {
           `${diffDuration.years()} años ${diffDuration.months()} meses y ${diffDuration.days()} días`,
         );
       }
+    } else {
+      navigation.goBack();
     }
   };
   function alert(data: any) {
@@ -137,22 +138,13 @@ const _BirthInformationForm = (props: any) => {
     );
   }
   const onSubmit = async (data: any) => {
+    SaveAnswers(QuestionConditionPersonCodes.LunaOccidental, data.fnclunocci);
+    SaveAnswers(QuestionConditionPersonCodes.LactanciaMaterna, data.lacmaterna);
+    let person: FNCPERSON = props.FNCPERSON;
+    person.FNCLUNIND_ID = data.fnclunind;
+    person.FUCMUNICI_ID = data.fucmunici;
+    await updateFNCPERSON(person);
     navigation.goBack();
-    /**
-     * props.saveAnswerLocal(
-      QuestionTypes.selectOne,
-      QuestionConditionPersonCodes.LunaOccidental,
-      value,
-    );
-    props.updateFNCPERSON({
-      FNCLUNIND_ID: parseInt(value, 10),
-    });
-    props.saveAnswerLocal(
-        QuestionTypes.selectOne,
-        QuestionConditionPersonCodes.LactanciaMaterna,
-        value,
-      );
-     */
   };
   async function onChangePais(fucpais_id: any) {
     getDeptfromPais(fucpais_id);
@@ -268,12 +260,6 @@ const _BirthInformationForm = (props: any) => {
               onChange={(value: any) => {
                 onChange(value);
               }}
-              onLoad={() => {
-                getAnswers(
-                  QuestionConditionPersonCodes.LunaOccidental,
-                  'fnclunocci',
-                );
-              }}
               selectedValue={value}
               items={getPicker(QuestionConditionPersonCodes.LunaOccidental)}
             />
@@ -309,12 +295,6 @@ const _BirthInformationForm = (props: any) => {
                 }}
                 selectedValue={value}
                 items={getPicker(QuestionConditionPersonCodes.LactanciaMaterna)}
-                onLoad={() => {
-                  getAnswers(
-                    QuestionConditionPersonCodes.LactanciaMaterna,
-                    'lacmaterna',
-                  );
-                }}
               />
             )}
             name="lacmaterna"
@@ -390,16 +370,13 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = (person: any) => {
+const mapStateToProps = (store: any) => {
   return {
-    FNCPERSON: person.person.FNCPERSON,
+    FNCPERSON: store.person.FNCPERSON,
   };
 };
 const mapDispatchToProps = {
-  updateFNCPERSON,
-  getEntitySelect,
-  saveAnswerLocal,
-  getQuestionAnswer,
+  setFNCPERSON,
 };
 export default connect(
   mapStateToProps,
