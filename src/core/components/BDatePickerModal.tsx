@@ -19,6 +19,7 @@ interface Props {
   isVisible?: boolean;
   format?: string;
   maximumDate?: Date;
+  minimumDate?: Date;
 }
 export default class BDatePickerModal extends Component<Props, State> {
   constructor(props: Props) {
@@ -69,6 +70,7 @@ export default class BDatePickerModal extends Component<Props, State> {
           </TouchableOpacity>
         </View>
         <DateTimePickerModal
+          minimumDate={this.props.minimumDate}
           maximumDate={this.props.maximumDate}
           isVisible={this.state.isVisible}
           mode={this.props.mode}

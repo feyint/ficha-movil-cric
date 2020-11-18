@@ -25,6 +25,7 @@ import DataBaseProvider, {
   FNCORGANISCHEMA,
   FNCPARENSCHEMA,
   FNCTIPIDESCHEMA,
+  FNCGENEROSCHEMA,
 } from '../providers/DataBaseProvider';
 import Realm from 'realm';
 import {HttpProvider} from '../providers';
@@ -69,6 +70,7 @@ export default class SyncCatalogService {
         FNCPUEINDSCHEMA,
         FNCPARENSCHEMA,
         FNCTIPIDESCHEMA,
+        FNCGENEROSCHEMA,
       ],
       schemaVersion: schemaVersion,
     }).then((realm) => {
@@ -81,6 +83,7 @@ export default class SyncCatalogService {
         let itemFUCRESGUA = realm.objects('FUCRESGUA');
         // let itemFUCBARVER = realm.objects('FUCBARVER');
         let itemFUCZONA = realm.objects('FUCZONA');
+        let itemFNCGENERO = realm.objects('FNCGENERO');
         let itemFUCZONCUI = realm.objects('FUCZONCUI');
         let itemFUCUNICUI = realm.objects('FUCUNICUI');
         let itemFUCPAISSCHEMA = realm.objects('FUCPAIS');
@@ -92,6 +95,7 @@ export default class SyncCatalogService {
         realm.delete(itemFUCRESGUA);
         //  realm.delete(itemFUCBARVER);
         realm.delete(itemFUCZONA);
+        realm.delete(itemFNCGENERO);
         realm.delete(itemFUCZONCUI);
         realm.delete(itemFUCUNICUI);
         realm.delete(itemFUCPAISSCHEMA);
@@ -423,6 +427,22 @@ export default class SyncCatalogService {
       DataBaseSchemas.FUCZONASCHEMA,
       FUCZONASCHEMA,
       FUCZONASCHEMAs,
+    );
+    let itemFNCGENEROs: any = await this.getEntity({
+      entityName: 'FNCGENERO',
+    });
+    const FNCGENEROs = itemFNCGENEROs.data.map((item: any) => {
+      return {
+        ID: item.id,
+        CODIGO: item.codigo,
+        NOMBRE: item.nombre,
+        ESTADO: item.estado,
+      };
+    });
+    await this.syncSaveEntities(
+      DataBaseSchemas.FNCGENEROSCHEMA,
+      FNCGENEROSCHEMA,
+      FNCGENEROs,
     );
     let itemFUCUNICUISCHEMAs: any = await this.getEntity({
       entityName: 'FUCUNICUI',

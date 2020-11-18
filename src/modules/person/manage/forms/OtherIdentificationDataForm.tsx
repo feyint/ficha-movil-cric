@@ -97,6 +97,7 @@ const _OtherIdentificationDataForm = (props: any) => {
     resolver: yupResolver(schemaForm),
   });
 
+  const [editable, setEditable] = useState(false);
   //TODO: JAL
   /* const [segundaLenguaMaterna, setsegundaLenguaMaterna] = useState<
     {label: any; value: any}[]
@@ -121,19 +122,21 @@ const _OtherIdentificationDataForm = (props: any) => {
     fetchQuestions();
   }, []);
   function alert(data: any) {
-    Alert.alert(
-      'Volver!!!',
-      'Esta seguro?',
-      [
-        {
-          text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
-          style: 'cancel',
-        },
-        {text: 'Aceptar', onPress: () => navigation.goBack()},
-      ],
-      {cancelable: false},
-    );
+    editable
+      ? Alert.alert(
+          '',
+          '¿Desea cancelar el proceso?.',
+          [
+            {
+              text: 'NO',
+              onPress: () => console.log('Cancel Pressed'),
+              style: 'cancel',
+            },
+            {text: 'SI', onPress: () => navigation.goBack()},
+          ],
+          {cancelable: false},
+        )
+      : navigation.goBack();
   }
   async function fetchQuestions() {
     let resultMultiselect = await props.getQuestionWithOptions(questionscodes);
@@ -304,6 +307,7 @@ const _OtherIdentificationDataForm = (props: any) => {
               onBlur={onBlur}
               error={errors.organizacion}
               onChange={(value: any) => {
+                setEditable(true);
                 //onChange(value);
                 if (value) {
                   onChange(value);
@@ -328,6 +332,7 @@ const _OtherIdentificationDataForm = (props: any) => {
               error={errors.ocupacionPrincipal}
               onChange={(value: any) => {
                 onChange(value);
+                setEditable(true);
                 if (value) {
                   onChange(value);
                   props.saveFNCPERSONPropiety('FNCOCUPAC_ID', value);
@@ -361,6 +366,7 @@ const _OtherIdentificationDataForm = (props: any) => {
                 onBlur={onBlur}
                 error={errors.puebloIndigena}
                 onChange={(value: any) => {
+                  setEditable(true);
                   if (value) {
                     console.log(`luna id ${props.FNCPERSON.FNCLUNIND_ID}`);
                     onChange(value);
@@ -382,6 +388,7 @@ const _OtherIdentificationDataForm = (props: any) => {
               onBlur={onBlur}
               error={errors.EstadoCivil}
               onChange={(value: any) => {
+                setEditable(true);
                 onChange(value);
                 props.saveAnswerLocal(
                   QuestionTypes.selectOne,
@@ -415,6 +422,7 @@ const _OtherIdentificationDataForm = (props: any) => {
                 onBlur={onBlur}
                 error={errors.Casta}
                 onChange={(value: any) => {
+                  setEditable(true);
                   onChange(value);
                   props.saveAnswerLocal(
                     QuestionTypes.selectOne,
@@ -450,6 +458,7 @@ const _OtherIdentificationDataForm = (props: any) => {
               onBlur={onBlur}
               error={errors.LenguaMaterna}
               onChange={(value: any) => {
+                setEditable(true);
                 onChange(value);
                 if (value) {
                   onChangeLengua(value);
@@ -489,6 +498,7 @@ const _OtherIdentificationDataForm = (props: any) => {
                 onBlur={onBlur}
                 error={errors.DominioLenguaMaterna}
                 onChange={(value: any) => {
+                  setEditable(true);
                   onChange(value);
                   if (value) {
                     props.saveAnswerLocal(
@@ -527,6 +537,7 @@ const _OtherIdentificationDataForm = (props: any) => {
                 onBlur={onBlur}
                 error={errors.SegundaLengua}
                 onChange={(value: any) => {
+                  setEditable(true);
                   onChange(value);
                   if (value) {
                     props.saveAnswerLocal(
@@ -561,6 +572,7 @@ const _OtherIdentificationDataForm = (props: any) => {
                 onBlur={onBlur}
                 error={errors.DominioSegundaLengua}
                 onChange={(value: any) => {
+                  setEditable(true);
                   onChange(value);
                   if (value) {
                     props.saveAnswerLocal(
@@ -599,6 +611,7 @@ const _OtherIdentificationDataForm = (props: any) => {
               onBlur={onBlur}
               error={errors.CapacidadDiversa}
               onChange={(values: any) => {
+                setEditable(true);
                 onChange(values);
                 props.saveAnswerLocal(
                   QuestionTypes.multiSelect,
@@ -632,6 +645,7 @@ const _OtherIdentificationDataForm = (props: any) => {
               onBlur={onBlur}
               error={errors.NivelEstudio}
               onChange={(value: any) => {
+                setEditable(true);
                 onChange(value);
                 props.saveAnswerLocal(
                   QuestionTypes.selectOne,
@@ -669,6 +683,7 @@ const _OtherIdentificationDataForm = (props: any) => {
                 onBlur={onBlur}
                 error={errors.TipoTrabajo}
                 onChange={(value: any) => {
+                  setEditable(true);
                   onChange(value);
                   props.saveAnswerLocal(
                     QuestionTypes.selectOne,
@@ -705,6 +720,7 @@ const _OtherIdentificationDataForm = (props: any) => {
               onBlur={onBlur}
               error={errors.PoblacionPensionada}
               onChange={(value: any) => {
+                setEditable(true);
                 onChange(value);
                 props.saveAnswerLocal(
                   QuestionTypes.selectOne,
@@ -740,6 +756,7 @@ const _OtherIdentificationDataForm = (props: any) => {
               onBlur={onBlur}
               error={errors.OtrosSaberesAnsestrales}
               onChange={(values: any) => {
+                setEditable(true);
                 onChange(values);
                 props.saveAnswerLocal(
                   QuestionTypes.multiSelect,
@@ -771,6 +788,7 @@ const _OtherIdentificationDataForm = (props: any) => {
               onBlur={onBlur}
               error={errors.Religion}
               onChange={(value: any) => {
+                setEditable(true);
                 onChange(value);
                 props.saveAnswerLocal(
                   QuestionTypes.selectOne,
@@ -805,6 +823,7 @@ const _OtherIdentificationDataForm = (props: any) => {
               onBlur={onBlur}
               error={errors.TipoDeCuidadosCulturalesQueRealiza}
               onChange={(values: any) => {
+                setEditable(true);
                 onChange(values);
                 props.saveAnswerLocal(
                   QuestionTypes.multiSelect,

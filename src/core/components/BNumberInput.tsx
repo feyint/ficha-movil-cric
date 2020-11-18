@@ -29,6 +29,7 @@ export default class BNumberInput extends Component<Props, any> {
           }}
           onBlur={this.props.onBlur ? this.props.onBlur() : null}
           value={this.props.value}
+          maxLength={50}
         />
         {this.props.error ? (
           <HelperText type="error">

@@ -51,6 +51,8 @@ const _LastPregnancyForm = (props: any) => {
 
   //const [pikerEnable, setPikerEnable] = useState(false);
 
+  const [editable, setEditable] = useState(false);
+
   const navigation = useNavigation();
 
   const getItemsForQuestionSelect = (code: string) => {
@@ -115,19 +117,21 @@ const _LastPregnancyForm = (props: any) => {
   };
 
   function alert(data: any) {
-    Alert.alert(
-      'Volver!!!',
-      'Esta seguro?',
-      [
-        {
-          text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
-          style: 'cancel',
-        },
-        {text: 'Aceptar', onPress: () => navigation.goBack()},
-      ],
-      {cancelable: false},
-    );
+    editable
+      ? Alert.alert(
+          '',
+          '¿Desea cancelar el proceso?.',
+          [
+            {
+              text: 'NO',
+              onPress: () => console.log('Cancel Pressed'),
+              style: 'cancel',
+            },
+            {text: 'SI', onPress: () => navigation.goBack()},
+          ],
+          {cancelable: false},
+        )
+      : navigation.goBack();
   }
 
   function onSubmit(data: any) {
@@ -146,6 +150,7 @@ const _LastPregnancyForm = (props: any) => {
               )}
               error={errors.TerminacionGestacion}
               onChange={(value: any) => {
+                setEditable(true);
                 onChange(value);
                 console.log(
                   'save finalizacion de la ultima gestacion value es: ',
@@ -181,12 +186,10 @@ const _LastPregnancyForm = (props: any) => {
               label="Fecha Terminacion De La Gestacion"
               error={errors.FechaTerminacionDeLaGestacion}
               onChange={(value: any) => {
+                setEditable(true);
                 onChange(value);
                 if (value) {
-                  props.saveFNCSALREPPropiety(
-                    'PARTO_ULTIMO',
-                    value,
-                  );
+                  props.saveFNCSALREPPropiety('PARTO_ULTIMO', value);
                 }
               }}
               value={value}
@@ -204,6 +207,7 @@ const _LastPregnancyForm = (props: any) => {
               )}
               error={errors.TerminacionGestacion}
               onChange={(value: any) => {
+                setEditable(true);
                 onChange(value);
                 props.saveAnswerLocal(
                   QuestionTypes.selectOne,
@@ -237,6 +241,7 @@ const _LastPregnancyForm = (props: any) => {
               )}
               error={errors.TerminacionGestacion}
               onChange={(value: any) => {
+                setEditable(true);
                 onChange(value);
                 props.saveAnswerLocal(
                   QuestionTypes.selectOne,
@@ -272,6 +277,7 @@ const _LastPregnancyForm = (props: any) => {
               onBlur={onBlur}
               error={errors.ComplicacionAtencionUltimoParto}
               onChange={(values: any) => {
+                setEditable(true);
                 onChange(values);
                 props.saveAnswerLocal(
                   QuestionTypes.multiSelect,

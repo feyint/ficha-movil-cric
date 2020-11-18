@@ -40,6 +40,8 @@ const schemaForm = yup.object().shape({
 const _HealthStatusVisitForm = (props: any) => {
   const syncCatalogService = new PersonService();
 
+  const [editable, setEditable] = useState(false);
+
   const [state, setState] = useState({
     questions: [] as PersonQuestion[],
   });
@@ -89,20 +91,23 @@ const _HealthStatusVisitForm = (props: any) => {
     );
   };
   function alert(data: any) {
-    Alert.alert(
-      'Volver!!!',
-      'Esta seguro?',
-      [
-        {
-          text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
-          style: 'cancel',
-        },
-        {text: 'Aceptar', onPress: () => navigation.goBack()},
-      ],
-      {cancelable: false},
-    );
+    editable
+      ? Alert.alert(
+          '',
+          '¿Desea cancelar el proceso?.',
+          [
+            {
+              text: 'NO',
+              onPress: () => console.log('Cancel Pressed'),
+              style: 'cancel',
+            },
+            {text: 'SI', onPress: () => navigation.goBack()},
+          ],
+          {cancelable: false},
+        )
+      : navigation.goBack();
   }
+
   function onSubmit(data: any) {
     navigation.goBack();
   }
@@ -153,6 +158,7 @@ const _HealthStatusVisitForm = (props: any) => {
               onBlur={onBlur}
               error={errors.DesarmoniaPropia}
               onChange={(value:any) => {
+                setEditable(true);
                 onChange(value);
                 setDesarmony(value);
               }}
@@ -171,6 +177,7 @@ const _HealthStatusVisitForm = (props: any) => {
               onBlur={onBlur}
               error={errors.DesarmoniaOccidental}
               onChange={(values: any) => {
+                setEditable(true);
                 onChange(values);
                 console.log('save');
                 props.saveAnswerLocal(
@@ -206,6 +213,7 @@ const _HealthStatusVisitForm = (props: any) => {
               onBlur={onBlur}
               error={errors.AntecedentesFamiliares}
               onChange={(values: any) => {
+                setEditable(true);
                 onChange(values);
                 console.log('save');
                 props.saveAnswerLocal(

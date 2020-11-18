@@ -1,4 +1,4 @@
-export interface FNCELEPER {
+export interface FNCELESAL {
   ID: number;
   CODIGO: string;
   NOMBRE: string;

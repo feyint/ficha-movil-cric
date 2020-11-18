@@ -310,6 +310,105 @@ export class DatabaseInitialization {
       );
     `);
     transaction.executeSql(`
+      CREATE TABLE IF NOT EXISTS FNCELESAL(
+        ID INTEGER PRIMARY KEY NOT NULL,
+        CODIGO TEXT,
+        NOMBRE TEXT,
+        ESTADO INTEGER,
+        SECCION TEXT,
+        REQUERIDO INTEGER
+      );
+    `);
+    transaction.executeSql(`
+      CREATE TABLE IF NOT EXISTS FNCCONSAL(
+        ID INTEGER PRIMARY KEY NOT NULL,
+        CODIGO TEXT,
+        NOMBRE TEXT,
+        ESTADO INTEGER,
+        FNCELESAL_ID INTEGER
+      );
+    `);
+    transaction.executeSql(`
+      CREATE TABLE IF NOT EXISTS FNCELEPER(
+        ID INTEGER PRIMARY KEY NOT NULL,
+        CODIGO TEXT,
+        NOMBRE TEXT,
+        ESTADO INTEGER,
+        SECCION TEXT,
+        REQUERIDO INTEGER
+      );
+    `);
+    transaction.executeSql(`
+      CREATE TABLE IF NOT EXISTS FNCCONPER(
+        ID INTEGER PRIMARY KEY NOT NULL,
+        CODIGO TEXT,
+        NOMBRE TEXT,
+        ESTADO INTEGER,
+        FNCELEPER_ID INTEGER
+      );
+    `);
+    transaction.executeSql(`
+      CREATE TABLE IF NOT EXISTS FNCDESARM(
+        ID INTEGER PRIMARY KEY NOT NULL,
+        CODIGO TEXT,
+        NOMBRE TEXT,
+        ESTADO INTEGER
+      );
+    `);
+    transaction.executeSql(`
+      CREATE TABLE IF NOT EXISTS FNCOCUPAC(
+        ID INTEGER PRIMARY KEY NOT NULL,
+        CODIGO TEXT,
+        CODIGO_FF TEXT,
+        NOMBRE TEXT,
+        ESTADO INTEGER,
+        FNCOCUSUB_ID INTEGER
+      );
+    `);
+    transaction.executeSql(`
+      CREATE TABLE IF NOT EXISTS FNCELEREP(
+        ID INTEGER PRIMARY KEY NOT NULL,
+        CODIGO TEXT,
+        NOMBRE TEXT,
+        ESTADO INTEGER,
+        SECCION TEXT,
+        REQUERIDO INTEGER
+      );
+    `);
+    transaction.executeSql(`
+      CREATE TABLE IF NOT EXISTS FNCCONREP(
+        ID INTEGER PRIMARY KEY NOT NULL,
+        CODIGO TEXT,
+        NOMBRE TEXT,
+        ESTADO INTEGER,
+        FNCELEREP_ID INTEGER
+      );
+    `);
+    transaction.executeSql(`
+      CREATE TABLE IF NOT EXISTS FNCPUEIND(
+        ID INTEGER PRIMARY KEY NOT NULL,
+        CODIGO TEXT,
+        NOMBRE TEXT,
+        ESTADO INTEGER
+      );
+    `);
+    transaction.executeSql(`
+      CREATE TABLE IF NOT EXISTS FNCPAREN(
+        ID INTEGER PRIMARY KEY NOT NULL,
+        CODIGO TEXT,
+        NOMBRE TEXT,
+        ESTADO INTEGER
+      );
+    `);
+    transaction.executeSql(`
+      CREATE TABLE IF NOT EXISTS FNCTIPIDE(
+        ID INTEGER PRIMARY KEY NOT NULL,
+        CODIGO TEXT,
+        NOMBRE TEXT,
+        ESTADO INTEGER
+      );
+    `);
+    transaction.executeSql(`
       CREATE TABLE IF NOT EXISTS FNBNUCVIV(
         ID INTEGER PRIMARY KEY AUTOINCREMENT,
         CODIGO TEXT,

@@ -18,8 +18,9 @@ import {
   getQuestionAnswer,
 } from '../../../../state/ConditionPerson/actions';
 import {ConditionPersonQuestion} from '../state/types';
-import { colors } from 'react-native-elements';
+import {colors} from 'react-native-elements';
 import {theme} from '../../../../core/style/theme';
+import {NavigationActions} from 'react-navigation';
 
 const questions = [
   QuestionConditionPersonCodes.SeguridadSocial,
@@ -46,6 +47,8 @@ const _SocialSecurityForm = (props: any) => {
   });
 
   const [enableEPS, setEnableEPS] = useState(false);
+
+  const [editable, setEditable] = useState(false);
 
   const navigation = useNavigation();
 
@@ -99,19 +102,21 @@ const _SocialSecurityForm = (props: any) => {
     );
   };
   function alert(data: any) {
-    Alert.alert(
-      'Volver!!!',
-      'Esta seguro?',
-      [
-        {
-          text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
-          style: 'cancel',
-        },
-        {text: 'Aceptar', onPress: () => navigation.goBack()},
-      ],
-      {cancelable: false},
-    );
+    editable
+      ? Alert.alert(
+          '',
+          '¿Desea cancelar el proceso?.',
+          [
+            {
+              text: 'NO',
+              onPress: () => console.log('Cancel Pressed'),
+              style: 'cancel',
+            },
+            {text: 'SI', onPress: () => navigation.goBack()},
+          ],
+          {cancelable: false},
+        )
+      : navigation.goBack();
   }
   function onSubmit(data: any) {
     navigation.goBack();
@@ -130,6 +135,7 @@ const _SocialSecurityForm = (props: any) => {
               error={errors.SeguridadSocial}
               onChange={(value: any) => {
                 if (value) {
+                  setEditable(true);
                   onChange(value);
                   props.saveAnswerLocal(
                     QuestionTypes.selectOne,
@@ -167,6 +173,7 @@ const _SocialSecurityForm = (props: any) => {
                 error={errors.EPS}
                 onChange={(value: any) => {
                   if (value) {
+                    setEditable(true);
                     onChange(value);
                     props.saveAnswerLocal(
                       QuestionTypes.selectOne,
@@ -204,6 +211,7 @@ const _SocialSecurityForm = (props: any) => {
               onChange={(values: any) => {
                 if (values) {
                   onChange(values);
+                  setEditable(true);
                   props.saveAnswerLocal(
                     QuestionTypes.multiSelect,
                     QuestionConditionPersonCodes.ProgramaDeSalud,

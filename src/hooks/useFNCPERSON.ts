@@ -17,12 +17,6 @@ export function useFNCPERSON() {
       } = useFNBNUCVIV_FNCPERSON();
     const database = useDatabase();
     useEffect(() => {
-        //clearAllFNCPERSON();
-        // createFNCPERSON({
-        //   ID: 1,
-        //   FUBUBIVIV_ID: 12,
-        //   CODIGO: 'PRUEBA-UNO-1',
-        // });
     }, []);
     function getAllFNCPERSON() {
         return database.getAllFromEntity('FNCPERSON').then(setItem);
