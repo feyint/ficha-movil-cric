@@ -1,10 +1,11 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useState, useEffect} from 'react';
 import {View, StyleSheet, Alert} from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {yupResolver} from '@hookform/resolvers';
 import * as yup from 'yup';
-import {BButton, BMultiSelect, BPicker} from '../../../../core/components';
+import {BButton, BMultiSelect, BPicker, ButtonAction} from '../../../../core/components';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {ConditionPersonService} from '../../../../services';
@@ -28,6 +29,7 @@ import {
 } from '../../../../providers/DataBaseProvider';
 import { createIconSetFromFontello } from 'react-native-vector-icons';
 import {theme} from '../../../../core/style/theme';
+import { useFNCCONPER, useFNCPERSON_FNCCONPER } from '../../../../hooks';
 
 const questionscodes = [
   QuestionConditionPersonCodes.EstadoCivil,
@@ -66,6 +68,22 @@ const schemaForm = yup.object().shape({
 });
 
 const _OtherIdentificationDataForm = (props: any) => {
+  const {
+    listFNCCONPER,
+    getLabel,
+    getQuestionsOptions,
+    getPicker,
+    getMultiselect,
+    getByID,
+  } = useFNCCONPER();
+  const {saveAnswer, getAnswerquestion} = useFNCPERSON_FNCCONPER();
+
+  useEffect(() => {
+    getQuestionsOptions(questionscodes);
+  }, []);
+  useEffect(() => {
+    fetchQuestions();
+  }, [listFNCCONPER]);
   const syncCatalogService = new ConditionPersonService();
 
   const [questions, setQuestions] = useState<ConditionPersonQuestion[]>([]);
@@ -117,77 +135,38 @@ const _OtherIdentificationDataForm = (props: any) => {
   const [organizaciones, setOrganizaciones] = useState<
     {label: any; value: any}[]
   >([]);
-
-  useEffect(() => {
-    fetchQuestions();
-  }, []);
-  function alert(data: any) {
-    editable
-      ? Alert.alert(
-          '',
-          '¿Desea cancelar el proceso?.',
-          [
-            {
-              text: 'NO',
-              onPress: () => console.log('Cancel Pressed'),
-              style: 'cancel',
-            },
-            {text: 'SI', onPress: () => navigation.goBack()},
-          ],
-          {cancelable: false},
-        )
-      : navigation.goBack();
-  }
   async function fetchQuestions() {
-    let resultMultiselect = await props.getQuestionWithOptions(questionscodes);
-    if (resultMultiselect) {
-      setState({
-        ...state,
-        questionscodesMultiselect: resultMultiselect,
-      });
-    }
-    let result = await props.getQuestionWithOptions(questionscodes);
-    let resultocupac = await syncCatalogService.getOcupacList();
-    let resultorgani = await syncCatalogService.getOrganiList();
-    let lenguas = syncCatalogService.getItemsForQuestionSelect(
-      QuestionConditionPersonCodes.LenguaMaterna,
-      result,
-    );
-    let segundalengua = syncCatalogService.getItemsForQuestionSelect(
-      QuestionConditionPersonCodes.SegundaLenguaMaterna,
-      result,
-    );
-    setQuestions(result);
-    setlenguaMaternaSelect(lenguas.children);
-    setsegundaLenguaSelect(segundalengua.children);
-    setOcupacionPrincipales(resultocupac);
-    setOrganizaciones(resultorgani);
-    // /* if (prop == 'GrupoEtnico') {
-    //   setEnablePueblo(question !== '99' || question !== null);
-    // } */
-    //------------------------------------------------------------------------
-    /* let FNCPUEIND = await props.getEntitySelect(
-      'FNCLUNIND',
-      FNCLUNINDSCHEMA,
-      'FNCPUEIND_ID',
-      props.FNCPERSON.FNCLUNIND_ID,
-    ); */
-    let FNCPUEIND = await props.getEntitySelect(
-      'FNCPUEIND',
-      FNCPUEINDSCHEMA,
-      'ID',
-      props.FNCPERSON.FNCLUNIND_ID,
-    );
-    setPuebloIndigenaSelect(FNCPUEIND.children);
-    setValue('puebloIndigena', '');
-    setPuebloIndigena('');
-    //------------------------------------------------------------------------
-    if (props.FNCPERSON.ID) {
-      setValue('ocupacionPrincipal', props.FNCPERSON.FNCOCUPAC_ID);
-      setOcupacionPrincipal(props.FNCPERSON.FNCOCUPAC_ID);
-      setValue('organizacion', props.FNCPERSON.FNCORGANI_ID);
-      setOrganizacion(props.FNCPERSON.FNCORGANI_ID);
-    }
+    // let resultocupac = await syncCatalogService.getOcupacList();
+    // let resultorgani = await syncCatalogService.getOrganiList();
+    // let lenguas = syncCatalogService.getItemsForQuestionSelect(
+    //   QuestionConditionPersonCodes.LenguaMaterna,
+    //   result,
+    // );
+    // let segundalengua = syncCatalogService.getItemsForQuestionSelect(
+    //   QuestionConditionPersonCodes.SegundaLenguaMaterna,
+    //   result,
+    // );
+    // setQuestions(result);
+    // setlenguaMaternaSelect(lenguas.children);
+    // setsegundaLenguaSelect(segundalengua.children);
+    // setOcupacionPrincipales(resultocupac);
+    // setOrganizaciones(resultorgani);
+    // let FNCPUEIND = await props.getEntitySelect(
+    //   'FNCPUEIND',
+    //   FNCPUEINDSCHEMA,
+    //   'ID',
+    //   props.FNCPERSON.FNCLUNIND_ID,
+    // );
+    // setPuebloIndigenaSelect(FNCPUEIND.children);
+    // setValue('puebloIndigena', '');
+    // setPuebloIndigena('');
+    // //------------------------------------------------------------------------
+    // if (props.FNCPERSON.ID) {
+    //   setValue('ocupacionPrincipal', props.FNCPERSON.FNCOCUPAC_ID);
+    //   setOcupacionPrincipal(props.FNCPERSON.FNCOCUPAC_ID);
+    //   setValue('organizacion', props.FNCPERSON.FNCORGANI_ID);
+    //   setOrganizacion(props.FNCPERSON.FNCORGANI_ID);
+    // }
   }
 
   async function getAnswers(
@@ -439,10 +418,7 @@ const _OtherIdentificationDataForm = (props: any) => {
                 }}
                 //value={value}
                 selectedValue={value}
-                items={
-                  getItemsForQuestionSelect(QuestionConditionPersonCodes.Casta)
-                    .children
-                }
+                items={getPicker(QuestionConditionPersonCodes.Casta)}
               />
             )}
             name="Casta"
@@ -517,11 +493,9 @@ const _OtherIdentificationDataForm = (props: any) => {
                 }}
                 //value={value}
                 selectedValue={value}
-                items={
-                  getItemsForQuestionSelect(
-                    QuestionConditionPersonCodes.DominioLenguaMaterna,
-                  ).children
-                }
+                items={getPicker(
+                  QuestionConditionPersonCodes.DominioLenguaMaterna,
+                )}
               />
             )}
             name="DominioLenguaMaterna"
@@ -591,11 +565,9 @@ const _OtherIdentificationDataForm = (props: any) => {
                 }}
                 //value={value}
                 selectedValue={value}
-                items={
-                  getItemsForQuestionSelect(
-                    QuestionConditionPersonCodes.DominioSegundaLenguaMaterna,
-                  ).children
-                }
+                items={getPicker(
+                  QuestionConditionPersonCodes.DominioSegundaLenguaMaterna,
+                )}
               />
             )}
             name="DominioSegundaLenguaMaterna"
@@ -628,7 +600,7 @@ const _OtherIdentificationDataForm = (props: any) => {
                 );
               }}
               selectedItems={value}
-              items={getItemsForQuestionMultiSelect(
+              items={getMultiselect(
                 QuestionConditionPersonCodes.CapacidadDiversa,
               )}
             />
@@ -662,11 +634,7 @@ const _OtherIdentificationDataForm = (props: any) => {
               }}
               //value={value}
               selectedValue={value}
-              items={
-                getItemsForQuestionSelect(
-                  QuestionConditionPersonCodes.NivelEstudio,
-                ).children
-              }
+              items={getPicker(QuestionConditionPersonCodes.NivelEstudio)}
             />
           )}
           name="NivelEstudio"
@@ -847,25 +815,10 @@ const _OtherIdentificationDataForm = (props: any) => {
           )}
           name="TipoDeCuidadosCulturalesQueRealiza"
         />
-        <View
-          style={{display: 'flex', flexDirection: 'row', marginLeft: '20%'}}>
-          <BButton
-            style={styles.aceptButon}
-            color="secondary"
-            value="Cancelar"
-            labelStyle={styles.text}
-            onPress={alert}
-          />
-          <BButton
-            style={styles.cancelButon}
-            color="secondary"
-            //labelStyle={styles.text}
-            value="Validar"
-            onPress={handleSubmit(onSubmit, (err) => {
-              console.warn(err);
-            })}
-          />
-        </View>
+         <ButtonAction
+          onAccept={handleSubmit(onSubmit)}
+          onCancel={() => navigation.goBack()}
+        />
       </View>
       <View style={styles.spacer} />
     </KeyboardAwareScrollView>
@@ -873,12 +826,6 @@ const _OtherIdentificationDataForm = (props: any) => {
 };
 
 const styles = StyleSheet.create({
-  input: {
-    backgroundColor: 'white',
-    height: 40,
-    padding: 10,
-    borderRadius: 4,
-  },
   spacer: {
     height: 50,
   },
@@ -886,27 +833,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 8,
-  },
-  aceptButon: {
-    backgroundColor: 'white',
-    color: 'white',
-    width: '25%',
-    borderWidth: 2,
-    borderColor: theme.colors.primary,
-  },
-  cancelButon: {
-    //left: 500,
-    //position: 'relative',
-    //marginTop: -60,
-    backgroundColor: theme.colors.primary,
-    width: '25%',
-    color: 'red',
-  },
-  text: {
-    fontWeight: 'bold',
-    fontSize: 15,
-    lineHeight: 26,
-    color: theme.colors.primary,
   },
 });
 const mapDispatchToProps = {

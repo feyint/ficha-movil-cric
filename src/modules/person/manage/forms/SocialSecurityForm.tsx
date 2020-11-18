@@ -1,26 +1,22 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useState, useEffect} from 'react';
-import {View, StyleSheet, Alert} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {yupResolver} from '@hookform/resolvers';
 import * as yup from 'yup';
-import {BButton, BMultiSelect, BPicker} from '../../../../core/components';
+import {BMultiSelect, BPicker, ButtonAction} from '../../../../core/components';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
-import {ConditionPersonService} from '../../../../services';
-import {
-  QuestionConditionPersonCodes,
-  QuestionTypes,
-} from '../../../../core/utils/PersonTypes';
+import {QuestionConditionPersonCodes} from '../../../../core/utils/PersonTypes';
 import {
   getQuestionWithOptions,
   saveAnswerLocal,
   getQuestionAnswer,
 } from '../../../../state/ConditionPerson/actions';
-import {ConditionPersonQuestion} from '../state/types';
-import {colors} from 'react-native-elements';
-import {theme} from '../../../../core/style/theme';
-import {NavigationActions} from 'react-navigation';
+import {useFNCCONPER, useFNCPERSON_FNCCONPER} from '../../../../hooks';
+import {FNCCONPER} from '../../../../types';
+import { PersonParametersConst } from '../../../../core/utils/SystemParameters';
 
 const questions = [
   QuestionConditionPersonCodes.SeguridadSocial,
@@ -40,88 +36,98 @@ const schemaForm = yup.object().shape({
 });
 
 const _SocialSecurityForm = (props: any) => {
-  const syncCatalogService = new ConditionPersonService();
-
-  const [state, setState] = useState({
-    questions: [] as ConditionPersonQuestion[],
-  });
-
+  const {
+    listFNCCONPER,
+    getLabel,
+    getQuestionsOptions,
+    getPicker,
+    getMultiselect,
+    getByID,
+  } = useFNCCONPER();
+  const {saveAnswer, getAnswerquestion} = useFNCPERSON_FNCCONPER();
   const [enableEPS, setEnableEPS] = useState(false);
-
-  const [editable, setEditable] = useState(false);
-
   const navigation = useNavigation();
-
-  const getItemsForQuestionSelect = (code: string) => {
-    return syncCatalogService.getItemsForQuestionSelect(code, state.questions);
-  };
-
   const {handleSubmit, control, errors, setValue} = useForm({
     resolver: yupResolver(schemaForm),
   });
-
   useEffect(() => {
-    fetchQuestions();
+    getQuestionsOptions(questions);
   }, []);
-
-  async function fetchQuestions() {
-    let result = await props.getQuestionWithOptions(questions);
-    if (result) {
-      setState({
-        ...state,
-        questions: result,
-      });
-    }
-  }
-  async function getAnswers(type: number, code: string, prop: string) {
-    let question = await props.getQuestionAnswer(type, code);
-    setValue(prop, question);
-    if (prop == 'SeguridadSocial') {
-      setEnableEPS(question !== '91');
-    }
-  }
-
-  const getQuestionlabel = (code: string) => {
-    return syncCatalogService.getQuestionlabel(code, state.questions);
-  };
-  const validateSocialSecurity = (value: string) => {
-    setEnableEPS(value !== '91');
-    if (value == '91') {
-      props.saveAnswerLocal(
-        QuestionTypes.selectOne,
-        QuestionConditionPersonCodes.EPS,
-        null,
-      );
-    }
-  };
-
-  const getItemsForQuestionMultiSelect = (code: string) => {
-    return syncCatalogService.getItemsForQuestionMultiSelect(
-      code,
-      state.questions,
+  useEffect(() => {
+    getAnswersFNCCONPER();
+  }, [listFNCCONPER]);
+  async function getAnswersFNCCONPER() {
+    let ans = await getAnswers(
+      QuestionConditionPersonCodes.SeguridadSocial,
+      'SeguridadSocial',
     );
-  };
-  function alert(data: any) {
-    editable
-      ? Alert.alert(
-          '',
-          '¿Desea cancelar el proceso?.',
-          [
-            {
-              text: 'NO',
-              onPress: () => console.log('Cancel Pressed'),
-              style: 'cancel',
-            },
-            {text: 'SI', onPress: () => navigation.goBack()},
-          ],
-          {cancelable: false},
-        )
-      : navigation.goBack();
+    getAnswers(QuestionConditionPersonCodes.EPS, 'EPS');
+    getAnswers(
+      QuestionConditionPersonCodes.ProgramaDeSalud,
+      'ProgramaDeSalud',
+      2,
+    );
+    validateSocialSecurity(ans);
   }
   function onSubmit(data: any) {
+    SaveAnswers(
+      QuestionConditionPersonCodes.SeguridadSocial,
+      data.SeguridadSocial,
+    );
+    SaveAnswers(QuestionConditionPersonCodes.EPS, data.EPS);
+    SaveAnswers(
+      QuestionConditionPersonCodes.ProgramaDeSalud,
+      data.ProgramaDeSalud,
+      2,
+    );
     navigation.goBack();
   }
-
+  async function SaveAnswers(
+    questionCode: string,
+    answer: any,
+    type: 1 | 2 = 1,
+  ) {
+    let question = listFNCCONPER.find((item: FNCCONPER) => {
+      return item.QUESTIONCODE === questionCode;
+    });
+    if (question) {
+      const {ID} = props.FNCPERSON;
+      await saveAnswer(type, answer, ID, question.FNCELEPER_ID);
+    }
+  }
+  async function getAnswers(
+    questionCode: string,
+    prop: string,
+    type: 1 | 2 = 1,
+  ) {
+    let question = listFNCCONPER.find((item: FNCCONPER) => {
+      return item.QUESTIONCODE === questionCode;
+    });
+    if (question) {
+      const {ID} = props.FNCPERSON;
+      let ans = await getAnswerquestion(ID, question.FNCELEPER_ID, type);
+      if (ans) {
+        if (type == 1) {
+          setValue(prop, '' + ans);
+        } else {
+          setValue(prop, ans);
+        }
+      }
+      return ans;
+    }
+  }
+  function validateSocialSecurity(id: any) {
+    let item: FNCCONPER = getByID(id);
+    if (
+      item &&
+      item.CODIGO !== PersonParametersConst.poplacionpobrenoaseguradacode
+    ) {
+      setEnableEPS(true);
+    } else {
+      setEnableEPS(false);
+      setValue('EPS', '');
+    }
+  }
   return (
     <KeyboardAwareScrollView>
       <View style={styles.container}>
@@ -129,35 +135,16 @@ const _SocialSecurityForm = (props: any) => {
           control={control}
           render={({onChange, value}) => (
             <BPicker
-              label={getQuestionlabel(
-                QuestionConditionPersonCodes.SeguridadSocial,
-              )}
+              label={getLabel(QuestionConditionPersonCodes.SeguridadSocial)}
               error={errors.SeguridadSocial}
               onChange={(value: any) => {
                 if (value) {
-                  setEditable(true);
                   onChange(value);
-                  props.saveAnswerLocal(
-                    QuestionTypes.selectOne,
-                    QuestionConditionPersonCodes.SeguridadSocial,
-                    value,
-                  );
                   validateSocialSecurity(value);
                 }
               }}
-              onLoad={() => {
-                getAnswers(
-                  QuestionTypes.selectOne,
-                  QuestionConditionPersonCodes.SeguridadSocial,
-                  'SeguridadSocial',
-                );
-              }}
               selectedValue={value}
-              items={
-                getItemsForQuestionSelect(
-                  QuestionConditionPersonCodes.SeguridadSocial,
-                ).children
-              }
+              items={getPicker(QuestionConditionPersonCodes.SeguridadSocial)}
             />
           )}
           name="SeguridadSocial"
@@ -173,27 +160,11 @@ const _SocialSecurityForm = (props: any) => {
                 error={errors.EPS}
                 onChange={(value: any) => {
                   if (value) {
-                    setEditable(true);
                     onChange(value);
-                    props.saveAnswerLocal(
-                      QuestionTypes.selectOne,
-                      QuestionConditionPersonCodes.EPS,
-                      value,
-                    );
                   }
                 }}
-                onLoad={() => {
-                  getAnswers(
-                    QuestionTypes.selectOne,
-                    QuestionConditionPersonCodes.EPS,
-                    'EPS',
-                  );
-                }}
                 selectedValue={value}
-                items={
-                  getItemsForQuestionSelect(QuestionConditionPersonCodes.EPS)
-                    .children
-                }
+                items={getPicker(QuestionConditionPersonCodes.EPS)}
               />
             )}
             name="EPS"
@@ -203,57 +174,27 @@ const _SocialSecurityForm = (props: any) => {
           control={control}
           render={({onChange, onBlur, value}) => (
             <BMultiSelect
-              label={getQuestionlabel(
-                QuestionConditionPersonCodes.ProgramaDeSalud,
-              )}
+              label={getLabel(QuestionConditionPersonCodes.ProgramaDeSalud)}
               onBlur={onBlur}
               error={errors.ProgramaDeSalud}
               onChange={(values: any) => {
                 if (values) {
                   onChange(values);
-                  setEditable(true);
-                  props.saveAnswerLocal(
-                    QuestionTypes.multiSelect,
-                    QuestionConditionPersonCodes.ProgramaDeSalud,
-                    values,
-                  );
                 }
               }}
-              onLoad={() => {
-                console.log('onLoad');
-                getAnswers(
-                  QuestionTypes.multiSelect,
-                  QuestionConditionPersonCodes.ProgramaDeSalud,
-                  'ProgramaDeSalud',
-                );
-              }}
               selectedItems={value}
-              items={getItemsForQuestionMultiSelect(
+              items={getMultiselect(
                 QuestionConditionPersonCodes.ProgramaDeSalud,
               )}
             />
           )}
           name="ProgramaDeSalud"
         />
-        <View
-          style={{display: 'flex', flexDirection: 'row', marginLeft: '20%'}}>
-          <BButton
-            style={styles.aceptButon}
-            color="secondary"
-            value="Cancelar"
-            labelStyle={styles.text}
-            onPress={alert}
-          />
-          <BButton
-            style={styles.cancelButon}
-            color="secondary"
-            //labelStyle={styles.text}
-            value="Validar"
-            onPress={handleSubmit(onSubmit)}
-          />
-        </View>
+        <ButtonAction
+          onAccept={handleSubmit(onSubmit)}
+          onCancel={() => navigation.goBack()}
+        />
       </View>
-      <View style={styles.spacer} />
     </KeyboardAwareScrollView>
   );
 };
@@ -265,38 +206,10 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 4,
   },
-  spacer: {
-    height: 50,
-  },
   container: {
     flex: 1,
     justifyContent: 'center',
     padding: 8,
-  },
-  buton: {
-    width: '25%',
-    //backgroundColor: colors.primary,
-  },
-  aceptButon: {
-    backgroundColor: 'white',
-    color: 'white',
-    width: '25%',
-    borderWidth: 2,
-    borderColor: theme.colors.primary,
-  },
-  cancelButon: {
-    //left: 500,
-    //position: 'relative',
-    //marginTop: -60,
-    backgroundColor: theme.colors.primary,
-    width: '25%',
-    color: 'red',
-  },
-  text: {
-    fontWeight: 'bold',
-    fontSize: 15,
-    lineHeight: 26,
-    color: theme.colors.primary,
   },
 });
 const mapDispatchToProps = {
@@ -306,7 +219,7 @@ const mapDispatchToProps = {
 };
 const mapStateToProps = (session: any) => {
   return {
-    user: session.session.user,
+    FNCPERSON: session.person.FNCPERSON,
   };
 };
 export default connect(

@@ -128,6 +128,7 @@ const PersonManageScreen = (props: any) => {
   );
 
   function goViewPersonScreen(data: FNCPERSON) {
+    console.error(data);
     props.setFNCPERSON(data);
     props.navigation.navigate('ViewPersonScreen');
   }
