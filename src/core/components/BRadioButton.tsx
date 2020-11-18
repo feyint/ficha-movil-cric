@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {RadioButton, Text} from 'react-native-paper';
+import {HelperText, RadioButton, Text} from 'react-native-paper';
 import {View, StyleSheet} from 'react-native';
 import BError from './BError';
 
@@ -8,11 +8,14 @@ interface Props {
   onChange?: any;
   value: any;
   label?: string;
-  error?: boolean;
+  error?: any;
 }
 class BRadioButton extends Component<Props, any> {
   constructor(props: Props) {
     super(props);
+    if (props.value && props.onChange && props.value.length > 0) {
+      props.onChange(props.value);
+    }
   }
   renderLabel() {
     return (
@@ -29,6 +32,7 @@ class BRadioButton extends Component<Props, any> {
         {this.renderLabel()}
         <View style={styles.flexDirection}>
           <RadioButton.Group
+            key={`${Math.round(Math.random() * 10000000)}`}
             value={'' + this.props.value}
             onValueChange={(selectedValue) => {
               this.props.onChange(selectedValue);
@@ -51,7 +55,13 @@ class BRadioButton extends Component<Props, any> {
               : null}
           </RadioButton.Group>
         </View>
-        <BError text="El campo es requerido" error={this.props.error} />
+        {this.props.error ? (
+          <HelperText type="error">
+            {this.props.error
+              ? this.props.error.message
+              : 'El campo es requerido'}
+          </HelperText>
+        ) : null}
       </View>
     );
   }

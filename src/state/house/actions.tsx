@@ -161,11 +161,22 @@ export function getQuestionByCode(
   });
   return item as HousingQuestion;
 }
-export const setQuestionWithOptions = () => async (dispatch: any) => {
-  let questionItems: HousingQuestion[] = [];
-  let houseServie: HousingService = new HousingService();
-  questionItems = await houseServie.getQuestionWithOptions();
-  dispatch(setHOUSING_QUESTION_LIST(questionItems));
+export const setQuestionWithOptions = () => async (
+  _dispatch: any,
+  getState: any,
+) => {
+  try {
+    const store = getState();
+    let questions = store.housing.HOUSINGQUESTIONLIST;
+    if (questions && questions.length == 0) {
+      let questionItems: HousingQuestion[] = [];
+      let houseServie: HousingService = new HousingService();
+      questionItems = await houseServie.getQuestionWithOptions();
+      _dispatch(setHOUSING_QUESTION_LIST(questionItems));
+    }
+  } catch (error) {
+    console.error(error);
+  }
 };
 export const getQuestionWithOptions = (questionsQuery?: any[]) => async (
   _dispatch: any,

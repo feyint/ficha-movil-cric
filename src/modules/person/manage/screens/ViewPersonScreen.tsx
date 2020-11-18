@@ -5,11 +5,10 @@ import {List} from 'react-native-paper';
 import {NavigationProp} from '@react-navigation/native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {connect} from 'react-redux';
-import {FNCPERSON} from '../../../../state/person/types';
-import {FNBNUCVIV} from '../../../../state/house/types';
 import {GenreService, SexAndRepHealthPersonService} from '../../../../services';
 import {setFNCNCSALREP} from '../../../../state/SexAndRepHealthPerson/actions';
 import {theme} from '../../../../core/style/theme';
+import {FNBNUCVIV, FNCPERSON} from '../../../../types';
 
 interface Props {
   navigation: NavigationProp<any>;
@@ -21,22 +20,18 @@ interface State {
   created: boolean;
   enableSexReproductionHealt: boolean;
 }
-
 class ViewPersonScreen extends Component<Props, State> {
+  private _unsubscribe: any;
   constructor(props: Props) {
     super(props);
     this.state = {
       created: false,
       enableSexReproductionHealt: false,
     };
+    this.initdata();
   }
-  private _unsubscribe: any;
   _goBack() {
     this.props.navigation.goBack();
-  }
-  async UNSAFE_componentWillMount() {}
-  async componentDidMount() {
-    await this.initdata();
   }
   async initdata() {
     if (!this.props.FNCPERSON || !this.props.FNCPERSON.ID) {
@@ -57,18 +52,20 @@ class ViewPersonScreen extends Component<Props, State> {
         }
       });
     } else {
-      let genreService = new GenreService();
-      let Genre = await genreService.get(this.props.FNCPERSON.FNCGENERO_ID);
-      if (Genre && Genre.CODIGO == 'F') {
-        this.setState({
-          enableSexReproductionHealt: true,
-        });
-      }
-      let sxhealtservice = new SexAndRepHealthPersonService();
-      let item = await sxhealtservice.getFNCSALREP(this.props.FNCPERSON.ID);
-      if (item) {
-        this.props.setFNCNCSALREP(item);
-      }
+      //let genreService = new GenreService();
+      // if (this.props.FNCPERSON.FNCGENERO_ID) {
+      //   let Genre = await genreService.get(this.props.FNCPERSON.FNCGENERO_ID);
+      //   if (Genre && Genre.CODIGO == 'F') {
+      //     this.setState({
+      //       enableSexReproductionHealt: true,
+      //     });
+      //   }
+      // }
+      // let sxhealtservice = new SexAndRepHealthPersonService();
+      // let item = await sxhealtservice.getFNCSALREP(this.props.FNCPERSON.ID);
+      // if (item) {
+      //   this.props.setFNCNCSALREP(item);
+      // }
     }
   }
   componentWillUnmount() {

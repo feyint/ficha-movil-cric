@@ -13,56 +13,48 @@ import {
   BTextInput,
 } from '../../../../core/components';
 import BNumberInput from '../../../../core/components/BNumberInput';
-import {
-  ConditionPersonService,
-  HousingService,
-  PersonService,
-} from '../../../../services';
-import {FNCPERSON} from '../../../../state/person/types';
-import {
-  saveFNCPERSON,
-  saveSaveFNBNUCVIV_FNCPERSON,
-  updateFNCPERSON,
-} from '../../../../state/person/actions';
-import {
-  QuestionConditionPersonCodes,
-  QuestionTypes,
-} from '../../../../core/utils/PersonTypes';
+import {setFNCPERSON} from '../../../../state/person/actions';
+import {QuestionConditionPersonCodes} from '../../../../core/utils/PersonTypes';
 import {
   getQuestionAnswer,
   getQuestionWithOptions,
   saveAnswerLocal,
 } from '../../../../state/ConditionPerson/actions';
-import PersonRelationService from '../../../../services/PersonRelationService';
 import {PersonParametersConst} from '../../../../core/utils/SystemParameters';
 import {theme} from '../../../../core/style/theme';
-
+import {
+  useFNBNUCVIV,
+  useFNBNUCVIV_FNCPERSON,
+  useFNCCONPER,
+  useFNCGENERO,
+  useFNCPAREN,
+  useFNCPERSON,
+  useFNCPERSON_FNCCONPER,
+  useFNCTIPIDE,
+} from '../../../../hooks';
+import {getSelectSchema} from '../../../../core/utils/utils';
+import {FNCCONPER, FNCPERSON} from '../../../../types';
+import moment from 'moment';
+// TODO ERROR AL GUARDAR PUEBLO INDIGENA EN LA CREACIÓN
 const schemaForm = yup.object().shape({
   parentezcoGrupoFamiliar: yup.string().required(),
   firstname: yup.string().required(),
   middlename: yup.string().optional(),
   lastname: yup.string().required(),
   secondlastname: yup.string().optional(),
-  identification: yup.string().required(),
+  identification: yup.string().optional(),
   identificationType: yup.string().required(),
   gender: yup.string().required(),
   GrupoEtnico: yup.number().required(),
   birthdate: yup.date().required('La fecha de nacimiento es requerida'),
 });
-// eslint-disable-next-line react-hooks/exhaustive-deps
 const _PersonalInformationForm = (props: any) => {
   const navigation = useNavigation();
-  const personService = new PersonService();
-  const housingService = new HousingService();
-  const conditionpersonService = new ConditionPersonService();
   const {handleSubmit, control, errors, setValue} = useForm({
     resolver: yupResolver(schemaForm),
   });
+  const [editable, setEditable] = useState(false);
   const [person, setPerson] = useState<FNCPERSON>();
-  const [genders, setGenders] = useState<{label: any; value: any}[]>([]);
-  const [identificationTypes, setidentificationTypes] = useState<
-    {label: any; value: any; item: any}[]
-  >([]);
   const [identificationEx, setidentificationEx] = useState<any[]>([]);
   const [gender, setGender] = useState<any>();
   const [alreadyHeaderID, setalreadyHeaderID] = useState<number>(0);
@@ -71,42 +63,48 @@ const _PersonalInformationForm = (props: any) => {
   const [grupoEtnico, setGrupoEtnico] = useState<any>();
   const [parentezcoGrupoFamiliar, setParentezcoGrupoFamiliar] = useState<any>();
   const [birthDate, setbirthDate] = useState<Date>(new Date());
-  const [
-    parentezcoGrupoFamiliarSelect,
-    setParentezcoGrupoFamiliarSelect,
-  ] = useState<{label: any; value: any}[]>([]);
+  const {listFNCTIPIDE, getAllFNCTIPIDE} = useFNCTIPIDE();
+  const {listFNCGENERO, getAllFNCGENERO} = useFNCGENERO();
+  const {listFNCPAREN, getAllFNCPAREN} = useFNCPAREN();
+  const {alreadyexistParent} = useFNBNUCVIV();
+  const {listFNCCONPER, getQuestionsOptions} = useFNCCONPER();
+  const {validateExist, createFNBNUCVIV_FNCPERSON} = useFNBNUCVIV_FNCPERSON();
+  const {
+    itemFNCPERSON,
+    createFNCPERSON,
+    updateFNCPERSON,
+    getByIdentification,
+    existbyIdentification,
+  } = useFNCPERSON();
+  const {saveAnswer, getAnswerquestion} = useFNCPERSON_FNCCONPER();
   useEffect(() => {
     fetchQuestions();
   }, []);
   useEffect(() => {
-    if (props.FNCPERSON.ID) {
-      setValue('parentezcoGrupoFamiliar', props.FNCPERSON.FNCPAREN_ID);
-      setParentezcoGrupoFamiliar(props.FNCPERSON.FNCPAREN_ID);
-    }
-  }, [parentezcoGrupoFamiliarSelect]);
+    let idtypeEx: any[] = [];
+    listFNCTIPIDE.forEach((item) => {
+      if (
+        item &&
+        PersonParametersConst.identificationType.indexOf(item.CODIGO) !== -1
+      ) {
+        idtypeEx.push(item);
+      }
+    });
+    setidentificationEx(idtypeEx);
+  }, [listFNCTIPIDE]);
   useEffect(() => {
-    if (props.FNCPERSON.ID) {
-      let idtypeEx: any[] = [];
-      identificationTypes.forEach((item) => {
-        if (
-          item.item &&
-          PersonParametersConst.identificationType.indexOf(item.item.CODIGO) !==
-            -1
-        ) {
-          idtypeEx.push(item.item);
-        }
-      });
-      setValue('identificationType', props.FNCPERSON.FNCTIPIDE_ID);
-      setIdentificationType(props.FNCPERSON.FNCTIPIDE_ID);
-      setidentificationEx(idtypeEx);
+    if (listFNCCONPER) {
+      if (props.FNCPERSON.ID) {
+        setPerson(props.FNCPERSON);
+        getAnswers(QuestionConditionPersonCodes.GrupoEtnico, 'GrupoEtnico');
+      }
     }
-  }, [identificationTypes]);
+  }, [listFNCCONPER]);
   useEffect(() => {
-    if (props.FNCPERSON.ID) {
-      setValue('gender', props.FNCPERSON.FNCGENERO_ID);
-      setGender(props.FNCPERSON.FNCGENERO_ID);
+    if (itemFNCPERSON) {
+      props.setFNCPERSON(itemFNCPERSON);
     }
-  }, [genders]);
+  }, [itemFNCPERSON]);
   useEffect(() => {
     let delayDebounceFn = onChangeIdentification();
     return () => clearTimeout(delayDebounceFn);
@@ -119,126 +117,94 @@ const _PersonalInformationForm = (props: any) => {
       setValue('secondlastname', person.SEGUNDO_APELLIDO);
       setValue('identification', person.IDENTIFICACION);
       setIdentification(person.IDENTIFICACION);
-      setValue('parentezcoGrupoFamiliar', person.FNCPAREN_ID);
-      setParentezcoGrupoFamiliar(person.FNCPAREN_ID);
-      setValue('birthdate', person.FECHA_NACIMIENTO);
-      setbirthDate(person.FECHA_NACIMIENTO);
+      setValue('birthdate', moment(person.FECHA_NACIMIENTO).toDate());
+      if (person.FECHA_NACIMIENTO) {
+        setbirthDate(moment(person.FECHA_NACIMIENTO).toDate());
+      }
+      setValue('parentezcoGrupoFamiliar', '' + props.FNCPERSON.FNCPAREN_ID);
+      setParentezcoGrupoFamiliar('' + props.FNCPERSON.FNCPAREN_ID);
+      setValue('identificationType', '' + props.FNCPERSON.FNCTIPIDE_ID);
+      setIdentificationType('' + props.FNCPERSON.FNCTIPIDE_ID);
+      setValue('gender', '' + props.FNCPERSON.FNCGENERO_ID);
+      setGender('' + props.FNCPERSON.FNCGENERO_ID);
+      // getAnswers(QuestionConditionPersonCodes.GrupoEtnico, 'GrupoEtnico');
     }
   }, [person]);
   const fetchQuestions = async () => {
-    let result = await personService.getSelectList('FNCGENERO');
-    let resultFNCPAREN = await personService.getSelectList('FNCPAREN');
-    let resultFNCTIPIDE = await personService.getSelectList('FNCTIPIDE');
-    let alreadyexistheader = await housingService.getFNBNUCVIVPersonsParent(
-      props.FNBNUCVIV.ID,
-    );
-    setalreadyHeaderID(alreadyexistheader);
-    setGenders(result);
-    setidentificationTypes(resultFNCTIPIDE);
-    setParentezcoGrupoFamiliarSelect(resultFNCPAREN);
-    if (props.FNCPERSON.ID) {
-      setPerson(props.FNCPERSON);
-    }
-  };
-  const refreshPerson = async (item: FNCPERSON) => {
-    if (item) {
-      setValue('firstname', item.PRIMER_NOMBRE);
-      setValue('middlename', item.SEGUNDO_NOMBRE);
-      setValue('lastname', item.PRIMER_APELLIDO);
-      setValue('secondlastname', item.SEGUNDO_APELLIDO);
-      setValue('identification', item.IDENTIFICACION);
-      setIdentification(item.IDENTIFICACION);
-      setValue('identificationType', item.FNCTIPIDE_ID);
-      setIdentificationType('' + item.FNCTIPIDE_ID);
-      setValue('gender', item.FNCGENERO_ID);
-      setGender(item.FNCGENERO_ID);
-      setValue('parentezcoGrupoFamiliar', item.FNCPAREN_ID);
-      setParentezcoGrupoFamiliar(item.FNCPAREN_ID);
-      getAnswers(
-        QuestionTypes.selectOne,
-        QuestionConditionPersonCodes.GrupoEtnico,
-        'GrupoEtnico',
-      );
+    getAllFNCTIPIDE();
+    getAllFNCGENERO();
+    getAllFNCPAREN();
+    getQuestionsOptions([QuestionConditionPersonCodes.GrupoEtnico]);
+    let alreadyexistheader = await alreadyexistParent(props.FNBNUCVIV.ID);
+    if (alreadyexistheader) {
+      setalreadyHeaderID(alreadyexistheader);
     }
   };
   function alert(data: any) {
-    Alert.alert(
-      'Volver!!!',
-      'Esta seguro?',
-      [
-        {
-          text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
-          style: 'cancel',
-        },
-        {text: 'Aceptar', onPress: () => navigation.goBack()},
-      ],
-      {cancelable: false},
-    );
+    editable
+      ? Alert.alert(
+          '',
+          '¿Desea cancelar el proceso?.',
+          [
+            {
+              text: 'NO',
+              onPress: () => console.log('Cancel Pressed'),
+              style: 'cancel',
+            },
+            {text: 'SI', onPress: () => navigation.goBack()},
+          ],
+          {cancelable: false},
+        )
+      : navigation.goBack();
   }
   const onSubmit = async (data: any) => {
     if (person && person.ID != null) {
-      try {
-        let inserted = await props.updateFNCPERSON({
-          ID: person.ID,
-          PRIMER_NOMBRE: data.firstname,
-          SEGUNDO_NOMBRE: data.middlename ? data.middlename : '',
-          PRIMER_APELLIDO: data.lastname,
-          SEGUNDO_APELLIDO: data.secondlastname ? data.secondlastname : '',
-          IDENTIFICACION: data.identification,
-          FNCTIPIDE_ID: JSON.parse(data.identificationType),
-          FNCGENERO_ID: JSON.parse(data.gender),
-          FNCPAREN_ID: JSON.parse(data.parentezcoGrupoFamiliar),
-          FECHA_NACIMIENTO: birthDate,
-        });
-        props.saveAnswerLocal(
-          QuestionTypes.selectOne,
-          QuestionConditionPersonCodes.GrupoEtnico,
-          data.GrupoEtnico,
-        );
-      } catch (error) {
-      }
+      await updateFNCPERSON({
+        ID: person.ID,
+        PRIMER_NOMBRE: data.firstname,
+        SEGUNDO_NOMBRE: data.middlename ? data.middlename : '',
+        PRIMER_APELLIDO: data.lastname,
+        SEGUNDO_APELLIDO: data.secondlastname ? data.secondlastname : '',
+        IDENTIFICACION: data.identification,
+        FNCTIPIDE_ID: JSON.parse(data.identificationType),
+        FNCGENERO_ID: JSON.parse(data.gender),
+        FNCPAREN_ID: JSON.parse(data.parentezcoGrupoFamiliar),
+        FECHA_NACIMIENTO: birthDate,
+      });
+      SaveAnswers(QuestionConditionPersonCodes.GrupoEtnico, data.GrupoEtnico);
     } else {
-      let item: any = {};
-      item.PRIMER_NOMBRE = data.firstname;
-      item.SEGUNDO_NOMBRE = data.middlename ? data.middlename : '';
-      item.PRIMER_APELLIDO = data.lastname;
-      item.SEGUNDO_APELLIDO = data.secondlastname ? data.secondlastname : '';
-      item.IDENTIFICACION = data.identification;
-      item.FNCTIPIDE_ID = JSON.parse(data.identificationType);
-      item.FNCGENERO_ID = JSON.parse(data.gender);
-      item.FNCPAREN_ID = JSON.parse(data.parentezcoGrupoFamiliar);
-      item.FECHA_NACIMIENTO = birthDate;
-      let inserted = await props.saveFNCPERSON(item);
-      if (inserted && inserted.ID) {
-        props.saveAnswerLocal(
-          QuestionTypes.selectOne,
+      let item: FNCPERSON = {
+        PRIMER_NOMBRE: data.firstname,
+        SEGUNDO_NOMBRE: data.middlename ? data.middlename : '',
+        PRIMER_APELLIDO: data.lastname,
+        SEGUNDO_APELLIDO: data.secondlastname ? data.secondlastname : '',
+        IDENTIFICACION: data.identification,
+        FNCTIPIDE_ID: JSON.parse(data.identificationType),
+        FNCGENERO_ID: JSON.parse(data.gender),
+        FNCPAREN_ID: JSON.parse(data.parentezcoGrupoFamiliar),
+        FECHA_NACIMIENTO: birthDate,
+      };
+      let inserted = await createFNCPERSON(item, props.FNBNUCVIV.ID);
+      if (inserted) {
+        SaveAnswers(
           QuestionConditionPersonCodes.GrupoEtnico,
           data.GrupoEtnico,
-        );
-      } else {
-        Alert.alert(
-          'Ocurrio un error',
-          'Ocurrio un error al guardar persona por favor vuelva a intentar',
-          [
-            {
-              text: 'aceptar',
-            },
-          ],
+          1,
+          inserted,
         );
       }
+      navigation.goBack();
     }
-    navigation.goBack();
   };
-  async function getAnswers(type: number, code: string, prop: string) {
-    let question = await props.getQuestionAnswer(type, code);
-    setValue(prop, question);
-    setGrupoEtnico(question);
-  }
   async function asociateExistingPerson(item: FNCPERSON) {
-    let asociated = await props.saveSaveFNBNUCVIV_FNCPERSON(item);
+    let asociated = await createFNBNUCVIV_FNCPERSON({
+      FNBNUCVIV_ID: props.FNBNUCVIV.ID,
+      FNCPERSON_ID: item.ID,
+    });
     if (asociated) {
-      await refreshPerson(item);
+      props.setFNCPERSON(item);
+      setPerson(item);
+      // await refreshPerson(item);
     } else {
       Alert.alert(
         'Error al asociar persona',
@@ -251,29 +217,19 @@ const _PersonalInformationForm = (props: any) => {
       );
     }
   }
-  async function existingCurrentFNBNUCVIV(FNCPERSON_ID: number) {
-    let personRelationService = new PersonRelationService();
-    return await personRelationService.countFNBNUCVIV_FNCPERSON(
-      props.FNBNUCVIV.ID,
-      FNCPERSON_ID,
-    );
-  }
   function onChangeIdentification() {
     const delayDebounceFn = setTimeout(async () => {
       //TODO validar solo numero de identificacion
       if (person && person.ID && person.IDENTIFICACION == identification) {
       } else if (identification && identificationType) {
-        let item = await personService.getPersonbyIdentification(
-          identification,
+        let item = await getByIdentification(
           identificationType,
+          identification,
         );
         if (item) {
           //valida que no exista en el nucleo familiar actual
-          if (
-            person &&
-            !person.ID &&
-            (await existingCurrentFNBNUCVIV(item.ID))
-          ) {
+          let exist = await validateExist(props.FNBNUCVIV.ID, item.ID);
+          if (exist) {
             setIdentification('');
             Alert.alert(
               'Identificación existente',
@@ -284,7 +240,7 @@ const _PersonalInformationForm = (props: any) => {
                 },
               ],
             );
-          } else if (person && person.ID !== item.ID) {
+          } else if (!person && item.ID) {
             if (item.FNCPAREN_ID == 7) {
               Alert.alert(
                 'Identificación existente',
@@ -308,7 +264,7 @@ const _PersonalInformationForm = (props: any) => {
               setIdentification('');
               Alert.alert(
                 'Identificación existente',
-                `La persona ${item.PRIMER_NOMBRE} ${item.SEGUNDO_NOMBRE} ${item.PRIMER_NOMBRE} ${item.SEGUNDO_APELLIDO} \ncon identificación ${item.IDENTIFICACION} ya esta asociada a un nucleo familiar \npara asociarlo a este debe tener el parentezco "CABEZA DE FAMILIA"`,
+                `La persona ${item.PRIMER_NOMBRE} ${item.SEGUNDO_NOMBRE} ${item.PRIMER_NOMBRE} ${item.SEGUNDO_APELLIDO} \ncon identificación ${item.IDENTIFICACION} ya esta asociada a un nucleo familiar \npara asociarlo a este debe tener el parentesco "CABEZA DE FAMILIA"`,
                 [
                   {
                     text: 'aceptar',
@@ -318,20 +274,13 @@ const _PersonalInformationForm = (props: any) => {
             }
           }
         } else {
-          let existDocument = await personService.getPersonbyIdentification(
-            identification,
-            null,
-          );
+          let existDocument = await existbyIdentification(identification);
           if (existDocument) {
-            Alert.alert(
-              'Identificación existente',
-              `El numero de identificación ${identification} ya se encuentra registrado en el sistema con otro tipo de identificación, \n Valide la información`,
-              [
-                {
-                  text: 'aceptar',
-                },
-              ],
-            );
+            Alert.alert('', 'Los datos registrados ya existen en el sistema', [
+              {
+                text: 'aceptar',
+              },
+            ]);
             setIdentification('');
           }
         }
@@ -339,12 +288,38 @@ const _PersonalInformationForm = (props: any) => {
     }, 1000);
     return delayDebounceFn;
   }
+  const validateIdentification = () => {
+    if (
+      (identificationType !== 4 || identificationType !== 7) &&
+      identification != ''
+    ) {
+      Alert.alert(
+        'Identificación Requerida',
+        `El tipo de identificación ${identificationType} es necesario, \n Valide la información.. ident ${identification}`,
+        [
+          {
+            text: 'aceptar',
+          },
+        ],
+        {cancelable: false},
+      );
+      return true;
+    } else {
+      return false;
+    }
+  };
   function validateRelationship(value: any) {
+    let isValid = true;
     if (
       person &&
       person.FNCPAREN_ID !== alreadyHeaderID &&
       value == alreadyHeaderID
     ) {
+      isValid = false;
+    } else if (!person && value == alreadyHeaderID) {
+      isValid = false;
+    }
+    if (!isValid) {
       Alert.alert(
         'Ya existe un cabeza de familia',
         'El nucleo familiar no puede tener mas de un cabeza de familia',
@@ -360,6 +335,43 @@ const _PersonalInformationForm = (props: any) => {
     //TODO Validar si la identificacion pertenece a mas de un nucleo no puede cambiar el parentezo
     //TODO validar si es la unica persona del nucleo debe ser cabeza de hogar
   }
+  async function getAnswers(
+    questionCode: string,
+    prop: string,
+    type: 1 | 2 = 1,
+  ) {
+    let question = listFNCCONPER.find((item: FNCCONPER) => {
+      return item.QUESTIONCODE === questionCode;
+    });
+    if (question) {
+      const {ID} = props.FNCPERSON;
+      let ans = await getAnswerquestion(ID, question.FNCELEPER_ID, type);
+      if (ans) {
+        if (type == 1) {
+          setValue(prop, '' + ans);
+        } else {
+          setValue(prop, ans);
+        }
+      }
+    }
+  }
+  async function SaveAnswers(
+    questionCode: string,
+    answer: any,
+    type: 1 | 2 = 1,
+    personid = 0,
+  ) {
+    let question = listFNCCONPER.find((item: FNCCONPER) => {
+      return item.QUESTIONCODE === questionCode;
+    });
+    if (question) {
+      let ID = props.FNCPERSON.ID;
+      if (personid > 0) {
+        ID = personid;
+      }
+      saveAnswer(type, answer, ID, question.FNCELEPER_ID);
+    }
+  }
   return (
     <View style={styles.container}>
       <Controller
@@ -370,6 +382,8 @@ const _PersonalInformationForm = (props: any) => {
             prompt="Seleccione una opción"
             error={errors.identificationType}
             onChange={(value) => {
+              console.log(`tipo de identificacion value igual a ${value}`);
+              setEditable(true);
               if (
                 identificationEx &&
                 identificationEx.find((i) => i.ID == identificationType)
@@ -393,14 +407,9 @@ const _PersonalInformationForm = (props: any) => {
                 }
               }
             }}
-            onLoad={() => {
-              if (person && person.ID) {
-                setValue('identificationType', '' + person.FNCTIPIDE_ID);
-                setIdentificationType('' + props.FNCPERSON.FNCTIPIDE_ID);
-              }
-            }}
+            onLoad={() => {}}
             selectedValue={identificationType}
-            items={identificationTypes}
+            items={getSelectSchema(listFNCTIPIDE)}
           />
         )}
         name="identificationType"
@@ -410,9 +419,12 @@ const _PersonalInformationForm = (props: any) => {
         render={({onChange, value}) =>
           identificationEx.find((i) => i.ID == identificationType) ? (
             <BNumberInput
+              {...console.warn('numericInput')}
+              keyboardType="number"
               label="Identificación"
               error={errors.identification}
               onChange={(value) => {
+                setEditable(true);
                 onChange(value);
                 setIdentification(value);
               }}
@@ -420,9 +432,12 @@ const _PersonalInformationForm = (props: any) => {
             />
           ) : (
             <BTextInput
+              {...console.warn('textInput')}
+              {...console.log(`identificationEx ${identificationEx}`)}
               label="Identificación"
               error={errors.identification}
               onChange={(value) => {
+                setEditable(true);
                 onChange(value);
                 setIdentification(value);
               }}
@@ -439,12 +454,13 @@ const _PersonalInformationForm = (props: any) => {
             label="Género"
             error={errors.gender}
             onChange={(value: any) => {
+              setEditable(true);
               onChange(value);
               setGender(value);
             }}
             onLoad={() => {}}
             selectedValue={gender}
-            items={genders}
+            items={getSelectSchema(listFNCGENERO)}
           />
         )}
         name="gender"
@@ -457,6 +473,7 @@ const _PersonalInformationForm = (props: any) => {
             label="Fecha de nacimiento"
             error={errors.birthdate}
             onChange={(value: Date) => {
+              setEditable(true);
               onChange(value);
               if (value) {
                 setbirthDate(value);
@@ -474,7 +491,10 @@ const _PersonalInformationForm = (props: any) => {
           <BTextInput
             label="Primer nombre"
             error={errors.firstname}
-            onChange={(value) => onChange(value)}
+            onChange={(value) => {
+              setEditable(true);
+              onChange(value);
+            }}
             value={value}
           />
         )}
@@ -486,7 +506,10 @@ const _PersonalInformationForm = (props: any) => {
           <BTextInput
             label="Segundo nombre"
             error={errors.middlename}
-            onChange={(value) => onChange(value)}
+            onChange={(value) => {
+              setEditable(true);
+              onChange(value);
+            }}
             value={value}
           />
         )}
@@ -498,7 +521,10 @@ const _PersonalInformationForm = (props: any) => {
           <BTextInput
             label="Primer apellido"
             error={errors.lastname}
-            onChange={(value) => onChange(value)}
+            onChange={(value) => {
+              setEditable(true);
+              onChange(value);
+            }}
             value={value}
           />
         )}
@@ -510,7 +536,10 @@ const _PersonalInformationForm = (props: any) => {
           <BTextInput
             label="Segundo Apellido"
             error={errors.secondlastname}
-            onChange={(value) => onChange(value)}
+            onChange={(value) => {
+              setEditable(true);
+              onChange(value);
+            }}
             value={value}
           />
         )}
@@ -520,11 +549,12 @@ const _PersonalInformationForm = (props: any) => {
         control={control}
         render={({onChange, onBlur, value}) => (
           <BPicker
-            label="Parentezco en el grupo familiar"
+            label="Parentesco en el grupo familiar"
             prompt="Selecione una opcion"
             onBlur={onBlur}
             error={errors.parentezcoGrupoFamiliar}
             onChange={(value: any) => {
+              setEditable(true);
               if (value) {
                 onChange(value);
                 setParentezcoGrupoFamiliar(value);
@@ -536,7 +566,7 @@ const _PersonalInformationForm = (props: any) => {
             //   setParentezcoGrupoFamiliarSelect(resultFNCPAREN);
             // }}
             selectedValue={parentezcoGrupoFamiliar}
-            items={parentezcoGrupoFamiliarSelect}
+            items={getSelectSchema(listFNCPAREN)}
             //value={value}
           />
         )}
@@ -546,35 +576,25 @@ const _PersonalInformationForm = (props: any) => {
         control={control}
         render={({onChange, onBlur, value}) => (
           <BPicker
-            label={'Grupo etnico'}
+            label={'Grupo étnico'}
             onBlur={onBlur}
             error={errors.GrupoEtnico}
             onChange={(value: any) => {
+              setEditable(true);
               onChange(value);
               if (value) {
                 setGrupoEtnico(value);
               }
             }}
-            onLoad={() => {
-              getAnswers(
-                QuestionTypes.selectOne,
-                QuestionConditionPersonCodes.GrupoEtnico,
-                'GrupoEtnico',
-              );
-            }}
+            onLoad={() => {}}
             //value={value}
-            selectedValue={grupoEtnico}
-            items={
-              conditionpersonService.getItemsForQuestionSelect(
-                QuestionConditionPersonCodes.GrupoEtnico,
-                props.questions,
-              ).children
-            }
+            selectedValue={value}
+            items={getSelectSchema(listFNCCONPER)}
           />
         )}
         name="GrupoEtnico"
       />
-      <View style={{display: 'flex', flexDirection: 'row', marginLeft: '20%'}}>
+      <View style={styles.buttoms}>
         <BButton
           style={styles.aceptButon}
           color="secondary"
@@ -600,6 +620,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 4,
   },
+  buttoms: {display: 'flex', flexDirection: 'row', marginLeft: '20%'},
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -636,12 +657,10 @@ const mapStateToProps = (state: any) => {
   };
 };
 const mapDispatchToProps = {
-  updateFNCPERSON,
-  saveFNCPERSON,
   getQuestionWithOptions,
   saveAnswerLocal,
   getQuestionAnswer,
-  saveSaveFNBNUCVIV_FNCPERSON,
+  setFNCPERSON,
 };
 export default connect(
   mapStateToProps,

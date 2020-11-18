@@ -28,6 +28,7 @@ const _ReproductiveSexualHealtForm = (props: any) => {
   const {handleSubmit, control, errors, setValue} = useForm({
     resolver: yupResolver(schemaForm),
   });
+  const [editable, setEditable] = useState(false);
   const [agemenstruation, setagemenstruation] = useState<number>();
   const [pregnancynumber, setpregnancynumber] = useState<number>(0);
   const [parideznumber, setparideznumber] = useState<number>(0);
@@ -91,21 +92,22 @@ const _ReproductiveSexualHealtForm = (props: any) => {
   };
 
   function alert(data: any) {
-    Alert.alert(
-      'Volver!!!',
-      'Esta seguro?',
-      [
-        {
-          text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
-          style: 'cancel',
-        },
-        {text: 'Aceptar', onPress: () => navigation.goBack()},
-      ],
-      {cancelable: false},
-    );
+    editable
+      ? Alert.alert(
+          '',
+          '¿Desea cancelar el proceso?.',
+          [
+            {
+              text: 'NO',
+              onPress: () => console.log('Cancel Pressed'),
+              style: 'cancel',
+            },
+            {text: 'SI', onPress: () => navigation.goBack()},
+          ],
+          {cancelable: false},
+        )
+      : navigation.goBack();
   }
-
 
   const valideateBornPregnancy = () => {
     let isValid = false;
@@ -128,6 +130,7 @@ const _ReproductiveSexualHealtForm = (props: any) => {
               label="Edad de la primera menstruación"
               error={errors.agemenstruation}
               onChange={(value) => {
+                setEditable(true);
                 onChange(value);
                 setagemenstruation(parseInt(value, 10));
               }}
@@ -144,6 +147,7 @@ const _ReproductiveSexualHealtForm = (props: any) => {
               label="Número de gravidez"
               error={errors.pregnancynumber}
               onChange={(value) => {
+                setEditable(true);
                 onChange(value);
                 if (!isNaN(value)) {
                   setpregnancynumber(parseInt(value, 10));
@@ -162,6 +166,7 @@ const _ReproductiveSexualHealtForm = (props: any) => {
               disabled={!pregnancynumber || pregnancynumber == 0}
               error={errors.parideznumber}
               onChange={(value) => {
+                setEditable(true);
                 onChange(value);
                 //if (validatepregnancynumber(parseInt(value, 10))) {
                 validateField(parseInt(value, 10))
@@ -186,6 +191,7 @@ const _ReproductiveSexualHealtForm = (props: any) => {
               label="Número de abortos"
               error={errors.abortionnumber}
               onChange={(value) => {
+                setEditable(true);
                 onChange(value);
                 //if (validatepregnancynumber(parseInt(value, 10))) {
                 validateField(parseInt(value, 10))
@@ -210,6 +216,7 @@ const _ReproductiveSexualHealtForm = (props: any) => {
               label="Número cesárea"
               error={errors.cesariannumber}
               onChange={(value) => {
+                setEditable(true);
                 onChange(value);
                 //if (validatepregnancynumber(parseInt(value, 10))) {
                 validateField(parseInt(value, 10))
@@ -234,6 +241,7 @@ const _ReproductiveSexualHealtForm = (props: any) => {
               label="Número de nacidos vivos"
               error={errors.bornnumber}
               onChange={(value) => {
+                setEditable(true);
                 onChange(value);
                 validateField(parseInt(value, 10))
                   ? setbornnumber(parseInt(value, 10))
@@ -255,6 +263,7 @@ const _ReproductiveSexualHealtForm = (props: any) => {
               label="Número de nacidos muertos"
               error={errors.bornnumberdeath}
               onChange={(value) => {
+                setEditable(true);
                 onChange(value);
                 validateField(parseInt(value, 10))
                   ? setbornnumberdeath(parseInt(value, 10))

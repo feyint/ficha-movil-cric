@@ -607,28 +607,28 @@ export default class DataBaseProvider {
           identificationType: 1,
           identification: '1061809552',
         });
-        realm.create('FUCBARVER', {
-          ID: 2,
-          CODIGO: 'CODBV_2',
-          NOMBRE: 'Barrio vereda 2',
-          ESTADO: 1,
-          FUCRESGUA_ID: 1925,
-          FUCZONA_ID: 1,
-        });
-        realm.create('FNCGENERO', {
-          ID: 1,
-          CODIGO: 'F',
-          NOMBRE: 'Femenino',
-          COD_FF: '1',
-          ESTADO: 1,
-        });
-        realm.create('FNCGENERO', {
-          ID: 2,
-          CODIGO: 'M',
-          NOMBRE: 'Masculino',
-          COD_FF: '2',
-          ESTADO: 1,
-        });
+        // realm.create('FUCBARVER', {
+        //   ID: 2,
+        //   CODIGO: 'CODBV_2',
+        //   NOMBRE: 'Barrio vereda 2',
+        //   ESTADO: 1,
+        //   FUCRESGUA_ID: 1925,
+        //   FUCZONA_ID: 1,
+        // });
+        // realm.create('FNCGENERO', {
+        //   ID: 1,
+        //   CODIGO: 'F',
+        //   NOMBRE: 'Femenino',
+        //   COD_FF: '1',
+        //   ESTADO: 1,
+        // });
+        // realm.create('FNCGENERO', {
+        //   ID: 2,
+        //   CODIGO: 'M',
+        //   NOMBRE: 'Masculino',
+        //   COD_FF: '2',
+        //   ESTADO: 1,
+        // });
         //-------------------------------------------------------------
         // realm.create('FNCPAREN', {
         //   ID: 7,
@@ -759,10 +759,10 @@ export default class DataBaseProvider {
         FNCCONREPSCHEMA,
         FUCPAISSCHEMA,
         FNCLUNINDSCHEMA,
+        FNCGENEROSCHEMA,
       ],
     }).then((realm) => {
       let count = realm.objects(entity).length;
-      realm.close();
       return count;
     });
     return count;

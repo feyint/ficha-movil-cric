@@ -95,24 +95,17 @@ export const saveFNCPERSON = (data: FNCPERSON) => async (
     let personServie: PersonService = new PersonService();
     let sexhealtService: SexAndRepHealthPersonService = new SexAndRepHealthPersonService();
     let result = await personServie.SaveFNCPERSON(data, family.ID);
+    console.error('guardó ', result);
     if (result) {
       data.CODIGO = result.CODIGO;
       data.ID = result.ID;
       sexhealtService.SaveFNCSALREP({
         FNCPERSON_ID: result.ID,
       });
+      console.error('sexhealtService ');
     }
     dispatch(_setPERSON(data));
   } catch (error) {
-    Alert.alert(
-      'Ha ocurrido un error',
-      error.message,
-      [
-        {
-          text: 'aceptar',
-        },
-      ],
-    );
     return false;
   }
   return data;
@@ -175,13 +168,19 @@ export const updateFNCPERSON = (data: any) => async (
 /**
  *
  */
-export const setQuestionWithOptions = () => async (dispatch: any) => {
-  let questionItems: PersonQuestion[] = [];
-  let personServie: PersonService = new PersonService();
-  questionItems = await personServie.getQuestionWithOptions();
-  dispatch(setPERSON_QUESTION_LIST(questionItems));
+export const setQuestionWithOptions = () => async (
+  dispatch: any,
+  getState: any,
+) => {
+  const store = getState();
+  let items: PersonQuestion[] = store.person.PERSONQUESTIONLIST;
+  if (items && items.length == 0) {
+    let questionItems: PersonQuestion[] = [];
+    let personServie: PersonService = new PersonService();
+    questionItems = await personServie.getQuestionWithOptions();
+    dispatch(setPERSON_QUESTION_LIST(questionItems));
+  }
 };
-
 /**
  *
  * @param questionsQuery

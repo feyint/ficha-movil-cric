@@ -11,24 +11,19 @@ import {
   BPicker,
   BRadioButton,
 } from '../../../core/components';
-import {useNavigation} from '@react-navigation/native';
-import {HousingService} from '../../../services';
-import {HousingQuestion} from '../../housing/state/types';
 import {
   QuestionFamilyCodes,
   logicOption,
-  QuestionTypes,
 } from '../../../core/utils/HousingTypes';
-import {
-  saveAnswerLocal,
-  getQuestionAnswer,
-  getQuestionWithOptions,
-  saveFNBNUCVIV,
-  saveFNBNUCVIVPropiety,
-} from '../../../state/house/actions';
+import {setFNBNUCVIV} from '../../../state/house/actions';
 import {connect} from 'react-redux';
 import {FieldValidator} from '../../../providers';
-import {PickerType} from '../../../core/utils/types';
+import {
+  useFNBNUCVIV,
+  useFNBNUCVIV_FVCCONVIV,
+  useFVCCONVIV,
+} from '../../../hooks';
+import {FNBNUCVIV, FVCCONVIV} from '../../../types';
 const schemaForm = yup.object().shape({
   housecode: FieldValidator.required(yup, 'Código vivienda'),
   MaterialTecho: FieldValidator.required(yup, 'Material Techo'),
@@ -66,34 +61,14 @@ const listCocinaseEncuentra = [
 ];
 
 const _HouseForm = (props: any) => {
-  const syncCatalogService = new HousingService();
+  const {
+    listFVCCONVIV,
+    getQuestionsOptions,
+    getFVCCONVIVpicker,
+  } = useFVCCONVIV();
+  const {saveAnswer, getAnswerquestion} = useFNBNUCVIV_FVCCONVIV();
+  const {updateFNBNUCVIV} = useFNBNUCVIV();
   const [internetaccess, setInternetaccess] = useState<boolean>();
-  const [questionsItems, setQuestionsItems] = useState<HousingQuestion[]>([]);
-  const [materialTechSelect, setmaterialTechSelect] = useState<PickerType[]>(
-    [],
-  );
-  const [MaterialPisoSelect, setMaterialPisoSelect] = useState<PickerType[]>(
-    [],
-  );
-  const [MaterialParedSelect, setMaterialParedSelect] = useState<PickerType[]>(
-    [],
-  );
-  const [TenenciaviviendaSelect, setTenenciaviviendaSelect] = useState<
-    PickerType[]
-  >([]);
-  const [TipodeAlumbradoSelect, setTipodeAlumbradoSelect] = useState<
-    PickerType[]
-  >([]);
-  const [CocinaConSelect, setCocinaConSelect] = useState<PickerType[]>([]);
-  const [
-    HabitacionesenlaviviendaSelect,
-    setHabitacionesenlaviviendaSelect,
-  ] = useState<PickerType[]>([]);
-  const [
-    NumerodepersonaspordormitorioSelect,
-    setNumerodepersonaspordormitorioSelect,
-  ] = useState<PickerType[]>([]);
-
   const {handleSubmit, control, errors, setValue} = useForm({
     resolver: yupResolver(schemaForm),
   });
@@ -102,132 +77,81 @@ const _HouseForm = (props: any) => {
   }, []);
   useEffect(() => {
     getAnswersFNBNUCVIV();
-  }, [questionsItems]);
-  useEffect(() => {
+  }, [listFVCCONVIV]);
+  const fetchQuestions = async () => {
+    getQuestionsOptions(questions);
+  };
+  async function getAnswers(
+    questionCode: string,
+    prop: string,
+    type: 1 | 2 = 1,
+  ) {
+    let question = listFVCCONVIV.find((item: FVCCONVIV) => {
+      return item.QUESTIONCODE === questionCode;
+    });
+    if (question) {
+      const {ID} = props.FNBNUCVIV;
+      let ans = await getAnswerquestion(ID, question.FVCELEVIV_ID, type);
+      setValue(prop, '' + ans);
+    }
+  }
+  async function SaveAnswers(
+    questionCode: string,
+    answer: any,
+    type: 1 | 2 = 1,
+  ) {
+    let question = listFVCCONVIV.find((item: FVCCONVIV) => {
+      return item.QUESTIONCODE === questionCode;
+    });
+    if (question) {
+      const {ID} = props.FNBNUCVIV;
+      saveAnswer(type, answer, ID, question.FVCELEVIV_ID);
+    }
+  }
+  async function getAnswersFNBNUCVIV() {
+    setValue('housecode', props.FNBNUCVIV.CODIGO);
+    setValue('smokeinsidehouse', props.FNBNUCVIV.HUMO_DENTRO);
+    setValue('kitchenislocated', '' + props.FNBNUCVIV.LUGAR_COCINA);
+    setValue('internetaccess', props.FNBNUCVIV.ACCESO_INTERNET);
+    setInternetaccess(props.FNBNUCVIV.ACCESO_INTERNET);
+    getAnswers(QuestionFamilyCodes.MaterialTecho, 'MaterialTecho');
+    getAnswers(QuestionFamilyCodes.MaterialPiso, 'MaterialPiso');
+    getAnswers(QuestionFamilyCodes.MaterialPared, 'MaterialPared');
+    getAnswers(QuestionFamilyCodes.Tenenciavivienda, 'Tenenciavivienda');
+    getAnswers(QuestionFamilyCodes.Cocinacon, 'Cocinacon');
     getAnswers(
-      QuestionTypes.selectOne,
-      QuestionFamilyCodes.MaterialTecho,
-      'MaterialTecho',
-    );
-  }, [materialTechSelect]);
-  useEffect(() => {
-    getAnswers(
-      QuestionTypes.selectOne,
-      QuestionFamilyCodes.MaterialPiso,
-      'MaterialPiso',
-    );
-  }, [MaterialPisoSelect]);
-  useEffect(() => {
-    getAnswers(
-      QuestionTypes.selectOne,
-      QuestionFamilyCodes.MaterialPared,
-      'MaterialPared',
-    );
-  }, [MaterialParedSelect]);
-  useEffect(() => {
-    getAnswers(
-      QuestionTypes.selectOne,
-      QuestionFamilyCodes.Tenenciavivienda,
-      'Tenenciavivienda',
-    );
-  }, [TenenciaviviendaSelect]);
-  useEffect(() => {
-    getAnswers(
-      QuestionTypes.selectOne,
-      QuestionFamilyCodes.Cocinacon,
-      'Cocinacon',
-    );
-  }, [CocinaConSelect]);
-  useEffect(() => {
-    getAnswers(
-      QuestionTypes.selectOne,
       QuestionFamilyCodes.Numerodepersonaspordormitorio,
       'Numerodepersonaspordormitorio',
     );
-    let HabitacionesenlaviviendaQuestion = syncCatalogService.getItemsForQuestionSelect(
-      QuestionFamilyCodes.Habitacionesenlavivienda,
-      questionsItems,
-    );
-    setHabitacionesenlaviviendaSelect(HabitacionesenlaviviendaQuestion);
-  }, [NumerodepersonaspordormitorioSelect]);
-  useEffect(() => {
     getAnswers(
-      QuestionTypes.selectOne,
       QuestionFamilyCodes.Habitacionesenlavivienda,
       'Habitacionesenlavivienda',
     );
-    let TipodeAlumbradoQuestion = syncCatalogService.getItemsForQuestionSelect(
-      QuestionFamilyCodes.TipodeAlumbrado,
-      questionsItems,
-    );
-    setTipodeAlumbradoSelect(TipodeAlumbradoQuestion);
-  }, [HabitacionesenlaviviendaSelect]);
-  useEffect(() => {
-    getAnswers(
-      QuestionTypes.selectOne,
-      QuestionFamilyCodes.TipodeAlumbrado,
-      'TipodeAlumbrado',
-    );
-  }, [TipodeAlumbradoSelect]);
-  const fetchQuestions = async () => {
-    let result = await syncCatalogService.getQuestionWithOptions(questions);
-    if (result) {
-      setQuestionsItems(result);
-    }
-  };
-  async function getAnswers(type: number, code: string, prop: string) {
-    let question = await props.getQuestionAnswer(type, code);
-    setValue(prop, question);
+    getAnswers(QuestionFamilyCodes.TipodeAlumbrado, 'TipodeAlumbrado');
   }
-  async function getAnswersFNBNUCVIV() {
-    // questions.forEach(QuestionCode => {
-    //   let result = syncCatalogService.getItemsForQuestionSelect(
-    //     QuestionFamilyCodes.MaterialTecho,
-    //     questionsItems,
-    //   );
-    // });
-    let MaterialTechoQuestion = syncCatalogService.getItemsForQuestionSelect(
-      QuestionFamilyCodes.MaterialTecho,
-      questionsItems,
-    );
-    setmaterialTechSelect(MaterialTechoQuestion);
-    let MaterialPisoQuestion = syncCatalogService.getItemsForQuestionSelect(
-      QuestionFamilyCodes.MaterialPiso,
-      questionsItems,
-    );
-    setMaterialPisoSelect(MaterialPisoQuestion);
-    let MaterialParedQuestion = syncCatalogService.getItemsForQuestionSelect(
-      QuestionFamilyCodes.MaterialPared,
-      questionsItems,
-    );
-    setMaterialParedSelect(MaterialParedQuestion);
-    let TenenciaviviendaQuestion = syncCatalogService.getItemsForQuestionSelect(
-      QuestionFamilyCodes.Tenenciavivienda,
-      questionsItems,
-    );
-    setTenenciaviviendaSelect(TenenciaviviendaQuestion);
-    let CocinaConQuestion = syncCatalogService.getItemsForQuestionSelect(
-      QuestionFamilyCodes.Cocinacon,
-      questionsItems,
-    );
-    setCocinaConSelect(CocinaConQuestion);
-    let NumerodepersonaspordormitorioQuestion = syncCatalogService.getItemsForQuestionSelect(
+  const onSubmit = async (data: any) => {
+    SaveAnswers(QuestionFamilyCodes.MaterialTecho, data.MaterialTecho);
+    SaveAnswers(QuestionFamilyCodes.MaterialPiso, data.MaterialPiso);
+    SaveAnswers(QuestionFamilyCodes.MaterialPared, data.MaterialPared);
+    SaveAnswers(QuestionFamilyCodes.Tenenciavivienda, data.Tenenciavivienda);
+    SaveAnswers(QuestionFamilyCodes.Cocinacon, data.Cocinacon);
+    SaveAnswers(QuestionFamilyCodes.TipodeAlumbrado, data.TipodeAlumbrado);
+    SaveAnswers(
       QuestionFamilyCodes.Numerodepersonaspordormitorio,
-      questionsItems,
+      data.Numerodepersonaspordormitorio,
     );
-    setNumerodepersonaspordormitorioSelect(
-      NumerodepersonaspordormitorioQuestion,
+    SaveAnswers(
+      QuestionFamilyCodes.Habitacionesenlavivienda,
+      data.Habitacionesenlavivienda,
     );
-    setValue('housecode', props.FNBNUCVIV.CODIGO);
-    setValue('smokeinsidehouse', props.FNBNUCVIV.HUMO_DENTRO);
-    setValue('kitchenislocated', props.FNBNUCVIV.LUGAR_COCINA);
-    setValue('internetaccess', props.FNBNUCVIV.ACCESO_INTERNET);
-    setInternetaccess(props.FNBNUCVIV.ACCESO_INTERNET);
-  }
-  const onSubmit = () => {
+    let _FNBNUCVIV: FNBNUCVIV = props.FNBNUCVIV;
+    _FNBNUCVIV.LUGAR_COCINA = data.kitchenislocated;
+    _FNBNUCVIV.HUMO_DENTRO = data.smokeinsidehouse;
+    _FNBNUCVIV.ACCESO_INTERNET = data.internetaccess;
+    await updateFNBNUCVIV(_FNBNUCVIV);
+    props.setFNBNUCVIV(_FNBNUCVIV);
     props.goBack();
   };
-
   return (
     <KeyboardAwareScrollView>
       <View style={styles.container}>
@@ -254,16 +178,9 @@ const _HouseForm = (props: any) => {
               error={errors.MaterialTecho}
               onChange={(vlue: any) => {
                 onChange(vlue);
-                if (vlue) {
-                  props.saveAnswerLocal(
-                    QuestionTypes.selectOne,
-                    QuestionFamilyCodes.MaterialTecho,
-                    vlue,
-                  );
-                }
               }}
               selectedValue={value}
-              items={materialTechSelect}
+              items={getFVCCONVIVpicker(QuestionFamilyCodes.MaterialTecho)}
             />
           )}
           name="MaterialTecho"
@@ -276,16 +193,9 @@ const _HouseForm = (props: any) => {
               error={errors.MaterialPiso}
               onChange={(vlue: any) => {
                 onChange(vlue);
-                if (vlue) {
-                  props.saveAnswerLocal(
-                    QuestionTypes.selectOne,
-                    QuestionFamilyCodes.MaterialPiso,
-                    vlue,
-                  );
-                }
               }}
               selectedValue={value}
-              items={MaterialPisoSelect}
+              items={getFVCCONVIVpicker(QuestionFamilyCodes.MaterialPiso)}
             />
           )}
           name="MaterialPiso"
@@ -298,16 +208,9 @@ const _HouseForm = (props: any) => {
               error={errors.MaterialPared}
               onChange={(vlue: any) => {
                 onChange(vlue);
-                if (vlue) {
-                  props.saveAnswerLocal(
-                    QuestionTypes.selectOne,
-                    QuestionFamilyCodes.MaterialPared,
-                    vlue,
-                  );
-                }
               }}
               selectedValue={value}
-              items={MaterialParedSelect}
+              items={getFVCCONVIVpicker(QuestionFamilyCodes.MaterialPared)}
             />
           )}
           name="MaterialPared"
@@ -320,16 +223,9 @@ const _HouseForm = (props: any) => {
               error={errors.Tenenciavivienda}
               onChange={(vlue: any) => {
                 onChange(vlue);
-                if (vlue) {
-                  props.saveAnswerLocal(
-                    QuestionTypes.selectOne,
-                    QuestionFamilyCodes.Tenenciavivienda,
-                    vlue,
-                  );
-                }
               }}
               selectedValue={value}
-              items={TenenciaviviendaSelect}
+              items={getFVCCONVIVpicker(QuestionFamilyCodes.Tenenciavivienda)}
             />
           )}
           name="Tenenciavivienda"
@@ -342,10 +238,7 @@ const _HouseForm = (props: any) => {
               enabled={true}
               error={errors.kitchenislocated}
               onChange={(value: any) => {
-                if (value) {
-                  onChange(value);
-                  props.saveFNBNUCVIVPropiety('LUGAR_COCINA', value);
-                }
+                onChange(value);
               }}
               selectedValue={value}
               items={listCocinaseEncuentra}
@@ -362,10 +255,7 @@ const _HouseForm = (props: any) => {
               error={errors.smokeinsidehouse}
               items={logicOption}
               onChange={(value: any) => {
-                if (value) {
-                  onChange(value);
-                  props.saveFNBNUCVIVPropiety('HUMO_DENTRO', JSON.parse(value));
-                }
+                onChange(value);
               }}
             />
           )}
@@ -379,16 +269,9 @@ const _HouseForm = (props: any) => {
               error={errors.Cocinacon}
               onChange={(vlue: any) => {
                 onChange(vlue);
-                if (vlue) {
-                  props.saveAnswerLocal(
-                    QuestionTypes.selectOne,
-                    QuestionFamilyCodes.Cocinacon,
-                    vlue,
-                  );
-                }
               }}
               selectedValue={value}
-              items={CocinaConSelect}
+              items={getFVCCONVIVpicker(QuestionFamilyCodes.Cocinacon)}
             />
           )}
           name="Cocinacon"
@@ -401,16 +284,11 @@ const _HouseForm = (props: any) => {
               error={errors.Numerodepersonaspordormitorio}
               onChange={(vlue: any) => {
                 onChange(vlue);
-                if (vlue) {
-                  props.saveAnswerLocal(
-                    QuestionTypes.selectOne,
-                    QuestionFamilyCodes.Numerodepersonaspordormitorio,
-                    vlue,
-                  );
-                }
               }}
               selectedValue={value}
-              items={NumerodepersonaspordormitorioSelect}
+              items={getFVCCONVIVpicker(
+                QuestionFamilyCodes.Numerodepersonaspordormitorio,
+              )}
             />
           )}
           name="Numerodepersonaspordormitorio"
@@ -423,16 +301,11 @@ const _HouseForm = (props: any) => {
               error={errors.Habitacionesenlavivienda}
               onChange={(vlue: any) => {
                 onChange(vlue);
-                if (vlue) {
-                  props.saveAnswerLocal(
-                    QuestionTypes.selectOne,
-                    QuestionFamilyCodes.Habitacionesenlavivienda,
-                    vlue,
-                  );
-                }
               }}
               selectedValue={value}
-              items={HabitacionesenlaviviendaSelect}
+              items={getFVCCONVIVpicker(
+                QuestionFamilyCodes.Habitacionesenlavivienda,
+              )}
             />
           )}
           name="Habitacionesenlavivienda"
@@ -445,16 +318,9 @@ const _HouseForm = (props: any) => {
               error={errors.TipodeAlumbrado}
               onChange={(vlue: any) => {
                 onChange(vlue);
-                if (vlue) {
-                  props.saveAnswerLocal(
-                    QuestionTypes.selectOne,
-                    QuestionFamilyCodes.TipodeAlumbrado,
-                    vlue,
-                  );
-                }
               }}
               selectedValue={value}
-              items={TipodeAlumbradoSelect}
+              items={getFVCCONVIVpicker(QuestionFamilyCodes.TipodeAlumbrado)}
             />
           )}
           name="TipodeAlumbrado"
@@ -469,10 +335,6 @@ const _HouseForm = (props: any) => {
               items={logicOption}
               onChange={(value: any) => {
                 onChange(value);
-                props.saveFNBNUCVIVPropiety(
-                  'ACCESO_INTERNET',
-                  JSON.parse(value),
-                );
                 setInternetaccess(value);
               }}
             />
@@ -505,13 +367,7 @@ const styles = StyleSheet.create({
     padding: 8,
   },
 });
-const mapDispatchToProps = {
-  saveAnswerLocal,
-  getQuestionAnswer,
-  getQuestionWithOptions,
-  saveFNBNUCVIV,
-  saveFNBNUCVIVPropiety,
-};
+const mapDispatchToProps = {setFNBNUCVIV};
 const mapStateToProps = (housing: any) => {
   return {
     FNBNUCVIV: housing.housing.FNBNUCVIV,

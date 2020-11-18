@@ -20,6 +20,7 @@ const schemaForm = yup.object().shape({
 });
 const _ContactInformationForm = (props: any) => {
   const navigation = useNavigation();
+  const [editable, setEditable] = useState(false);
   const personService = new PersonService();
   const {handleSubmit, control, errors, setValue} = useForm({
     resolver: yupResolver(schemaForm),
@@ -31,19 +32,21 @@ const _ContactInformationForm = (props: any) => {
     fetchQuestions();
   }, []);
   function alert(data: any) {
-    Alert.alert(
-      'Volver!!!',
-      'Esta seguro?',
-      [
-        {
-          text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
-          style: 'cancel',
-        },
-        {text: 'Aceptar', onPress: () => navigation.goBack()},
-      ],
-      {cancelable: false},
-    );
+    editable
+      ? Alert.alert(
+          '',
+          '¿Desea cancelar el proceso?.',
+          [
+            {
+              text: 'NO',
+              onPress: () => console.log('Cancel Pressed'),
+              style: 'cancel',
+            },
+            {text: 'SI', onPress: () => navigation.goBack()},
+          ],
+          {cancelable: false},
+        )
+      : navigation.goBack();
   }
   const fetchQuestions = async () => {
     if (props.FNCPERSON.ID) {
@@ -75,6 +78,7 @@ const _ContactInformationForm = (props: any) => {
               label="Número teléfono celular"
               error={errors.phonenumber}
               onChange={(value) => {
+                setEditable(true);
                 onChange(value);
                 setphonenumber(value);
               }}
@@ -90,6 +94,7 @@ const _ContactInformationForm = (props: any) => {
               label="Número teléfono 2"
               error={errors.phonenumber2}
               onChange={(value) => {
+                setEditable(true);
                 onChange(value);
                 setphonenumber2(value);
               }}
@@ -106,6 +111,7 @@ const _ContactInformationForm = (props: any) => {
               onBlur={onBlur}
               error={errors.email}
               onChange={(value) => {
+                setEditable(true);
                 onChange(value);
                 setEmail(value);
               }}

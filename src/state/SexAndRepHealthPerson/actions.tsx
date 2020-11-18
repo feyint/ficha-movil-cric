@@ -161,12 +161,16 @@ export const setFNCSALREP = (data: any) => (dispatch: any) => {
  *
  */
 export const setSexAndRepHealthQuestionWithOptions = () => async (
-  dispatch: any,
+  _dispatch: any,
+  getState: any,
 ) => {
-  let questionItems: SexAndRepHealthPersonQuestion[] = [];
-  let personServie: SexAndRepHealthPersonService = new SexAndRepHealthPersonService();
-  questionItems = await personServie.getQuestionWithOptions();
-  dispatch(setSEXANDREPHEALTHPERSON_QUESTION_LIST(questionItems));
+  const store = getState();
+  if (store.sarhealthperson.SEXANDREPHEALTHPERSONQUESTIONLIST.length == 0) {
+    let questionItems: SexAndRepHealthPersonQuestion[] = [];
+    let personServie: SexAndRepHealthPersonService = new SexAndRepHealthPersonService();
+    questionItems = await personServie.getQuestionWithOptions();
+    _dispatch(setSEXANDREPHEALTHPERSON_QUESTION_LIST(questionItems));
+  }
 };
 /**
  *

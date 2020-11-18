@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
@@ -8,21 +9,21 @@ import {BTextInput, BPicker, BButton} from '../../../core/components';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {getEntitySelect, getLasHouseCode} from '../state/actions';
-import {PickerType, SelectSchema} from '../../../core/utils/types';
+import {PickerType} from '../../../core/utils/types';
 import Geolocation from '@react-native-community/geolocation';
-import {saveFUBUBIVIV, updateFUBUBIVIV} from '../../../state/house/actions';
-import {FUBUBIVIV} from '../../../state/house/types';
-import {HousingService, UtilsService} from '../../../services';
-import {FUCZONCUI} from '../state/types';
-import {
-  DataBaseSchemas,
-  FUCBARVERSCHEMA,
-  FUCDEPARTSCHEMA,
-  FUCMUNICISCHEMA,
-  FUCRESGUASCHEMA,
-  FUCTIPTERSCHEMA,
-} from '../../../providers/DataBaseProvider';
+import {setFUBUBIVIV} from '../../../state/house/actions';
 import {FieldValidator} from '../../../providers';
+import {
+  useFUBUBIVIV,
+  useFUCBARVER,
+  useFUCDEPART,
+  useFUCMUNICI,
+  useFUCRESGUA,
+  useFUCTIPTER,
+  useFUCZONCUI,
+} from '../../../hooks';
+import {getSelectSchema} from '../../../core/utils/utils';
+import {FUBUBIVIV} from '../../../types';
 
 interface GeolocationData {
   latitude: string;
@@ -30,27 +31,46 @@ interface GeolocationData {
 }
 const schemaForm = yup.object().shape({
   department: FieldValidator.required(yup, 'Departamento'),
-  municipality: FieldValidator.required(yup, 'Municipio'),
-  territoryType: FieldValidator.required(yup, 'Tipo de territorio'),
-  shelterOrCouncil: FieldValidator.required(yup, 'Resguardo o cabildo'),
-  sidewalk: FieldValidator.required(yup, 'Centro poblado').nullable(),
+  municipality: yup.string().required(),
+  territoryType: yup.string().required(),
+  shelterOrCouncil: yup.string().required(),
+  sidewalk: FieldValidator.required(yup, 'Centro poblado'),
   carezone: yup.mixed().optional(),
   latitude: yup.string().optional(),
   longitude: yup.string().optional(),
-  address: FieldValidator.required(yup, 'Dirección'),
+  address: yup.string().required(),
   housingCode: yup.string().optional(),
 });
 
 const _HomeLocationForm = (props: any) => {
   const navigation = useNavigation();
-  const [error, setError] = useState('');
   const [position, setPosition] = useState<GeolocationData>({
     latitude: '',
     longitude: '',
   });
-  const {handleSubmit, control, errors, getValues, setValue} = useForm({
+  const {handleSubmit, control, errors, setValue} = useForm({
     resolver: yupResolver(schemaForm),
   });
+  const {listFUCDEPART, getAllFUCDEPART} = useFUCDEPART();
+  const {listFUCMUNICI, getFUCMUNICIFromDept} = useFUCMUNICI();
+  const {listFUCTIPTER, getAllFUCTIPTER} = useFUCTIPTER();
+  const {listFUCRESGUA, getFilterFUCRESGUA} = useFUCRESGUA();
+  const {
+    listFUCBARVER,
+    itemFUCBARVER,
+    getFUCBARVERbyID,
+    filterFUCBARVER,
+  } = useFUCBARVER();
+  const {listFUCZONCUI, filterFUCZONCUI} = useFUCZONCUI();
+  const {
+    itemFUBUBIVIV,
+    itemFUBUBIVIVDETAILS,
+    createFUBUBIVIV,
+    updateFUBUBIVIV,
+    getLastCode,
+    getFUBUBIVIVDETAILS,
+  } = useFUBUBIVIV();
+  //OLD
   const [department, setDepartment] = useState('');
   const [municipio, setMunicipio] = useState('');
   const [originalhouseCode, setoriginalHouseCode] = useState('');
@@ -82,112 +102,92 @@ const _HomeLocationForm = (props: any) => {
     fetchQuestions();
   }, []);
   useEffect(() => {
-    // useMunicipio();
-  }, [municipio]);
+    if (itemFUBUBIVIV) {
+      props.setFUBUBIVIV(itemFUBUBIVIV);
+      navigation.goBack();
+    }
+  }, [itemFUBUBIVIV]);
+  useEffect(() => {
+    if (listFUCDEPART) {
+      let result = getSelectSchema(listFUCDEPART);
+      setDepartamentoSelect(result);
+    }
+  }, [listFUCDEPART]);
+  useEffect(() => {
+    if (listFUCMUNICI) {
+      setMunicipioSelect(getSelectSchema(listFUCMUNICI));
+    }
+  }, [listFUCMUNICI]);
+  useEffect(() => {
+    if (listFUCRESGUA) {
+      setrescentropSelect(getSelectSchema(listFUCRESGUA));
+    }
+  }, [listFUCRESGUA]);
+  useEffect(() => {
+    if (listFUCBARVER) {
+      setBarrioVeredaSelect(getSelectSchema(listFUCBARVER));
+    }
+  }, [listFUCBARVER]);
+  useEffect(() => {
+    if (listFUCTIPTER) {
+      setTipoterritorioSelect(getSelectSchema(listFUCTIPTER));
+    }
+  }, [listFUCTIPTER]);
+  useEffect(() => {
+    if (listFUCZONCUI) {
+      setFUCZONCUIItems(getSelectSchema(listFUCZONCUI));
+    }
+  }, [listFUCZONCUI]);
+  useEffect(() => {
+    if (itemFUCBARVER) {
+      filterFUCBARVER(itemFUCBARVER.FUCRESGUA_ID);
+    }
+  }, [itemFUCBARVER]);
+  useEffect(() => {
+    if (itemFUBUBIVIVDETAILS) {
+      filterFUCZONCUI(itemFUBUBIVIVDETAILS.FUCBARVER_ID);
+      setZonacuidado('' + itemFUBUBIVIVDETAILS.FUCZONCUI_ID);
+      setBarrioVereda('' + itemFUBUBIVIVDETAILS.FUCBARVER_ID);
+      getFUCBARVERbyID(itemFUBUBIVIVDETAILS.FUCBARVER_ID);
+      setTipoterritorio('' + itemFUBUBIVIVDETAILS.FUCTIPTER_ID);
+      changeLabelType(itemFUBUBIVIVDETAILS.CODIGOTERRITORIO);
+      getFilterFUCRESGUA(
+        itemFUBUBIVIVDETAILS.FUCMUNICI_ID,
+        itemFUBUBIVIVDETAILS.FUCTIPTER_ID,
+      );
+      getAllFUCDEPART();
+      setCentropoblado('' + itemFUBUBIVIVDETAILS.FUCRESGUA_ID);
+      getFUCMUNICIFromDept(itemFUBUBIVIVDETAILS.FUCDEPART_ID);
+      setMunicipio('' + itemFUBUBIVIVDETAILS.FUCMUNICI_ID);
+      setDepartment('' + itemFUBUBIVIVDETAILS.FUCDEPART_ID);
+      setValue('carezone', '' + itemFUBUBIVIVDETAILS.FUCZONCUI_ID);
+      setValue('department', '' + itemFUBUBIVIVDETAILS.FUCDEPART_ID);
+      setValue('municipality', '' + itemFUBUBIVIVDETAILS.FUCMUNICI_ID);
+      setValue('territoryType', '' + itemFUBUBIVIVDETAILS.FUCTIPTER_ID);
+      setValue('sidewalk', '' + itemFUBUBIVIVDETAILS.FUCRESGUA_ID);
+      setValue('shelterOrCouncil', '' + itemFUBUBIVIVDETAILS.FUCBARVER_ID);
+    }
+  }, [itemFUBUBIVIVDETAILS]);
   async function fetchQuestions() {
-    let FUCDEPART = await props.getEntitySelect('FUCDEPART', FUCDEPARTSCHEMA);
-    let FUCTIPTER = await props.getEntitySelect('FUCTIPTER', FUCTIPTERSCHEMA);
-    let FUCMUNICI = await props.getEntitySelect(
-      'FUCMUNICI',
-      FUCMUNICISCHEMA,
-      'FUCDEPART_ID',
-      getValues().department,
-    );
-    setDepartamentoSelect(FUCDEPART);
-    setTipoterritorioSelect(FUCTIPTER);
-    setMunicipioSelect(FUCMUNICI);
-    getDefaultValues();
-  }
-
-  async function getDefaultValues() {
+    getAllFUCDEPART();
+    getAllFUCTIPTER();
     if (props.FUBUBIVIV.CODIGO !== '') {
+      getFUBUBIVIVDETAILS(props.FUBUBIVIV.ID);
       setoriginalHouseCode(props.FUBUBIVIV.CODIGO);
       setPosition({
         latitude: '' + props.FUBUBIVIV.COORDENADA_X,
         longitude: '' + props.FUBUBIVIV.COORDENADA_Y,
       });
-      setAddress(props.FUBUBIVIV.DIRECCION);
-      setHouseCode(props.FUBUBIVIV.CODIGO);
-      let FUCBARVER_ID = props.FUBUBIVIV.FUCBARVER_ID;
-      let service: UtilsService = new UtilsService();
-      let barver = await service.getFilterEntity(
-        DataBaseSchemas.FUCBARVERSCHEMA,
-        FUCBARVERSCHEMA,
-        'ID',
-        FUCBARVER_ID,
-        null,
-        null,
-        true,
-      );
-      let cenpoblado = await service.getFilterEntity(
-        DataBaseSchemas.FUCRESGUASCHEMA,
-        FUCRESGUASCHEMA,
-        'ID',
-        barver.FUCRESGUA_ID,
-        null,
-        null,
-        true,
-      );
-      let munici = await service.getFilterEntity(
-        DataBaseSchemas.FUCMUNICISCHEMA,
-        FUCMUNICISCHEMA,
-        'ID',
-        cenpoblado.FUCMUNICI_ID,
-        null,
-        null,
-        true,
-      );
-      let dept = await service.getFilterEntity(
-        DataBaseSchemas.FUCDEPARTSCHEMA,
-        FUCDEPARTSCHEMA,
-        'ID',
-        munici.FUCDEPART_ID,
-        null,
-        null,
-        true,
-      );
-      //setZonacuidado('' + zonacuidado.ID)
-      setMunicipio('' + munici.ID);
-      setTipoterritorio('' + cenpoblado.FUCTIPRES_ID);
-      if (cenpoblado.FUCTIPRES_ID == '1') {
-        changeLabelType('3');
-      } else {
-        changeLabelType('2');
-      }
-      let FUCRESGUA = await props.getEntitySelect(
-        'FUCRESGUA',
-        FUCRESGUASCHEMA,
-        'FUCMUNICI_ID',
-        munici.ID,
-        'FUCTIPRES_ID',
-        cenpoblado.FUCTIPRES_ID,
-      );
-      setrescentropSelect(FUCRESGUA);
-      setCentropoblado('' + cenpoblado.ID);
-      let FUCBARVER = await props.getEntitySelect(
-        'FUCBARVER',
-        FUCBARVERSCHEMA,
-        'FUCRESGUA_ID',
-        cenpoblado.ID,
-      );
-      setBarrioVeredaSelect(FUCBARVER);
-      setBarrioVereda('' + barver.ID);
-      onChangeBarrioVereda(barver.ID);
-      setZonacuidado('' + props.FUBUBIVIV.FUCZONCUI_ID);
-      setValue('carezone', '' + props.FUBUBIVIV.FUCZONCUI_ID);
-      setValue('department', '' + dept.ID);
-      setDepartment('' + dept.ID);
-      setValue('municipality', '' + munici.ID);
-      setValue('territoryType', '' + cenpoblado.FUCTIPRES_ID);
-      setValue('shelterOrCouncil', '' + cenpoblado.ID);
-      setValue('sidewalk', '' + barver.ID);
       setValue('latitude', '' + props.FUBUBIVIV.COORDENADA_X);
       setValue('longitude', '' + props.FUBUBIVIV.COORDENADA_Y);
       setValue('address', '' + props.FUBUBIVIV.DIRECCION);
+      setAddress(props.FUBUBIVIV.DIRECCION);
+      setHouseCode(props.FUBUBIVIV.CODIGO);
     } else {
-      await getCurrentPosition();
+      getCurrentPosition();
     }
   }
+
   async function getCurrentPosition() {
     Geolocation.getCurrentPosition(
       (pos) => {
@@ -198,50 +198,45 @@ const _HomeLocationForm = (props: any) => {
         setValue('latitude', '' + pos.coords.latitude);
         setValue('longitude', '' + pos.coords.longitude);
       },
-      (e) => {
-        setError(e.message);
-      },
+      (e) => {},
       {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000},
     );
   }
   async function onChangeDept(idDept: any) {
-    let FUCMUNICI = await props.getEntitySelect(
-      'FUCMUNICI',
-      FUCMUNICISCHEMA,
-      'FUCDEPART_ID',
-      idDept,
-    );
-    setMunicipioSelect(FUCMUNICI);
-    setValue('municipality', '-1');
-    setMunicipio('-1');
-    await onChangeMuni('null', 'null');
-    onChangeCentroOResgua('null');
+    getFUCMUNICIFromDept(idDept);
+    onChangeMuni(null, null);
   }
-  async function onChangeMuni(munid: string, typeid: string) {
-    let FUCRESGUA = await props.getEntitySelect(
-      'FUCRESGUA',
-      FUCRESGUASCHEMA,
-      'FUCMUNICI_ID',
-      munid,
-      'FUCTIPRES_ID',
-      typeid,
-    );
-    setrescentropSelect(FUCRESGUA);
-    setValue('shelterOrCouncil', '');
-    setCentropoblado('');
-  }
-  //TODO AJUSTAR ESOS NUMEROS QUEMADOS POR CODIGOS
-  async function onChangeTypeTerr(typeid: any) {
-    if (typeid == '1') {
-      typeid = '3';
+  async function onChangeMuni(munid: any, typeid: any) {
+    if (munid && typeid) {
+      getFilterFUCRESGUA(munid, typeid);
+      setValue('shelterOrCouncil', '');
+      setBarrioVereda('');
+      setValue('sidewalk', '');
+      setZonacuidado('');
+      setBarrioVeredaSelect([]);
+      setFUCZONCUIItems([]);
+      setValue('carezone', '');
+      setCentropoblado('');
     } else {
-      typeid = '2';
+      setValue('municipality', '');
+      setMunicipio('');
+      setrescentropSelect(getSelectSchema([]));
+      onChangeCentroOResgua(null);
     }
-    onChangeMuni(municipio, typeid);
+  }
+  async function onChangeTypeTerr(typeid: any) {
+    getFilterFUCRESGUA(parseInt(municipio, 10), typeid);
+    setValue('shelterOrCouncil', '');
+    setBarrioVereda('');
+    setValue('sidewalk', '');
+    setZonacuidado('');
+    setValue('carezone', '');
+    setCentropoblado('');
+    onChangeCentroOResgua(null);
     await changeLabelType(typeid);
   }
-  async function changeLabelType(typeid: any) {
-    if (typeid == '3') {
+  async function changeLabelType(codigo: string) {
+    if (codigo == '1') {
       await setTipoterritorioLabel('Resguardo o cabildo');
     } else {
       await setTipoterritorioLabel('Centro poblado');
@@ -249,75 +244,51 @@ const _HomeLocationForm = (props: any) => {
   }
   async function onChangeCentroOResgua(resguaId: any) {
     if (resguaId) {
-      let FUCBARVER = await props.getEntitySelect(
-        'FUCBARVER',
-        FUCBARVERSCHEMA,
-        'FUCRESGUA_ID',
-        resguaId,
-      );
-      setBarrioVeredaSelect(FUCBARVER);
+      filterFUCBARVER(resguaId);
       for (let i = 0; i < rescentropSelect.length; i++) {
         const item: any = rescentropSelect[i];
         if (item.item && item.item.ID == resguaId) {
-          let ress = await props.getLasHouseCode(item.item.CODIGO);
-          setHouseCode(`${item.item.CODIGO}-${ress}`);
-          setValue('housingCode', `${item.item.CODIGO}-${ress}`);
-          if (FUCBARVER.children.length == 1) {
-            setValue('sidewalk', '', {shouldValidate: true});
-            setBarrioVereda('');
-          }
+          let newCode = await getLastCode(item.item.CODIGO);
+          setHouseCode(newCode);
+          setValue('housingCode', `${newCode}`);
         }
       }
+    } else {
+      setBarrioVeredaSelect(getSelectSchema([]));
+      setBarrioVereda('');
+      setValue('sidewalk', '', {shouldValidate: true});
+      setBarrioVereda('');
+      onChangeBarrioVereda(null);
     }
   }
-  async function onChangeBarrioVereda(FUCBARVER_ID: string) {
-    let items: {label: string; value: string}[] = [];
+  async function onChangeBarrioVereda(FUCBARVER_ID: any) {
     if (FUCBARVER_ID) {
-      let service: HousingService = new HousingService();
-      let FUCZONCUIitems: FUCZONCUI[] = await service.getFUCZONCUI(
-        parseInt(FUCBARVER_ID, 10),
-      );
-      for (let option of FUCZONCUIitems) {
-        items.push({
-          value: option.ID.toString(),
-          label: option.CODIGO_FF,
-        });
-      }
-      items.unshift({value: '-1', label: 'Seleccione...'});
-      setFUCZONCUIItems(items);
+      filterFUCZONCUI(parseInt(FUCBARVER_ID, 10));
     } else {
-      items.unshift({value: '-1', label: 'Seleccione...'});
       setZonacuidado('-1');
       setValue('carezone', '');
-      setFUCZONCUIItems(items);
+      setFUCZONCUIItems(getSelectSchema([]));
     }
   }
   const onSubmit = async (data: any) => {
     if (props.FUBUBIVIV.CODIGO !== '') {
-      let item: FUBUBIVIV = {
-        ID: props.FUBUBIVIV.ID,
-        CODIGO: houseCode,
-        COORDENADA_X: position.latitude,
-        COORDENADA_Y: position.longitude,
-        DIRECCION: data.address,
-        FUCBARVER_ID: JSON.parse(data.sidewalk),
-        //FUCZONCUI_ID: JSON.parse(data.carezone),
-        FUCZONCUI_ID: 1,
-      };
-      await props.updateFUBUBIVIV(item, originalhouseCode);
-      navigation.goBack();
+      let _item: FUBUBIVIV = props.FUBUBIVIV;
+      _item.COORDENADA_X = position.latitude;
+      _item.COORDENADA_Y = position.longitude;
+      _item.DIRECCION = data.address;
+      _item.FUCZONCUI_FUCBARVER_ID = JSON.parse(data.carezone);
+      updateFUBUBIVIV(_item);
     } else {
       // SAVE
       let item: FUBUBIVIV = {
+        ID: -1,
         CODIGO: houseCode,
         COORDENADA_X: position.latitude,
         COORDENADA_Y: position.longitude,
         DIRECCION: data.address,
-        FUCBARVER_ID: JSON.parse(data.sidewalk),
-        FUCZONCUI_ID: JSON.parse(data.carezone),
+        FUCZONCUI_FUCBARVER_ID: JSON.parse(data.carezone),
       };
-      await props.saveFUBUBIVIV(item);
-      navigation.goBack();
+      createFUBUBIVIV(item);
     }
   };
   return (
@@ -375,7 +346,9 @@ const _HomeLocationForm = (props: any) => {
               onChange={(value: any) => {
                 onChange(value);
                 setMunicipio(value);
-                onChangeMuni(value, tipoterritorio);
+                if (value) {
+                  onChangeMuni(value, tipoterritorio);
+                }
               }}
               selectedValue={municipio}
               items={municipioSelect}
@@ -562,8 +535,7 @@ const styles = StyleSheet.create({
 const mapDispatchToProps = {
   getEntitySelect,
   getLasHouseCode,
-  saveFUBUBIVIV,
-  updateFUBUBIVIV,
+  setFUBUBIVIV,
 };
 const mapStateToProps = (housing: any) => {
   return {

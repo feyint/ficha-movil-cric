@@ -1,193 +1,151 @@
-import React, {Component, useState} from 'react';
-import {
-  BButton,
-  BTextInput,
-  BSearchBar,
-  BSearchBarV2,
-} from '../../../../core/components';
-import {Alert, Image, StyleSheet, View} from 'react-native';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, {useEffect, useState} from 'react';
+import {BSearchBarV2} from '../../../../core/components';
+import {Image, StyleSheet, View} from 'react-native';
 import {Appbar, Text} from 'react-native-paper';
-import {NavigationProp} from '@react-navigation/native';
-import PersonManageList from '../forms/PersonManageList';
+import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {
   clearFNBINFSAL,
   clearFNCPERSON,
   setFNCPERSON,
 } from '../../../../state/person/actions';
-import {FNBNUCVIV} from '../../../../state/house/types';
 import {HousingService} from '../../../../services';
-import {FNCPERSON} from '../../../../state/person/types';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {ListItem} from 'react-native-elements';
 import BFabButton from '../../../../core/components/BFabButton';
+import {FNCPERSON} from '../../../../types';
+import {useFNCPERSON} from '../../../../hooks';
 
-interface Props {
-  navigation: NavigationProp<any>;
-  clearFNCPERSON: any;
-  setFNCPERSON: any;
-  clearFNBINFSAL: any;
-  FNBNUCVIV: FNBNUCVIV;
-}
-interface State {
-  persons: FNCPERSON[];
-  filteredPersons: FNCPERSON[];
-  //filteredPersonsID: FNCPERSON[];
-  word: string;
-}
-/* const Helper2 =()=>{
-  const [searchQuery, setSearchQuery] = React.useState('');
-} */
-class PersonManageScreen extends Component<Props, State> {
-  private _unsubscribe: any;
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      persons: [],
-      filteredPersons: [],
-      word: '',
-    };
-  }
-  componentDidMount() {
-    try {
-      this._unsubscribe = this.props.navigation.addListener('focus', () => {
-        this.fetchPersons();
-      });
-    } catch (error) {
-      console.error('ocurrio un error');
+const PersonManageScreen = (props: any) => {
+  const [persons, setPersons] = useState<FNCPERSON[]>([]);
+  const [filteredPersons, setFilter] = useState<FNCPERSON[]>([]);
+  const [word, setWord] = useState<string>('');
+  const navigation = useNavigation();
+  const {listFNCPERSON, filterFNCPERSON} = useFNCPERSON();
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      fetchPersons();
+    });
+    return unsubscribe;
+  }, [navigation]);
+  useEffect(() => {
+    if (listFNCPERSON) {
+      setPersons(listFNCPERSON);
     }
-  }
-  componentWillUnmount() {
-    this._unsubscribe();
-  }
-  async fetchPersons() {
+  }, [listFNCPERSON]);
+
+  async function fetchPersons() {
     try {
-      let syncCatalogService = new HousingService();
-      let result = await syncCatalogService.getFNBNUCVIVPersons(
-        this.props.FNBNUCVIV.ID,
-      );
-      if (result) {
-        this.setState({
-          persons: result,
-        });
+      if (props.FNBNUCVIV.ID) {
+        filterFNCPERSON(props.FNBNUCVIV.ID);
       }
     } catch (error) {
       console.error(error);
     }
   }
-  //const [searchQuery, setSearchQuery] = React.useState('');
-  _goBack() {
-    this.props.navigation.goBack();
+  function searchUser(textToSearch: any) {
+    // setState({
+    //   filteredPersons: persons.filter(
+    //     (i) =>
+    //       i.PRIMER_NOMBRE.toLowerCase().includes(textToSearch.toLowerCase()) ||
+    //       i.IDENTIFICACION.toLowerCase().includes(textToSearch.toLowerCase()) ||
+    //       i.PRIMER_APELLIDO.toLowerCase().includes(
+    //         textToSearch.toLowerCase(),
+    //       ) ||
+    //       i.SEGUNDO_NOMBRE.toLowerCase().includes(textToSearch.toLowerCase()) ||
+    //       i.SEGUNDO_APELLIDO.toLowerCase().includes(textToSearch.toLowerCase()),
+    //   ),
+    //   word: textToSearch,
+    // });
   }
-  searchUser(textToSearch: any) {
-    this.setState({
-      filteredPersons: this.state.persons.filter(
-        (i) =>
-          i.PRIMER_NOMBRE.toLowerCase().includes(textToSearch.toLowerCase()) ||
-          i.IDENTIFICACION.toLowerCase().includes(textToSearch.toLowerCase()) ||
-          i.PRIMER_APELLIDO.toLowerCase().includes(
-            textToSearch.toLowerCase(),
-          ) ||
-          i.SEGUNDO_NOMBRE.toLowerCase().includes(textToSearch.toLowerCase()) ||
-          i.SEGUNDO_APELLIDO.toLowerCase().includes(textToSearch.toLowerCase()),
-      ),
-      word: textToSearch,
-    });
-  }
-  render() {
-    return (
-      <View style={{flex: 1}}>
-        <Appbar.Header>
-          <Appbar.BackAction onPress={() => this._goBack()} />
-          <Appbar.Content title="Identificacion nucleo familiar" />
-        </Appbar.Header>
-        <Text style={{fontSize: 16, padding: 10}}>
-          <Text style={{fontWeight: 'bold'}}>Nucleo familiar:</Text>{' '}
-          {this.props.FNBNUCVIV.CODIGO}
-        </Text>
-        <KeyboardAwareScrollView>
-          <BSearchBarV2
-            placeholder="Ingrese identificacion o nombre de persona a buscar"
-            onChange={(text: any) => {
-              this.searchUser(text);
-            }}
-          />
-          <View style={styles.container}>
-            {this.state.filteredPersons &&
-            this.state.filteredPersons.length > 0 ? (
-              this.state.filteredPersons.map((person: FNCPERSON, i: any) => (
-                <ListItem
-                  onPress={() => {
-                    this.goViewPersonScreen(person);
-                  }}
-                  key={i}
-                  bottomDivider>
-                  <ListItem.Content>
-                    <ListItem.Title>{`${person.PRIMER_NOMBRE}  ${person.SEGUNDO_NOMBRE}  ${person.PRIMER_APELLIDO}  ${person.SEGUNDO_APELLIDO}`}</ListItem.Title>
-                    <ListItem.Subtitle>
-                      {person.IDENTIFICACION}
-                    </ListItem.Subtitle>
-                  </ListItem.Content>
-                </ListItem>
-              ))
-            ) : this.state.filteredPersons.length == 0 &&
-              this.state.word != '' ? (
-              <View>
-                <Image
-                  source={{
-                    uri:
-                      'https://image.flaticon.com/icons/png/512/64/64670.png',
-                  }}
-                  style={styles.imageStyle}
-                />
-                <Text style={styles.noResultsText}>¡Sin resultados!</Text>
-              </View>
-            ) : (
-              this.state.persons.map((person: FNCPERSON, i: any) => (
-                <ListItem
-                  onPress={() => {
-                    this.goViewPersonScreen(person);
-                  }}
-                  key={i}
-                  bottomDivider>
-                  <ListItem.Content>
-                    <ListItem.Title>
-                      {`${person.PRIMER_NOMBRE}  ${person.SEGUNDO_NOMBRE}  ${person.PRIMER_APELLIDO}  ${person.SEGUNDO_APELLIDO}`}
-                    </ListItem.Title>
-                    <ListItem.Subtitle>
-                      {person.IDENTIFICACION}
-                    </ListItem.Subtitle>
-                  </ListItem.Content>
-                </ListItem>
-              ))
-            )}
-          </View>
-          <View style={styles.spacer} />
-        </KeyboardAwareScrollView>
+  return (
+    <View style={{flex: 1}}>
+      <Appbar.Header>
+        <Appbar.BackAction onPress={() => navigation.goBack()} />
+        <Appbar.Content title="Identificacion nucleo familiar" />
+      </Appbar.Header>
+      <Text style={{fontSize: 16, padding: 10}}>
+        <Text style={{fontWeight: 'bold'}}>Nucleo familiar:</Text>{' '}
+        {props.FNBNUCVIV.CODIGO}
+      </Text>
+      <KeyboardAwareScrollView>
+        <BSearchBarV2
+          placeholder="Ingrese identificacion o nombre de persona a buscar"
+          onChange={(text: any) => {
+            searchUser(text);
+          }}
+        />
+        <View style={styles.container}>
+          {filteredPersons && filteredPersons.length > 0 ? (
+            filteredPersons.map((person: FNCPERSON, i: any) => (
+              <ListItem
+                onPress={() => {
+                  goViewPersonScreen(person);
+                }}
+                key={i}
+                bottomDivider>
+                <ListItem.Content>
+                  <ListItem.Title>{`${person.PRIMER_NOMBRE}  ${person.SEGUNDO_NOMBRE}  ${person.PRIMER_APELLIDO}  ${person.SEGUNDO_APELLIDO}`}</ListItem.Title>
+                  <ListItem.Subtitle>{person.IDENTIFICACION}</ListItem.Subtitle>
+                </ListItem.Content>
+              </ListItem>
+            ))
+          ) : filteredPersons.length == 0 && word != '' ? (
+            <View>
+              <Image
+                source={{
+                  uri: 'https://image.flaticon.com/icons/png/512/64/64670.png',
+                }}
+                style={styles.imageStyle}
+              />
+              <Text style={styles.noResultsText}>¡Sin resultados!</Text>
+            </View>
+          ) : (
+            persons.map((person: FNCPERSON, i: any) => (
+              <ListItem
+                onPress={() => {
+                  goViewPersonScreen(person);
+                }}
+                key={i}
+                bottomDivider>
+                <ListItem.Content>
+                  <ListItem.Title>
+                    {`${person.PRIMER_NOMBRE}  ${person.SEGUNDO_NOMBRE}  ${person.PRIMER_APELLIDO}  ${person.SEGUNDO_APELLIDO}`}
+                  </ListItem.Title>
+                  <ListItem.Subtitle>{person.IDENTIFICACION}</ListItem.Subtitle>
+                </ListItem.Content>
+              </ListItem>
+            ))
+          )}
+        </View>
+        <View style={styles.spacer} />
+      </KeyboardAwareScrollView>
 
-        <BFabButton onPress={() => this.createNewPerson()} />
-      </View>
-    );
+      <BFabButton onPress={() => createNewPerson()} />
+    </View>
+  );
+
+  function goViewPersonScreen(data: FNCPERSON) {
+    props.setFNCPERSON(data);
+    props.navigation.navigate('ViewPersonScreen');
   }
-  goViewPersonScreen(data: FNCPERSON) {
-    this.props.setFNCPERSON(data);
-    this.props.navigation.navigate('ViewPersonScreen');
+  function createNewPerson() {
+    props.clearFNCPERSON();
+    props.clearFNBINFSAL();
+    props.navigation.navigate('ViewPersonScreen');
   }
-  createNewPerson() {
-    this.props.clearFNCPERSON();
-    this.props.clearFNBINFSAL();
-    this.props.navigation.navigate('ViewPersonScreen');
-  }
-}
+};
 
 const mapDispatchToProps = {
   clearFNCPERSON,
   setFNCPERSON,
   clearFNBINFSAL,
 };
-const mapStateToProps = (housing: any) => {
+const mapStateToProps = (store: any) => {
   return {
-    FNBNUCVIV: housing.housing.FNBNUCVIV,
+    FNBNUCVIV: store.housing.FNBNUCVIV,
   };
 };
 
