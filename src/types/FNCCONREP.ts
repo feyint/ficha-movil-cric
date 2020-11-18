@@ -4,4 +4,5 @@ export interface FNCCONREP {
   NOMBRE: string;
   ESTADO: boolean;
   FNCELEREP_ID: number;
+  QUESTIONCODE?: string;
 }

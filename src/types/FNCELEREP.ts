@@ -3,6 +3,6 @@ export interface FNCELEREP {
   CODIGO: string;
   NOMBRE: string;
   ESTADO: boolean;
-  SECCION: string;
-  REQUERIDO: number;
+  SECCION?: string;
+  REQUERIDO?: number;
 }

@@ -4,5 +4,5 @@ export interface FNCELEPER {
   NOMBRE: string;
   ESTADO: boolean;
   SECCION?: string;
-  REQUERIDO: number;
+  REQUERIDO?: number;
 }

@@ -4,4 +4,5 @@ export interface FNCCONSAL {
   NOMBRE: string;
   ESTADO: boolean;
   FNCELESAL_ID: number;
+  QUESTIONCODE?: string;
 }
