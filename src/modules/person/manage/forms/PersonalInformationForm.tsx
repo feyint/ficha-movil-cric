@@ -42,7 +42,7 @@ const schemaForm = yup.object().shape({
   middlename: yup.string().optional(),
   lastname: yup.string().required(),
   secondlastname: yup.string().optional(),
-  identification: yup.string().required(),
+  identification: yup.string().optional(),
   identificationType: yup.string().required(),
   gender: yup.string().required(),
   GrupoEtnico: yup.number().required(),
@@ -53,6 +53,7 @@ const _PersonalInformationForm = (props: any) => {
   const {handleSubmit, control, errors, setValue} = useForm({
     resolver: yupResolver(schemaForm),
   });
+  const [editable, setEditable] = useState(false);
   const [person, setPerson] = useState<FNCPERSON>();
   const [identificationEx, setidentificationEx] = useState<any[]>([]);
   const [gender, setGender] = useState<any>();
@@ -140,19 +141,21 @@ const _PersonalInformationForm = (props: any) => {
     }
   };
   function alert(data: any) {
-    Alert.alert(
-      'Volver!!!',
-      'Esta seguro?',
-      [
-        {
-          text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
-          style: 'cancel',
-        },
-        {text: 'Aceptar', onPress: () => navigation.goBack()},
-      ],
-      {cancelable: false},
-    );
+    editable
+      ? Alert.alert(
+          '',
+          '¿Desea cancelar el proceso?.',
+          [
+            {
+              text: 'NO',
+              onPress: () => console.log('Cancel Pressed'),
+              style: 'cancel',
+            },
+            {text: 'SI', onPress: () => navigation.goBack()},
+          ],
+          {cancelable: false},
+        )
+      : navigation.goBack();
   }
   const onSubmit = async (data: any) => {
     if (person && person.ID != null) {
@@ -185,8 +188,8 @@ const _PersonalInformationForm = (props: any) => {
       if (inserted) {
         SaveAnswers(QuestionConditionPersonCodes.GrupoEtnico, data.GrupoEtnico);
       }
+      navigation.goBack();
     }
-    navigation.goBack();
   };
   async function asociateExistingPerson(item: FNCPERSON) {
     let asociated = await createFNBNUCVIV_FNCPERSON({
@@ -259,7 +262,7 @@ const _PersonalInformationForm = (props: any) => {
               setIdentification('');
               Alert.alert(
                 'Identificación existente',
-                `La persona ${item.PRIMER_NOMBRE} ${item.SEGUNDO_NOMBRE} ${item.PRIMER_NOMBRE} ${item.SEGUNDO_APELLIDO} \ncon identificación ${item.IDENTIFICACION} ya esta asociada a un nucleo familiar \npara asociarlo a este debe tener el parentezco "CABEZA DE FAMILIA"`,
+                `La persona ${item.PRIMER_NOMBRE} ${item.SEGUNDO_NOMBRE} ${item.PRIMER_NOMBRE} ${item.SEGUNDO_APELLIDO} \ncon identificación ${item.IDENTIFICACION} ya esta asociada a un nucleo familiar \npara asociarlo a este debe tener el parentesco "CABEZA DE FAMILIA"`,
                 [
                   {
                     text: 'aceptar',
@@ -271,15 +274,11 @@ const _PersonalInformationForm = (props: any) => {
         } else {
           let existDocument = await existbyIdentification(identification);
           if (existDocument) {
-            Alert.alert(
-              'Identificación existente',
-              `El numero de identificación ${identification} ya se encuentra registrado en el sistema con otro tipo de identificación, \n Valide la información`,
-              [
-                {
-                  text: 'aceptar',
-                },
-              ],
-            );
+            Alert.alert('', 'Los datos registrados ya existen en el sistema', [
+              {
+                text: 'aceptar',
+              },
+            ]);
             setIdentification('');
           }
         }
@@ -287,6 +286,26 @@ const _PersonalInformationForm = (props: any) => {
     }, 1000);
     return delayDebounceFn;
   }
+  const validateIdentification = () => {
+    if (
+      (identificationType !== 4 || identificationType !== 7) &&
+      identification != ''
+    ) {
+      Alert.alert(
+        'Identificación Requerida',
+        `El tipo de identificación ${identificationType} es necesario, \n Valide la información.. ident ${identification}`,
+        [
+          {
+            text: 'aceptar',
+          },
+        ],
+        {cancelable: false},
+      );
+      return true;
+    } else {
+      return false;
+    }
+  };
   function validateRelationship(value: any) {
     let isValid = true;
     if (
@@ -357,6 +376,8 @@ const _PersonalInformationForm = (props: any) => {
             prompt="Seleccione una opción"
             error={errors.identificationType}
             onChange={(value) => {
+              console.log(`tipo de identificacion value igual a ${value}`);
+              setEditable(true);
               if (
                 identificationEx &&
                 identificationEx.find((i) => i.ID == identificationType)
@@ -392,9 +413,12 @@ const _PersonalInformationForm = (props: any) => {
         render={({onChange, value}) =>
           identificationEx.find((i) => i.ID == identificationType) ? (
             <BNumberInput
+              {...console.warn('numericInput')}
+              keyboardType="number"
               label="Identificación"
               error={errors.identification}
               onChange={(value) => {
+                setEditable(true);
                 onChange(value);
                 setIdentification(value);
               }}
@@ -402,9 +426,12 @@ const _PersonalInformationForm = (props: any) => {
             />
           ) : (
             <BTextInput
+              {...console.warn('textInput')}
+              {...console.log(`identificationEx ${identificationEx}`)}
               label="Identificación"
               error={errors.identification}
               onChange={(value) => {
+                setEditable(true);
                 onChange(value);
                 setIdentification(value);
               }}
@@ -421,6 +448,7 @@ const _PersonalInformationForm = (props: any) => {
             label="Género"
             error={errors.gender}
             onChange={(value: any) => {
+              setEditable(true);
               onChange(value);
               setGender(value);
             }}
@@ -439,6 +467,7 @@ const _PersonalInformationForm = (props: any) => {
             label="Fecha de nacimiento"
             error={errors.birthdate}
             onChange={(value: Date) => {
+              setEditable(true);
               onChange(value);
               if (value) {
                 setbirthDate(value);
@@ -456,7 +485,10 @@ const _PersonalInformationForm = (props: any) => {
           <BTextInput
             label="Primer nombre"
             error={errors.firstname}
-            onChange={(value) => onChange(value)}
+            onChange={(value) => {
+              setEditable(true);
+              onChange(value);
+            }}
             value={value}
           />
         )}
@@ -468,7 +500,10 @@ const _PersonalInformationForm = (props: any) => {
           <BTextInput
             label="Segundo nombre"
             error={errors.middlename}
-            onChange={(value) => onChange(value)}
+            onChange={(value) => {
+              setEditable(true);
+              onChange(value);
+            }}
             value={value}
           />
         )}
@@ -480,7 +515,10 @@ const _PersonalInformationForm = (props: any) => {
           <BTextInput
             label="Primer apellido"
             error={errors.lastname}
-            onChange={(value) => onChange(value)}
+            onChange={(value) => {
+              setEditable(true);
+              onChange(value);
+            }}
             value={value}
           />
         )}
@@ -492,7 +530,10 @@ const _PersonalInformationForm = (props: any) => {
           <BTextInput
             label="Segundo Apellido"
             error={errors.secondlastname}
-            onChange={(value) => onChange(value)}
+            onChange={(value) => {
+              setEditable(true);
+              onChange(value);
+            }}
             value={value}
           />
         )}
@@ -502,11 +543,12 @@ const _PersonalInformationForm = (props: any) => {
         control={control}
         render={({onChange, onBlur, value}) => (
           <BPicker
-            label="Parentezco en el grupo familiar"
+            label="Parentesco en el grupo familiar"
             prompt="Selecione una opcion"
             onBlur={onBlur}
             error={errors.parentezcoGrupoFamiliar}
             onChange={(value: any) => {
+              setEditable(true);
               if (value) {
                 onChange(value);
                 setParentezcoGrupoFamiliar(value);
@@ -528,10 +570,11 @@ const _PersonalInformationForm = (props: any) => {
         control={control}
         render={({onChange, onBlur, value}) => (
           <BPicker
-            label={'Grupo etnico'}
+            label={'Grupo étnico'}
             onBlur={onBlur}
             error={errors.GrupoEtnico}
             onChange={(value: any) => {
+              setEditable(true);
               onChange(value);
               if (value) {
                 setGrupoEtnico(value);

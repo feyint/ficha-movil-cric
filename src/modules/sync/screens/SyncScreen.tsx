@@ -24,6 +24,7 @@ interface State {
   FUCZONA: number;
   FUCUNICUI: number;
   FUCZONCUI: number;
+  FNCGENERO: number;
   /* /-------------------- */
   FNCELESAL: number;
   FNCCONSAL: number;
@@ -55,6 +56,7 @@ class SyncScreen extends Component<Props, State> {
       FUCRESGUA: 0,
       FUCBARVER: 0,
       FUCZONA: 0,
+      FNCGENERO: 0,
       FNCPAREN: 0,
       FNCOCUPAC: 0,
       FNCPUEIND: 0,
@@ -168,6 +170,7 @@ class SyncScreen extends Component<Props, State> {
             <Paragraph>
               FUCZONCUI (Zona de cuidado) : {this.state.FUCZONCUI}
             </Paragraph>
+            <Paragraph>FNCGENERO (Genero) : {this.state.FNCGENERO}</Paragraph>
             {this.state.FVCCONVIV != 0 &&
             this.state.FVCELEVIV != 0 &&
             this.state.FUCDEPART != 0 &&
@@ -176,6 +179,7 @@ class SyncScreen extends Component<Props, State> {
             this.state.FUCRESGUA != 0 &&
             this.state.FUCBARVER != 0 &&
             this.state.FUCZONA != 0 &&
+            this.state.FNCGENERO != 0 &&
             this.state.FNCPAREN != 0 &&
             this.state.FNCOCUPAC != 0 &&
             this.state.FNCPUEIND != 0 &&
@@ -279,6 +283,9 @@ class SyncScreen extends Component<Props, State> {
       'FUCBARVER',
     );
     let countFUCZONA = await this.syncCatalogService.countEntities('FUCZONA');
+    let countFNCGENERO = await this.syncCatalogService.countEntities(
+      'FNCGENERO',
+    );
     let countFNCPAREN = await this.syncCatalogService.countEntities('FNCPAREN');
     let countFNCOCUPAC = await this.syncCatalogService.countEntities(
       'FNCOCUPAC',
@@ -311,6 +318,7 @@ class SyncScreen extends Component<Props, State> {
       FUCRESGUA: countFUCRESGUA,
       FUCBARVER: countFUCBARVER,
       FUCZONA: countFUCZONA,
+      FNCGENERO: countFNCGENERO,
       FNCPAREN: countFNCPAREN,
       FNCOCUPAC: countFNCOCUPAC,
       FNCPUEIND: countFNCPUEIND,

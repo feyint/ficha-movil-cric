@@ -57,6 +57,8 @@ const _CurrentPregnancyForm = (props: any) => {
 
   const navigation = useNavigation();
 
+  const [editable, setEditable] = useState(false);
+
   const getItemsForQuestionSelect = (code: string) => {
     return syncCatalogService.getItemsForQuestionSelect(code, state.questions);
   };
@@ -100,19 +102,21 @@ const _CurrentPregnancyForm = (props: any) => {
   };
 
   function alert(data: any) {
-    Alert.alert(
-      'Volver!!!',
-      'Esta seguro?',
-      [
-        {
-          text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
-          style: 'cancel',
-        },
-        {text: 'Aceptar', onPress: () => navigation.goBack()},
-      ],
-      {cancelable: false},
-    );
+    editable
+      ? Alert.alert(
+          '',
+          '¿Desea cancelar el proceso?.',
+          [
+            {
+              text: 'NO',
+              onPress: () => console.log('Cancel Pressed'),
+              style: 'cancel',
+            },
+            {text: 'SI', onPress: () => navigation.goBack()},
+          ],
+          {cancelable: false},
+        )
+      : navigation.goBack();
   }
 
   function onSubmit(data: any) {
@@ -131,6 +135,7 @@ const _CurrentPregnancyForm = (props: any) => {
               maximumDate={new Date()}
               error={errors.FechaUltimaMenstruacion}
               onChange={(value: any) => {
+                setEditable(true);
                 onChange(value);
                 if (value) {
                   var diff = (new Date().getTime() - value.getTime()) / 1000;
@@ -157,6 +162,7 @@ const _CurrentPregnancyForm = (props: any) => {
               disabled={true}
               error={errors.EdadGestacional}
               onChange={(value: any) => {
+                setEditable(true);
                 onChange(value);
               }}
               value={EdadGestacional}
@@ -173,6 +179,7 @@ const _CurrentPregnancyForm = (props: any) => {
               onBlur={onBlur}
               error={errors.FechaProbableParto}
               onChange={(value: any) => {
+                setEditable(true);
                 onChange(value);
               }}
               value={FechaProbableParto}
@@ -190,6 +197,7 @@ const _CurrentPregnancyForm = (props: any) => {
               onBlur={onBlur}
               error={errors.PracticasCulturalesDuranteLaGestacion}
               onChange={(values: any) => {
+                setEditable(true);
                 onChange(values);
                 props.saveAnswerLocal(
                   QuestionTypes.multiSelect,
@@ -222,6 +230,7 @@ const _CurrentPregnancyForm = (props: any) => {
               onBlur={onBlur}
               error={errors.acompanamientoDeGestacion}
               onChange={(values: any) => {
+                setEditable(true);
                 onChange(values);
                 props.saveAnswerLocal(
                   QuestionTypes.multiSelect,
@@ -253,6 +262,7 @@ const _CurrentPregnancyForm = (props: any) => {
               error={errors.AcompanamientoFamilia}
               items={logicOption}
               onChange={(value: any) => {
+                setEditable(true);
                 if (value) {
                   onChange(value);
                   //props.saveFNBNUCVIVPropiety('HUMO_CASA', JSON.parse(value));
@@ -272,6 +282,7 @@ const _CurrentPregnancyForm = (props: any) => {
               onBlur={onBlur}
               error={errors.FactoresDeRiesgoGestante}
               onChange={(values: any) => {
+                setEditable(true);
                 onChange(values);
                 props.saveAnswerLocal(
                   QuestionTypes.multiSelect,
@@ -303,6 +314,7 @@ const _CurrentPregnancyForm = (props: any) => {
               error={errors.RealizacionPruebaSerologia}
               items={logicOption}
               onChange={(value: any) => {
+                setEditable(true);
                 if (value) {
                   onChange(value);
                   //props.saveFNBNUCVIVPropiety('HUMO_CASA', JSON.parse(value));
@@ -322,6 +334,7 @@ const _CurrentPregnancyForm = (props: any) => {
               error={errors.RealizacionPruebaVIH}
               items={logicOption}
               onChange={(value: any) => {
+                setEditable(true);
                 if (value) {
                   onChange(value);
                   //props.saveFNBNUCVIVPropiety('HUMO_CASA', JSON.parse(value));

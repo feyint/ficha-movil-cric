@@ -52,6 +52,8 @@ const _HealthInformationForm = (props: any) => {
   //const [pikerEnable, setPikerEnable] = useState(false);
 
   const navigation = useNavigation();
+  
+  const [editable, setEditable] = useState(false);
 
   const getItemsForQuestionSelect = (code: string) => {
     return {children: []}; //syncCatalogService.getItemsForQuestionSelect(code, state.questions);
@@ -94,20 +96,23 @@ const _HealthInformationForm = (props: any) => {
       state.questions,
     );*/
   };
+
   function alert(data: any) {
-    Alert.alert(
-      'Volver!!!',
-      'Esta seguro?',
-      [
-        {
-          text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
-          style: 'cancel',
-        },
-        {text: 'Aceptar', onPress: () => navigation.goBack()},
-      ],
-      {cancelable: false},
-    );
+    editable
+      ? Alert.alert(
+          '',
+          '¿Desea cancelar el proceso?.',
+          [
+            {
+              text: 'NO',
+              onPress: () => console.log('Cancel Pressed'),
+              style: 'cancel',
+            },
+            {text: 'SI', onPress: () => navigation.goBack()},
+          ],
+          {cancelable: false},
+        )
+      : navigation.goBack();
   }
 
   function onSubmit(data: any) {
@@ -124,6 +129,7 @@ const _HealthInformationForm = (props: any) => {
               keyboardType="number-pad"
               onBlur={onBlur}
               onChange={(value: any) => {
+                setEditable(true);
                 onChange(value);
               }}
               value={value}
@@ -139,6 +145,7 @@ const _HealthInformationForm = (props: any) => {
               keyboardType="number-pad"
               onBlur={onBlur}
               onChange={(value: any) => {
+                setEditable(true);
                 onChange(value);
               }}
               value={value}
@@ -155,6 +162,7 @@ const _HealthInformationForm = (props: any) => {
               onBlur={onBlur}
               disabled={true}
               onChange={(value: any) => {
+                setEditable(true);
                 onChange(value);
               }}
               value={value}
@@ -169,6 +177,7 @@ const _HealthInformationForm = (props: any) => {
               label={'Factores de riesgo'}
               onBlur={onBlur}
               onChange={(value: any) => {
+                setEditable(true);
                 onChange(value);
               }}
               onLoad={() => {
@@ -197,6 +206,7 @@ const _HealthInformationForm = (props: any) => {
               keyboardType="number-pad"
               onBlur={onBlur}
               onChange={(value: any) => {
+                setEditable(true);
                 onChange(value);
               }}
               value={value}
@@ -212,6 +222,7 @@ const _HealthInformationForm = (props: any) => {
               keyboardType="number-pad"
               onBlur={onBlur}
               onChange={(value: any) => {
+                setEditable(true);
                 onChange(value);
               }}
               value={value}
@@ -227,6 +238,7 @@ const _HealthInformationForm = (props: any) => {
               enabled={false}
               onBlur={onBlur}
               onChange={(value: any) => {
+                setEditable(true);
                 onChange(value);
               }}
               onLoad={() => {
@@ -249,6 +261,7 @@ const _HealthInformationForm = (props: any) => {
               label={'Salud visual'}
               onBlur={onBlur}
               onChange={(value: any) => {
+                setEditable(true);
                 onChange(value);
               }}
               onLoad={() => {
@@ -276,6 +289,7 @@ const _HealthInformationForm = (props: any) => {
               label={'Salud auditiva y comunicativa'}
               onBlur={onBlur}
               onChange={(value: any) => {
+                setEditable(true);
                 onChange(value);
               }}
               onLoad={() => {
@@ -310,6 +324,7 @@ const _HealthInformationForm = (props: any) => {
               label={'Salud bucal'}
               onBlur={onBlur}
               onChange={(values: any) => {
+                setEditable(true);
                 onChange(values);
               }}
               onLoad={() => {
@@ -346,6 +361,7 @@ const _HealthInformationForm = (props: any) => {
               value={value}
               items={logicOption}
               onChange={(value: any) => {
+                setEditable(true);
                 if (value) {
                   onChange(value);
                   //props.saveFNBNUCVIVPropiety('HUMO_CASA', JSON.parse(value));
@@ -363,6 +379,7 @@ const _HealthInformationForm = (props: any) => {
               value={value}
               items={timeOption}
               onChange={(value: any) => {
+                setEditable(true);
                 if (value) {
                   onChange(value);
                   //props.saveFNBNUCVIVPropiety('HUMO_CASA', JSON.parse(value));
@@ -379,6 +396,7 @@ const _HealthInformationForm = (props: any) => {
               label={'Riesgo de padecer Diabetes'}
               onBlur={onBlur}
               onChange={(value: any) => {
+                setEditable(true);
                 onChange(value);
               }}
               onLoad={() => {
@@ -401,6 +419,7 @@ const _HealthInformationForm = (props: any) => {
               label={'Sintomático respiratorio'}
               onBlur={onBlur}
               onChange={(value: any) => {
+                setEditable(true);
                 onChange(value);
               }}
               onLoad={() => {
@@ -423,6 +442,7 @@ const _HealthInformationForm = (props: any) => {
               label={'Sintomático de malaria'}
               onBlur={onBlur}
               onChange={(value: any) => {
+                setEditable(true);
                 onChange(value);
               }}
               onLoad={() => {
@@ -445,6 +465,7 @@ const _HealthInformationForm = (props: any) => {
               label={'Desparasitación interna en el último semestre'}
               onBlur={onBlur}
               onChange={(values: any) => {
+                setEditable(true);
                 onChange(values);
               }}
               onLoad={() => {
@@ -466,6 +487,7 @@ const _HealthInformationForm = (props: any) => {
               label={'Desparasitación Externa en el último semestre'}
               onBlur={onBlur}
               onChange={(value: any) => {
+                setEditable(true);
                 onChange(value);
               }}
               onLoad={() => {
@@ -489,6 +511,7 @@ const _HealthInformationForm = (props: any) => {
               maximumDate={new Date()}
               error={errors.FechaUltimaMenstruacion}
               onChange={(value: any) => {
+                setEditable(true);
                 onChange(value);
               }}
               value={value}
@@ -497,7 +520,7 @@ const _HealthInformationForm = (props: any) => {
           name="FechaUltimaMenstruacion"
         />
 
-<View
+        <View
           style={{display: 'flex', flexDirection: 'row', marginLeft: '20%'}}>
           <BButton
             style={styles.aceptButon}
