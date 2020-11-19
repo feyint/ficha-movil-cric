@@ -67,9 +67,11 @@ export function useFNCPERSON_FNCCONPER() {
       newItem.FNCCONPER_ID,
       newItem.FNCELEPER_ID,
     ];
-    return await database
-      .executeQuery('FNCPERSON_FNCCONPER', statement, params)
-      .then(countEntity);
+    return await database.executeQuery(
+      'FNCPERSON_FNCCONPER',
+      statement,
+      params,
+    );
   }
   async function countEntity(): Promise<void> {
     return database.countEntity('FNCPERSON_FNCCONPER').then(setCount);
