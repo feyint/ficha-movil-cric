@@ -45,7 +45,7 @@ class BPicker extends Component<Props, any> {
   }
   renderLabel() {
     return (
-      <View>
+      <View  >
         <Text>
           {this.props.label ? this.props.label : 'Seleccione una opción'}
         </Text>
@@ -100,17 +100,24 @@ class BPicker extends Component<Props, any> {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
+    marginTop: 8,
     marginBottom: 5,
     color: 'black',
     borderRadius: 5,
-    borderWidth: 1,
-    borderColor: 'black',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.18,
+    shadowRadius: 1.00,
+    elevation: 1,
   },
   containerError: {
     backgroundColor: 'white',
     color: 'red',
     borderRadius: 5,
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: 'red',
   },
   picker: {

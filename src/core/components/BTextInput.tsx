@@ -26,12 +26,12 @@ interface Props {
 export default class BTextInput extends Component<Props, State> {
   render() {
     return (
-      <View>
+      <View style={styles.container1}>
         <TextInput
           style={styles.input}
           error={this.props.error}
           secureTextEntry={this.props.isPassword ? true : false}
-          mode={this.props.mode ? this.props.mode : 'outlined'}
+          mode={this.props.mode ? this.props.mode : 'outline'}
           label={this.props.label}
           onChangeText={(text) => this.props.onChange(text)}
           value={this.props.value}
@@ -40,6 +40,7 @@ export default class BTextInput extends Component<Props, State> {
           numberOfLines={this.props.numberOfLines}
           contextMenuHidden={false}
           maxLength={50}
+          underlineColorAndroid='transparent'
         />
         {this.props.error ? (
           <HelperText type="error">
@@ -54,8 +55,26 @@ export default class BTextInput extends Component<Props, State> {
 }
 
 const styles = StyleSheet.create({
+  container1:{
+    justifyContent: 'center',
+
+  },
   input: {
+    borderRadius: 5,
+    borderTopEndRadius: 5,
+    borderTopLeftRadius: 5,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.18,
+    shadowRadius: 1.00,
+
+    elevation: 1,
+    height: 60,
     marginTop: 10,
-    backgroundColor: '#ffff',
+    marginBottom: 5,
+    backgroundColor : "#FFFFFF"
   },
 });

@@ -11,7 +11,6 @@ const styles = StyleSheet.create({
     fontSize: 40,
     color: theme.colors.primary,
     fontWeight: 'bold',
-    paddingVertical: 14,
     textAlign: 'center'
   },
 });

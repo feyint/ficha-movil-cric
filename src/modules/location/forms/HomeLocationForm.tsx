@@ -494,7 +494,7 @@ const _HomeLocationForm = (props: any) => {
           )}
           name="address"
         />
-        <View>
+        <View style={styles.button}>
           <BButton
             color="secondary"
             value={
@@ -512,6 +512,9 @@ const _HomeLocationForm = (props: any) => {
 };
 
 const styles = StyleSheet.create({
+  button:{
+    marginTop: 20
+  },
   input: {
     backgroundColor: 'white',
     height: 40,

@@ -31,9 +31,8 @@ const _LoginForm = (props: any) => {
   };
   const onDismissSnackBar = () => setVisible(false);
   return (
-    <View>
+    <View style={styles.container1}>
       <KeyboardAwareScrollView>
-        <View style={styles.container}>
           <Controller
             control={control}
             render={({onChange, value}) => (
@@ -46,6 +45,7 @@ const _LoginForm = (props: any) => {
             )}
             name="username"
           />
+           <View style={styles.container}>
           <Controller
             control={control}
             render={({onChange, value}) => (
@@ -60,14 +60,15 @@ const _LoginForm = (props: any) => {
             )}
             name="password"
           />
-          <View>
+        </View>
+          <View style={styles.container}>
             <BButton
               color="primary"
               value="Iniciar Sesión"
               onPress={handleSubmit(onSubmit)}
             />
           </View>
-        </View>
+
       </KeyboardAwareScrollView>
       <Snackbar duration={3000} visible={visible} onDismiss={onDismissSnackBar}>
         Usuario o contraseña incorrecta
@@ -77,17 +78,15 @@ const _LoginForm = (props: any) => {
 };
 
 const styles = StyleSheet.create({
-  input: {
-    backgroundColor: 'white',
-    height: 40,
-    padding: 10,
-    borderRadius: 4,
-  },
   container: {
     flex: 1,
     justifyContent: 'center',
-    padding: 8,
+    marginBottom: 20,
+
   },
+  container1:{
+   
+  }
 });
 const mapDispatchToProps = {
   authAction,

@@ -21,7 +21,6 @@ export default class BNumberInput extends Component<Props, any> {
           style={styles.container}
           error={this.props.error}
           label={this.props.label}
-          mode="outlined"
           disabled={this.props.disabled}
           keyboardType="numeric"
           onChangeText={(text) => {
@@ -45,5 +44,16 @@ export default class BNumberInput extends Component<Props, any> {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.18,
+    shadowRadius: 1.00,
+    elevation: 1,
+    height: 60,
+    marginTop: 10,
+    marginBottom: 5,
   },
 });

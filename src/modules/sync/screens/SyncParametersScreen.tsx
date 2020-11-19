@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
-import {View} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import {Appbar, Paragraph} from 'react-native-paper';
-import {BButton} from '../../../core/components';
+import {BButton, BHeader} from '../../../core/components';
 import {
   useFNCCONPER,
   useFNCELEPER,
@@ -77,12 +77,10 @@ const SyncParametersScreen = () => {
       <Appbar.Header>
         <Appbar.Content title="Sincronización de información" />
       </Appbar.Header>
-      <BButton
-        color="secondary"
-        value="Sincronizar Catalogos"
-        mode="outlined"
-        onPress={() => syncCatalogs()}
-      />
+
+      <BHeader>Sincronización de catalogos</BHeader>
+      
+      <View  style={styles.container1}>
       <Paragraph>
         FVCELEVIV (Preguntas Nucleo familiar):{' '}
         {loadingFVCELEVIV ? 'Cargando..' : countFVCELEVIV}
@@ -156,7 +154,20 @@ const SyncParametersScreen = () => {
         FNCCONPER(Person options):
         {loadingFNCCONPER ? 'Cargando..' : countFNCCONPER}
       </Paragraph>
+      </View>
+      <BButton
+        color="primary"
+        value="Sincronizar Catalogos"
+
+        onPress={() => syncCatalogs()}
+      />
     </View>
   );
 };
+const styles = StyleSheet.create({
+  container1: {
+    marginTop: 20, 
+    marginBottom: 20,
+  },
+});
 export default SyncParametersScreen;

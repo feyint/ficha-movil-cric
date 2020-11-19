@@ -93,12 +93,19 @@ const styles = StyleSheet.create({
   input: {
     height: 50,
     backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: 'black',
     borderRadius: 5,
     width: '100%',
     color: '#553432',
     paddingHorizontal: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.18,
+    shadowRadius: 1.00,
+
+    elevation: 1,
   },
   inputerror: {
     height: 50,
