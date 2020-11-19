@@ -1,7 +1,9 @@
 import {useState, useEffect} from 'react';
+import { useFNBNUCVIV_FVCCONVIV, useFVCCONVIV } from '.';
 import {useDatabase} from '../context/DatabaseContext';
-import { PersonParametersConst } from '../core/utils/SystemParameters';
-import {FNBNUCVIV, FUBUBIVIVDETAILS} from '../types';
+import { QuestionFamilyCodes } from '../core/utils/HousingTypes';
+import {PersonParametersConst} from '../core/utils/SystemParameters';
+import {FNBNUCVIV, FUBUBIVIVDETAILS, FVCCONVIV} from '../types';
 
 export function useFNBNUCVIV() {
   const [listFNBNUCVIV, setItem] = useState<FNBNUCVIV[]>([]);
@@ -12,6 +14,9 @@ export function useFNBNUCVIV() {
   const [countFNBNUCVIV, setCount] = useState<number>(0);
   const [loadingFNBNUCVIV, setLoading] = useState<boolean>(false);
   const database = useDatabase();
+  const {getQuestionsOptions} = useFVCCONVIV();
+  const {saveAnswer, getAnswerquestion} = useFNBNUCVIV_FVCCONVIV();
+
   useEffect(() => {
     //clearAllFNBNUCVIV();
     // createFNBNUCVIV({
@@ -71,7 +76,7 @@ export function useFNBNUCVIV() {
   function getFNBNUCVIVbyID(FNBNUCVIVID: number) {
     let statement = `
      SELECT * FROM {0} WHERE ID = ${FNBNUCVIVID}`;
-    database.executeQuery('FNBNUCVIV', statement).then((results) => {
+    return database.executeQuery('FNBNUCVIV', statement).then((results) => {
       const count = results.rows.length;
       const items: FNBNUCVIV[] = [];
       for (let i = 0; i < count; i++) {
@@ -110,9 +115,10 @@ export function useFNBNUCVIV() {
         });
       }
       setFNBNUCVIV(items[0]);
+      return items[0];
     });
   }
-  async function createFNBNUCVIV(newItem: FNBNUCVIV): Promise<void> {
+  async function createFNBNUCVIV(newItem: FNBNUCVIV) {
     setLoading(true);
     let statement = `INSERT INTO {0} 
     ( CODIGO, 
@@ -144,13 +150,60 @@ export function useFNBNUCVIV() {
     ];
     return database
       .executeQuery('FNBNUCVIV', statement, params)
-      .then((results) => {
+      .then(async (results) => {
         const {insertId} = results;
-        getFNBNUCVIVbyID(insertId);
+        return await getFNBNUCVIVbyID(insertId);
       })
       .finally(() => {
         setLoading(false);
       });
+  }
+  async function cloneFNBNUCVIV(
+    item: FNBNUCVIV,
+    FUBUBIVIVID: number,
+    FUBUBIVIVCODE: string,
+  ) {
+    setLoading(true);
+    let NFCODIGO = await getLastNucleoCode(FUBUBIVIVID, FUBUBIVIVCODE);
+    let NUCVIV = await getFNBNUCVIVbyID(item.ID);
+    let originalNUCVIVid = NUCVIV.ID;
+    NUCVIV.CODIGO = NFCODIGO;
+    NUCVIV.ID = -1;
+    NUCVIV.FUBUBIVIV_ID = FUBUBIVIVID;
+    let created = await createFNBNUCVIV(NUCVIV);
+    if (created) {
+      await CloneAnswers(originalNUCVIVid, created.ID);
+      return created;
+    }
+    setLoading(false);
+    return null;
+  }
+  async function CloneAnswers(
+    originalNUCVIVID: number,
+    FNBNUCVIVID: number,
+    type: 1 | 2 = 1,
+  ) {
+    const questions = [
+      QuestionFamilyCodes.MaterialTecho,
+      QuestionFamilyCodes.MaterialPiso,
+      QuestionFamilyCodes.MaterialPared,
+      QuestionFamilyCodes.Tenenciavivienda,
+      QuestionFamilyCodes.Cocinacon,
+      QuestionFamilyCodes.Numerodepersonaspordormitorio,
+      QuestionFamilyCodes.Habitacionesenlavivienda,
+      QuestionFamilyCodes.TipodeAlumbrado,
+    ];
+    let listFVCCONVIV = await getQuestionsOptions(questions);
+    listFVCCONVIV.forEach(async (question) => {
+      let ans = await getAnswerquestion(
+        originalNUCVIVID,
+        question.FVCELEVIV_ID,
+        type,
+      );
+      if (ans) {
+        saveAnswer(type, ans, FNBNUCVIVID, question.FVCELEVIV_ID);
+      }
+    });
   }
   async function updateFNBNUCVIV(item: FNBNUCVIV): Promise<void> {
     setLoading(true);
@@ -228,7 +281,6 @@ export function useFNBNUCVIV() {
     listFNBNUCVIV,
     countFNBNUCVIV,
     loadingFNBNUCVIV,
-    getLastNucleoCode,
     alreadyexistParent,
     getFNBNUCVIVbyID,
     createFNBNUCVIV,
@@ -236,6 +288,8 @@ export function useFNBNUCVIV() {
     selectFNBNUCVIV,
     getAllFNBNUCVIV,
     filterFNBNUCVIV,
+    cloneFNBNUCVIV,
     updateFNBNUCVIV,
+    getLastNucleoCode,
   };
 }

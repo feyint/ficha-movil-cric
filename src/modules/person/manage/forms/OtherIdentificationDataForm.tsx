@@ -126,11 +126,11 @@ const _OtherIdentificationDataForm = (props: any) => {
     const {ID, FNCOCUPAC_ID, FNCORGANI_ID, FNCPUEIND_ID} = props.FNCPERSON;
     if (ID) {
       setValue('puebloIndigena', FNCPUEIND_ID);
-      setPuebloIndigena(FNCPUEIND_ID);
+      setPuebloIndigena('' + FNCPUEIND_ID);
       setValue('ocupacionPrincipal', FNCOCUPAC_ID);
-      setOcupacionPrincipal(FNCOCUPAC_ID);
+      setOcupacionPrincipal('' + FNCOCUPAC_ID);
       setValue('organizacion', FNCORGANI_ID);
-      setOrganizacion(FNCORGANI_ID);
+      setOrganizacion('' + FNCORGANI_ID);
     }
     let grupoanwer = await getAnswers(
       QuestionConditionPersonCodes.GrupoEtnico,

@@ -4,6 +4,7 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {HousingService} from '../../../services';
 import {ListItem} from 'react-native-elements';
 import {FNBNUCVIV} from '../../../state/house/types';
+import BEmpty from '../../../core/components/BEmpty';
 
 const _FamilyList = (props: any) => {
   const [state, setState] = useState({
@@ -26,6 +27,9 @@ const _FamilyList = (props: any) => {
               </ListItem>
             ))
           : null}
+        {props.families && props.families.length == 0 ? (
+          <BEmpty visible={true} />
+        ) : null}
       </View>
       <View style={styles.spacer} />
     </KeyboardAwareScrollView>

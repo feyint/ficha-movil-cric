@@ -29,6 +29,7 @@ import DataBaseProvider, {
 } from '../providers/DataBaseProvider';
 import Realm from 'realm';
 import {HttpProvider} from '../providers';
+import {Alert} from 'react-native';
 
 export default class SyncCatalogService {
   async getEntity(name: string): Promise<{totalItems: number; data: any[]}> {
@@ -37,6 +38,7 @@ export default class SyncCatalogService {
         entityName: name,
       });
     } catch (error) {
+      Alert.alert('Ocurrio un error', 'con la entidad : ' + name);
       console.log(error);
       return {totalItems: 0, data: []};
     }

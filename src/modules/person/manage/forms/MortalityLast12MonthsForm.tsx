@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useState, useEffect} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
@@ -23,6 +24,7 @@ import {
   getQuestionAnswer,
 } from '../../../../state/person/actions';
 import {PersonQuestion} from '../state/types';
+import { useFNCCONPER, useFNCPERSON_FNCCONPER } from '../../../../hooks';
 const questions = [
   QuestionPersonCodes.CausaDeLaMuerte,
   QuestionPersonCodes.RealizacionRitualOPracticasCulturales,
@@ -36,6 +38,22 @@ const schemaForm = yup.object().shape({
 });
 
 const _MortalityLast12MonthsForm = (props: any) => {
+  const {
+    listFNCCONPER,
+    getLabel,
+    getQuestionsOptions,
+    getPicker,
+    getMultiselect,
+    getByID,
+    getBycodes,
+  } = useFNCCONPER();
+  const {saveAnswer, getAnswerquestion} = useFNCPERSON_FNCCONPER();
+  useEffect(() => {
+    getQuestionsOptions(questions);
+  }, []);
+  useEffect(() => {
+    fetchQuestions();
+  }, [listFNCCONPER]);
   const syncCatalogService = new PersonService();
   const [state, setState] = useState({
     questions: [] as PersonQuestion[],
@@ -47,10 +65,6 @@ const _MortalityLast12MonthsForm = (props: any) => {
   const {handleSubmit, control, errors, setValue} = useForm({
     resolver: yupResolver(schemaForm),
   });
-
-  useEffect(() => {
-    fetchQuestions();
-  }, []);
 
   async function getAnswers(type: number, code: string, prop: string) {
     let question = await props.getQuestionAnswer(type, code);
@@ -70,6 +84,44 @@ const _MortalityLast12MonthsForm = (props: any) => {
   };
   function onSubmit(data: any) {
     navigation.goBack();
+  }
+  async function getAnswers(
+    questionCode: string,
+    prop: string,
+    type: 1 | 2 = 1,
+  ) {
+    let question = listFNCCONPER.find((item: FNCCONPER) => {
+      return item.QUESTIONCODE === questionCode;
+    });
+    if (question) {
+      const {ID} = props.FNCPERSON;
+      let ans = await getAnswerquestion(ID, question.FNCELEPER_ID, type);
+      if (ans) {
+        if (type == 1) {
+          setValue(prop, '' + ans);
+        } else {
+          setValue(prop, ans);
+        }
+      }
+      return ans;
+    }
+  }
+  async function SaveAnswers(
+    questionCode: string,
+    answer: any,
+    type: 1 | 2 = 1,
+    personid = 0,
+  ) {
+    let question = listFNCCONPER.find((item: FNCCONPER) => {
+      return item.QUESTIONCODE === questionCode;
+    });
+    if (question) {
+      let ID = props.FNCPERSON.ID;
+      if (personid > 0) {
+        ID = personid;
+      }
+      saveAnswer(type, answer, ID, question.FNCELEPER_ID);
+    }
   }
   return (
     <KeyboardAwareScrollView>
@@ -98,10 +150,7 @@ const _MortalityLast12MonthsForm = (props: any) => {
           control={control}
           render={({onChange, value}) => (
             <BPicker
-              label={
-                getItemsForQuestionSelect(QuestionPersonCodes.CausaDeLaMuerte)
-                  .name
-              }
+              label={getLabel(QuestionPersonCodes.CausaDeLaMuerte)}
               error={errors.CausaDeLaMuerte}
               onChange={(value: any) => {
                 onChange(value);
