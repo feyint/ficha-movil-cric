@@ -1,12 +1,14 @@
 import {useState, useEffect} from 'react';
 import {useDatabase} from '../context/DatabaseContext';
 import {MultiSelectSchema, PickerType} from '../core/utils/types';
+import {capitalizeFirstLetter} from '../core/utils/utils';
 import {SyncCatalogService} from '../services';
-import {FNCCONPER} from '../types';
+import {FNCCONPER, FNCELEPER} from '../types';
 
 export function useFNCCONPER() {
   const [listFNCCONPER, setlist] = useState<FNCCONPER[]>([]);
   const [itemFNCCONPER, setFNCCONPER] = useState<FNCCONPER>();
+  const [listFNCELEPER, setlistLabel] = useState<FNCELEPER[]>([]);
   const [countFNCCONPER, setCount] = useState<number>(0);
   const [loadingFNCCONPER, setLoading] = useState<boolean>(false);
 
@@ -23,15 +25,24 @@ export function useFNCCONPER() {
     inQuery = inQuery.replace('[', '');
     inQuery = inQuery.replace(']', '');
     let statement = `
-    SELECT q.CODIGO as QUESTIONCODE, o.* FROM FNCELEPER q 
+    SELECT q.CODIGO as QUESTIONCODE, q.NOMBRE as QUESTIONNAME, o.* FROM FNCELEPER q 
     INNER JOIN FNCCONPER o ON q.ID = o.FNCELEPER_ID
     WHERE q.CODIGO  in (${inQuery})`;
     await database.executeQuery('FNCCONPER', statement).then((results) => {
       const count = results.rows.length;
       const items: FNCCONPER[] = [];
+      const labels: FNCELEPER[] = [];
       for (let i = 0; i < count; i++) {
         const row = results.rows.item(i);
-        const {ID, CODIGO, ESTADO, NOMBRE, FNCELEPER_ID, QUESTIONCODE} = row;
+        const {
+          ID,
+          CODIGO,
+          ESTADO,
+          NOMBRE,
+          FNCELEPER_ID,
+          QUESTIONCODE,
+          QUESTIONNAME,
+        } = row;
         items.push({
           ID: ID,
           CODIGO: CODIGO,
@@ -40,10 +51,22 @@ export function useFNCCONPER() {
           FNCELEPER_ID: FNCELEPER_ID,
           QUESTIONCODE: QUESTIONCODE,
         });
+        labels.push({
+          CODIGO: QUESTIONCODE,
+          NOMBRE: QUESTIONNAME,
+        });
       }
       setlist(items);
+      setlistLabel(labels);
       setLoading(false);
     });
+  }
+  function getLabel(code: string) {
+    for (let i = 0; i < listFNCELEPER.length; i++) {
+      if (listFNCELEPER[i].CODIGO === code) {
+        return capitalizeFirstLetter(listFNCELEPER[i].NOMBRE);
+      }
+    }
   }
   async function createFNCCONPER(newItem: FNCCONPER): Promise<void> {
     let statement = `INSERT INTO {0} 
@@ -98,6 +121,15 @@ export function useFNCCONPER() {
     item.unshift({value: '-1', label: 'Seleccione', item: null});
     return item;
   }
+  function getByID(id: number) {
+    let item: any = null;
+    for (let i = 0; i < listFNCCONPER.length; i++) {
+      if (listFNCCONPER[i].ID == id) {
+        item = listFNCCONPER[i];
+      }
+    }
+    return item;
+  }
   async function selectFNCCONPER(list: FNCCONPER) {
     setFNCCONPER(list);
   }
@@ -126,9 +158,11 @@ export function useFNCCONPER() {
     deleteFNCCONPER,
     selectFNCCONPER,
     getPicker,
+    getLabel,
     syncFNCCONPER,
     getAllFNCCONPER,
     getQuestionsOptions,
     getMultiselect,
+    getByID,
   };
 }

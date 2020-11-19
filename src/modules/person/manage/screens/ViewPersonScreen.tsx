@@ -1,14 +1,17 @@
-import React, {Component} from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, {useEffect, useState} from 'react';
 import {Alert, StyleSheet, View} from 'react-native';
 import {Appbar, Text} from 'react-native-paper';
 import {List} from 'react-native-paper';
-import {NavigationProp} from '@react-navigation/native';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {connect} from 'react-redux';
-import {GenreService, SexAndRepHealthPersonService} from '../../../../services';
 import {setFNCNCSALREP} from '../../../../state/SexAndRepHealthPerson/actions';
 import {theme} from '../../../../core/style/theme';
 import {FNBNUCVIV, FNCPERSON} from '../../../../types';
+import {useFNCGENERO, useFNCPERSON} from '../../../../hooks';
+import {setFNCPERSON} from '../../../../state/person/actions';
+import {PersonParametersConst} from '../../../../core/utils/SystemParameters';
 
 interface Props {
   navigation: NavigationProp<any>;
@@ -20,216 +23,205 @@ interface State {
   created: boolean;
   enableSexReproductionHealt: boolean;
 }
-class ViewPersonScreen extends Component<Props, State> {
-  private _unsubscribe: any;
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      created: false,
-      enableSexReproductionHealt: false,
-    };
-    this.initdata();
-  }
-  _goBack() {
-    this.props.navigation.goBack();
-  }
-  async initdata() {
-    if (!this.props.FNCPERSON || !this.props.FNCPERSON.ID) {
-      this.navigate('PersonalInformationScreen');
-      this._unsubscribe = this.props.navigation.addListener('focus', () => {
-        try {
-          if (this.state.created) {
-            if (!this.props.FNCPERSON.ID) {
-              this.props.navigation.goBack();
-            }
-          } else {
-            this.setState({
-              created: true,
-            });
-          }
-        } catch (error) {
-          console.error('error focus ', error);
-        }
-      });
-    } else {
-      //let genreService = new GenreService();
-      // if (this.props.FNCPERSON.FNCGENERO_ID) {
-      //   let Genre = await genreService.get(this.props.FNCPERSON.FNCGENERO_ID);
-      //   if (Genre && Genre.CODIGO == 'F') {
-      //     this.setState({
-      //       enableSexReproductionHealt: true,
-      //     });
-      //   }
-      // }
-      // let sxhealtservice = new SexAndRepHealthPersonService();
-      // let item = await sxhealtservice.getFNCSALREP(this.props.FNCPERSON.ID);
-      // if (item) {
-      //   this.props.setFNCNCSALREP(item);
-      // }
+const ViewPersonScreen = (props: any) => {
+  const navigation = useNavigation();
+  const {itemFNCPERSON, getFNCPERSONbyID} = useFNCPERSON();
+  const {itemFNCGENERO, getbyID} = useFNCGENERO();
+  const [created, setcreated] = useState<boolean>(false);
+  const [enableSexReproductionHealt, setenableSexReproductionHealt] = useState<
+    boolean
+  >(false);
+  useEffect(() => {
+    if (props.FNCPERSON.ID) {
+      getFNCPERSONbyID(props.FNCPERSON.ID);
     }
-  }
-  componentWillUnmount() {
-    try {
-      if (this._unsubscribe) {
-        this._unsubscribe();
+  }, []);
+  useEffect(() => {
+    if (itemFNCPERSON) {
+      props.setFNCPERSON(itemFNCPERSON);
+    }
+  }, [itemFNCPERSON]);
+  useEffect(() => {
+    if (itemFNCGENERO) {
+      if (itemFNCGENERO.CODIGO == PersonParametersConst.onlyGenrecode) {
+        setenableSexReproductionHealt(true);
       }
-    } catch (error) {
-      console.error('cath de null', error);
+    }
+  }, [itemFNCGENERO]);
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      initdata();
+    });
+    return unsubscribe;
+  }, [navigation]);
+
+  function _goBack() {
+    props.navigation.goBack();
+  }
+  async function initdata() {
+    if (!props.FNCPERSON || !props.FNCPERSON.ID) {
+      navigate('PersonalInformationScreen');
+
+      if (created) {
+        if (!props.FNCPERSON.ID) {
+          props.navigation.goBack();
+        }
+      } else {
+        setcreated(true);
+      }
+    } else {
+      if (props.FNCPERSON.FNCGENERO_ID) {
+        getbyID(props.FNCPERSON.FNCGENERO_ID);
+      }
     }
   }
-  render() {
-    return (
-      <View>
-        <KeyboardAwareScrollView>
-          <Appbar.Header>
-            <Appbar.BackAction onPress={() => this._goBack()} />
-            <Appbar.Content
-              title="Ver persona"
-              subtitle={`${this.props.FNCPERSON.PRIMER_NOMBRE} ${this.props.FNCPERSON.PRIMER_APELLIDO}`}
-            />
-          </Appbar.Header>
+  return (
+    <View>
+      <KeyboardAwareScrollView>
+        <Appbar.Header>
+          <Appbar.BackAction onPress={() => _goBack()} />
+          <Appbar.Content
+            title="Ver persona"
+            subtitle={`${props.FNCPERSON.PRIMER_NOMBRE} ${props.FNCPERSON.PRIMER_APELLIDO}`}
+          />
+        </Appbar.Header>
 
-          <Text style={{fontSize: 16, padding: 10}}>
-            <Text style={{fontWeight: 'bold'}}>Nucleo familiar:</Text>{' '}
-            {this.props.FNBNUCVIV.CODIGO}
-          </Text>
-          <List.Section>
-            <List.Item
-              title="Datos personales"
-              left={() => (
-                <List.Icon icon="account-box" color={theme.colors.gray} />
-              )}
-              onPress={() => this.navigate('PersonalInformationScreen')}
-            />
-            <View style={styles.divisor} />
-            <List.Item
-              title="Datos de nacimiento"
-              left={() => (
-                <List.Icon icon="baby-face" color={theme.colors.gray} />
-              )}
-              onPress={() => this.navigate('BirthInformationScreen')}
-            />
-            <View style={styles.divisor} />
-            <List.Item
-              title="Seguridad social"
-              left={() => (
-                <List.Icon icon="bottle-tonic-plus" color={theme.colors.gray} />
-              )}
-              onPress={() => this.navigate('SocialSecurityScreen')}
-            />
-            <View style={styles.divisor} />
-            <List.Item
-              title="Datos de contacto"
-              left={() => (
-                <List.Icon
-                  icon="card-account-phone"
-                  color={theme.colors.gray}
-                />
-              )}
-              onPress={() => this.navigate('ContactInformationScreen')}
-            />
-            <View style={styles.divisor} />
-            <List.Item
-              title="Otros datos de identificación"
-              left={() => (
-                <List.Icon icon="card-account-mail" color={theme.colors.gray} />
-              )}
-              onPress={() => {
-                this.props.FNCPERSON.FNCLUNIND_ID != null
-                  ? this.navigate('OtherIdentificationDataScreen')
-                  : Alert.alert(
-                      'Accion no permitida',
-                      'Debe seleccionar luna indigena en datos de nacimiento',
-                    );
-              }}
-            />
-            <View style={styles.divisor} />
-            <List.Item
-              title="Informacion de salud"
-              left={() => <List.Icon icon="bottle-tonic-plus-outline" />}
-              onPress={() => this.navigate('HealthInformationScreen')}
-            />
-            <View style={styles.divisor} />
-            <List.Item
-              title="Estado de salud en la visita"
-              left={() => (
-                <List.Icon icon="map-marker" color={theme.colors.gray} />
-              )}
-              onPress={() => this.navigate('HealthStatusVisitScreen')}
-            />
-            <View style={styles.divisor} />
-            <List.Item
-              title="Hábitos no saludables"
-              left={() => (
-                <List.Icon icon="map-marker" color={theme.colors.gray} />
-              )}
-              onPress={() => this.navigate('UnhealthyHabitsScreen')}
-            />
-            <View style={styles.divisor} />
-            <List.Item
-              title="Salud sexual y reproductiva"
-              left={() => (
-                <List.Icon icon="map-marker" color={theme.colors.gray} />
-              )}
-              onPress={() => {
-                this.state.enableSexReproductionHealt
-                  ? this.navigate('ReproductiveSexualHealtScreen')
-                  : Alert.alert(
-                      'Acción no permitida',
-                      'solo aplica para genero "Femenino"',
-                    );
-              }}
-            />
-            <View style={styles.divisor} />
-            <List.Item
-              title="Finalización de la última gestación"
-              left={() => (
-                <List.Icon icon="map-marker" color={theme.colors.gray} />
-              )}
-              onPress={() => this.navigate('LastPregnancyScreen')}
-            />
-            <View style={styles.divisor} />
-            <List.Item
-              title="Gestación actual"
-              left={() => (
-                <List.Icon icon="map-marker" color={theme.colors.gray} />
-              )}
-              onPress={() => this.navigate('CurrentPregnancyScreen')}
-            />
-            <View style={styles.divisor} />
-            <List.Item
-              title="Otros datos de salud sexual y reproductiva"
-              left={() => (
-                <List.Icon icon="map-marker" color={theme.colors.gray} />
-              )}
-              onPress={() =>
-                this.navigate('AnotherReproductiveSexualHealtScreen')
-              }
-            />
-            <View style={styles.divisor} />
-            <List.Item
-              title="Mortalidad en los últimos 12 meses"
-              left={() => (
-                <List.Icon icon="emoticon-dead" color={theme.colors.gray} />
-              )}
-              onPress={() => this.navigate('MortalityLast12MonthsScreen')}
-            />
-            <View style={styles.divisor} />
-          </List.Section>
-        </KeyboardAwareScrollView>
-      </View>
-    );
-  }
-  navigate(screen: string) {
-    this.props.navigation.navigate(screen);
-  }
-}
+        <Text style={{fontSize: 16, padding: 10}}>
+          <Text style={{fontWeight: 'bold'}}>Nucleo familiar:</Text>{' '}
+          {props.FNBNUCVIV.CODIGO}
+        </Text>
+        <List.Section>
+          <List.Item
+            title="Datos personales"
+            left={() => (
+              <List.Icon icon="account-box" color={theme.colors.gray} />
+            )}
+            onPress={() => navigate('PersonalInformationScreen')}
+          />
+          <View style={styles.divisor} />
+          <List.Item
+            title="Datos de nacimiento"
+            left={() => (
+              <List.Icon icon="baby-face" color={theme.colors.gray} />
+            )}
+            onPress={() => navigate('BirthInformationScreen')}
+          />
+          <View style={styles.divisor} />
+          <List.Item
+            title="Seguridad social"
+            left={() => (
+              <List.Icon icon="bottle-tonic-plus" color={theme.colors.gray} />
+            )}
+            onPress={() => navigate('SocialSecurityScreen')}
+          />
+          <View style={styles.divisor} />
+          <List.Item
+            title="Datos de contacto"
+            left={() => (
+              <List.Icon icon="card-account-phone" color={theme.colors.gray} />
+            )}
+            onPress={() => navigate('ContactInformationScreen')}
+          />
+          <View style={styles.divisor} />
+          <List.Item
+            title="Otros datos de identificación"
+            left={() => (
+              <List.Icon icon="card-account-mail" color={theme.colors.gray} />
+            )}
+            onPress={() => {
+              props.FNCPERSON.FNCLUNIND_ID != null
+                ? navigate('OtherIdentificationDataScreen')
+                : Alert.alert(
+                    'Accion no permitida',
+                    'Debe seleccionar luna indigena en datos de nacimiento',
+                  );
+            }}
+          />
+          <View style={styles.divisor} />
+          <List.Item
+            title="Informacion de salud"
+            left={() => <List.Icon icon="bottle-tonic-plus-outline" />}
+            onPress={() => navigate('HealthInformationScreen')}
+          />
+          <View style={styles.divisor} />
+          <List.Item
+            title="Estado de salud en la visita"
+            left={() => (
+              <List.Icon icon="map-marker" color={theme.colors.gray} />
+            )}
+            onPress={() => navigate('HealthStatusVisitScreen')}
+          />
+          <View style={styles.divisor} />
+          <List.Item
+            title="Hábitos no saludables"
+            left={() => (
+              <List.Icon icon="map-marker" color={theme.colors.gray} />
+            )}
+            onPress={() => navigate('UnhealthyHabitsScreen')}
+          />
+          <View style={styles.divisor} />
+          <List.Item
+            title="Salud sexual y reproductiva"
+            left={() => (
+              <List.Icon icon="map-marker" color={theme.colors.gray} />
+            )}
+            onPress={() => {
+              enableSexReproductionHealt
+                ? navigate('ReproductiveSexualHealtScreen')
+                : Alert.alert(
+                    'Acción no permitida',
+                    'solo aplica para genero "Femenino"',
+                  );
+            }}
+          />
+          <View style={styles.divisor} />
+          <List.Item
+            title="Finalización de la última gestación"
+            left={() => (
+              <List.Icon icon="map-marker" color={theme.colors.gray} />
+            )}
+            onPress={() => navigate('LastPregnancyScreen')}
+          />
+          <View style={styles.divisor} />
+          <List.Item
+            title="Gestación actual"
+            left={() => (
+              <List.Icon icon="map-marker" color={theme.colors.gray} />
+            )}
+            onPress={() => navigate('CurrentPregnancyScreen')}
+          />
+          <View style={styles.divisor} />
+          <List.Item
+            title="Otros datos de salud sexual y reproductiva"
+            left={() => (
+              <List.Icon icon="map-marker" color={theme.colors.gray} />
+            )}
+            onPress={() => navigate('AnotherReproductiveSexualHealtScreen')}
+          />
+          <View style={styles.divisor} />
+          <List.Item
+            title="Mortalidad en los últimos 12 meses"
+            left={() => (
+              <List.Icon icon="emoticon-dead" color={theme.colors.gray} />
+            )}
+            onPress={() => navigate('MortalityLast12MonthsScreen')}
+          />
+          <View style={styles.divisor} />
+        </List.Section>
+      </KeyboardAwareScrollView>
+    </View>
+  );
 
+  function navigate(screen: string) {
+    navigation.navigate(screen);
+  }
+};
 const styles = StyleSheet.create({
   divisor: {height: 1, backgroundColor: theme.colors.light},
 });
 const mapDispatchToProps = {
   setFNCNCSALREP,
+  setFNCPERSON,
 };
 const mapStateToProps = (reducer: any) => {
   return {

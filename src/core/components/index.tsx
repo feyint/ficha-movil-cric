@@ -9,3 +9,4 @@ export {default as BDatePickerModal} from './BDatePickerModal';
 export {default as BImagePicker} from './BImagePicker';
 export {default as BSearchBar} from './BSearchBar';
 export {default as BSearchBarV2} from './BSearchBarV2';
+export {default as ButtonAction} from './ButtonAction';

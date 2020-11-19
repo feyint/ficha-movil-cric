@@ -54,24 +54,24 @@ export function useFNCPERSON() {
                     FNCPAREN_ID,
                     FNCGENERO_ID } = row;
                 items.push({
-                    ID,
-                    CODIGO,
-                    IDENTIFICACION,
-                    PRIMER_NOMBRE,
-                    SEGUNDO_NOMBRE,
-                    PRIMER_APELLIDO,
-                    SEGUNDO_APELLIDO,
-                    FECHA_NACIMIENTO,
-                    TEL_CELULAR,
-                    TEL_ALTERNO,
-                    CORREO_ELECTRONICO,
-                    FNCTIPIDE_ID,
-                    FNCORGANI_ID,
-                    FNCLUNIND_ID,
-                    FNCOCUPAC_ID,
-                    FUCMUNICI_ID,
-                    FNCPAREN_ID,
-                    FNCGENERO_ID,
+                    ID: ID,
+                    CODIGO: CODIGO,
+                    IDENTIFICACION:IDENTIFICACION,
+                    PRIMER_NOMBRE: PRIMER_NOMBRE,
+                    SEGUNDO_NOMBRE: SEGUNDO_NOMBRE,
+                    PRIMER_APELLIDO: PRIMER_APELLIDO,
+                    SEGUNDO_APELLIDO: SEGUNDO_APELLIDO,
+                    FECHA_NACIMIENTO: FECHA_NACIMIENTO,
+                    TEL_CELULAR: TEL_CELULAR,
+                    TEL_ALTERNO: TEL_ALTERNO,
+                    CORREO_ELECTRONICO: CORREO_ELECTRONICO,
+                    FNCTIPIDE_ID: FNCTIPIDE_ID,
+                    FNCORGANI_ID: FNCORGANI_ID,
+                    FNCLUNIND_ID: FNCLUNIND_ID,
+                    FNCOCUPAC_ID: FNCOCUPAC_ID,
+                    FUCMUNICI_ID: FUCMUNICI_ID,
+                    FNCPAREN_ID: FNCPAREN_ID,
+                    FNCGENERO_ID: FNCGENERO_ID,
                 });
             }
             if (single) {
@@ -268,7 +268,6 @@ export function useFNCPERSON() {
             for (let i = 0; i < count; i++) {
               const row = results.rows.item(i);
               const {total} = row;
-              console.error(' total > 0', total > 0);
               return total > 0;
             }
           });

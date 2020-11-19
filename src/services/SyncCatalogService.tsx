@@ -556,6 +556,7 @@ export default class SyncCatalogService {
       })
         .then((realm) => {
           let servicios = realm.objects('FVCCONVIV');
+          realm.close();
           resolve(servicios);
         })
         .catch((error) => {

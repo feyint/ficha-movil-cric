@@ -24,15 +24,18 @@ interface Props {
 }
 interface State {
   selectedItems: any[];
+  items?: any[];
 }
 
 class BMultiSelect extends Component<Props, State> {
   multiSelect: MultiSelect | null | undefined;
   constructor(props: Props) {
     super(props);
-    //initialize a piece of state that we will also be persisting
+    
+
     this.state = {
       selectedItems: this.props.selectedItems ? this.props.selectedItems : [],
+
     };
     // if (this.state.selectedItems) {
     //   this.props.onChange(this.state.selectedItems);
@@ -52,13 +55,21 @@ class BMultiSelect extends Component<Props, State> {
     this.props.onChange(this.state.selectedItems);
   }
   render() {
+    const items:any = this.props.items ? {...this.props.items} : null;
+    if (items){    
+      items.children = items.children.sort((a:any,b:any) => {
+        if (a.name > b.name) return 1; 
+        if (a.name < b.name) return -1;
+        return 0;
+      }) 
+    }
     return (
       <View style={styles.spacer}>
         <View>
           <SectionedMultiSelect
             single={this.props.single ? this.props.single : false}
             expandDropDowns={true}
-            items={this.props.items ? [this.props.items] : []}
+            items={items ? [items] : []}
             uniqueKey="id"
             subKey="children"
             selectText={this.props.label}

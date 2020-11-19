@@ -1,41 +1,30 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
-import {View, StyleSheet, Alert} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {yupResolver} from '@hookform/resolvers';
 import * as yup from 'yup';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
-import {BButton, BPicker} from '../../../../core/components';
-import {updateFNCPERSON} from '../../../../state/person/actions';
-import {
-  FUCDEPARTSCHEMA,
-  FUCMUNICISCHEMA,
-} from '../../../../providers/DataBaseProvider';
-import {
-  saveAnswerLocal,
-  getQuestionAnswer,
-} from '../../../../state/ConditionPerson/actions';
-import {getEntitySelect} from '../../../location/state/actions';
-import {
-  QuestionConditionPersonCodes,
-  QuestionTypes,
-} from '../../../../core/utils/PersonTypes';
+import {BPicker, ButtonAction} from '../../../../core/components';
+import {QuestionConditionPersonCodes} from '../../../../core/utils/PersonTypes';
 import moment from 'moment';
 import {PersonParametersConst} from '../../../../core/utils/SystemParameters';
 import {Text} from 'react-native-paper';
-import {theme} from '../../../../core/style/theme';
+import {setFNCPERSON} from '../../../../state/person/actions';
+
 import {
   useFNCCONPER,
   useFNCLUNIND,
+  useFNCPERSON,
   useFNCPERSON_FNCCONPER,
   useFUCDEPART,
   useFUCMUNICI,
   useFUCPAIS,
 } from '../../../../hooks';
-import {FNCCONPER} from '../../../../types';
-import { getSelectSchema } from '../../../../core/utils/utils';
+import {FNCCONPER, FNCPERSON} from '../../../../types';
+import {getSelectSchema} from '../../../../core/utils/utils';
 
 const schemaForm = yup.object().shape({
   fucmunici: yup.number().required(),
@@ -58,6 +47,7 @@ const _BirthInformationForm = (props: any) => {
   const {saveAnswer, getAnswerquestion} = useFNCPERSON_FNCCONPER();
   const {listFUCPAIS, getAllFUCPAIS} = useFUCPAIS();
   const {listFUCDEPART, getDeptfromPais} = useFUCDEPART();
+  const {itemFNCPERSON, updateFNCPERSON} = useFNCPERSON();
   const {listFUCMUNICI, getFUCMUNICIFromDept, getDetails} = useFUCMUNICI();
   const {listFNCLUNIND, getAllFNCLUNIND} = useFNCLUNIND();
   const [fucmunici, setfucmunici] = useState<string>();
@@ -67,10 +57,17 @@ const _BirthInformationForm = (props: any) => {
   const [enablelacmaterna, setenablelacmaterna] = useState<boolean>(false);
   const [ageActual, setageActual] = useState<string>('');
   useEffect(() => {
-    fetchQuestions();
-  }, []);
-  const fetchQuestions = async () => {
     getQuestionsOptions(questions);
+  }, []);
+  useEffect(() => {
+    fetchQuestions();
+  }, [listFNCCONPER]);
+  useEffect(() => {
+    if (itemFNCPERSON) {
+      props.setFNCPERSON(itemFNCPERSON);
+    }
+  }, [itemFNCPERSON]);
+  const fetchQuestions = async () => {
     getAllFUCPAIS();
     getAllFNCLUNIND();
     if (props.FNCPERSON.ID) {
@@ -88,11 +85,12 @@ const _BirthInformationForm = (props: any) => {
         setfucdepat('' + details.FUCDEPART_ID);
         setValue('fucmunici', props.FNCPERSON.FUCMUNICI_ID);
         setfucmunici('' + props.FNCPERSON.FUCMUNICI_ID);
+        getAnswers(QuestionConditionPersonCodes.LactanciaMaterna, 'lacmaterna');
+        getAnswers(QuestionConditionPersonCodes.LunaOccidental, 'fnclunocci');
       }
     }
-    if (props.FNCPERSON.ID) {
-      let birthDate = props.FNCPERSON.FECHA_NACIMIENTO;
-      console.error('llega a', birthDate);
+    if (props.FNCPERSON.ID && props.FNCPERSON.FECHA_NACIMIENTO) {
+      let birthDate = moment(props.FNCPERSON.FECHA_NACIMIENTO).toDate();
       var years = moment().diff(moment(birthDate, 'DD-MM-YYYY'), 'years');
       var days = moment().diff(moment(birthDate, 'DD-MM-YYYY'), 'days');
       var a = moment(new Date());
@@ -119,42 +117,18 @@ const _BirthInformationForm = (props: any) => {
           `${diffDuration.years()} años ${diffDuration.months()} meses y ${diffDuration.days()} días`,
         );
       }
+    } else {
+      navigation.goBack();
     }
   };
-  function alert(data: any) {
-    editable
-      ? Alert.alert(
-          '',
-          '¿Desea cancelar el proceso?.',
-          [
-            {
-              text: 'NO',
-              onPress: () => console.log('Cancel Pressed'),
-              style: 'cancel',
-            },
-            {text: 'SI', onPress: () => navigation.goBack()},
-          ],
-          {cancelable: false},
-        )
-      : navigation.goBack();
-  }
   const onSubmit = async (data: any) => {
+    SaveAnswers(QuestionConditionPersonCodes.LunaOccidental, data.fnclunocci);
+    SaveAnswers(QuestionConditionPersonCodes.LactanciaMaterna, data.lacmaterna);
+    let person: FNCPERSON = props.FNCPERSON;
+    person.FNCLUNIND_ID = data.fnclunind;
+    person.FUCMUNICI_ID = data.fucmunici;
+    await updateFNCPERSON(person);
     navigation.goBack();
-    /**
-     * props.saveAnswerLocal(
-      QuestionTypes.selectOne,
-      QuestionConditionPersonCodes.LunaOccidental,
-      value,
-    );
-    props.updateFNCPERSON({
-      FNCLUNIND_ID: parseInt(value, 10),
-    });
-    props.saveAnswerLocal(
-        QuestionTypes.selectOne,
-        QuestionConditionPersonCodes.LactanciaMaterna,
-        value,
-      );
-     */
   };
   async function onChangePais(fucpais_id: any) {
     getDeptfromPais(fucpais_id);
@@ -211,7 +185,6 @@ const _BirthInformationForm = (props: any) => {
               label="País"
               error={errors.fucpais}
               onChange={(value: any) => {
-                setEditable(true);
                 onChange(value);
                 setfucpais(value);
                 if (value) {
@@ -232,7 +205,6 @@ const _BirthInformationForm = (props: any) => {
               label="Departamento"
               error={errors.fucdepat}
               onChange={(value: any) => {
-                setEditable(true);
                 onChange(value);
                 setfucdepat(value);
                 if (value) {
@@ -253,7 +225,6 @@ const _BirthInformationForm = (props: any) => {
               label="Municipio"
               error={errors.fucmunici}
               onChange={(value: any) => {
-                setEditable(true);
                 onChange(value);
                 setfucmunici(value);
               }}
@@ -271,14 +242,7 @@ const _BirthInformationForm = (props: any) => {
               label="Luna occidental en la que nació"
               error={errors.fnclunocci}
               onChange={(value: any) => {
-                setEditable(true);
                 onChange(value);
-              }}
-              onLoad={() => {
-                getAnswers(
-                  QuestionConditionPersonCodes.LunaOccidental,
-                  'fnclunocci',
-                );
               }}
               selectedValue={value}
               items={getPicker(QuestionConditionPersonCodes.LunaOccidental)}
@@ -293,7 +257,6 @@ const _BirthInformationForm = (props: any) => {
               label="Luna indígena en la que nació"
               error={errors.fnclunind}
               onChange={(value: any) => {
-                setEditable(true);
                 onChange(value);
                 setfnclunind(value);
               }}
@@ -312,76 +275,25 @@ const _BirthInformationForm = (props: any) => {
                 label="Lactancia materna"
                 error={errors.lacmaterna}
                 onChange={(value: any) => {
-                  setEditable(true);
                   onChange(value);
                 }}
                 selectedValue={value}
                 items={getPicker(QuestionConditionPersonCodes.LactanciaMaterna)}
-                onLoad={() => {
-                  getAnswers(
-                    QuestionConditionPersonCodes.LactanciaMaterna,
-                    'lacmaterna',
-                  );
-                }}
               />
             )}
             name="lacmaterna"
           />
         )}
-        <View style={styles.bottoms}>
-          <BButton
-            style={styles.aceptButon}
-            color="secondary"
-            value="Cancelar"
-            labelStyle={styles.text}
-            onPress={alert}
-          />
-          <BButton
-            style={styles.cancelButon}
-            color="secondary"
-            //labelStyle={styles.text}
-            value="Validar"
-            onPress={handleSubmit(onSubmit)}
-          />
-        </View>
+        <ButtonAction
+          onAccept={handleSubmit(onSubmit)}
+          onCancel={() => navigation.goBack()}
+        />
       </View>
     </KeyboardAwareScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  buton: {
-    width: '25%',
-    //backgroundColor: colors.primary,
-  },
-  aceptButon: {
-    backgroundColor: 'white',
-    color: 'white',
-    width: '25%',
-    borderWidth: 2,
-    borderColor: theme.colors.primary,
-  },
-  bottoms: {display: 'flex', flexDirection: 'row', marginLeft: '20%'},
-  cancelButon: {
-    //left: 500,
-    //position: 'relative',
-    //marginTop: -60,
-    backgroundColor: theme.colors.primary,
-    width: '25%',
-    color: 'red',
-  },
-  text: {
-    fontWeight: 'bold',
-    fontSize: 15,
-    lineHeight: 26,
-    color: theme.colors.primary,
-  },
-  input: {
-    backgroundColor: 'white',
-    height: 40,
-    padding: 10,
-    borderRadius: 4,
-  },
   containerage: {
     fontSize: 16,
     padding: 10,
@@ -398,16 +310,13 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = (person: any) => {
+const mapStateToProps = (store: any) => {
   return {
-    FNCPERSON: person.person.FNCPERSON,
+    FNCPERSON: store.person.FNCPERSON,
   };
 };
 const mapDispatchToProps = {
-  updateFNCPERSON,
-  getEntitySelect,
-  saveAnswerLocal,
-  getQuestionAnswer,
+  setFNCPERSON,
 };
 export default connect(
   mapStateToProps,

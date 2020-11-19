@@ -26,6 +26,7 @@ export default class UtilsService {
         if (item) {
           increment = item.ID + 1;
         }
+        realm.close();
         return increment;
       })
       .catch((error) => {
@@ -59,8 +60,10 @@ export default class UtilsService {
           items = items.filtered(query);
         }
         if (first) {
+          realm.close();
           return items[0];
         }
+        realm.close();
         return items;
       })
       .catch((error) => {

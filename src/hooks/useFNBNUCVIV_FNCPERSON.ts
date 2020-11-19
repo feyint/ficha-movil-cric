@@ -67,7 +67,6 @@ export function useFNBNUCVIV_FNCPERSON() {
     return database
       .executeQuery('FNBNUCVIV_FNCPERSON', statement, params)
       .then((results) => {
-        console.error('llegaaaa');
         const {insertId} = results;
         getFNBNUCVIV_FNCPERSONbyID(insertId);
         return insertId > 0;
@@ -103,7 +102,6 @@ export function useFNBNUCVIV_FNCPERSON() {
         for (let i = 0; i < count; i++) {
           const row = results.rows.item(i);
           const {total} = row;
-          console.error(' total > 0', total > 0);
           return total > 0;
         }
       });

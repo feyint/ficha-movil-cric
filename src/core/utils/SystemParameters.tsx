@@ -5,4 +5,6 @@ export const PersonParametersConst = {
   PRM021: 30,
   PRM025: 365,
   PRM026: 6570,
+  poplacionpobrenoaseguradacode: '1',
+  onlyGenrecode: 'F',
 };

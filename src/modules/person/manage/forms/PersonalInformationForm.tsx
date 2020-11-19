@@ -11,6 +11,7 @@ import {
   BDatePickerModal,
   BPicker,
   BTextInput,
+  ButtonAction,
 } from '../../../../core/components';
 import BNumberInput from '../../../../core/components/BNumberInput';
 import {setFNCPERSON} from '../../../../state/person/actions';
@@ -123,7 +124,7 @@ const _PersonalInformationForm = (props: any) => {
       setIdentification(person.IDENTIFICACION);
       setValue('birthdate', moment(person.FECHA_NACIMIENTO).toDate());
       if (person.FECHA_NACIMIENTO) {
-        setbirthDate(person.FECHA_NACIMIENTO);
+        setbirthDate(moment(person.FECHA_NACIMIENTO).toDate());
       }
       setValue('parentezcoGrupoFamiliar', '' + props.FNCPERSON.FNCPAREN_ID);
       setParentezcoGrupoFamiliar('' + props.FNCPERSON.FNCPAREN_ID);
@@ -131,7 +132,7 @@ const _PersonalInformationForm = (props: any) => {
       setIdentificationType('' + props.FNCPERSON.FNCTIPIDE_ID);
       setValue('gender', '' + props.FNCPERSON.FNCGENERO_ID);
       setGender('' + props.FNCPERSON.FNCGENERO_ID);
-      getAnswers(QuestionConditionPersonCodes.GrupoEtnico, 'GrupoEtnico');
+      // getAnswers(QuestionConditionPersonCodes.GrupoEtnico, 'GrupoEtnico');
     }
   }, [person]);
   const fetchQuestions = async () => {
@@ -144,23 +145,6 @@ const _PersonalInformationForm = (props: any) => {
       setalreadyHeaderID(alreadyexistheader);
     }
   };
-  function alert(data: any) {
-    editable
-      ? Alert.alert(
-          '',
-          '¿Desea cancelar el proceso?.',
-          [
-            {
-              text: 'NO',
-              onPress: () => console.log('Cancel Pressed'),
-              style: 'cancel',
-            },
-            {text: 'SI', onPress: () => navigation.goBack()},
-          ],
-          {cancelable: false},
-        )
-      : navigation.goBack();
-  }
   const onSubmit = async (data: any) => {
     if (person && person.ID != null) {
       await updateFNCPERSON({
@@ -190,10 +174,15 @@ const _PersonalInformationForm = (props: any) => {
       };
       let inserted = await createFNCPERSON(item, props.FNBNUCVIV.ID);
       if (inserted) {
-        SaveAnswers(QuestionConditionPersonCodes.GrupoEtnico, data.GrupoEtnico);
+        SaveAnswers(
+          QuestionConditionPersonCodes.GrupoEtnico,
+          data.GrupoEtnico,
+          1,
+          inserted,
+        );
       }
-      navigation.goBack();
     }
+    navigation.goBack();
   };
   async function asociateExistingPerson(item: FNCPERSON) {
     let asociated = await createFNBNUCVIV_FNCPERSON({
@@ -219,18 +208,15 @@ const _PersonalInformationForm = (props: any) => {
   function onChangeIdentification() {
     const delayDebounceFn = setTimeout(async () => {
       //TODO validar solo numero de identificacion
-      console.error('padam', person);
       if (person && person.ID && person.IDENTIFICACION == identification) {
       } else if (identification && identificationType) {
         let item = await getByIdentification(
           identificationType,
           identification,
         );
-        console.error('item', item);
         if (item) {
           //valida que no exista en el nucleo familiar actual
           let exist = await validateExist(props.FNBNUCVIV.ID, item.ID);
-          console.error('await', person);
           if (exist) {
             setIdentification('');
             Alert.alert(
@@ -361,12 +347,16 @@ const _PersonalInformationForm = (props: any) => {
     questionCode: string,
     answer: any,
     type: 1 | 2 = 1,
+    personid = 0,
   ) {
     let question = listFNCCONPER.find((item: FNCCONPER) => {
       return item.QUESTIONCODE === questionCode;
     });
     if (question) {
-      const {ID} = props.FNCPERSON;
+      let ID = props.FNCPERSON.ID;
+      if (personid > 0) {
+        ID = personid;
+      }
       saveAnswer(type, answer, ID, question.FNCELEPER_ID);
     }
   }
@@ -417,7 +407,6 @@ const _PersonalInformationForm = (props: any) => {
         render={({onChange, value}) =>
           identificationEx.find((i) => i.ID == identificationType) ? (
             <BNumberInput
-              {...console.warn('numericInput')}
               keyboardType="number"
               label="Identificación"
               error={errors.identification}
@@ -430,8 +419,6 @@ const _PersonalInformationForm = (props: any) => {
             />
           ) : (
             <BTextInput
-              {...console.warn('textInput')}
-              {...console.log(`identificationEx ${identificationEx}`)}
               label="Identificación"
               error={errors.identification}
               onChange={(value) => {
@@ -559,13 +546,8 @@ const _PersonalInformationForm = (props: any) => {
                 validateRelationship(value);
               }
             }}
-            // onLoad={async () => {
-            //   let resultFNCPAREN = await personService.getSelectList('FNCPAREN');
-            //   setParentezcoGrupoFamiliarSelect(resultFNCPAREN);
-            // }}
             selectedValue={parentezcoGrupoFamiliar}
             items={getSelectSchema(listFNCPAREN)}
-            //value={value}
           />
         )}
         name="parentezcoGrupoFamiliar"
@@ -585,66 +567,26 @@ const _PersonalInformationForm = (props: any) => {
               }
             }}
             onLoad={() => {}}
-            //value={value}
             selectedValue={value}
             items={getSelectSchema(listFNCCONPER)}
           />
         )}
         name="GrupoEtnico"
       />
-      <View style={styles.buttoms}>
-        <BButton
-          style={styles.aceptButon}
-          color="secondary"
-          value="Cancelar"
-          labelStyle={styles.text}
-          onPress={alert}
-        />
-        <BButton
-          style={styles.cancelButon}
-          color="secondary"
-          value="Guardar"
-          onPress={handleSubmit(onSubmit)}
-        />
-      </View>
+      <ButtonAction
+        onAccept={handleSubmit(onSubmit)}
+        onCancel={() => navigation.goBack()}
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  input: {
-    backgroundColor: 'white',
-    height: 40,
-    padding: 10,
-    borderRadius: 4,
-  },
-  buttoms: {display: 'flex', flexDirection: 'row', marginLeft: '20%'},
   container: {
     flex: 1,
     justifyContent: 'center',
     padding: 8,
     paddingBottom: 50,
-  },
-  aceptButon: {
-    backgroundColor: 'white',
-    color: 'white',
-    width: '25%',
-    borderWidth: 2,
-    borderColor: theme.colors.primary,
-  },
-  cancelButon: {
-    //left: 500,
-    //position: 'relative',
-    //marginTop: -60,
-    backgroundColor: theme.colors.primary,
-    width: '25%',
-    color: 'red',
-  },
-  text: {
-    fontWeight: 'bold',
-    fontSize: 15,
-    lineHeight: 26,
-    color: theme.colors.primary,
   },
 });
 

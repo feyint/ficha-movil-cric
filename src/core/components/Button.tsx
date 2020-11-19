@@ -14,7 +14,7 @@ class BButton extends Component<Props, any> {
   render() {
     return (
       <Button
-        style={[styles.button, this.props.style]}
+        style={[this.props.style]}
         color={this.props.theme.colors[this.props.color]}
         labelStyle={[styles.text, this.props.labelStyle]}
         mode={this.props.mode ? this.props.mode : 'contained'}
@@ -25,17 +25,6 @@ class BButton extends Component<Props, any> {
   }
 }
 const styles = StyleSheet.create({
-  button: {
-    //width: '100%',
-    marginVertical: 10,
-    justifyContent: 'center',
-    //alignItems: 'center',
-    borderRadius: 15,
-    marginTop: 30,
-    height: 57,
-    width: '90%',
-    marginHorizontal: '5%',
-  },
   text: {
     fontWeight: 'bold',
     fontSize: 15,
