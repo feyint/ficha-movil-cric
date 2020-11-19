@@ -477,6 +477,7 @@ const _PersonalInformationForm = (props: any) => {
             label="Primer nombre"
             error={errors.firstname}
             onChange={(value) => {
+              //value = value.replace(/\s/g, '');
               setEditable(true);
               onChange(value);
             }}

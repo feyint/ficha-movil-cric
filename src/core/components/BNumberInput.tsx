@@ -25,6 +25,8 @@ export default class BNumberInput extends Component<Props, any> {
           disabled={this.props.disabled}
           keyboardType="numeric"
           onChangeText={(text) => {
+            text = text.replace(/\s/g, '');
+            text = text.replace(/[^\d,]/g, '');
             this.props.onChange(text);
           }}
           onBlur={this.props.onBlur ? this.props.onBlur() : null}
