@@ -2,6 +2,7 @@
 import React, {useState, useEffect} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
+import {FieldValidator} from '../../../providers';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {yupResolver} from '@hookform/resolvers';
 import * as yup from 'yup';
@@ -53,18 +54,18 @@ const schemaForm = yup.object().shape({
   FuentedeAgua: yup.array().required(),
   AlmacenamientoAguaconsumo: yup.array().required(),
   Tratamientoagua: yup.array().required(),
-  Estadodelrecipiente: yup.number().required(),
+  Estadodelrecipiente: FieldValidator.required(yup, 'Estado del recipiente'),
   ResiduosGeneranenVivienda: yup.number().moreThan(0).required(),
-  ManejoderesiduosBiodegradables: yup.number().required(),
-  ManejoresiduosOrdinariosnoreciclables: yup.number().required(),
-  ManejoresiduosReciclables: yup.number().required(),
-  Manejoresiduospeligrosos: yup.number().required(),
-  Eliminacionexcretas: yup.number().required(),
-  ConvivenciaAnimalesCasa: yup.number().required(),
-  DisposicionfinalAguasdomesticas: yup.number().required(),
+  ManejoderesiduosBiodegradables: FieldValidator.required(yup, 'Manejo de residuos biodegradables'),
+  ManejoresiduosOrdinariosnoreciclables: FieldValidator.required(yup, 'Manejo de residuos ordinarios'),
+  ManejoresiduosReciclables: FieldValidator.required(yup, 'Manejo de residuos reciclables'),
+  Manejoresiduospeligrosos: FieldValidator.required(yup, 'Manejo de residuos peligrosos'),
+  Eliminacionexcretas: FieldValidator.required(yup, 'Eliminaciones excretas'),
+  ConvivenciaAnimalesCasa: FieldValidator.required(yup, 'Convivencia animales en casa'),
+  DisposicionfinalAguasdomesticas: FieldValidator.required(yup, 'Disposción final aguas domesticas'),
   PresenciadevectoresCasa: yup.array().required(),
   TipodeRiesgodelavivienda: yup.array().required(),
-  Tipodeespacioproductivo: yup.number().required(),
+  Tipodeespacioproductivo: FieldValidator.required(yup, 'Tipo de espacio productivo'),
   Destinodelosproductos: yup.array().required(),
   PracticasCulturalesProductivo: yup.array().required(),
   ActividadesProductivasVivienda: yup.array().required(),
@@ -82,7 +83,7 @@ const _HouseConditionForm = (props: any) => {
   const [questionsItems, setquestionsItems] = useState<HousingQuestion[]>([]);
   const [residuoBor, setresiduoBor] = useState<any>(0);
   const [observacion, setObservacion] = useState<any>('');
-  const [riesgo, setRiesgo] = useState<boolean>(false);
+  const [riesgo, setRiesgo] = useState<boolean>();
   const [numeroAnimales, setNumeroAnimales] = useState('');
   const [numeroAnimalesnoVacunados, setNumeroAnimalesnoVacunados] = useState(
     '',
@@ -120,7 +121,6 @@ const _HouseConditionForm = (props: any) => {
       PracticasCulturalesProductivo: [],
       ActividadesProductivasVivienda: [],
       FamiliaPracticasCulturales: [],
-      RiesgoVivienda: false,
       NumeroAnimales: 0,
       NumeroAnimalesnoVacunados: 0,
       Observaciones: '',
@@ -165,8 +165,10 @@ const _HouseConditionForm = (props: any) => {
     }
     setValue('Observaciones', OBSERVACION);
     setObservacion(OBSERVACION);
-    setValue('RiesgoVivienda', Boolean(RIESGO));
-    setRiesgo(Boolean(RIESGO));
+    if (RIESGO !== null && RIESGO !== 'null') {
+      setRiesgo(Boolean(RIESGO))
+      setValue('RiesgoVivienda', Boolean(RIESGO));
+}
   }
   function onSubmit(data: any) {
     let _FNBNUCVIV: FNBNUCVIV = props.FNBNUCVIV;
@@ -222,6 +224,7 @@ const _HouseConditionForm = (props: any) => {
                 label={getLabel(QuestionFamilyCodes.FuentedeAgua)}
                 error={errors.FuentedeAgua}
                 onChange={(values: any) => {
+                  
                   onChange(values);
                   SaveAnswers(QuestionFamilyCodes.FuentedeAgua, values, 2);
                 }}
@@ -590,7 +593,7 @@ const _HouseConditionForm = (props: any) => {
                 items={logicOption}
                 error={errors.RiesgoVivienda}
                 onChange={(value: any) => {
-                  onChange(Boolean(value));
+                  onChange(value);
                   setRiesgo(value);
                 }}
               />
@@ -604,6 +607,9 @@ const _HouseConditionForm = (props: any) => {
                 label={getLabel(QuestionFamilyCodes.PresenciadevectoresCasa)}
                 error={errors.PresenciadevectoresCasa}
                 onChange={(values: any) => {
+                  if (values.includes(297)){
+                    values =[297]
+                  }
                   onChange(values);
                   SaveAnswers(
                     QuestionFamilyCodes.PresenciadevectoresCasa,
