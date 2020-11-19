@@ -11,6 +11,7 @@ import {
   BDatePickerModal,
   BPicker,
   BTextInput,
+  ButtonAction,
 } from '../../../../core/components';
 import BNumberInput from '../../../../core/components/BNumberInput';
 import {setFNCPERSON} from '../../../../state/person/actions';
@@ -140,23 +141,6 @@ const _PersonalInformationForm = (props: any) => {
       setalreadyHeaderID(alreadyexistheader);
     }
   };
-  function alert(data: any) {
-    editable
-      ? Alert.alert(
-          '',
-          '¿Desea cancelar el proceso?.',
-          [
-            {
-              text: 'NO',
-              onPress: () => console.log('Cancel Pressed'),
-              style: 'cancel',
-            },
-            {text: 'SI', onPress: () => navigation.goBack()},
-          ],
-          {cancelable: false},
-        )
-      : navigation.goBack();
-  }
   const onSubmit = async (data: any) => {
     if (person && person.ID != null) {
       await updateFNCPERSON({
@@ -193,8 +177,8 @@ const _PersonalInformationForm = (props: any) => {
           inserted,
         );
       }
-      navigation.goBack();
     }
+    navigation.goBack();
   };
   async function asociateExistingPerson(item: FNCPERSON) {
     let asociated = await createFNBNUCVIV_FNCPERSON({
@@ -419,7 +403,6 @@ const _PersonalInformationForm = (props: any) => {
         render={({onChange, value}) =>
           identificationEx.find((i) => i.ID == identificationType) ? (
             <BNumberInput
-              {...console.warn('numericInput')}
               keyboardType="number"
               label="Identificación"
               error={errors.identification}
@@ -432,8 +415,6 @@ const _PersonalInformationForm = (props: any) => {
             />
           ) : (
             <BTextInput
-              {...console.warn('textInput')}
-              {...console.log(`identificationEx ${identificationEx}`)}
               label="Identificación"
               error={errors.identification}
               onChange={(value) => {
@@ -561,13 +542,8 @@ const _PersonalInformationForm = (props: any) => {
                 validateRelationship(value);
               }
             }}
-            // onLoad={async () => {
-            //   let resultFNCPAREN = await personService.getSelectList('FNCPAREN');
-            //   setParentezcoGrupoFamiliarSelect(resultFNCPAREN);
-            // }}
             selectedValue={parentezcoGrupoFamiliar}
             items={getSelectSchema(listFNCPAREN)}
-            //value={value}
           />
         )}
         name="parentezcoGrupoFamiliar"
@@ -587,66 +563,26 @@ const _PersonalInformationForm = (props: any) => {
               }
             }}
             onLoad={() => {}}
-            //value={value}
             selectedValue={value}
             items={getSelectSchema(listFNCCONPER)}
           />
         )}
         name="GrupoEtnico"
       />
-      <View style={styles.buttoms}>
-        <BButton
-          style={styles.aceptButon}
-          color="secondary"
-          value="Cancelar"
-          labelStyle={styles.text}
-          onPress={alert}
-        />
-        <BButton
-          style={styles.cancelButon}
-          color="secondary"
-          value="Guardar"
-          onPress={handleSubmit(onSubmit)}
-        />
-      </View>
+      <ButtonAction
+        onAccept={handleSubmit(onSubmit)}
+        onCancel={() => navigation.goBack()}
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  input: {
-    backgroundColor: 'white',
-    height: 40,
-    padding: 10,
-    borderRadius: 4,
-  },
-  buttoms: {display: 'flex', flexDirection: 'row', marginLeft: '20%'},
   container: {
     flex: 1,
     justifyContent: 'center',
     padding: 8,
     paddingBottom: 50,
-  },
-  aceptButon: {
-    backgroundColor: 'white',
-    color: 'white',
-    width: '25%',
-    borderWidth: 2,
-    borderColor: theme.colors.primary,
-  },
-  cancelButon: {
-    //left: 500,
-    //position: 'relative',
-    //marginTop: -60,
-    backgroundColor: theme.colors.primary,
-    width: '25%',
-    color: 'red',
-  },
-  text: {
-    fontWeight: 'bold',
-    fontSize: 15,
-    lineHeight: 26,
-    color: theme.colors.primary,
   },
 });
 
