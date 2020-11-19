@@ -37,6 +37,15 @@ export function useFNCPUEIND() {
   async function selectFNCPUEIND(list: FNCPUEIND) {
     setFNCPUEIND(list);
   }
+  function getPuebloByID(id: number) {
+    let item: any = null;
+    for (let i = 0; i < listFNCPUEIND.length; i++) {
+      if (listFNCPUEIND[i].ID == id) {
+        item = listFNCPUEIND[i];
+      }
+    }
+    return item;
+  }
   async function syncFNCPUEIND() {
     setLoading(true);
     let service = new SyncCatalogService();
@@ -61,6 +70,7 @@ export function useFNCPUEIND() {
     deleteFNCPUEIND,
     selectFNCPUEIND,
     syncFNCPUEIND,
+    getPuebloByID,
     getAllFNCPUEIND,
   };
 }
