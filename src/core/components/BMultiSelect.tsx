@@ -54,6 +54,15 @@ class BMultiSelect extends Component<Props, State> {
     this.setState({selectedItems: selectedItems});
     this.props.onChange(this.state.selectedItems);
   }
+  renderLabel() {
+    return (
+      <View>
+        <Text>
+          {this.props.label ? this.props.label : 'Seleccione una opción'}
+        </Text>
+      </View>
+    );
+  }
   render() {
     const items:any = this.props.items ? {...this.props.items} : null;
     if (items){    
@@ -65,6 +74,7 @@ class BMultiSelect extends Component<Props, State> {
     }
     return (
       <View style={styles.spacer}>
+         <Text>{this.renderLabel()}</Text>
         <View>
           <SectionedMultiSelect
             single={this.props.single ? this.props.single : false}

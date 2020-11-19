@@ -52,7 +52,10 @@ export function useFNCPERSON() {
                     FNCOCUPAC_ID,
                     FUCMUNICI_ID,
                     FNCPAREN_ID,
-                    FNCGENERO_ID } = row;
+                    FNCGENERO_ID,
+                    FNCPUEIND_ID,
+                    FVBENCUES_ID
+                 } = row;
                 items.push({
                     ID: ID,
                     CODIGO: CODIGO,
@@ -72,6 +75,8 @@ export function useFNCPERSON() {
                     FUCMUNICI_ID: FUCMUNICI_ID,
                     FNCPAREN_ID: FNCPAREN_ID,
                     FNCGENERO_ID: FNCGENERO_ID,
+                    FNCPUEIND_ID: FNCPUEIND_ID,
+                    FVBENCUES_ID: FVBENCUES_ID,
                 });
             }
             if (single) {
@@ -108,6 +113,8 @@ export function useFNCPERSON() {
                     FUCMUNICI_ID,
                     FNCPAREN_ID,
                     FNCGENERO_ID,
+                    FNCPUEIND_ID,
+                    FVBENCUES_ID,
                 } = row;
                 items.push({
                     ID,
@@ -128,6 +135,8 @@ export function useFNCPERSON() {
                     FUCMUNICI_ID,
                     FNCPAREN_ID,
                     FNCGENERO_ID,
+                    FNCPUEIND_ID,
+                    FVBENCUES_ID,
                 });
             }
             setFNCPERSON(items[0]);
@@ -160,6 +169,8 @@ export function useFNCPERSON() {
                     FUCMUNICI_ID,
                     FNCPAREN_ID,
                     FNCGENERO_ID,
+                    FNCPUEIND_ID,
+                    FVBENCUES_ID,
                 } = row;
                 items.push({
                     ID,
@@ -180,6 +191,8 @@ export function useFNCPERSON() {
                     FUCMUNICI_ID,
                     FNCPAREN_ID,
                     FNCGENERO_ID,
+                    FNCPUEIND_ID,
+                    FVBENCUES_ID,
                 });
             }
             return items[0];
@@ -196,7 +209,10 @@ export function useFNCPERSON() {
             FECHA_NACIMIENTO, 
             FNCTIPIDE_ID,
             FNCPAREN_ID, 
-            FNCGENERO_ID) 
+            FNCGENERO_ID,
+            FNCPUEIND_ID,
+            FVBENCUES_ID
+            ) 
             VALUES ('${item.IDENTIFICACION}',
                 '${item.PRIMER_NOMBRE}',
                 '${item.SEGUNDO_NOMBRE}',
@@ -205,7 +221,10 @@ export function useFNCPERSON() {
                 '${item.FECHA_NACIMIENTO}',
                 ${item.FNCTIPIDE_ID},
                 ${item.FNCPAREN_ID},
-                ${item.FNCGENERO_ID});`;
+                ${item.FNCGENERO_ID},
+                ${item.FNCPUEIND_ID},
+                ${item.FVBENCUES_ID}
+                );`;
         return database
             .executeQuery('FNCPERSON', statement)
             .then(async (results) => {
@@ -243,7 +262,9 @@ export function useFNCPERSON() {
             FNCOCUPAC_ID=${item.FNCOCUPAC_ID ?item.FNCOCUPAC_ID  :  null}, 
             FUCMUNICI_ID=${item.FUCMUNICI_ID ? item.FUCMUNICI_ID : null},
             FNCPAREN_ID=${item.FNCPAREN_ID ? item.FNCPAREN_ID : null}, 
-            FNCGENERO_ID=${item.FNCGENERO_ID ? item.FNCGENERO_ID : null}
+            FNCGENERO_ID=${item.FNCGENERO_ID ? item.FNCGENERO_ID : null},
+            FNCPUEIND_ID=${item.FNCPUEIND_ID ? item.FNCPUEIND_ID : null},
+            FVBENCUES_ID=${item.FVBENCUES_ID ? item.FVBENCUES_ID : null}
             WHERE ID = ${item.ID}`;
         return await database
             .executeQuery('FNCPERSON', statement)

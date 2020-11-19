@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {HelperText, TextInput} from 'react-native-paper';
-import {StyleSheet, View} from 'react-native';
+import {Alert, Clipboard, StyleSheet, View} from 'react-native';
 import BError from './BError';
 
 interface State {
@@ -24,6 +24,25 @@ interface Props {
   maxLength?: any;
 }
 export default class BTextInput extends Component<Props, State> {
+  /* handleOnPaste = (content: any) => {
+    Alert.alert('No es valido pegar contenido');
+    //return true;
+  }; */
+
+  handleOnChangeText = async (content: any) => {
+    console.log('entro al handle');
+    if (content === '') return true;
+    const copiedContent = await Clipboard.getString();
+
+    if (copiedContent === '') return true;
+    const isPasted = content.includes(copiedContent);
+    if (isPasted) {
+      Alert.alert('No es valido pegar contenido');
+      return false;
+    } else {
+      return true;
+    }
+  };
   render() {
     return (
       <View style={styles.container1}>
@@ -33,7 +52,13 @@ export default class BTextInput extends Component<Props, State> {
           secureTextEntry={this.props.isPassword ? true : false}
           mode={this.props.mode ? this.props.mode : 'outline'}
           label={this.props.label}
-          onChangeText={(text) => this.props.onChange(text)}
+          onChangeText={async (text) => {
+            this.handleOnChangeText(text);
+            //(await this.handleOnChangeText(text)) === true ? null : (text = '');
+            //this.handleOnPaste(text) ? (text = '') : null;
+            text = text.replace(/\s/g, '');
+            this.props.onChange(text);
+          }}
           value={this.props.value}
           disabled={this.props.disabled}
           multiline={this.props.multiline}

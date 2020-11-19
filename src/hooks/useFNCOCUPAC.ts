@@ -61,6 +61,15 @@ export function useFNCOCUPAC() {
     setLoading(false);
     countEntity();
   }
+  function getOcupacionByID(id: number) {
+    let item: any = null;
+    for (let i = 0; i < listFNCOCUPAC.length; i++) {
+      if (listFNCOCUPAC[i].ID == id) {
+        item = listFNCOCUPAC[i];
+      }
+    }
+    return item;
+  }
   return {
     itemFNCOCUPAC,
     listFNCOCUPAC,
@@ -70,6 +79,7 @@ export function useFNCOCUPAC() {
     deleteFNCOCUPAC,
     selectFNCOCUPAC,
     syncFNCOCUPAC,
+    getOcupacionByID,
     getAllFNCOCUPAC,
   };
 }

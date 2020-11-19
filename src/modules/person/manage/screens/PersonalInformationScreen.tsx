@@ -19,6 +19,7 @@ class PersonalInformationScreen extends Component<Props, any> {
     super(props);
   }
   _goBack() {
+    console.log('go back');
     this.props.navigation.goBack();
   }
   render() {

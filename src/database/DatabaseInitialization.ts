@@ -401,6 +401,15 @@ export class DatabaseInitialization {
       );
     `);
     transaction.executeSql(`
+      CREATE TABLE IF NOT EXISTS FNCORGANI(
+        ID INTEGER PRIMARY KEY NOT NULL,
+        CODIGO TEXT,
+        NOMBRE TEXT,
+        ESTADO INTEGER,
+        FNCREGION_ID INTEGER
+      );
+    `);
+    transaction.executeSql(`
       CREATE TABLE IF NOT EXISTS FNCTIPIDE(
         ID INTEGER PRIMARY KEY NOT NULL,
         CODIGO TEXT,

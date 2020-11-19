@@ -7,4 +7,6 @@ export const PersonParametersConst = {
   PRM026: 6570,
   poplacionpobrenoaseguradacode: '1',
   onlyGenrecode: 'F',
+  doesNotApplyCode: 'NA',
+  puebloWayuuCode: '23',
 };

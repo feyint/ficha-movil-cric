@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { Alert } from 'react-native';
 
 const get = (url: string, params = {}) => {
   return new Promise((resolve, reject) => {
@@ -16,7 +15,6 @@ const post = (url: string, data: any): any => {
       .post(url, data)
       .then((response) => resolve(response.data))
       .catch((error) => {
-        Alert.alert('error', JSON.stringify(error));
         let exception = Object.assign(error);
         exception.data = data;
         reject(exception);

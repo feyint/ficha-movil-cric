@@ -33,12 +33,12 @@ const schemaForm = yup.object().shape({
   department: FieldValidator.required(yup, 'Departamento'),
   municipality: FieldValidator.required(yup, 'Municipio'),
   territoryType: FieldValidator.required(yup, 'Tipo de territorio'),
-  shelterOrCouncil: FieldValidator.required(yup, 'Campo'),
-  sidewalk: FieldValidator.required(yup, 'Centro poblado'),
-  carezone: FieldValidator.required(yup, 'Zona de cuidado'),
+  shelterOrCouncil: FieldValidator.required(yup, 'Centro poblado'),
+  sidewalk: FieldValidator.required(yup, 'Barrio o Vereda'),
+  carezone: yup.mixed().optional(),
   latitude: yup.string().optional(),
   longitude: yup.string().optional(),
-  address: FieldValidator.required(yup, 'Dirección'),
+  address: FieldValidator.required(yup, 'Direccion'),
   housingCode: yup.string().optional(),
 });
 

@@ -36,18 +36,22 @@ import {
 import {getSelectSchema} from '../../../../core/utils/utils';
 import {FNCCONPER, FNCPERSON} from '../../../../types';
 import moment from 'moment';
-// TODO ERROR AL GUARDAR PUEBLO INDIGENA EN LA CREACIÓN
+import {FieldValidator} from '../../../../providers';
+
 const schemaForm = yup.object().shape({
-  parentezcoGrupoFamiliar: yup.string().required(),
-  firstname: yup.string().required(),
+  parentezcoGrupoFamiliar: FieldValidator.required(
+    yup,
+    'Parentezco en el grupo familiar',
+  ),
+  firstname: FieldValidator.required(yup, 'Primer nombre'),
   middlename: yup.string().optional(),
-  lastname: yup.string().required(),
+  lastname: FieldValidator.required(yup, 'Primer apellido'),
   secondlastname: yup.string().optional(),
   identification: yup.string().optional(),
-  identificationType: yup.string().required(),
-  gender: yup.string().required(),
-  GrupoEtnico: yup.number().required(),
-  birthdate: yup.date().required('La fecha de nacimiento es requerida'),
+  identificationType: FieldValidator.required(yup, 'Tipo de identificacion'),
+  gender: FieldValidator.required(yup, 'Genero'),
+  GrupoEtnico: FieldValidator.required(yup, 'Grupo etnico'),
+  birthdate: FieldValidator.required(yup, 'Fecha de nacimiento'),
 });
 const _PersonalInformationForm = (props: any) => {
   const navigation = useNavigation();
@@ -451,7 +455,7 @@ const _PersonalInformationForm = (props: any) => {
         render={({onChange, value}) => (
           <BDatePickerModal
             maximumDate={new Date()}
-            label="Fecha de nacimiento"
+            label="*Fecha de nacimiento"
             error={errors.birthdate}
             onChange={(value: Date) => {
               setEditable(true);
@@ -473,6 +477,7 @@ const _PersonalInformationForm = (props: any) => {
             label="Primer nombre"
             error={errors.firstname}
             onChange={(value) => {
+              //value = value.replace(/\s/g, '');
               setEditable(true);
               onChange(value);
             }}

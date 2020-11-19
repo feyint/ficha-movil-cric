@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {Appbar, Paragraph} from 'react-native-paper';
-import {BButton, BHeader} from '../../../core/components';
+import {BButton, Bloader, BHeader} from '../../../core/components';
 import {
   useFNCCONPER,
   useFNCELEPER,
@@ -23,6 +23,7 @@ import {
   useFVCCONVIV,
   useFVCELEVIV,
 } from '../../../hooks';
+import {useFNCORGANI} from '../../../hooks/useFNCORGANI';
 
 const SyncParametersScreen = () => {
   const {countFVCELEVIV, syncFVCELEVIV, loadingFVCELEVIV} = useFVCELEVIV();
@@ -42,6 +43,7 @@ const SyncParametersScreen = () => {
   const {countFNCELEPER, syncFNCELEPER, loadingFNCELEPER} = useFNCELEPER();
   const {countFNCCONPER, syncFNCCONPER, loadingFNCCONPER} = useFNCCONPER();
   const {countFUCPAIS, syncFUCPAIS, loadingFUCPAIS} = useFUCPAIS();
+  const {countFNCORGANI, syncFNCORGANI, loadingFNCORGANI} = useFNCORGANI();
   const {
     countFUCZONCUI_FUCBARVER,
     loadingFUCZONCUI_FUCBARVER,
@@ -69,11 +71,12 @@ const SyncParametersScreen = () => {
     syncFNCELEPER();
     syncFNCCONPER();
     syncFUCPAIS();
+    syncFNCORGANI();
     //await this.clearPollEntities();
     // this.countEntity();
   }
   return (
-    <View>
+    <View style={{flex:1}}>
       <Appbar.Header>
         <Appbar.Content title="Sincronización de información" />
       </Appbar.Header>
@@ -154,13 +157,36 @@ const SyncParametersScreen = () => {
         FNCCONPER(Person options):
         {loadingFNCCONPER ? 'Cargando..' : countFNCCONPER}
       </Paragraph>
-      </View>
+      <Paragraph>
+        FNCORGANI(Organizacion):
+        {loadingFNCORGANI ? 'Cargando..' : countFNCORGANI}
+      </Paragraph>
+      <Bloader
+        visible={
+          loadingFVCELEVIV ||
+          loadingFVCCONVIV ||
+          loadingFUCDEPART ||
+          loadingFUCMUNICI ||
+          loadingFUCTIPTER ||
+          loadingFUCBARVER ||
+          loadingFUCRESGUA ||
+          loadingFUCZONCUI ||
+          loadingFNCTIPIDE ||
+          loadingFNCOCUPAC ||
+          loadingFNCPUEIND ||
+          loadingFNCLUNIND ||
+          loadingFNCGENERO ||
+          loadingFNCELEPER ||
+          loadingFNCCONPER ||
+          loadingFNCORGANI
+        }
+      />
+            </View>
       <BButton
         color="primary"
         value="Sincronizar Catalogos"
 
-        onPress={() => syncCatalogs()}
-      />
+        onPress={() => syncCatalogs()} />
     </View>
   );
 };

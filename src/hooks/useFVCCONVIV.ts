@@ -58,38 +58,41 @@ export function useFVCCONVIV() {
     SELECT q.CODIGO as QUESTIONCODE, q.NOMBRE as QUESTIONNAME, o.* FROM FVCELEVIV q 
     INNER JOIN FVCCONVIV o ON q.ID = o.FVCELEVIV_ID
     WHERE q.CODIGO  in (${inQuery})`;
-    await database.executeQuery('FVCELEVIV', statement).then((results) => {
-      const count = results.rows.length;
-      const items: FVCCONVIV[] = [];
-      const labels: FVCELEVIV[] = [];
-      for (let i = 0; i < count; i++) {
-        const row = results.rows.item(i);
-        const {
-          ID,
-          CODIGO,
-          ESTADO,
-          NOMBRE,
-          FVCELEVIV_ID,
-          QUESTIONCODE,
-          QUESTIONNAME,
-        } = row;
-        items.push({
-          ID: ID,
-          CODIGO: CODIGO,
-          ESTADO: ESTADO,
-          NOMBRE: NOMBRE,
-          FVCELEVIV_ID: FVCELEVIV_ID,
-          QUESTIONCODE: QUESTIONCODE,
-        });
-        labels.push({
-          CODIGO: QUESTIONCODE,
-          NOMBRE: QUESTIONNAME,
-        });
-      }
-      setlist(items);
-      setlistLabel(labels);
-      setLoading(false);
-    });
+    return await database
+      .executeQuery('FVCELEVIV', statement)
+      .then((results) => {
+        const count = results.rows.length;
+        const items: FVCCONVIV[] = [];
+        const labels: FVCELEVIV[] = [];
+        for (let i = 0; i < count; i++) {
+          const row = results.rows.item(i);
+          const {
+            ID,
+            CODIGO,
+            ESTADO,
+            NOMBRE,
+            FVCELEVIV_ID,
+            QUESTIONCODE,
+            QUESTIONNAME,
+          } = row;
+          items.push({
+            ID: ID,
+            CODIGO: CODIGO,
+            ESTADO: ESTADO,
+            NOMBRE: NOMBRE,
+            FVCELEVIV_ID: FVCELEVIV_ID,
+            QUESTIONCODE: QUESTIONCODE,
+          });
+          labels.push({
+            CODIGO: QUESTIONCODE,
+            NOMBRE: QUESTIONNAME,
+          });
+        }
+        setlist(items);
+        setlistLabel(labels);
+        setLoading(false);
+        return items;
+      });
   }
   function getLabel(code: string) {
     for (let i = 0; i < listFVCELEVIV.length; i++) {

@@ -219,7 +219,7 @@ const _HouseForm = (props: any) => {
           control={control}
           render={({onChange, value}) => (
             <BPicker
-              label={'Tenencia Vivien'}
+              label={'Tenencia vivienda'}
               error={errors.Tenenciavivienda}
               onChange={(vlue: any) => {
                 onChange(vlue);
