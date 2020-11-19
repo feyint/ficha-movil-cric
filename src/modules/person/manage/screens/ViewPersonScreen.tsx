@@ -32,12 +32,8 @@ const ViewPersonScreen = (props: any) => {
     boolean
   >(false);
   useEffect(() => {
-    if (props.FNCPERSON.ID) {
-      getFNCPERSONbyID(props.FNCPERSON.ID);
-    }
-  }, []);
-  useEffect(() => {
     if (itemFNCPERSON) {
+      console.error(itemFNCPERSON);
       props.setFNCPERSON(itemFNCPERSON);
     }
   }, [itemFNCPERSON]);
@@ -70,6 +66,7 @@ const ViewPersonScreen = (props: any) => {
         setcreated(true);
       }
     } else {
+      getFNCPERSONbyID(props.FNCPERSON.ID);
       if (props.FNCPERSON.FNCGENERO_ID) {
         getbyID(props.FNCPERSON.FNCGENERO_ID);
       }

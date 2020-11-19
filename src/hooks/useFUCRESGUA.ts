@@ -92,8 +92,8 @@ export function useFUCRESGUA() {
     await database.clearEntity('FUCRESGUA');
     let service = new SyncCatalogService();
     let result = await service.getEntity('FUCRESGUA');
-    result.data.map((item: any) => {
-      createFUCRESGUA({
+    result.data.map(async (item: any) => {
+      await createFUCRESGUA({
         ID: item.id,
         CODIGO: item.codigo,
         CODIGO_FF: item.codigoFf,
