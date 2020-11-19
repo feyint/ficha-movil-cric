@@ -31,14 +31,14 @@ interface GeolocationData {
 }
 const schemaForm = yup.object().shape({
   department: FieldValidator.required(yup, 'Departamento'),
-  municipality: yup.string().required(),
-  territoryType: yup.string().required(),
-  shelterOrCouncil: yup.string().required(),
+  municipality: FieldValidator.required(yup, 'Municipio'),
+  territoryType: FieldValidator.required(yup, 'Tipo de territorio'),
+  shelterOrCouncil: FieldValidator.required(yup, 'Campo'),
   sidewalk: FieldValidator.required(yup, 'Centro poblado'),
-  carezone: yup.mixed().optional(),
+  carezone: FieldValidator.required(yup, 'Zona de cuidado'),
   latitude: yup.string().optional(),
   longitude: yup.string().optional(),
-  address: yup.string().required(),
+  address: FieldValidator.required(yup, 'Dirección'),
   housingCode: yup.string().optional(),
 });
 
