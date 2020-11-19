@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import {View} from 'react-native';
 import {Appbar, Paragraph} from 'react-native-paper';
-import {BButton} from '../../../core/components';
+import {BButton, Bloader} from '../../../core/components';
 import {
   useFNCCONPER,
   useFNCELEPER,
@@ -76,7 +76,7 @@ const SyncParametersScreen = () => {
     // this.countEntity();
   }
   return (
-    <View>
+    <View style={{flex:1}}>
       <Appbar.Header>
         <Appbar.Content title="Sincronización de información" />
       </Appbar.Header>
@@ -163,6 +163,26 @@ const SyncParametersScreen = () => {
         FNCORGANI(Organizacion):
         {loadingFNCORGANI ? 'Cargando..' : countFNCORGANI}
       </Paragraph>
+      <Bloader
+        visible={
+          loadingFVCELEVIV ||
+          loadingFVCCONVIV ||
+          loadingFUCDEPART ||
+          loadingFUCMUNICI ||
+          loadingFUCTIPTER ||
+          loadingFUCBARVER ||
+          loadingFUCRESGUA ||
+          loadingFUCZONCUI ||
+          loadingFNCTIPIDE ||
+          loadingFNCOCUPAC ||
+          loadingFNCPUEIND ||
+          loadingFNCLUNIND ||
+          loadingFNCGENERO ||
+          loadingFNCELEPER ||
+          loadingFNCCONPER ||
+          loadingFNCORGANI
+        }
+      />
     </View>
   );
 };

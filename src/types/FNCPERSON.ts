@@ -21,4 +21,6 @@ export interface FNCPERSON {
   FUCMUNICI_ID?: number;
   FNCPAREN_ID: number;
   FNCGENERO_ID: number;
+  FNCPUEIND_ID: number;
+  FVBENCUES_ID: number;
 }

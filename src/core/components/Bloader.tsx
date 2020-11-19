@@ -1,43 +1,61 @@
-import React from 'react';
-import {StyleSheet, View, Modal, ActivityIndicator} from 'react-native';
+import * as React from 'react';
+import {StyleSheet} from 'react-native';
+import {
+  Modal,
+  Portal,
+  Text,
+  Provider,
+  ActivityIndicator,
+  Colors,
+} from 'react-native-paper';
 
-const BLoader = (props: any) => {
-  const {loading} = props;
-
+interface Props {
+  visible: boolean;
+  hideModal?: any;
+  dismissable?: boolean;
+  text?: string;
+}
+const Bloader = (props: Props) => {
   return (
-    <Modal
-      transparent={true}
-      animationType={'none'}
-      visible={loading}
-      onRequestClose={() => {
-        console.log('close modal');
-      }}>
-      <View style={styles.modalBackground}>
-        <View style={styles.activityIndicatorWrapper}>
-          <ActivityIndicator animating={loading} />
-        </View>
-      </View>
-    </Modal>
+    <Provider>
+      <Portal>
+        <Modal
+          dismissable={props.dismissable ? props.dismissable : false}
+          visible={props.visible}
+          onDismiss={props.hideModal ? props.hideModal() : null}
+          contentContainerStyle={styles.containerStyle}>
+          <ActivityIndicator
+            size={'large'}
+            animating={true}
+            color={Colors.cyan800}
+          />
+          <Text style={styles.text}>
+            {props.text ? props.text : 'Cargando ...'}
+          </Text>
+        </Modal>
+      </Portal>
+    </Provider>
   );
 };
 
 const styles = StyleSheet.create({
-  modalBackground: {
-    flex: 1,
-    alignItems: 'center',
-    flexDirection: 'column',
-    justifyContent: 'space-around',
-    backgroundColor: '#00000040',
+  containerStyle: {
+    borderRadius: 15,
+    position: 'relative',
+    backgroundColor: 'white',
+    padding: 20,
+    width: '50%',
+    justifyContent: 'center',
+    alignSelf: 'center',
   },
-  activityIndicatorWrapper: {
-    backgroundColor: '#FFFFFF',
-    height: 100,
-    width: 100,
-    borderRadius: 10,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-around',
+  text: {
+    marginTop: 10,
+    fontSize: 20,
+    fontWeight: 'bold',
+    position: 'relative',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    color: Colors.cyan800,
   },
 });
-
-export default BLoader;
+export default Bloader;
