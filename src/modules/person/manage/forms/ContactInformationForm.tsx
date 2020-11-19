@@ -31,7 +31,6 @@ const _ContactInformationForm = (props: any) => {
   }, []);
   useEffect(() => {
     if (itemFNCPERSON) {
-      console.error(itemFNCPERSON);
       props.setFNCPERSON(itemFNCPERSON);
     }
   }, [itemFNCPERSON]);

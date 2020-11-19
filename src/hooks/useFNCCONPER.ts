@@ -130,6 +130,18 @@ export function useFNCCONPER() {
     }
     return item;
   }
+  function getBycodes(questioncode: string, optioncode: string) {
+    let item: any = null;
+    for (let i = 0; i < listFNCCONPER.length; i++) {
+      if (
+        listFNCCONPER[i].QUESTIONCODE == questioncode &&
+        listFNCCONPER[i].CODIGO == optioncode
+      ) {
+        item = listFNCCONPER[i];
+      }
+    }
+    return item;
+  }
   async function selectFNCCONPER(list: FNCCONPER) {
     setFNCCONPER(list);
   }
@@ -164,5 +176,6 @@ export function useFNCCONPER() {
     getQuestionsOptions,
     getMultiselect,
     getByID,
+    getBycodes,
   };
 }

@@ -23,6 +23,7 @@ import {
   useFVCCONVIV,
   useFVCELEVIV,
 } from '../../../hooks';
+import {useFNCORGANI} from '../../../hooks/useFNCORGANI';
 
 const SyncParametersScreen = () => {
   const {countFVCELEVIV, syncFVCELEVIV, loadingFVCELEVIV} = useFVCELEVIV();
@@ -42,6 +43,7 @@ const SyncParametersScreen = () => {
   const {countFNCELEPER, syncFNCELEPER, loadingFNCELEPER} = useFNCELEPER();
   const {countFNCCONPER, syncFNCCONPER, loadingFNCCONPER} = useFNCCONPER();
   const {countFUCPAIS, syncFUCPAIS, loadingFUCPAIS} = useFUCPAIS();
+  const {countFNCORGANI, syncFNCORGANI, loadingFNCORGANI} = useFNCORGANI();
   const {
     countFUCZONCUI_FUCBARVER,
     loadingFUCZONCUI_FUCBARVER,
@@ -69,6 +71,7 @@ const SyncParametersScreen = () => {
     syncFNCELEPER();
     syncFNCCONPER();
     syncFUCPAIS();
+    syncFNCORGANI();
     //await this.clearPollEntities();
     // this.countEntity();
   }
@@ -155,6 +158,10 @@ const SyncParametersScreen = () => {
       <Paragraph>
         FNCCONPER(Person options):
         {loadingFNCCONPER ? 'Cargando..' : countFNCCONPER}
+      </Paragraph>
+      <Paragraph>
+        FNCORGANI(Organizacion):
+        {loadingFNCORGANI ? 'Cargando..' : countFNCORGANI}
       </Paragraph>
     </View>
   );
