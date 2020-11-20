@@ -70,6 +70,26 @@ export function useFUCBARVER() {
     ];
     return await database.executeQuery('FUCBARVER', statement, params);
   }
+  
+  async function bulkFUCBARVER(newItems: Array<FUCBARVER>): Promise<void> {
+    let statementValues = '(?, ?, ?, ?, ?, ?),'.repeat(newItems.length);
+    statementValues = statementValues.substr(0, statementValues.length - 1);
+    let statement = `INSERT INTO {0} 
+    (ID, CODIGO, NOMBRE, ESTADO, FUCRESGUA_ID, FUCZONA_ID) 
+    VALUES ${statementValues}; `;
+    let params: any[] = [];
+    newItems.forEach((newItem) => {
+      params.push(newItem.ID);
+      params.push(newItem.CODIGO);
+      params.push(newItem.NOMBRE);
+      params.push(newItem.ESTADO);
+      params.push(newItem.FUCRESGUA_ID);
+      params.push(newItem.FUCZONA_ID);
+    });
+    return await database
+      .executeQuery('FUCBARVER', statement, params)
+      .then(countEntity);
+  }
   async function countEntity(): Promise<void> {
     return database.countEntity('FUCBARVER').then(setCount);
   }
@@ -90,8 +110,10 @@ export function useFUCBARVER() {
     await database.clearEntity('FUCBARVER');
     let service = new SyncCatalogService();
     let result = await service.getEntity('FUCBARVER');
-    result.data.map((item: any) => {
-      createFUCBARVER({
+    let items: Array<FUCBARVER> = [];
+    for (let i = 0; i < result.data.length; i++) {
+      const item = result.data[i];
+      items.push({
         ID: item.id,
         CODIGO: item.codigo,
         NOMBRE: item.nombre,
@@ -99,7 +121,14 @@ export function useFUCBARVER() {
         FUCRESGUA_ID: item.fucresguaId.id,
         FUCZONA_ID: item.fuczonaId.id,
       });
-    });
+      if (items.length > 100) {
+        await bulkFUCBARVER(items);
+        items = [];
+      }
+    }
+    if (items.length > 0) {
+      await bulkFUCBARVER(items);
+    }
     setLoading(false);
     countEntity();
   }
@@ -115,5 +144,6 @@ export function useFUCBARVER() {
     syncFUCBARVER,
     getAllFUCBARVER,
     filterFUCBARVER,
+    bulkFUCBARVER
   };
 }

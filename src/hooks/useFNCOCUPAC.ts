@@ -29,6 +29,25 @@ export function useFNCOCUPAC() {
     ];
     return await database.executeQuery('FNCOCUPAC', statement, params);
   }
+  async function bulkFNCOCUPAC(newItems: Array<FNCOCUPAC>): Promise<void> {
+    let statementValues = '(?, ?, ?, ?, ?, ?),'.repeat(newItems.length);
+    statementValues = statementValues.substr(0, statementValues.length - 1);
+    let statement = `INSERT INTO {0} 
+    (ID, CODIGO, NOMBRE, ESTADO, CODIGO_FF, FNCOCUSUB_ID) 
+    VALUES ${statementValues}; `;
+    let params: any[] = [];
+    newItems.forEach((newItem) => {
+      params.push(newItem.ID);
+      params.push(newItem.CODIGO);
+      params.push(newItem.NOMBRE);
+      params.push(newItem.ESTADO);
+      params.push(newItem.CODIGO_FF);
+      params.push(newItem.FNCOCUSUB_ID);
+    });
+    return await database
+      .executeQuery('FNCOCUPAC', statement, params)
+      .then(countEntity);
+  }
   async function countEntity(): Promise<void> {
     return database.countEntity('FNCOCUPAC').then(setCount);
   }
@@ -48,8 +67,10 @@ export function useFNCOCUPAC() {
     setLoading(true);
     let service = new SyncCatalogService();
     let result = await service.getEntity('FNCOCUPAC');
-    result.data.map(async (item: any) => {
-      await createFNCOCUPAC({
+    let items: Array<FNCOCUPAC> = [];
+    for (let i = 0; i < result.data.length; i++) {
+      const item = result.data[i];
+      items.push({
         ID: item.id,
         CODIGO: item.codigo,
         NOMBRE: item.nombre,
@@ -57,7 +78,14 @@ export function useFNCOCUPAC() {
         CODIGO_FF: item.codigoFf,
         FNCOCUSUB_ID: item.fncocusubId.id,
       });
-    });
+      if (items.length > 100) {
+        await bulkFNCOCUPAC(items);
+        items = [];
+      }
+    }
+    if (items.length > 0) {
+      await bulkFNCOCUPAC(items);
+    }
     setLoading(false);
     countEntity();
   }
@@ -81,5 +109,6 @@ export function useFNCOCUPAC() {
     syncFNCOCUPAC,
     getOcupacionByID,
     getAllFNCOCUPAC,
+    bulkFNCOCUPAC,
   };
 }

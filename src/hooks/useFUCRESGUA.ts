@@ -72,6 +72,27 @@ export function useFUCRESGUA() {
     ];
     return await database.executeQuery('FUCRESGUA', statement, params);
   }
+  async function bulkFUCRESGUA(newItems: Array<FUCRESGUA>): Promise<void> {
+    let statementValues = '(?, ?, ?, ?, ?, ?, ?, ?),'.repeat(newItems.length);
+    statementValues = statementValues.substr(0, statementValues.length - 1);
+    let statement = `INSERT INTO {0} 
+    (ID, CODIGO, CODIGO_FF,  NOMBRE, ESTADO, FUCMUNICI_ID, FUCTIPRES_ID, FUCTERCRI_ID) 
+    VALUES ${statementValues}; `;
+    let params: any[] = [];
+    newItems.forEach((newItem) => {
+      params.push(newItem.ID);
+      params.push(newItem.CODIGO);
+      params.push(newItem.CODIGO_FF);
+      params.push(newItem.NOMBRE);
+      params.push(newItem.ESTADO);
+      params.push(newItem.FUCMUNICI_ID);
+      params.push(newItem.FUCTIPRES_ID);
+      params.push(newItem.FUCTERCRI_ID);
+    });
+    return await database
+      .executeQuery('FUCRESGUA', statement, params)
+      .then(countEntity);
+  }
   async function countEntity(): Promise<void> {
     return database.countEntity('FUCRESGUA').then(setCount);
   }
@@ -92,8 +113,10 @@ export function useFUCRESGUA() {
     await database.clearEntity('FUCRESGUA');
     let service = new SyncCatalogService();
     let result = await service.getEntity('FUCRESGUA');
-    result.data.map(async (item: any) => {
-      await createFUCRESGUA({
+    let items: Array<FUCRESGUA> = [];
+    for (let i = 0; i < result.data.length; i++) {
+      const item = result.data[i];
+      items.push({
         ID: item.id,
         CODIGO: item.codigo,
         CODIGO_FF: item.codigoFf,
@@ -103,7 +126,14 @@ export function useFUCRESGUA() {
         FUCTIPRES_ID: item.fuctipresId.id,
         FUCTERCRI_ID: item.fuctercriId.id,
       });
-    });
+      if (items.length > 100) {
+        await bulkFUCRESGUA(items);
+        items = [];
+      }
+    }
+    if (items.length > 0) {
+      await bulkFUCRESGUA(items);
+    }
     setLoading(false);
     countEntity();
   }
@@ -118,5 +148,6 @@ export function useFUCRESGUA() {
     syncFUCRESGUA,
     getAllFUCRESGUA,
     getFilterFUCRESGUA,
+    bulkFUCRESGUA,
   };
 }

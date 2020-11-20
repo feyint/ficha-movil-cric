@@ -73,6 +73,25 @@ export function useFUCMUNICI() {
       .executeQuery('FUCMUNICI', statement, params)
       .then(countEntity);
   }
+  async function bulkFUCMUNICI(newItems: Array<FUCMUNICI>): Promise<void> {
+    let statementValues = '(?, ?, ?, ?, ?, ?),'.repeat(newItems.length);
+    statementValues = statementValues.substr(0, statementValues.length - 1);
+    let statement = `INSERT INTO {0} 
+    (ID, CODIGO, NOMBRE, ESTADO, FUCTIPMUN_ID, FUCDEPART_ID) 
+    VALUES ${statementValues}; `;
+    let params: any[] = [];
+    newItems.forEach((newItem) => {
+      params.push(newItem.ID);
+      params.push(newItem.CODIGO);
+      params.push(newItem.NOMBRE);
+      params.push(newItem.ESTADO);
+      params.push(newItem.FUCTIPMUN_ID);
+      params.push(newItem.FUCDEPART_ID);
+    });
+    return await database
+      .executeQuery('FUCMUNICI', statement, params)
+      .then(countEntity);
+  }
   async function countEntity(): Promise<void> {
     return database.countEntity('FUCMUNICI').then(setCount);
   }
@@ -92,8 +111,10 @@ export function useFUCMUNICI() {
     setLoading(true);
     let service = new SyncCatalogService();
     let result = await service.getEntity('FUCMUNICI');
-    result.data.map((item: any) => {
-      createFUCMUNICI({
+    let items: Array<FUCMUNICI> = [];
+    for (let i = 0; i < result.data.length; i++) {
+      const item = result.data[i];
+      items.push({
         ID: item.id,
         CODIGO: item.codigo,
         NOMBRE: item.nombre,
@@ -101,7 +122,14 @@ export function useFUCMUNICI() {
         FUCTIPMUN_ID: item.fuctipmunId.id,
         FUCDEPART_ID: item.fucdepartId.id,
       });
-    });
+      if (items.length > 100) {
+        await bulkFUCMUNICI(items);
+        items = [];
+      }
+    }
+    if (items.length > 0) {
+      await bulkFUCMUNICI(items);
+    }
     setLoading(false);
   }
   return {
@@ -116,5 +144,6 @@ export function useFUCMUNICI() {
     getAllFUCMUNICI,
     getDetails,
     getFUCMUNICIFromDept,
+    bulkFUCMUNICI,
   };
 }

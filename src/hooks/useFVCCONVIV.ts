@@ -34,6 +34,24 @@ export function useFVCCONVIV() {
       .executeQuery('FVCCONVIV', statement, params)
       .then(countEntity);
   }
+  async function bulkFVCCONVIV(newItems: Array<FVCCONVIV>): Promise<void> {
+    let statementValues = '(?, ?, ?, ?, ?),'.repeat(newItems.length);
+    statementValues = statementValues.substr(0, statementValues.length - 1);
+    let statement = `INSERT INTO {0} 
+    (ID, CODIGO, NOMBRE, ESTADO, FVCELEVIV_ID)
+    VALUES ${statementValues}; `;
+    let params: any[] = [];
+    newItems.forEach((newItem) => {
+      params.push(newItem.ID);
+      params.push(newItem.CODIGO);
+      params.push(newItem.NOMBRE);
+      params.push(newItem.ESTADO);
+      params.push(newItem.FVCELEVIV_ID);
+    });
+    return await database
+      .executeQuery('FVCCONVIV', statement, params)
+      .then(countEntity);
+  }
   async function countEntity(): Promise<void> {
     return database.countEntity('FVCCONVIV').then(setCount);
   }
@@ -133,17 +151,28 @@ export function useFVCCONVIV() {
     setLoading(true);
     let service = new SyncCatalogService();
     let result = await service.getEntity('FVCCONVIV');
-    result.data.map((item: any) => {
-      createFVCCONVIV({
+    
+    let items: Array<FVCCONVIV> = [];
+    for (let i = 0; i < result.data.length; i++) {
+      const item = result.data[i];
+      items.push({
         ID: item.id,
         CODIGO: item.codigo,
         NOMBRE: item.nombre,
         ESTADO: item.estado,
         FVCELEVIV_ID: item.fvcelevivId.id,
       });
-    });
+      if (items.length > 100) {
+        await bulkFVCCONVIV(items);
+        items = [];
+      }
+    }
+    if (items.length > 0) {
+      await bulkFVCCONVIV(items);
+    }
     setLoading(false);
   }
+
   return {
     itemFVCCONVIV,
     listFVCCONVIV,
@@ -156,6 +185,7 @@ export function useFVCCONVIV() {
     getQuestionsOptions,
     getFVCCONVIVpicker,
     getFVCCONVIVMultiselect,
+    bulkFVCCONVIV,
     getLabel,
   };
 }
