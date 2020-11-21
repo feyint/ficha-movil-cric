@@ -33,19 +33,19 @@ const _LoginForm = (props: any) => {
   return (
     <View style={styles.container1}>
       <KeyboardAwareScrollView>
-          <Controller
-            control={control}
-            render={({onChange, value}) => (
-              <BTextInput
-                label="Usuario"
-                error={errors.username}
-                onChange={(value: any) => onChange(value)}
-                value={value}
-              />
-            )}
-            name="username"
-          />
-           <View style={styles.container}>
+        <Controller
+          control={control}
+          render={({onChange, value}) => (
+            <BTextInput
+              label="Usuario"
+              error={errors.username}
+              onChange={(value: any) => onChange(value)}
+              value={value}
+            />
+          )}
+          name="username"
+        />
+        <View style={styles.container}>
           <Controller
             control={control}
             render={({onChange, value}) => (
@@ -61,14 +61,13 @@ const _LoginForm = (props: any) => {
             name="password"
           />
         </View>
-          <View style={styles.container}>
-            <BButton
-              color="primary"
-              value="Iniciar Sesión"
-              onPress={handleSubmit(onSubmit)}
-            />
-          </View>
-
+        <View style={styles.container}>
+          <BButton
+            color="primary"
+            value="Iniciar Sesión"
+            onPress={handleSubmit(onSubmit)}
+          />
+        </View>
       </KeyboardAwareScrollView>
       <Snackbar duration={3000} visible={visible} onDismiss={onDismissSnackBar}>
         Usuario o contraseña incorrecta
@@ -82,11 +81,19 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     marginBottom: 20,
-
   },
-  container1:{
-   
-  }
+  container1: {
+    padding: 15,
+    //width: '60%',
+    //marginHorizontal: '20%',
+    marginVertical: '20%',
+    marginHorizontal: '4%',
+    height: '20%',
+    borderRadius: 20,
+    //alignItems: 'center',
+    backgroundColor: '#C6CDCD',
+    //marginTop: 10,
+  },
 });
 const mapDispatchToProps = {
   authAction,
