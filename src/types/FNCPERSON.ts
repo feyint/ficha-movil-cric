@@ -19,8 +19,8 @@ export interface FNCPERSON {
   FNCLUNIND_ID?: number;
   FNCOCUPAC_ID?: number;
   FUCMUNICI_ID?: number;
-  FNCPAREN_ID: number;
-  FNCGENERO_ID: number;
-  FNCPUEIND_ID: number;
-  FVBENCUES_ID: number;
+  FNCPAREN_ID?: number;
+  FNCGENERO_ID?: number;
+  FNCPUEIND_ID?: number;
+  FVBENCUES_ID?: number;
 }

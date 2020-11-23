@@ -108,6 +108,7 @@ const _PersonalInformationForm = (props: any) => {
   useEffect(() => {
     if (itemFNCPERSON) {
       props.setFNCPERSON(itemFNCPERSON);
+      navigation.goBack();
     }
   }, [itemFNCPERSON]);
   useEffect(() => {
@@ -174,15 +175,15 @@ const _PersonalInformationForm = (props: any) => {
       };
       let inserted = await createFNCPERSON(item, props.FNBNUCVIV.ID);
       if (inserted) {
-        SaveAnswers(
+        await props.setFNCPERSON(inserted);
+        await SaveAnswers(
           QuestionConditionPersonCodes.GrupoEtnico,
           data.GrupoEtnico,
           1,
-          inserted,
+          inserted.ID,
         );
       }
     }
-    navigation.goBack();
   };
   async function asociateExistingPerson(item: FNCPERSON) {
     let asociated = await createFNBNUCVIV_FNCPERSON({

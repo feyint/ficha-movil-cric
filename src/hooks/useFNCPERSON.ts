@@ -89,7 +89,7 @@ export function useFNCPERSON() {
     function getFNCPERSONbyID(FNCPERSONID: number) {
         let statement = `
      SELECT * FROM {0} WHERE ID = ${FNCPERSONID}`;
-        database.executeQuery('FNCPERSON', statement).then((results) => {
+        return database.executeQuery('FNCPERSON', statement).then((results) => {
             const count = results.rows.length;
             const items: FNCPERSON[] = [];
             for (let i = 0; i < count; i++) {
@@ -140,6 +140,7 @@ export function useFNCPERSON() {
                 });
             }
             setFNCPERSON(items[0]);
+            return items[0];
         });
     } 
     function getByIdentification(identificationType: number, identification: string) {
@@ -198,7 +199,7 @@ export function useFNCPERSON() {
             return items[0];
         });
     }
-    async function createFNCPERSON(item: FNCPERSON, FNBNUCVIVID: number): Promise<number> {
+    async function createFNCPERSON(item: FNCPERSON, FNBNUCVIVID: number) {
         setLoading(true);
         let statement = `INSERT INTO {0} 
             (IDENTIFICACION, 
@@ -219,22 +220,21 @@ export function useFNCPERSON() {
                 '${item.PRIMER_APELLIDO}',
                 '${item.SEGUNDO_APELLIDO}',
                 '${item.FECHA_NACIMIENTO}',
-                ${item.FNCTIPIDE_ID},
-                ${item.FNCPAREN_ID},
-                ${item.FNCGENERO_ID},
-                ${item.FNCPUEIND_ID},
-                ${item.FVBENCUES_ID}
+                ${item.FNCTIPIDE_ID ? item.FNCTIPIDE_ID : null},
+                ${item.FNCPAREN_ID ? item.FNCPAREN_ID: null},
+                ${item.FNCGENERO_ID? item.FNCGENERO_ID : null},
+                ${item.FNCPUEIND_ID ? item.FNCPUEIND_ID : null},
+                ${item.FVBENCUES_ID ? item.FVBENCUES_ID : null}
                 );`;
         return database
             .executeQuery('FNCPERSON', statement)
             .then(async (results) => {
                 const { insertId } = results;
-                getFNCPERSONbyID(insertId);
                 await createFNBNUCVIV_FNCPERSON({
                     FNCPERSON_ID: insertId,
                     FNBNUCVIV_ID: FNBNUCVIVID
                 });
-                return insertId;
+                return  await getFNCPERSONbyID(insertId);
             })
             .catch((err) => {
                 console.error(err);

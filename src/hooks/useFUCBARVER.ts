@@ -70,7 +70,6 @@ export function useFUCBARVER() {
     ];
     return await database.executeQuery('FUCBARVER', statement, params);
   }
-  
   async function bulkFUCBARVER(newItems: Array<FUCBARVER>): Promise<void> {
     let statementValues = '(?, ?, ?, ?, ?, ?),'.repeat(newItems.length);
     statementValues = statementValues.substr(0, statementValues.length - 1);

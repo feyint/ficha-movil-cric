@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, Alert} from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {yupResolver} from '@hookform/resolvers';
@@ -24,6 +24,7 @@ import {
 } from '../../../hooks';
 import {getSelectSchema} from '../../../core/utils/utils';
 import {FUBUBIVIV} from '../../../types';
+import {Button} from 'react-native-paper';
 
 interface GeolocationData {
   latitude: string;
@@ -191,6 +192,7 @@ const _HomeLocationForm = (props: any) => {
   async function getCurrentPosition() {
     Geolocation.getCurrentPosition(
       (pos) => {
+        Alert.alert('location ', JSON.stringify(pos));
         setPosition({
           latitude: '' + pos.coords.latitude,
           longitude: '' + pos.coords.longitude,
@@ -198,7 +200,9 @@ const _HomeLocationForm = (props: any) => {
         setValue('latitude', '' + pos.coords.latitude);
         setValue('longitude', '' + pos.coords.longitude);
       },
-      (e) => {},
+      (e) => {
+        Alert.alert('location ', JSON.stringify(e));
+      },
       {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000},
     );
   }
@@ -478,6 +482,12 @@ const _HomeLocationForm = (props: any) => {
           )}
           name="longitude"
         />
+        <Button
+          icon="map-marker"
+          mode="text"
+          onPress={() => getCurrentPosition()}>
+          obtener coordenadas
+        </Button>
         <Controller
           control={control}
           render={({onChange, value}) => (

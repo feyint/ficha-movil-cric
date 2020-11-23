@@ -3,7 +3,7 @@ import React, {useEffect, useState} from 'react';
 import {Alert, StyleSheet, View} from 'react-native';
 import {Appbar, Text} from 'react-native-paper';
 import {List} from 'react-native-paper';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {NavigationProp, useFocusEffect, useNavigation} from '@react-navigation/native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {connect} from 'react-redux';
 import {setFNCNCSALREP} from '../../../../state/SexAndRepHealthPerson/actions';
@@ -14,14 +14,9 @@ import {setFNCPERSON} from '../../../../state/person/actions';
 import {PersonParametersConst} from '../../../../core/utils/SystemParameters';
 
 interface Props {
-  navigation: NavigationProp<any>;
   FNCPERSON: FNCPERSON;
   FNBNUCVIV: FNBNUCVIV;
   setFNCNCSALREP: any;
-}
-interface State {
-  created: boolean;
-  enableSexReproductionHealt: boolean;
 }
 const ViewPersonScreen = (props: any) => {
   const navigation = useNavigation();
@@ -33,7 +28,6 @@ const ViewPersonScreen = (props: any) => {
   >(false);
   useEffect(() => {
     if (itemFNCPERSON) {
-      console.error(itemFNCPERSON);
       props.setFNCPERSON(itemFNCPERSON);
     }
   }, [itemFNCPERSON]);
@@ -44,26 +38,15 @@ const ViewPersonScreen = (props: any) => {
       }
     }
   }, [itemFNCGENERO]);
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      initdata();
-    });
-    return unsubscribe;
-  }, [navigation]);
-
-  function _goBack() {
-    props.navigation.goBack();
-  }
-  async function initdata() {
-    if (!props.FNCPERSON || !props.FNCPERSON.ID) {
-      navigate('PersonalInformationScreen');
-
+  useFocusEffect(() => {
+    if (!props.FNCPERSON.ID) {
       if (created) {
         if (!props.FNCPERSON.ID) {
-          props.navigation.goBack();
+          navigation.goBack();
         }
       } else {
         setcreated(true);
+        navigate('PersonalInformationScreen');
       }
     } else {
       getFNCPERSONbyID(props.FNCPERSON.ID);
@@ -71,6 +54,9 @@ const ViewPersonScreen = (props: any) => {
         getbyID(props.FNCPERSON.FNCGENERO_ID);
       }
     }
+  }, []);
+  function _goBack() {
+    navigation.goBack();
   }
   return (
     <View>
