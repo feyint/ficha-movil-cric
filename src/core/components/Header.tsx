@@ -9,8 +9,9 @@ export default class BHeader extends Component<any, any> {
 const styles = StyleSheet.create({
   header: {
     fontSize: 40,
-    color: theme.colors.primary,
+    //color: theme.colors.primary,
+    color: 'white',
     fontWeight: 'bold',
-    textAlign: 'center'
+    textAlign: 'center',
   },
 });

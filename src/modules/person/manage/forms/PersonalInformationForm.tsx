@@ -253,7 +253,8 @@ const _PersonalInformationForm = (props: any) => {
               setIdentification('');
               Alert.alert(
                 'Identificación existente',
-                `La persona ${item.PRIMER_NOMBRE} ${item.SEGUNDO_NOMBRE} ${item.PRIMER_NOMBRE} ${item.SEGUNDO_APELLIDO} \ncon identificación ${item.IDENTIFICACION} ya esta asociada a un nucleo familiar \npara asociarlo a este debe tener el parentesco "CABEZA DE FAMILIA"`,
+                /* `La persona ${item.PRIMER_NOMBRE} ${item.SEGUNDO_NOMBRE} ${item.PRIMER_NOMBRE} ${item.SEGUNDO_APELLIDO} \ncon identificación ${item.IDENTIFICACION} ya esta asociada a un nucleo familiar \npara asociarlo a este debe tener el parentesco "CABEZA DE FAMILIA"`, */
+                'Los datos registrados ya existen en el sistema',
                 [
                   {
                     text: 'aceptar',
@@ -398,7 +399,15 @@ const _PersonalInformationForm = (props: any) => {
             }}
             onLoad={() => {}}
             selectedValue={identificationType}
-            items={getSelectSchema(listFNCTIPIDE)}
+            items={getSelectSchema(listFNCTIPIDE).sort(function (a, b) {
+              if (a.label == b.label) return 0;
+              if (a.label == 'Seleccione') return -1;
+              if (b.label == 'Seleccione') return 1;
+
+              if (a.label < b.label) return -1;
+              if (a.label > b.label) return 1;
+              return 0;
+            })}
           />
         )}
         name="identificationType"
