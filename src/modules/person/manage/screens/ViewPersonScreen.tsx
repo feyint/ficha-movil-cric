@@ -3,7 +3,11 @@ import React, {useEffect, useState} from 'react';
 import {Alert, StyleSheet, View} from 'react-native';
 import {Appbar, Text} from 'react-native-paper';
 import {List} from 'react-native-paper';
-import {NavigationProp, useFocusEffect, useNavigation} from '@react-navigation/native';
+import {
+  NavigationProp,
+  useFocusEffect,
+  useNavigation,
+} from '@react-navigation/native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {connect} from 'react-redux';
 import {setFNCNCSALREP} from '../../../../state/SexAndRepHealthPerson/actions';

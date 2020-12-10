@@ -16,7 +16,7 @@ import {
 } from '../../../../state/ConditionPerson/actions';
 import {useFNCCONPER, useFNCPERSON_FNCCONPER} from '../../../../hooks';
 import {FNCCONPER} from '../../../../types';
-import { PersonParametersConst } from '../../../../core/utils/SystemParameters';
+import {PersonParametersConst} from '../../../../core/utils/SystemParameters';
 
 const questions = [
   QuestionConditionPersonCodes.SeguridadSocial,

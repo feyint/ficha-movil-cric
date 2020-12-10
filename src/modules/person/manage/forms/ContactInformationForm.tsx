@@ -10,8 +10,8 @@ import {connect} from 'react-redux';
 import {BTextInput, ButtonAction} from '../../../../core/components';
 import BNumberInput from '../../../../core/components/BNumberInput';
 import {FNCPERSON} from '../../../../state/person/types';
-import { useFNCPERSON } from '../../../../hooks';
-import { setFNCPERSON } from '../../../../state/person/actions';
+import {useFNCPERSON} from '../../../../hooks';
+import {setFNCPERSON} from '../../../../state/person/actions';
 const schemaForm = yup.object().shape({
   phonenumber: yup.string().required(),
   phonenumber2: yup.string().required(),

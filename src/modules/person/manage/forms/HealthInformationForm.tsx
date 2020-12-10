@@ -52,7 +52,7 @@ const _HealthInformationForm = (props: any) => {
   //const [pikerEnable, setPikerEnable] = useState(false);
 
   const navigation = useNavigation();
-  
+
   const [editable, setEditable] = useState(false);
 
   const getItemsForQuestionSelect = (code: string) => {
