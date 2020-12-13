@@ -1,7 +1,15 @@
 import React, {useEffect} from 'react';
 import {View, StyleSheet} from 'react-native';
-import {Appbar, Paragraph} from 'react-native-paper';
-import {BButton, Bloader, BHeader} from '../../../core/components';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {
+  Appbar,
+  Card,
+  DataTable,
+  FAB,
+  Paragraph,
+  Subheading,
+} from 'react-native-paper';
+import {Text} from 'react-native-paper/lib/typescript/src/components/Avatar/Avatar';
 import {
   useFNCCONPER,
   useFNCELEPER,
@@ -54,115 +62,175 @@ const SyncParametersScreen = () => {
   } = useFUCTIPTER_FUCRESGUA();
   useEffect(() => {}, []);
   function syncCatalogs() {
-    syncFVCELEVIV();
-    syncFVCCONVIV();
-    syncFUCDEPART();
-    syncFUCMUNICI();
-    syncFUCTIPTER();
-    syncFUCBARVER();
-    syncFUCRESGUA();
-    syncFUCZONCUI();
-    syncFNCTIPIDE();
-    syncFNCPAREN();
-    syncFNCOCUPAC();
-    syncFNCPUEIND();
-    syncFNCLUNIND();
-    syncFNCGENERO();
-    syncFNCELEPER();
-    syncFNCCONPER();
-    syncFUCPAIS();
-    syncFNCORGANI();
+    if (
+      loadingFVCELEVIV ||
+      loadingFVCCONVIV ||
+      loadingFUCDEPART ||
+      loadingFUCMUNICI ||
+      loadingFUCTIPTER ||
+      loadingFUCBARVER ||
+      loadingFUCRESGUA ||
+      loadingFUCZONCUI ||
+      loadingFNCTIPIDE ||
+      loadingFNCOCUPAC ||
+      loadingFNCPUEIND ||
+      loadingFNCLUNIND ||
+      loadingFNCGENERO ||
+      loadingFNCELEPER ||
+      loadingFNCCONPER ||
+      loadingFNCORGANI
+    ) {
+    } else {
+      syncFVCELEVIV();
+      syncFVCCONVIV();
+      syncFUCDEPART();
+      syncFUCMUNICI();
+      syncFUCTIPTER();
+      syncFUCBARVER();
+      syncFUCRESGUA();
+      syncFUCZONCUI();
+      syncFNCTIPIDE();
+      syncFNCPAREN();
+      syncFNCOCUPAC();
+      syncFNCPUEIND();
+      syncFNCLUNIND();
+      syncFNCGENERO();
+      syncFNCELEPER();
+      syncFNCCONPER();
+      syncFUCPAIS();
+      syncFNCORGANI();
+    }
+
     //await this.clearPollEntities();
     // this.countEntity();
   }
+  function renderRow(
+    catalog: string,
+    loading: boolean,
+    count: number,
+    detail: string = '',
+  ) {
+    return (
+      <DataTable.Row style={styles.row}>
+        <DataTable.Cell>
+          <View>
+            <Subheading>{catalog}</Subheading>
+            {detail.length > 0 ? <Paragraph>{detail}</Paragraph> : null}
+          </View>
+        </DataTable.Cell>
+        <DataTable.Cell numeric>
+          {loading ? 'Cargando..' : count}
+        </DataTable.Cell>
+      </DataTable.Row>
+    );
+  }
   return (
-    <View style={{flex:1}}>
+    <View style={{flex: 1}}>
       <Appbar.Header>
         <Appbar.Content title="Sincronización de información" />
       </Appbar.Header>
-
-      <BHeader>Sincronización de catalogos</BHeader>
-      
-      <View  style={styles.container1}>
-      <Paragraph>
-        FVCELEVIV (Preguntas Nucleo familiar):{' '}
-        {loadingFVCELEVIV ? 'Cargando..' : countFVCELEVIV}
-      </Paragraph>
-      <Paragraph>
-        FVCCONVIV (Opciones de Respuestas Nucleo familiar) :{' '}
-        {loadingFVCCONVIV ? 'Cargando..' : countFVCCONVIV}
-      </Paragraph>
-      <Paragraph>
-        FUCPAIS (Departamentos) : {loadingFUCPAIS ? 'Cargando..' : countFUCPAIS}
-      </Paragraph>
-      <Paragraph>
-        FUCDEPART (Departamentos) :{' '}
-        {loadingFUCDEPART ? 'Cargando..' : countFUCDEPART}
-      </Paragraph>
-      <Paragraph>
-        FUCMUNICI (Municipios) :{' '}
-        {loadingFUCMUNICI ? 'Cargando..' : countFUCMUNICI}
-      </Paragraph>
-      <Paragraph>
-        FUCTIPTER (tipo territorio) :{' '}
-        {loadingFUCTIPTER ? 'Cargando..' : countFUCTIPTER}
-      </Paragraph>
-      <Paragraph>
-        FUCBARVER (centros poblados) :{' '}
-        {loadingFUCBARVER ? 'Cargando..' : countFUCBARVER}
-      </Paragraph>
-      <Paragraph>
-        FUCRESGUA (reguardo / centro poblados) :{' '}
-        {loadingFUCRESGUA ? 'Cargando..' : countFUCRESGUA}
-      </Paragraph>
-      <Paragraph>
-        FUCZONCUI (Zona de cuidado):{' '}
-        {loadingFUCZONCUI ? 'Cargando..' : countFUCZONCUI}
-      </Paragraph>
-      <Paragraph>
-        (Zona de cuidado relacion barrios/veredas):{' '}
-        {loadingFUCZONCUI_FUCBARVER ? 'Cargando..' : countFUCZONCUI_FUCBARVER}
-      </Paragraph>
-      <Paragraph>
-        FUCTIPTER_FUCRESGUA ():{' '}
-        {loadingFUCTIPTER_FUCRESGUA ? 'Cargando..' : countFUCTIPTER_FUCRESGUA}
-      </Paragraph>
-      <Paragraph>
-        FNCTIPIDE (tipo identificacion):{' '}
-        {loadingFNCTIPIDE ? 'Cargando..' : countFNCTIPIDE}
-      </Paragraph>
-      <Paragraph>
-        FNCPAREN (parentezco): {loadingFNCPAREN ? 'Cargando..' : countFNCPAREN}
-      </Paragraph>
-      <Paragraph>
-        FNCOCUPAC (ocupación):{loadingFNCOCUPAC ? 'Cargando..' : countFNCOCUPAC}
-      </Paragraph>
-      <Paragraph>
-        FNCPUEIND (pueblo indigena):
-        {loadingFNCPUEIND ? 'Cargando..' : countFNCPUEIND}
-      </Paragraph>
-      <Paragraph>
-        FNCLUNIND (luna indigena):
-        {loadingFNCLUNIND ? 'Cargando..' : countFNCLUNIND}
-      </Paragraph>
-      <Paragraph>
-        FNCGENERO(genero):
-        {loadingFNCGENERO ? 'Cargando..' : countFNCGENERO}
-      </Paragraph>
-      <Paragraph>
-        FNCELEPER(Person question):
-        {loadingFNCELEPER ? 'Cargando..' : countFNCELEPER}
-      </Paragraph>
-      <Paragraph>
-        FNCCONPER(Person options):
-        {loadingFNCCONPER ? 'Cargando..' : countFNCCONPER}
-      </Paragraph>
-      <Paragraph>
-        FNCORGANI(Organizacion):
-        {loadingFNCORGANI ? 'Cargando..' : countFNCORGANI}
-      </Paragraph>
-      <Bloader
-        visible={
+      <KeyboardAwareScrollView>
+        <Card style={styles.container}>
+          <DataTable collapsable={true}>
+            <DataTable.Header>
+              <DataTable.Title style={styles.titles}>Catalogo</DataTable.Title>
+              <DataTable.Title numeric>Registros</DataTable.Title>
+            </DataTable.Header>
+            {renderRow(
+              'FVCELEVIV',
+              loadingFVCELEVIV,
+              countFVCELEVIV,
+              '(Preguntas Nucleo familiar)',
+            )}
+            {renderRow(
+              'FVCCONVIV',
+              loadingFVCCONVIV,
+              countFVCCONVIV,
+              '(Opciones de Respuestas Nucleo familiar)',
+            )}
+            {renderRow('FUCPAIS (Departamentos)', loadingFUCPAIS, countFUCPAIS)}
+            {renderRow(
+              'FUCDEPART (Departamentos)',
+              loadingFUCDEPART,
+              countFUCDEPART,
+            )}
+            {renderRow(
+              'FUCMUNICI (Municipios)',
+              loadingFUCMUNICI,
+              countFUCMUNICI,
+            )}
+            {renderRow(
+              'FUCTIPTER (tipo territorio)',
+              loadingFUCTIPTER,
+              countFUCTIPTER,
+            )}
+            {renderRow(
+              'FUCBARVER (centros poblados)',
+              loadingFUCBARVER,
+              countFUCBARVER,
+            )}
+            {renderRow(
+              'FUCRESGUA (reguardo/c poblado)',
+              loadingFUCRESGUA,
+              countFUCRESGUA,
+            )}
+            {renderRow(
+              'FUCZONCUI (Zona de cuidado)',
+              loadingFUCZONCUI,
+              countFUCZONCUI,
+            )}
+            {renderRow(
+              '(FUCZONCUI relación barrios/veredas)',
+              loadingFUCZONCUI_FUCBARVER,
+              countFUCZONCUI_FUCBARVER,
+            )}
+            {renderRow(
+              'FUCTIPTER_FUCRESGUA',
+              loadingFUCTIPTER_FUCRESGUA,
+              countFUCTIPTER_FUCRESGUA,
+            )}
+            {renderRow(
+              'FNCTIPIDE (tipo identificacion)',
+              loadingFNCTIPIDE,
+              countFNCTIPIDE,
+            )}
+            {renderRow('FNCPAREN (parentezco)', loadingFNCPAREN, countFNCPAREN)}
+            {renderRow(
+              'FNCOCUPAC (ocupación)',
+              loadingFNCOCUPAC,
+              countFNCOCUPAC,
+            )}
+            {renderRow(
+              'FNCPUEIND (pueblo indigena)',
+              loadingFNCPUEIND,
+              countFNCPUEIND,
+            )}
+            {renderRow(
+              'FNCLUNIND (luna indigena)',
+              loadingFNCLUNIND,
+              countFNCLUNIND,
+            )}
+            {renderRow('FNCGENERO(genero)', loadingFNCGENERO, countFNCGENERO)}
+            {renderRow(
+              'FNCELEPER(Person question)',
+              loadingFNCELEPER,
+              countFNCELEPER,
+            )}
+            {renderRow(
+              'FNCCONPER(Person options)',
+              loadingFNCCONPER,
+              countFNCCONPER,
+            )}
+            {renderRow(
+              'FNCORGANI(Organizacion)',
+              loadingFNCORGANI,
+              countFNCORGANI,
+            )}
+          </DataTable>
+        </Card>
+      </KeyboardAwareScrollView>
+      <FAB
+        loading={
           loadingFVCELEVIV ||
           loadingFVCCONVIV ||
           loadingFUCDEPART ||
@@ -180,20 +248,31 @@ const SyncParametersScreen = () => {
           loadingFNCCONPER ||
           loadingFNCORGANI
         }
+        label="Sincronizar Catalogos"
+        style={styles.fab}
+        icon="arrow-down-circle"
+        onPress={() => syncCatalogs()}
       />
-            </View>
-      <BButton
-        color="primary"
-        value="Sincronizar Catalogos"
-
-        onPress={() => syncCatalogs()} />
     </View>
   );
 };
 const styles = StyleSheet.create({
-  container1: {
-    marginTop: 20, 
-    marginBottom: 20,
+  container: {
+    padding: 10,
+    margin: 20,
+  },
+  titles: {
+    color: 'red',
+    fontSize: 20,
+  },
+  fab: {
+    position: 'absolute',
+    margin: 16,
+    right: 0,
+    bottom: 0,
+  },
+  row: {
+    marginBottom: 10,
   },
 });
 export default SyncParametersScreen;

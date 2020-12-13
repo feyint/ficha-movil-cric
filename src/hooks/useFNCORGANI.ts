@@ -26,7 +26,9 @@ export function useFNCORGANI() {
       newItem.ESTADO,
       newItem.FNCREGION_ID,
     ];
-    return await database.executeQuery('FNCORGANI', statement, params);
+    try {
+      return await database.executeQuery('FNCORGANI', statement, params);
+    } catch (error) {}
   }
   async function countEntity(): Promise<void> {
     return database.countEntity('FNCORGANI').then(setCount);

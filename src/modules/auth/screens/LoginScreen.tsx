@@ -32,10 +32,10 @@ export default () => {
           <BHeader>Ficha Familiar</BHeader>
         </View>
         <View>
-          <Image
+          {/* <Image
             style={styles.image}
             source={require('../../../core/assets/logoCRIC.png')}
-          />
+          /> */}
         </View>
         <View style={styles.mid}></View>
       </View>

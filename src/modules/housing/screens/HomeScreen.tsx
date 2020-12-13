@@ -1,9 +1,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
-import {Image, StyleSheet, Text, View} from 'react-native';
+import {Button, Image, StyleSheet, Text, View} from 'react-native';
 import {BSearchBarV2} from '../../../core/components';
 import {useNavigation} from '@react-navigation/native';
-import {Appbar} from 'react-native-paper';
+import {
+  Appbar,
+  Avatar,
+  Card,
+  Paragraph,
+  Searchbar,
+  Title,
+} from 'react-native-paper';
 import {connect} from 'react-redux';
 import {setFUBUBIVIV, clearFUBUBIVIV} from '../../../state/house/actions';
 import {theme} from '../../../core/style/theme';
@@ -46,18 +53,25 @@ const HomeScreen = (props: any) => {
     setfilteredHouses(Result);
   }
   return (
-    <View style={{flex: 1}}>
+    <View style={{flex: 1, backgroundColor: 'white'}}>
       <Appbar.Header>
-        <Appbar.Content title="INICIO (Ficha Familiar)" />
+        <Appbar.Content title="INICIO" />
       </Appbar.Header>
+      {/* <Card>
+        <Card.Cover source={require('../../../core/assets/img20.jpg')} />
+        <Card.Content>
+          <Card.Title title="Bienvenido a la ficha familiar"> </Card.Title>
+        </Card.Content>
+      </Card> */}
+      <Searchbar
+        placeholder="Ingrese codigo de ficha a buscar"
+        onChangeText={(text: any) => {
+          searchHouse(text);
+        }}
+        value={''}
+      />
       <View>
         <KeyboardAwareScrollView>
-          <BSearchBarV2
-            placeholder="Ingrese codigo de ficha a buscar"
-            onChange={(text: any) => {
-              searchHouse(text);
-            }}
-          />
           <View style={styles.container}>
             {filteredHouses && filteredHouses.length > 0 ? (
               filteredHouses.map((house: any, i: number) => {
@@ -155,14 +169,6 @@ const HomeScreen = (props: any) => {
           <View style={styles.spacer} />
         </KeyboardAwareScrollView>
       </View>
-      {/* ------------------------------------------- */}
-      {/* <HouseList
-          houses={houses}
-          onSelect={(value: any) => {
-            goToHouse(value);
-          }}
-        /> */}
-      {/* ------------------------------------------ */}
       <BFabButton onPress={() => createNew()} />
     </View>
   );

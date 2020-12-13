@@ -148,7 +148,7 @@ const _PersonalInformationForm = (props: any) => {
   };
   const onSubmit = async (data: any) => {
     if (person && person.ID != null) {
-      await updateFNCPERSON({
+      let item: FNCPERSON = {
         ID: person.ID,
         PRIMER_NOMBRE: data.firstname,
         SEGUNDO_NOMBRE: data.middlename ? data.middlename : '',
@@ -159,7 +159,9 @@ const _PersonalInformationForm = (props: any) => {
         FNCGENERO_ID: JSON.parse(data.gender),
         FNCPAREN_ID: JSON.parse(data.parentezcoGrupoFamiliar),
         FECHA_NACIMIENTO: birthDate,
-      });
+      };
+      await updateFNCPERSON(item);
+      await props.setFNCPERSON(item);
       SaveAnswers(QuestionConditionPersonCodes.GrupoEtnico, data.GrupoEtnico);
     } else {
       let item: FNCPERSON = {

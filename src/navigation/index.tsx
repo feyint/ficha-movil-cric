@@ -36,6 +36,7 @@ import {
   HealthInformationScreen,
 } from '../modules/person/manage/screens';
 import {FamilyScreen} from '../modules/families/screens';
+import { StyleSheet } from 'react-native';
 
 const DashboardStack = createStackNavigator();
 export const Dashboard = () => {
@@ -215,6 +216,7 @@ export const HomeTabs = () => {
   const {colors} = useTheme();
   return (
     <BottomTabs.Navigator
+      sceneAnimationEnabled={true}
       activeColor={colors.secondaryFont}
       inactiveColor={colors.primaryLight}
       barStyle={{backgroundColor: colors.primary}}>
@@ -222,7 +224,16 @@ export const HomeTabs = () => {
         name="Ficha Familiar"
         component={HomeScreen}
         options={{
-          tabBarIcon: ({color}) => <Icon name="home" size={20} color={color} />,
+          tabBarIcon: ({color}) => <Icon name="home" size={25} color={color} />,
+        }}
+      />
+      <BottomTabs.Screen
+        name="Parametrización"
+        component={SyncParametersScreen}
+        options={{
+          tabBarIcon: ({color}) => (
+            <Icon name="arrow-down-circle" size={25} color={color} />
+          ),
         }}
       />
       <BottomTabs.Screen
@@ -230,10 +241,15 @@ export const HomeTabs = () => {
         component={SyncParametersScreen}
         options={{
           tabBarIcon: ({color}) => (
-            <Icon name="sync-outline" size={20} color={color} />
+            <Icon name="sync-outline" size={25} color={color} />
           ),
         }}
       />
     </BottomTabs.Navigator>
   );
 };
+const styles = StyleSheet.create({
+  menu: {
+    fontSize: 20,
+  },
+});

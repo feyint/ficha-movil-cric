@@ -3,7 +3,7 @@ import React, {useEffect, useState} from 'react';
 import {Alert, StyleSheet, View} from 'react-native';
 import {Appbar, Text} from 'react-native-paper';
 import {List} from 'react-native-paper';
-import {NavigationProp, useFocusEffect, useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {connect} from 'react-redux';
 import {setFNCNCSALREP} from '../../../../state/SexAndRepHealthPerson/actions';
@@ -29,6 +29,7 @@ const ViewPersonScreen = (props: any) => {
   useEffect(() => {
     if (itemFNCPERSON) {
       props.setFNCPERSON(itemFNCPERSON);
+      getbyID(itemFNCPERSON.FNCGENERO_ID);
     }
   }, [itemFNCPERSON]);
   useEffect(() => {
@@ -48,12 +49,7 @@ const ViewPersonScreen = (props: any) => {
         setcreated(true);
         navigate('PersonalInformationScreen');
       }
-    } else {
-      getFNCPERSONbyID(props.FNCPERSON.ID);
-      if (props.FNCPERSON.FNCGENERO_ID) {
-        getbyID(props.FNCPERSON.FNCGENERO_ID);
-      }
-    }
+    } else {}
   }, []);
   function _goBack() {
     navigation.goBack();
