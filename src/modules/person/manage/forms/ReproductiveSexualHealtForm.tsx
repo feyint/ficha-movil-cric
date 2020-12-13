@@ -10,8 +10,8 @@ import {BButton} from '../../../../core/components';
 import BNumberInput from '../../../../core/components/BNumberInput';
 import {FNCPERSON} from '../../../../state/person/types';
 import {saveFNCPERSON, updateFNCPERSON} from '../../../../state/person/actions';
-import { FNCSALREP } from '../../../../state/SexAndRepHealthPerson/types';
-import { updateFNCSALREP } from '../../../../state/SexAndRepHealthPerson/actions';
+import {FNCSALREP} from '../../../../state/SexAndRepHealthPerson/types';
+import {updateFNCSALREP} from '../../../../state/SexAndRepHealthPerson/actions';
 import {theme} from '../../../../core/style/theme';
 
 const schemaForm = yup.object().shape({

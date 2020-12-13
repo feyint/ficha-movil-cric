@@ -157,7 +157,7 @@ const _HealthStatusVisitForm = (props: any) => {
               enabled={true}
               onBlur={onBlur}
               error={errors.DesarmoniaPropia}
-              onChange={(value:any) => {
+              onChange={(value: any) => {
                 setEditable(true);
                 onChange(value);
                 setDesarmony(value);

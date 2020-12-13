@@ -31,7 +31,6 @@ import {
 import {SexAndRepHealthPersonQuestion} from '../state/types';
 import {theme} from '../../../../core/style/theme';
 
-
 const questions = [
   QuestionSexAndRepHealthPersonCodes.MetodoDelPlaneacionFamiliar,
   QuestionSexAndRepHealthPersonCodes.CitologiaCervicoUterina,

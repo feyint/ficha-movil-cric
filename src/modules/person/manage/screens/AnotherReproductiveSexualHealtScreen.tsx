@@ -7,7 +7,10 @@ import {NavigationProp} from '@react-navigation/native';
 interface Props {
   navigation: NavigationProp<any>;
 }
-export default class AnotherReproductiveSexualHealtScreen extends Component<Props, any> {
+export default class AnotherReproductiveSexualHealtScreen extends Component<
+  Props,
+  any
+> {
   //TODO añadir el back interceptor
   _goBack() {
     this.props.navigation.goBack();

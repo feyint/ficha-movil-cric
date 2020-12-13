@@ -24,7 +24,8 @@ import {
   getQuestionAnswer,
 } from '../../../../state/person/actions';
 import {PersonQuestion} from '../state/types';
-import { useFNCCONPER, useFNCPERSON_FNCCONPER } from '../../../../hooks';
+import {useFNCCONPER, useFNCPERSON_FNCCONPER} from '../../../../hooks';
+import { FNCCONPER } from '../../../../types';
 const questions = [
   QuestionPersonCodes.CausaDeLaMuerte,
   QuestionPersonCodes.RealizacionRitualOPracticasCulturales,
@@ -66,7 +67,7 @@ const _MortalityLast12MonthsForm = (props: any) => {
     resolver: yupResolver(schemaForm),
   });
 
-  async function getAnswers(type: number, code: string, prop: string) {
+  async function getAnswers2(type: number, code: string, prop: string) {
     let question = await props.getQuestionAnswer(type, code);
     setValue(prop, question);
   }
@@ -161,7 +162,7 @@ const _MortalityLast12MonthsForm = (props: any) => {
                 );
               }}
               onLoad={() => {
-                getAnswers(
+                getAnswers2(
                   QuestionTypes.selectOne,
                   QuestionPersonCodes.CausaDeLaMuerte,
                   'CausaDeLaMuerte',
@@ -195,7 +196,7 @@ const _MortalityLast12MonthsForm = (props: any) => {
                 );
               }}
               onLoad={() => {
-                getAnswers(
+                getAnswers2(
                   QuestionTypes.selectOne,
                   QuestionPersonCodes.RealizacionRitualOPracticasCulturales,
                   'RealizacionRitualOPracticasCulturales',

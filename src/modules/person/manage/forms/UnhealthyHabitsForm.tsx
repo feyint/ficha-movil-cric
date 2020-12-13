@@ -1,25 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Alert } from 'react-native';
-import { useForm, Controller } from 'react-hook-form';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { yupResolver } from '@hookform/resolvers';
+import React, {useState, useEffect} from 'react';
+import {View, StyleSheet, Alert} from 'react-native';
+import {useForm, Controller} from 'react-hook-form';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {yupResolver} from '@hookform/resolvers';
 import * as yup from 'yup';
-import { BButton, BMultiSelect, BPicker } from '../../../../core/components';
-import { useNavigation } from '@react-navigation/native';
-import { connect } from 'react-redux';
-import { PersonService } from '../../../../services';
+import {BButton, BMultiSelect, BPicker} from '../../../../core/components';
+import {useNavigation} from '@react-navigation/native';
+import {connect} from 'react-redux';
+import {PersonService} from '../../../../services';
 import {
   QuestionPersonCodes,
   QuestionTypes,
 } from '../../../../core/utils/PersonTypes';
-import { getQuestionWithOptions, saveAnswerLocal, getQuestionAnswer } from '../../../../state/person/actions';
-import { PersonQuestion } from '../state/types';
+import {
+  getQuestionWithOptions,
+  saveAnswerLocal,
+  getQuestionAnswer,
+} from '../../../../state/person/actions';
+import {PersonQuestion} from '../state/types';
 import {theme} from '../../../../core/style/theme';
 
-const questions = [QuestionPersonCodes.Fuma,
-QuestionPersonCodes.ConsumeBebidasAlcoholicas,
-QuestionPersonCodes.EvidenciaConsumoSustanciasPsicoactivas,
-QuestionPersonCodes.EvidenciaViolencia,
+const questions = [
+  QuestionPersonCodes.Fuma,
+  QuestionPersonCodes.ConsumeBebidasAlcoholicas,
+  QuestionPersonCodes.EvidenciaConsumoSustanciasPsicoactivas,
+  QuestionPersonCodes.EvidenciaViolencia,
 ];
 
 const schemaForm = yup.object().shape({
@@ -44,7 +49,7 @@ const _UnhealthyHabitsForm = (props: any) => {
 
   const [editable, setEditable] = useState(false);
 
-  const { handleSubmit, control, errors, setValue } = useForm({
+  const {handleSubmit, control, errors, setValue} = useForm({
     resolver: yupResolver(schemaForm),
   });
 
@@ -105,7 +110,7 @@ const _UnhealthyHabitsForm = (props: any) => {
       <View style={styles.container}>
         <Controller
           control={control}
-          render={({ onChange, onBlur, value }) => (
+          render={({onChange, onBlur, value}) => (
             <BPicker
               label={getQuestionlabel(QuestionPersonCodes.Fuma)}
               onBlur={onBlur}
@@ -137,9 +142,11 @@ const _UnhealthyHabitsForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({ onChange, onBlur, value }) => (
+          render={({onChange, onBlur, value}) => (
             <BPicker
-              label={getQuestionlabel(QuestionPersonCodes.ConsumeBebidasAlcoholicas)}
+              label={getQuestionlabel(
+                QuestionPersonCodes.ConsumeBebidasAlcoholicas,
+              )}
               onBlur={onBlur}
               error={errors.ConsumeBebidasAlcoholicas}
               onChange={(value: any) => {
@@ -161,7 +168,9 @@ const _UnhealthyHabitsForm = (props: any) => {
               value={value}
               selectedValue={value}
               items={
-                getItemsForQuestionSelect(QuestionPersonCodes.ConsumeBebidasAlcoholicas).children
+                getItemsForQuestionSelect(
+                  QuestionPersonCodes.ConsumeBebidasAlcoholicas,
+                ).children
               }
             />
           )}
@@ -169,9 +178,11 @@ const _UnhealthyHabitsForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({ onChange, onBlur, value }) => (
+          render={({onChange, onBlur, value}) => (
             <BPicker
-              label={getQuestionlabel(QuestionPersonCodes.EvidenciaConsumoSustanciasPsicoactivas)}
+              label={getQuestionlabel(
+                QuestionPersonCodes.EvidenciaConsumoSustanciasPsicoactivas,
+              )}
               onBlur={onBlur}
               error={errors.EvidenciaConsumoSustanciasPsicoactivas}
               onChange={(value: any) => {
@@ -193,7 +204,9 @@ const _UnhealthyHabitsForm = (props: any) => {
               value={value}
               selectedValue={value}
               items={
-                getItemsForQuestionSelect(QuestionPersonCodes.EvidenciaConsumoSustanciasPsicoactivas).children
+                getItemsForQuestionSelect(
+                  QuestionPersonCodes.EvidenciaConsumoSustanciasPsicoactivas,
+                ).children
               }
             />
           )}
@@ -201,11 +214,9 @@ const _UnhealthyHabitsForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({ onChange, onBlur, value }) => (
+          render={({onChange, onBlur, value}) => (
             <BMultiSelect
-              label={getQuestionlabel(
-                QuestionPersonCodes.EvidenciaViolencia,
-              )}
+              label={getQuestionlabel(QuestionPersonCodes.EvidenciaViolencia)}
               onBlur={onBlur}
               error={errors.EvidenciaViolencia}
               onChange={(values: any) => {
@@ -297,7 +308,7 @@ const styles = StyleSheet.create({
 const mapDispatchToProps = {
   getQuestionWithOptions,
   saveAnswerLocal,
-  getQuestionAnswer
+  getQuestionAnswer,
 };
 const mapStateToProps = (session: any) => {
   return {

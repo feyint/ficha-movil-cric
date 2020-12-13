@@ -374,7 +374,7 @@ const _PersonalInformationForm = (props: any) => {
             prompt="Seleccione una opción"
             error={errors.identificationType}
             onChange={(value) => {
-              console.log(`tipo de identificacion value igual a ${value}`);
+              console.error(`tipo de identificacion value igual a ${value}`);
               setEditable(true);
               if (
                 identificationEx &&
@@ -382,22 +382,23 @@ const _PersonalInformationForm = (props: any) => {
               ) {
                 if (!identificationEx.find((i) => i.ID == value)) {
                   setIdentification('');
-                  onChange(value);
-                  setIdentificationType(value);
-                } else {
-                  onChange(value);
-                  setIdentificationType(value);
+                } else if (value == 4 || value == 7) {
+                  // adulto sin ID o menor sin ID
+                  setIdentification(
+                    `${Math.floor(Math.random() * 100000) + 10000}I${Math.floor(Math.random() * 10000) + 1000}`,
+                  );
                 }
               } else {
                 if (identificationEx.find((i) => i.ID == value)) {
                   setIdentification('');
-                  onChange(value);
-                  setIdentificationType(value);
-                } else {
-                  onChange(value);
-                  setIdentificationType(value);
+                } else if (value == 4 || value == 7) {
+                  setIdentification(
+                    `${Math.floor(Math.random() * 100000) + 10000}I${Math.floor(Math.random() * 10000) + 1000}`,
+                  );
                 }
               }
+              onChange(value);
+              setIdentificationType(value);
             }}
             onLoad={() => {}}
             selectedValue={identificationType}

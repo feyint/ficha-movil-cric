@@ -6,7 +6,7 @@ import {NavigationProp} from '@react-navigation/native';
 import {QuestionConditionPersonCodes} from '../../../../core/utils/PersonTypes';
 import {getQuestionWithOptions} from '../../../../state/ConditionPerson/actions';
 import {connect} from 'react-redux';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 interface Props {
   navigation: NavigationProp<any>;
