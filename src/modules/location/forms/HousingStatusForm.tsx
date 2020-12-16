@@ -5,7 +5,7 @@ import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {yupResolver} from '@hookform/resolvers';
 import * as yup from 'yup';
-import {BButton, BPicker} from '../../../core/components';
+import {BButton, BPicker, ButtonAction} from '../../../core/components';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {QuestionFamilyCodes} from '../../../core/utils/HousingTypes';
@@ -91,6 +91,7 @@ const _HousingStatusForm = (props: any) => {
     if (question) {
       const {ID} = props.FNBNUCVIV;
       let ans = await getAnswerquestion(ID, question.FVCELEVIV_ID, type);
+      console.error('ans ', ID, question.FVCELEVIV_ID, type, ans);
       setValue(prop, '' + ans);
     }
   }
@@ -152,23 +153,6 @@ const _HousingStatusForm = (props: any) => {
           control={control}
           render={({onChange, onBlur, value}) => (
             <BPicker
-              label="Ventilación"
-              enabled={true}
-              onBlur={onBlur}
-              error={errors.Ventilacion}
-              onChange={(vlue: any) => {
-                onChange(vlue);
-              }}
-              selectedValue={value}
-              items={getFVCCONVIVpicker(QuestionFamilyCodes.Ventilacion)}
-            />
-          )}
-          name="Ventilacion"
-        />
-        <Controller
-          control={control}
-          render={({onChange, onBlur, value}) => (
-            <BPicker
               label="Iluminación"
               enabled={true}
               onBlur={onBlur}
@@ -182,13 +166,28 @@ const _HousingStatusForm = (props: any) => {
           )}
           name="Iluminacion"
         />
-        <View>
-          <BButton
-            color="secondary"
-            value="Guardar Cambios"
-            onPress={handleSubmit(onSubmit)}
-          />
-        </View>
+        <Controller
+          control={control}
+          render={({onChange, onBlur, value}) => (
+            <BPicker
+              label="Ventilación"
+              enabled={true}
+              onBlur={onBlur}
+              error={errors.Ventilacion}
+              onChange={(vlue: any) => {
+                onChange(vlue);
+              }}
+              selectedValue={value}
+              items={getFVCCONVIVpicker(QuestionFamilyCodes.Ventilacion)}
+            />
+          )}
+          name="Ventilacion"
+        />
+        <ButtonAction
+          acceptMsg={'Guardar Cambios'}
+          onAccept={handleSubmit(onSubmit)}
+          onCancel={() => navigation.goBack()}
+        />
       </View>
     </KeyboardAwareScrollView>
   );

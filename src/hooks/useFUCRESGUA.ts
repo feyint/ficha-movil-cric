@@ -13,7 +13,7 @@ export function useFUCRESGUA() {
     countEntity();
   }, []);
   function getAllFUCRESGUA() {
-    return database.getAllFromEntity('FUCRESGUA').then(setItem);
+    return database.getAllFromEntity('FUCRESGUA', 'NOMBRE').then(setItem);
   }
   function getFilterFUCRESGUA(
     FUCMUNICI: number,

@@ -125,6 +125,7 @@ export function useFUBUBIVIV() {
     });
   }
   async function createFUBUBIVIV(newItem: FUBUBIVIV): Promise<void> {
+    console.error('llega a guardard  ', newItem);
     let statement = `INSERT INTO {0} 
     (CODIGO, DIRECCION, COORDENADA_X, COORDENADA_Y, FVBENCUES_ID, FUCZONCUI_FUCBARVER_ID) 
     VALUES (?, ?, ?, ?, ?, ?);`;
@@ -144,6 +145,7 @@ export function useFUBUBIVIV() {
       });
   }
   async function updateFUBUBIVIV(item: FUBUBIVIV): Promise<void> {
+    console.error('llega a update');
     setLoading(true);
     let statement = `UPDATE {0}  SET
       CODIGO = ?, 

@@ -421,7 +421,7 @@ const _PersonalInformationForm = (props: any) => {
           identificationEx.find((i) => i.ID == identificationType) ? (
             <BNumberInput
               keyboardType="number"
-              label="Identificación"
+              label="Número de identificación"
               error={errors.identification}
               onChange={(value) => {
                 setEditable(true);

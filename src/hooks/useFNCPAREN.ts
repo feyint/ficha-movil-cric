@@ -14,7 +14,7 @@ export function useFNCPAREN() {
     countEntity();
   }, []);
   function getAllFNCPAREN() {
-    return database.getAllFromEntity('FNCPAREN').then(setlist);
+    return database.getAllFromEntity('FNCPAREN', 'NOMBRE').then(setlist);
   }
   async function createFNCPAREN(newItem: FNCPAREN): Promise<void> {
     let statement = `INSERT INTO {0} 

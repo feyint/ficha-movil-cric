@@ -13,7 +13,7 @@ export function useFNCELEREP() {
     countEntity();
   }, []);
   function getAllFNCELEREP() {
-    return database.getAllFromEntity('FNCELEREP').then(setlist);
+    return database.getAllFromEntity('FNCELEREP', 'NOMBRE').then(setlist);
   }
   async function createFNCELEREP(newItem: FNCELEREP): Promise<void> {
     let statement = `INSERT INTO {0} 

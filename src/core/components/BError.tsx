@@ -10,13 +10,21 @@ class BError extends Component<Props> {
   constructor(props: Props) {
     super(props);
   }
+  renderTypeMessage(type: any) {
+    switch (type) {
+      case 'required':
+        return 'Campo es requerido';
+      default:
+        return type + 'Campo requerido invalido';
+    }
+  }
   render() {
     return (
       <View>
         {this.props.error ? (
           <HelperText type="error">
-            {this.props.error
-              ? this.props.error.message
+            {this.props.error && this.props.error.type
+              ? this.renderTypeMessage(this.props.error.type)
               : 'El campo es requerido'}
           </HelperText>
         ) : null}

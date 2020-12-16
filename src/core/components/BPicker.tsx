@@ -3,7 +3,8 @@ import {HelperText, Text} from 'react-native-paper';
 import {View, StyleSheet} from 'react-native';
 import {Picker} from '@react-native-community/picker';
 import {withTheme} from 'react-native-paper';
-import BError from './BError';
+import {BError, BLabel} from '.';
+import {theme} from '../style/theme';
 
 interface Props {
   label?: string;
@@ -17,6 +18,7 @@ interface Props {
   onLoad?: any;
   theme: any;
   enabled?: boolean;
+  style?: any;
 }
 
 class BPicker extends Component<Props, any> {
@@ -45,17 +47,15 @@ class BPicker extends Component<Props, any> {
   }
   renderLabel() {
     return (
-      <View  >
-        <Text>
-          {this.props.label ? this.props.label : 'Seleccione una opción'}
-        </Text>
-      </View>
+      <BLabel>
+        {this.props.label ? this.props.label : 'Seleccione una opción'}
+      </BLabel>
     );
   }
   render() {
     return (
       this.props.items && (
-        <View>
+        <View style={[styles.vieww, this.props.style]}>
           <Text>{this.renderLabel()}</Text>
           <View
             style={this.props.error ? styles.containerError : styles.container}>
@@ -85,13 +85,7 @@ class BPicker extends Component<Props, any> {
               {this.renderItems()}
             </Picker>
           </View>
-          {this.props.error ? (
-            <HelperText type="error">
-              {this.props.error
-                ? this.props.error.message
-                : 'El campo es requerido'}
-            </HelperText>
-          ) : null}
+          <BError error={this.props.error} />
         </View>
       )
     );
@@ -111,7 +105,10 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.18,
     shadowRadius: 1.00,
-    elevation: 1,
+    elevation: 2,
+  },
+  vieww: {
+    margin: 2,
   },
   containerError: {
     backgroundColor: 'white',
@@ -125,6 +122,10 @@ const styles = StyleSheet.create({
   },
   pickerdisabled: {
     color: 'gray',
+  },
+  label: {
+    fontWeight: 'bold',
+    color: theme.colors.accent,
   },
 });
 

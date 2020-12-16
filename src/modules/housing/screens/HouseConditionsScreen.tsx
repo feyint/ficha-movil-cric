@@ -1,9 +1,8 @@
 import React, {Component} from 'react';
-import {StyleSheet, View} from 'react-native';
-import {Appbar} from 'react-native-paper';
+import {View} from 'react-native';
 import {NavigationProp} from '@react-navigation/native';
 import {HouseConditionsForm} from '../forms';
-import { theme } from '../../../core/style/theme';
+import {BAppBar} from '../../../core/components';
 
 interface Props {
   navigation: NavigationProp<any>;
@@ -15,10 +14,11 @@ class HouseConditionsScreen extends Component<Props, any> {
   render() {
     return (
       <View>
-        <Appbar.Header>
-          <Appbar.BackAction onPress={() => this._goBack()} />
-          <Appbar.Content title="Condiciones de la vivienda" />
-        </Appbar.Header>
+        <BAppBar
+          backH={true}
+          onPress={() => this._goBack()}
+          title="Condiciones de la vivienda"
+        />
         <HouseConditionsForm />
       </View>
     );

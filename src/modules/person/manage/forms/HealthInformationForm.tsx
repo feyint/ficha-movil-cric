@@ -85,18 +85,6 @@ const _HealthInformationForm = (props: any) => {
     //let question = await props.getQuestionAnswer(type, code);
     setValue(prop, []);
   }
-
-  const getQuestionlabel = (code: string) => {
-    return syncCatalogService.getQuestionlabel(code, state.questions);
-  };
-
-  const getItemsForQuestionMultiSelect = (code: string) => {
-    return {}; /*syncCatalogService.getItemsForQuestionMultiSelect(
-      code,
-      state.questions,
-    );*/
-  };
-
   function alert(data: any) {
     editable
       ? Alert.alert(

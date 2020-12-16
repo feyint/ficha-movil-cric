@@ -12,6 +12,7 @@ import {
   BPicker,
   BRadioButton,
   BTextInput,
+  ButtonAction,
 } from '../../../core/components';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
@@ -117,6 +118,7 @@ const _HouseConditionForm = (props: any) => {
       PresenciadevectoresCasa: [],
       TipodeRiesgodelavivienda: [],
       Tipodeespacioproductivo: undefined,
+      RiesgoVivienda: false,
       Destinodelosproductos: [],
       PracticasCulturalesProductivo: [],
       ActividadesProductivasVivienda: [],
@@ -166,9 +168,9 @@ const _HouseConditionForm = (props: any) => {
     setValue('Observaciones', OBSERVACION);
     setObservacion(OBSERVACION);
     if (RIESGO !== null && RIESGO !== 'null') {
-      setRiesgo(Boolean(RIESGO))
-      setValue('RiesgoVivienda', Boolean(RIESGO));
-}
+      setRiesgo(Boolean(RIESGO));
+      setValue('RiesgoVivienda', '' + Boolean(RIESGO));
+    }
   }
   function onSubmit(data: any) {
     let _FNBNUCVIV: FNBNUCVIV = props.FNBNUCVIV;
@@ -796,13 +798,11 @@ const _HouseConditionForm = (props: any) => {
             )}
             name="Observaciones"
           />
-          <View>
-            <BButton
-              color="secondary"
-              value="Guardar Cambios"
-              onPress={handleSubmit(onSubmit)}
-            />
-          </View>
+          <ButtonAction
+            acceptMsg={'Guardar Cambios'}
+            onAccept={handleSubmit(onSubmit)}
+            onCancel={() => navigation.goBack()}
+          />
         </View>
       ) : (
         <Text>Cragando...</Text>

@@ -201,6 +201,7 @@ export function useFNBNUCVIV() {
         type,
       );
       if (ans) {
+        console.error('guarda ', type, ans, FNBNUCVIVID, question.FVCELEVIV_ID);
         saveAnswer(type, ans, FNBNUCVIVID, question.FVCELEVIV_ID);
       }
     });

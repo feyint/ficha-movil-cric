@@ -14,7 +14,7 @@ export const theme = {
     secondaryLight: '#757de8',
     secondaryDark: '#002984',
     secondaryFont: '#ffffff',
-    backgroundTransparent: '#00000030',
+    backgroundTransparent: '#ffffff',
     error: '#f13a59',
     gray: '#484848',
     light: '#E8E8E8E8',

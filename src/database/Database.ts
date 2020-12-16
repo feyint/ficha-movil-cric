@@ -100,6 +100,9 @@ async function getAllFromEntity(
   order: 'ASC' | 'DESC' | undefined = undefined,
 ): Promise<any[]> {
   console.log(`[db] Fetching ${entity} from the db...`);
+  if (orderBy && !order) {
+    order = 'ASC';
+  }
   let orderQuery = orderBy ? `ORDER BY ${orderBy} ${order}` : '';
   return getDatabase()
     .then((db) =>

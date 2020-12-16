@@ -13,7 +13,7 @@ export function useFNCORGANI() {
     countEntity();
   }, []);
   function getAllFNCORGANI() {
-    return database.getAllFromEntity('FNCORGANI').then(setlist);
+    return database.getAllFromEntity('FNCORGANI', 'NOMBRE').then(setlist);
   }
   async function createFNCORGANI(newItem: FNCORGANI): Promise<void> {
     let statement = `INSERT INTO {0} 

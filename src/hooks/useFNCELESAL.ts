@@ -13,7 +13,7 @@ export function useFNCELESAL() {
     countEntity();
   }, []);
   function getAllFNCELESAL() {
-    return database.getAllFromEntity('FNCELESAL').then(setlist);
+    return database.getAllFromEntity('FNCELESAL', 'NOMBRE').then(setlist);
   }
   async function createFNCELESAL(newItem: FNCELESAL): Promise<void> {
     let statement = `INSERT INTO {0} 

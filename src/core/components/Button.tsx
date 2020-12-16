@@ -14,9 +14,9 @@ class BButton extends Component<Props, any> {
   render() {
     return (
       <Button
-        style={[styles.button]}
+        style={[styles.button, this.props.style]}
         color={this.props.theme.colors[this.props.color]}
-        labelStyle={[styles.text, this.props.labelStyle]}
+        labelStyle={[styles.text]}
         mode={this.props.mode ? this.props.mode : 'contained'}
         onPress={() => this.props.onPress()}>
         {this.props.value}
@@ -25,29 +25,24 @@ class BButton extends Component<Props, any> {
   }
 }
 const styles = StyleSheet.create({
-  button:{
-    marginRight:40,
-    marginLeft:40,
-    marginTop:10,
-    paddingTop:10,
-    paddingBottom:10,
-    borderRadius:20,
-    borderWidth: 1,
+  button: {
+    margin: 5,
+    padding: 5,
+    borderRadius: 15,
+    borderWidth: 0,
     borderColor: '#fff',
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    
     elevation: 10,
   },
   text: {
-    color:'#fff',
-      textAlign:'center',
+    color: '#fff',
+    textAlign: 'center',
   },
-
 });
 export default withTheme(BButton);

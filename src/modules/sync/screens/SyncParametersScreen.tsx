@@ -127,7 +127,7 @@ const SyncParametersScreen = () => {
   return (
     <View style={{flex: 1}}>
       <Appbar.Header>
-        <Appbar.Content title="Sincronización de información" />
+        <Appbar.Content title="Parametrización de información" />
       </Appbar.Header>
       <KeyboardAwareScrollView>
         <Card style={styles.container}>

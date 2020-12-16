@@ -3,6 +3,7 @@ import {View} from 'react-native';
 import {Appbar} from 'react-native-paper';
 import {AnotherReproductiveSexualHealtForm} from '../forms';
 import {NavigationProp} from '@react-navigation/native';
+import { BAppBar } from '../../../../core/components';
 
 interface Props {
   navigation: NavigationProp<any>;
@@ -18,10 +19,11 @@ export default class AnotherReproductiveSexualHealtScreen extends Component<
   render() {
     return (
       <View>
-        <Appbar.Header>
-          <Appbar.BackAction onPress={() => this._goBack()} />
-          <Appbar.Content title="Otros datos de salud sexual y reproductiva" />
-        </Appbar.Header>
+        <BAppBar
+          backH={true}
+          onPress={() => this._goBack()}
+          title="Otros datos de salud sexual y reproductiva"
+        />
         <AnotherReproductiveSexualHealtForm />
       </View>
     );

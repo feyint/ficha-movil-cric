@@ -11,3 +11,7 @@ export {default as BSearchBar} from './BSearchBar';
 export {default as BSearchBarV2} from './BSearchBarV2';
 export {default as ButtonAction} from './ButtonAction';
 export {default as Bloader} from './Bloader';
+export {default as BAppBar} from './BAppBar';
+export {default as BRow} from './Brow';
+export {default as BError} from './BError';
+export {default as BLabel} from './BLabel';

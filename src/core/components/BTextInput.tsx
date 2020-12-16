@@ -22,6 +22,7 @@ interface Props {
   icon?: any;
   contextMenuHidden?: boolean;
   maxLength?: any;
+  style?: any;
 }
 export default class BTextInput extends Component<Props, State> {
   /* handleOnPaste = (content: any) => {
@@ -31,10 +32,14 @@ export default class BTextInput extends Component<Props, State> {
 
   handleOnChangeText = async (content: any) => {
     console.log('entro al handle');
-    if (content === '') return true;
+    if (content === '') {
+      return true;
+    }
     const copiedContent = await Clipboard.getString();
 
-    if (copiedContent === '') return true;
+    if (copiedContent === '') {
+      return true;
+    }
     const isPasted = content.includes(copiedContent);
     if (isPasted) {
       Alert.alert('No es valido pegar contenido');
@@ -45,9 +50,9 @@ export default class BTextInput extends Component<Props, State> {
   };
   render() {
     return (
-      <View style={styles.container1}>
+      <View style={[styles.container, this.props.style]}>
         <TextInput
-          style={styles.input}
+          style={[styles.input]}
           error={this.props.error}
           secureTextEntry={this.props.isPassword ? true : false}
           mode={this.props.mode ? this.props.mode : 'outline'}
@@ -65,7 +70,7 @@ export default class BTextInput extends Component<Props, State> {
           numberOfLines={this.props.numberOfLines}
           contextMenuHidden={false}
           maxLength={50}
-          underlineColorAndroid='transparent'
+          underlineColorAndroid="transparent"
         />
         {this.props.error ? (
           <HelperText type="error">
@@ -80,26 +85,24 @@ export default class BTextInput extends Component<Props, State> {
 }
 
 const styles = StyleSheet.create({
-  container1:{
-    justifyContent: 'center',
-
+  container: {
+    margin: 2,
   },
   input: {
     borderRadius: 5,
     borderTopEndRadius: 5,
     borderTopLeftRadius: 5,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 1,
     },
     shadowOpacity: 0.18,
-    shadowRadius: 1.00,
-
+    shadowRadius: 1.0,
     elevation: 1,
     height: 60,
     marginTop: 10,
     marginBottom: 5,
-    backgroundColor : "#FFFFFF"
+    backgroundColor: '#FFFFFF',
   },
 });

@@ -13,7 +13,7 @@ export function useFNCGENERO() {
     countEntity();
   }, []);
   function getAllFNCGENERO() {
-    return database.getAllFromEntity('FNCGENERO').then(setlist);
+    return database.getAllFromEntity('FNCGENERO', 'NOMBRE').then(setlist);
   }
   async function createFNCGENERO(newItem: FNCGENERO): Promise<void> {
     let statement = `INSERT INTO {0} 
@@ -43,6 +43,7 @@ export function useFNCGENERO() {
   function getbyID(GENREID: number) {
     let statement = `
       SELECT * FROM {0} WHERE ID = ${GENREID}`;
+      console.error('genero length ', statement);
     database.executeQuery('FNCGENERO', statement).then((results) => {
       const count = results.rows.length;
       const items: FNCGENERO[] = [];

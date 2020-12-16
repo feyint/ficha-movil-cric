@@ -7,6 +7,7 @@ import {QuestionConditionPersonCodes} from '../../../../core/utils/PersonTypes';
 import {getQuestionWithOptions} from '../../../../state/ConditionPerson/actions';
 import {connect} from 'react-redux';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import { BAppBar } from '../../../../core/components';
 
 interface Props {
   navigation: NavigationProp<any>;
@@ -25,10 +26,11 @@ class PersonalInformationScreen extends Component<Props, any> {
   render() {
     return (
       <View>
-        <Appbar.Header>
-          <Appbar.BackAction onPress={() => this._goBack()} />
-          <Appbar.Content title="Datos Personales" />
-        </Appbar.Header>
+        <BAppBar
+          backH={true}
+          onPress={() => this._goBack()}
+          title="Datos Personales"
+        />
         <KeyboardAwareScrollView>
           <PersonalInformationForm />
         </KeyboardAwareScrollView>

@@ -13,7 +13,7 @@ export function useFNCLUNIND() {
     countEntity();
   }, []);
   function getAllFNCLUNIND() {
-    return database.getAllFromEntity('FNCLUNIND').then(setlist);
+    return database.getAllFromEntity('FNCLUNIND', 'NOMBRE').then(setlist);
   }
   async function createFNCLUNIND(newItem: FNCLUNIND): Promise<void> {
     let statement = `INSERT INTO {0} 

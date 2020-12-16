@@ -13,7 +13,7 @@ export function useFNCPUEIND() {
     countEntity();
   }, []);
   function getAllFNCPUEIND() {
-    return database.getAllFromEntity('FNCPUEIND').then(setlist);
+    return database.getAllFromEntity('FNCPUEIND', 'NOMBRE').then(setlist);
   }
   async function createFNCPUEIND(newItem: FNCPUEIND): Promise<void> {
     let statement = `INSERT INTO {0} 

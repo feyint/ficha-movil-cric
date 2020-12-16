@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {withTheme} from 'react-native-paper';
-import {Alert, StyleSheet, View} from 'react-native';
+import {Alert, BackHandler, StyleSheet, View} from 'react-native';
 import {BButton} from '.';
 import {theme} from '../style/theme';
 interface Props {
@@ -13,6 +13,28 @@ interface Props {
   acceptMsg?: string;
 }
 class ButtonAction extends Component<Props, any> {
+  constructor(props: Props) {
+    super(props);
+    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
+  }
+  componentWillMount() {
+    BackHandler.addEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
+  }
+
+  handleBackButtonClick() {
+    this.alert();
+    return true;
+  }
   alert() {
     Alert.alert(
       this.props.title ? this.props.title : '',
@@ -53,20 +75,19 @@ const styles = StyleSheet.create({
     lineHeight: 26,
   },
   container: {
+    width: '100%',
     marginTop: 15,
     marginBottom: 50,
     display: 'flex',
     flexDirection: 'row',
+    justifyContent: 'center',
   },
   aceptButon: {
-    width: '50%',
     backgroundColor: theme.colors.secondary,
     borderColor: theme.colors.primary,
   },
   cancelButon: {
-    width: '50%',
     backgroundColor: theme.colors.primary,
-    color: 'red',
   },
 });
 export default withTheme(ButtonAction);

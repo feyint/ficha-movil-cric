@@ -4,6 +4,7 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import moment from 'moment';
 import 'moment/locale/es';
 import {HelperText} from 'react-native-paper';
+import { BLabel } from '.';
 
 interface State {
   isVisible: boolean;
@@ -44,11 +45,7 @@ export default class BDatePickerModal extends Component<Props, State> {
     this.props.onChange(date);
   };
   renderLabel() {
-    return (
-      <View>
-        <Text>{this.props.label ? this.props.label : 'Fecha'}</Text>
-      </View>
-    );
+    return <BLabel>{this.props.label}</BLabel>;
   }
   render() {
     return (
@@ -97,13 +94,13 @@ const styles = StyleSheet.create({
     width: '100%',
     color: '#553432',
     paddingHorizontal: 20,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 1,
     },
     shadowOpacity: 0.18,
-    shadowRadius: 1.00,
+    shadowRadius: 1.0,
 
     elevation: 1,
   },

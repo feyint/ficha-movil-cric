@@ -17,7 +17,7 @@ export function useFNCCONPER() {
     // countEntity();
   }, []);
   function getAllFNCCONPER() {
-    return database.getAllFromEntity('FNCCONPER').then(setlist);
+    return database.getAllFromEntity('FNCCONPER', 'NOMBRE').then(setlist);
   }
   async function getQuestionsOptions(questionCodes: string[]) {
     setLoading(true);
@@ -27,7 +27,8 @@ export function useFNCCONPER() {
     let statement = `
     SELECT q.CODIGO as QUESTIONCODE, q.NOMBRE as QUESTIONNAME, o.* FROM FNCELEPER q 
     INNER JOIN FNCCONPER o ON q.ID = o.FNCELEPER_ID
-    WHERE q.CODIGO  in (${inQuery})`;
+    WHERE q.CODIGO  in (${inQuery})
+    ORDER BY o.NOMBRE ASC`;
     await database.executeQuery('FNCCONPER', statement).then((results) => {
       const count = results.rows.length;
       const items: FNCCONPER[] = [];

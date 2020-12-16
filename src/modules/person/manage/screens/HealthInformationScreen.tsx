@@ -3,6 +3,7 @@ import {View} from 'react-native';
 import {Appbar} from 'react-native-paper';
 import {HealthInformationForm} from '../forms';
 import {NavigationProp} from '@react-navigation/native';
+import { BAppBar } from '../../../../core/components';
 
 interface Props {
   navigation: NavigationProp<any>;
@@ -15,10 +16,11 @@ export default class HealthInformationScreen extends Component<Props, any> {
   render() {
     return (
       <View>
-        <Appbar.Header>
-          <Appbar.BackAction onPress={() => this._goBack()} />
-          <Appbar.Content title="Informacion de salud" />
-        </Appbar.Header>
+        <BAppBar
+          backH={true}
+          onPress={() => this._goBack()}
+          title="Informacion de salud"
+        />
         <HealthInformationForm />
       </View>
     );

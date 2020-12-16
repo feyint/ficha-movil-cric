@@ -17,7 +17,7 @@ import {
 } from '../modules/housing/screens';
 import {useTheme} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {SyncParametersScreen} from '../modules/sync/screens';
+import {SyncParametersScreen, SyncScreen} from '../modules/sync/screens';
 import {
   HealthStatusVisitScreen,
   MortalityLast12MonthsScreen,
@@ -238,7 +238,7 @@ export const HomeTabs = () => {
       />
       <BottomTabs.Screen
         name="Sincronización"
-        component={SyncParametersScreen}
+        component={SyncScreen}
         options={{
           tabBarIcon: ({color}) => (
             <Icon name="sync-outline" size={25} color={color} />

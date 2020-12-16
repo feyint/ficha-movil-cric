@@ -18,6 +18,7 @@ export default class BNumberInput extends Component<Props, any> {
     return (
       <View>
         <TextInput
+          selectTextOnFocus={false}
           style={styles.container}
           error={this.props.error}
           label={this.props.label}

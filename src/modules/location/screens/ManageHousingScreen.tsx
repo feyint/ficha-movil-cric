@@ -6,6 +6,7 @@ import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {setQuestionWithOptions} from '../../../state/house/actions';
 import {theme} from '../../../core/style/theme';
+import { BAppBar } from '../../../core/components';
 
 interface Props {
   navigation: NavigationProp<any>;
@@ -29,30 +30,36 @@ class ManageHousingScreen extends Component<any, any> {
   render() {
     return (
       <View>
-        <Appbar.Header>
-          <Appbar.BackAction onPress={() => this._goBack()} />
-          <Appbar.Content
-            title="Administrar Vivienda"
-            subtitle={this.props.FUBUBIVIV.CODIGO}
-          />
-        </Appbar.Header>
+        <BAppBar
+          backH={false}
+          onPress={() => this._goBack()}
+          title="Administrar Vivienda"
+          subtitle={this.props.FUBUBIVIV.CODIGO}
+        />
         <List.Section>
+          <List.Subheader>Seleccione una opción</List.Subheader>
           <List.Item
+            titleEllipsizeMode={'tail'}
+            titleStyle={{ fontWeight: 'normal', color: theme.colors.secondary}}
             key={'Ubicacion'}
-            title="Ubicación de la vivienda"
+            title="UBICACIÓN DE LA VIVIENDA"
             left={() => (
-              <List.Icon icon="map-marker" color={theme.colors.gray} />
+              <List.Icon icon="map-marker" color={theme.colors.secondary} />
             )}
             onPress={() => this.goHomeLocation()}
           />
           <View style={styles.divisor} />
           {this.props.FUBUBIVIV && this.props.FUBUBIVIV.CODIGO !== '' && (
             <List.Item
+              titleStyle={{ fontWeight: 'normal', color: theme.colors.secondary}}
               key={'Nucleo'}
               onPress={() => this.goFamilyScreen()}
-              title="Nucleo Familiar"
+              title="NUCLEO FAMILIAR"
               left={() => (
-                <List.Icon icon="account-group" color={theme.colors.gray} />
+                <List.Icon
+                  icon="account-group"
+                  color={theme.colors.secondary}
+                />
               )}
             />
           )}

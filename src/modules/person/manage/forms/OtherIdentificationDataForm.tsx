@@ -5,7 +5,12 @@ import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {yupResolver} from '@hookform/resolvers';
 import * as yup from 'yup';
-import {BMultiSelect, BPicker, ButtonAction} from '../../../../core/components';
+import {
+  BMultiSelect,
+  BPicker,
+  BRow,
+  ButtonAction,
+} from '../../../../core/components';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {QuestionConditionPersonCodes} from '../../../../core/utils/PersonTypes';
@@ -305,50 +310,57 @@ const _OtherIdentificationDataForm = (props: any) => {
           )}
           name="organizacion"
         />
-        <Controller //Ocupacion principal
-          control={control}
-          render={({onChange, onBlur, value}) => (
-            <BPicker
-              label="Ocupacion Principal"
-              prompt="Selecione una opcion"
-              onBlur={onBlur}
-              error={errors.ocupacionPrincipal}
-              onChange={(value: any) => {
-                onChange(value);
-                if (value) {
-                  onChange(value);
-                  SaveAnswersFNCPERSON('FNCOCUPAC_ID', value);
-                  setOcupacionPrincipal(value);
-                }
-              }}
-              selectedValue={ocupacionPrincipal}
-              items={getSelectSchema(listFNCOCUPAC)}
-              //value={value}
-            />
-          )}
-          name="ocupacionPrincipal"
-        />
-        {enableTipoTrabajo ? (
-          <Controller //TipoTrabajo
+        <BRow>
+          <Controller //Ocupacion principal
             control={control}
             render={({onChange, onBlur, value}) => (
               <BPicker
-                //enabled={enableTipoTrabajo}
-                label={getLabel(QuestionConditionPersonCodes.TipoTrabajo)}
+                style={enableTipoTrabajo ? styles.input : {width: '100%'}}
+                label="Ocupacion Principal"
+                prompt="Selecione una opcion"
                 onBlur={onBlur}
-                error={errors.TipoTrabajo}
+                error={errors.ocupacionPrincipal}
                 onChange={(value: any) => {
                   onChange(value);
-                  SaveAnswers(QuestionConditionPersonCodes.TipoTrabajo, value);
+                  if (value) {
+                    onChange(value);
+                    SaveAnswersFNCPERSON('FNCOCUPAC_ID', value);
+                    setOcupacionPrincipal(value);
+                  }
                 }}
+                selectedValue={ocupacionPrincipal}
+                items={getSelectSchema(listFNCOCUPAC)}
                 //value={value}
-                selectedValue={value}
-                items={getPicker(QuestionConditionPersonCodes.TipoTrabajo)}
               />
             )}
-            name="TipoTrabajo"
+            name="ocupacionPrincipal"
           />
-        ) : null}
+          {enableTipoTrabajo ? (
+            <Controller //TipoTrabajo
+              control={control}
+              render={({onChange, onBlur, value}) => (
+                <BPicker
+                  style={styles.input}
+                  //enabled={enableTipoTrabajo}
+                  label={getLabel(QuestionConditionPersonCodes.TipoTrabajo)}
+                  onBlur={onBlur}
+                  error={errors.TipoTrabajo}
+                  onChange={(value: any) => {
+                    onChange(value);
+                    SaveAnswers(
+                      QuestionConditionPersonCodes.TipoTrabajo,
+                      value,
+                    );
+                  }}
+                  //value={value}
+                  selectedValue={value}
+                  items={getPicker(QuestionConditionPersonCodes.TipoTrabajo)}
+                />
+              )}
+              name="TipoTrabajo"
+            />
+          ) : null}
+        </BRow>
         {enablePueblo ? (
           <Controller //Pueblo indigena
             control={control}
@@ -407,60 +419,64 @@ const _OtherIdentificationDataForm = (props: any) => {
             name="Casta"
           />
         ) : null}
-        <Controller
-          control={control}
-          render={({onChange, onBlur, value}) => (
-            <BPicker
-              label={getLabel(QuestionConditionPersonCodes.LenguaMaterna)}
-              onBlur={onBlur}
-              error={errors.LenguaMaterna}
-              onChange={(value: any) => {
-                onChange(value);
-                if (value) {
-                  //onChangeLengua(value);
-                  setLeng(value);
-                  SaveAnswers(
-                    QuestionConditionPersonCodes.LenguaMaterna,
-                    value,
-                  );
-                  validateLenguaMaterna(value);
-                }
-              }}
-              selectedValue={value}
-              items={getPicker(QuestionConditionPersonCodes.LenguaMaterna)}
-            />
-          )}
-          name="LenguaMaterna"
-        />
-        {enableLenguaMaterna ? (
+        <BRow>
           <Controller
             control={control}
             render={({onChange, onBlur, value}) => (
               <BPicker
-                enabled={enableLenguaMaterna}
-                label={getLabel(
-                  QuestionConditionPersonCodes.DominioLenguaMaterna,
-                )}
+                style={styles.input}
+                label={getLabel(QuestionConditionPersonCodes.LenguaMaterna)}
                 onBlur={onBlur}
-                error={errors.DominioLenguaMaterna}
+                error={errors.LenguaMaterna}
                 onChange={(value: any) => {
                   onChange(value);
                   if (value) {
+                    //onChangeLengua(value);
+                    setLeng(value);
                     SaveAnswers(
-                      QuestionConditionPersonCodes.DominioLenguaMaterna,
+                      QuestionConditionPersonCodes.LenguaMaterna,
                       value,
                     );
+                    validateLenguaMaterna(value);
                   }
                 }}
                 selectedValue={value}
-                items={getPicker(
-                  QuestionConditionPersonCodes.DominioLenguaMaterna,
-                )}
+                items={getPicker(QuestionConditionPersonCodes.LenguaMaterna)}
               />
             )}
-            name="DominioLenguaMaterna"
+            name="LenguaMaterna"
           />
-        ) : null}
+          {enableLenguaMaterna ? (
+            <Controller
+              control={control}
+              render={({onChange, onBlur, value}) => (
+                <BPicker
+                  style={styles.input}
+                  enabled={enableLenguaMaterna}
+                  label={getLabel(
+                    QuestionConditionPersonCodes.DominioLenguaMaterna,
+                  )}
+                  onBlur={onBlur}
+                  error={errors.DominioLenguaMaterna}
+                  onChange={(value: any) => {
+                    onChange(value);
+                    if (value) {
+                      SaveAnswers(
+                        QuestionConditionPersonCodes.DominioLenguaMaterna,
+                        value,
+                      );
+                    }
+                  }}
+                  selectedValue={value}
+                  items={getPicker(
+                    QuestionConditionPersonCodes.DominioLenguaMaterna,
+                  )}
+                />
+              )}
+              name="DominioLenguaMaterna"
+            />
+          ) : null}
+        </BRow>
         {enableLenguaMaterna ? (
           <Controller
             control={control}
@@ -647,8 +663,6 @@ const _OtherIdentificationDataForm = (props: any) => {
           name="TipoDeCuidadosCulturalesQueRealiza"
         />
         <ButtonAction
-          cancelMsg="Volver"
-          acceptMsg="Validar"
           onAccept={handleSubmit(onSubmit)}
           onCancel={() => navigation.goBack()}
         />
@@ -661,6 +675,9 @@ const _OtherIdentificationDataForm = (props: any) => {
 const styles = StyleSheet.create({
   spacer: {
     height: 50,
+  },
+  input: {
+    width: '50%',
   },
   container: {
     flex: 1,

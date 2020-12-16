@@ -157,7 +157,7 @@ export class DatabaseInitialization {
         CODIGO_FF TEXT,
         NOMBRE TEXT,
         REPS TEXT,
-        ESTADO INTEGER
+        ESTADO INTEGER DEFAULT 0
       );
     `);
     transaction.executeSql(`
@@ -306,7 +306,7 @@ export class DatabaseInitialization {
         COORDENADA_Y TEXT,
         FVBENCUES_ID INTEGER,
         FUCZONCUI_FUCBARVER_ID INTEGER,
-        ESTADO INTEGER
+        ESTADO INTEGER DEFAULT 0
       );
     `);
     transaction.executeSql(`
@@ -461,7 +461,8 @@ export class DatabaseInitialization {
         FNCPAREN_ID INTEGER,
         FNCGENERO_ID INTEGER,
         FVBENCUES_ID INTEGER,
-        FNCPUEIND_ID INTEGER
+        FNCPUEIND_ID INTEGER,
+        ESTADO INTEGER DEFAULT 0
       );
     `);
     // ListItem table

@@ -13,7 +13,7 @@ export function useFNCOCUPAC() {
     countEntity();
   }, []);
   function getAllFNCOCUPAC() {
-    return database.getAllFromEntity('FNCOCUPAC').then(setlist);
+    return database.getAllFromEntity('FNCOCUPAC', 'NOMBRE').then(setlist);
   }
   async function createFNCOCUPAC(newItem: FNCOCUPAC): Promise<void> {
     let statement = `INSERT INTO {0} 

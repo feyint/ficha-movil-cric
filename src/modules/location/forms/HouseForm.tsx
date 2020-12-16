@@ -10,6 +10,7 @@ import {
   BTextInput,
   BPicker,
   BRadioButton,
+  ButtonAction,
 } from '../../../core/components';
 import {
   QuestionFamilyCodes,
@@ -24,6 +25,7 @@ import {
   useFVCCONVIV,
 } from '../../../hooks';
 import {FNBNUCVIV, FVCCONVIV} from '../../../types';
+import { useNavigation } from '@react-navigation/native';
 const schemaForm = yup.object().shape({
   housecode: FieldValidator.required(yup, 'Código vivienda'),
   MaterialTecho: FieldValidator.required(yup, 'Material Techo'),
@@ -44,6 +46,7 @@ const schemaForm = yup.object().shape({
   TipodeAlumbrado: FieldValidator.required(yup, 'Tipo de Alumbrado'),
   internetaccess: FieldValidator.required(yup, 'Acceso a Internet'),
 });
+
 const questions = [
   QuestionFamilyCodes.MaterialTecho,
   QuestionFamilyCodes.MaterialPiso,
@@ -61,6 +64,7 @@ const listCocinaseEncuentra = [
 ];
 
 const _HouseForm = (props: any) => {
+  const navigation = useNavigation();
   const {
     listFVCCONVIV,
     getQuestionsOptions,
@@ -81,6 +85,7 @@ const _HouseForm = (props: any) => {
   const fetchQuestions = async () => {
     getQuestionsOptions(questions);
   };
+
   async function getAnswers(
     questionCode: string,
     prop: string,
@@ -341,13 +346,15 @@ const _HouseForm = (props: any) => {
           )}
           name="internetaccess"
         />
-        <View>
-          <BButton
-            color="primary"
-            value="Guardar Cambios"
-            onPress={handleSubmit(onSubmit)}
-          />
-        </View>
+        <ButtonAction
+          acceptMsg={
+            props.FNBNUCVIV.CODIGO == ''
+              ? 'Guardar Cambios'
+              : 'Actualizar Registro'
+          }
+          onAccept={handleSubmit(onSubmit)}
+          onCancel={() => navigation.goBack()}
+        />
         <View style={styles.spacer} />
       </View>
     </KeyboardAwareScrollView>
@@ -364,7 +371,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    padding: 8,
+    padding: 20,
   },
 });
 const mapDispatchToProps = {setFNBNUCVIV};

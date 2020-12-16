@@ -5,7 +5,12 @@ import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {yupResolver} from '@hookform/resolvers';
 import * as yup from 'yup';
-import {BTextInput, BPicker, BButton} from '../../../core/components';
+import {
+  BTextInput,
+  BPicker,
+  ButtonAction,
+  BRow
+} from '../../../core/components';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {getEntitySelect, getLasHouseCode} from '../state/actions';
@@ -31,8 +36,8 @@ interface GeolocationData {
   longitude: string;
 }
 const schemaForm = yup.object().shape({
-  department: FieldValidator.required(yup, 'Departamento'),
-  municipality: FieldValidator.required(yup, 'Municipio'),
+  department: yup.number().required(),
+  municipality: yup.number().required(),
   territoryType: FieldValidator.required(yup, 'Tipo de territorio'),
   shelterOrCouncil: FieldValidator.required(yup, 'Centro poblado'),
   sidewalk: FieldValidator.required(yup, 'Barrio o Vereda'),
@@ -275,6 +280,7 @@ const _HomeLocationForm = (props: any) => {
     }
   }
   const onSubmit = async (data: any) => {
+    console.error('lleha');
     if (props.FUBUBIVIV.CODIGO !== '') {
       let _item: FUBUBIVIV = props.FUBUBIVIV;
       _item.COORDENADA_X = position.latitude;
@@ -350,9 +356,7 @@ const _HomeLocationForm = (props: any) => {
               onChange={(value: any) => {
                 onChange(value);
                 setMunicipio(value);
-                if (value) {
-                  onChangeMuni(value, tipoterritorio);
-                }
+                onChangeMuni(value, tipoterritorio);
               }}
               selectedValue={municipio}
               items={municipioSelect}
@@ -443,45 +447,49 @@ const _HomeLocationForm = (props: any) => {
           )}
           name="carezone"
         />
-        <Controller
-          control={control}
-          render={({onChange, value}) => (
-            <BTextInput
-              value={position.latitude}
-              label="Latitud"
-              disabled={false}
-              error={errors.latitude}
-              onChange={(value: any) => {
-                onChange(value);
-                setPosition({
-                  ...position,
-                  latitude: value,
-                });
-              }}
-            />
-          )}
-          name="latitude"
-        />
-        <Controller
-          value={position.longitude}
-          control={control}
-          render={({onChange, value}) => (
-            <BTextInput
-              value={position.longitude}
-              label="Longitud"
-              disabled={false}
-              error={errors.longitude}
-              onChange={(value: any) => {
-                onChange(value);
-                setPosition({
-                  ...position,
-                  longitude: value,
-                });
-              }}
-            />
-          )}
-          name="longitude"
-        />
+        <BRow>
+          <Controller
+            control={control}
+            render={({onChange, value}) => (
+              <BTextInput
+                style={styles.input}
+                value={position.latitude}
+                label="Latitud"
+                disabled={false}
+                error={errors.latitude}
+                onChange={(value: any) => {
+                  onChange(value);
+                  setPosition({
+                    ...position,
+                    latitude: value,
+                  });
+                }}
+              />
+            )}
+            name="latitude"
+          />
+          <Controller
+            value={position.longitude}
+            control={control}
+            render={({onChange, value}) => (
+              <BTextInput
+                style={styles.input}
+                value={position.longitude}
+                label="Longitud"
+                disabled={false}
+                error={errors.longitude}
+                onChange={(value: any) => {
+                  onChange(value);
+                  setPosition({
+                    ...position,
+                    longitude: value,
+                  });
+                }}
+              />
+            )}
+            name="longitude"
+          />
+        </BRow>
         <Button
           icon="map-marker"
           mode="text"
@@ -504,17 +512,15 @@ const _HomeLocationForm = (props: any) => {
           )}
           name="address"
         />
-        <View style={styles.button}>
-          <BButton
-            color="secondary"
-            value={
-              props.FUBUBIVIV.CODIGO == ''
-                ? 'Guardar Cambios'
-                : 'Actualizar Registro'
-            }
-            onPress={handleSubmit(onSubmit)}
-          />
-        </View>
+        <ButtonAction
+          acceptMsg={
+            props.FUBUBIVIV.CODIGO == ''
+              ? 'Guardar Cambios'
+              : 'Actualizar Registro'
+          }
+          onAccept={handleSubmit(onSubmit)}
+          onCancel={() => navigation.goBack()}
+        />
       </View>
       <View style={styles.spacer} />
     </KeyboardAwareScrollView>
@@ -522,19 +528,16 @@ const _HomeLocationForm = (props: any) => {
 };
 
 const styles = StyleSheet.create({
-  button:{
-    marginTop: 20
+  button: {
+    marginTop: 20,
   },
   input: {
-    backgroundColor: 'white',
-    height: 40,
-    padding: 10,
-    borderRadius: 4,
+    width: '50%',
   },
   container: {
     flex: 1,
     justifyContent: 'center',
-    padding: 8,
+    padding: 20,
   },
   spacer: {
     height: 70,

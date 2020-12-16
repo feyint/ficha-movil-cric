@@ -28,17 +28,21 @@ const ViewPersonScreen = (props: any) => {
   >(false);
   useEffect(() => {
     if (itemFNCPERSON) {
-      props.setFNCPERSON(itemFNCPERSON);
       getbyID(itemFNCPERSON.FNCGENERO_ID);
+      props.setFNCPERSON(itemFNCPERSON);
     }
   }, [itemFNCPERSON]);
   useEffect(() => {
     if (itemFNCGENERO) {
+      console.error('itemFNCGENERO ', itemFNCGENERO);
       if (itemFNCGENERO.CODIGO == PersonParametersConst.onlyGenrecode) {
         setenableSexReproductionHealt(true);
       }
     }
   }, [itemFNCGENERO]);
+  useEffect(() => {
+    getbyID(props.FNCPERSON.FNCGENERO_ID);
+  }, [props.FNCPERSON]);
   useFocusEffect(() => {
     if (!props.FNCPERSON.ID) {
       if (created) {
@@ -49,7 +53,8 @@ const ViewPersonScreen = (props: any) => {
         setcreated(true);
         navigate('PersonalInformationScreen');
       }
-    } else {}
+    } else {
+    }
   }, []);
   function _goBack() {
     navigation.goBack();

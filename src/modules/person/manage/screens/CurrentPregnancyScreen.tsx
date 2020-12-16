@@ -3,6 +3,7 @@ import {View} from 'react-native';
 import {Appbar} from 'react-native-paper';
 import {CurrentPregnancyForm} from '../forms';
 import {NavigationProp} from '@react-navigation/native';
+import { BAppBar } from '../../../../core/components';
 
 interface Props {
   navigation: NavigationProp<any>;
@@ -15,10 +16,11 @@ export default class CurrenyPregnancyScreen extends Component<Props, any> {
   render() {
     return (
       <View>
-        <Appbar.Header>
-          <Appbar.BackAction onPress={() => this._goBack()} />
-          <Appbar.Content title="Gestación actual" />
-        </Appbar.Header>
+        <BAppBar
+          backH={true}
+          onPress={() => this._goBack()}
+          title="Gestación actual"
+        />
         <CurrentPregnancyForm />
       </View>
     );

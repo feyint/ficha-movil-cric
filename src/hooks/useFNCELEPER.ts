@@ -13,7 +13,7 @@ export function useFNCELEPER() {
     countEntity();
   }, []);
   function getAllFNCELEPER() {
-    return database.getAllFromEntity('FNCELEPER').then(setlist);
+    return database.getAllFromEntity('FNCELEPER', 'NOMBRE').then(setlist);
   }
   async function createFNCELEPER(newItem: FNCELEPER): Promise<void> {
     let statement = `INSERT INTO {0} 

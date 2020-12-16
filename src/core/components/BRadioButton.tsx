@@ -1,7 +1,9 @@
 import React, {Component} from 'react';
-import {HelperText, RadioButton, Text} from 'react-native-paper';
+import {HelperText, RadioButton, Text, withTheme} from 'react-native-paper';
 import {View, StyleSheet} from 'react-native';
 import BError from './BError';
+import {theme} from '../style/theme';
+import {BLabel} from '.';
 
 interface Props {
   items?: {label: string; value: any}[];
@@ -9,6 +11,7 @@ interface Props {
   value: any;
   label?: string;
   error?: any;
+  theme: any;
 }
 class BRadioButton extends Component<Props, any> {
   constructor(props: Props) {
@@ -18,13 +21,7 @@ class BRadioButton extends Component<Props, any> {
     }
   }
   renderLabel() {
-    return (
-      <View>
-        <Text>
-          {this.props.label ? this.props.label : 'Seleccione una opción'}
-        </Text>
-      </View>
-    );
+    return <BLabel>{this.props.label}</BLabel>;
   }
   render() {
     return (
@@ -71,6 +68,10 @@ const styles = StyleSheet.create({
   flexDirection: {
     flexDirection: 'row',
   },
+  label: {
+    fontWeight: 'bold',
+    color: theme.colors.accent,
+  },
 });
 
-export default BRadioButton;
+export default withTheme(BRadioButton);
