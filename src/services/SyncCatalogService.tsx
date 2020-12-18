@@ -35,7 +35,7 @@ export default class SyncCatalogService {
   async getEntity(name: string): Promise<{totalItems: number; data: any[]}> {
     try {
       return await HttpProvider.post('common/v1/entity', {
-        entityName: name,
+        entityName: name.substr(0, 1).toUpperCase() + name.substr(1, name.length - 1).toLowerCase(),
       });
     } catch (error) {
       Alert.alert('Ocurrio un error', 'con la entidad : ' + name);
@@ -130,7 +130,7 @@ export default class SyncCatalogService {
     });
   }
   async syncEntities() {
-    let itemFVCELEVIV: any = await this.getEntity({entityName: 'FVCELEVIV'});
+    let itemFVCELEVIV: any = await this.getEntity('FVCELEVIV');
     const FVCELEVIVSchema = itemFVCELEVIV.data.map((item: any) => {
       return {
         ID: item.id,
@@ -145,7 +145,7 @@ export default class SyncCatalogService {
       FVCELEVIVSchema,
     );
 
-    let itemFVCCONVIV: any = await this.getEntity({entityName: 'FVCCONVIV'});
+    let itemFVCCONVIV: any = await this.getEntity('FVCCONVIV');
     const FVCCONVIVSchema = itemFVCCONVIV.data.map((item: any) => {
       return {
         ID: item.id,
@@ -160,7 +160,7 @@ export default class SyncCatalogService {
       FVCCONVIVSCHEMA,
       FVCCONVIVSchema,
     );
-    let itemFNCDESARM: any = await this.getEntity({entityName: 'FNCDESARM'});
+    let itemFNCDESARM: any = await this.getEntity('FNCDESARM');
     const FNCDESARMSchema = itemFNCDESARM.data.map((item: any) => {
       return {
         ID: item.id,
@@ -175,7 +175,7 @@ export default class SyncCatalogService {
       FNCDESARMSCHEMA,
       FNCDESARMSchema,
     );
-    let itemFNCOCUPAC: any = await this.getEntity({entityName: 'FNCOCUPAC'});
+    let itemFNCOCUPAC: any = await this.getEntity('FNCOCUPAC');
     const FNCOCUPACSchema = itemFNCOCUPAC.data.map((item: any) => {
       return {
         ID: item.id,
@@ -191,7 +191,7 @@ export default class SyncCatalogService {
       FNCOCUPACSCHEMA,
       FNCOCUPACSchema,
     );
-    let itemFNCELESAL: any = await this.getEntity({entityName: 'FNCELESAL'});
+    let itemFNCELESAL: any = await this.getEntity('FNCELESAL');
     const FNCELESALSchema = itemFNCELESAL.data.map((item: any) => {
       return {
         ID: item.id,
@@ -205,7 +205,7 @@ export default class SyncCatalogService {
       FNCELESALSCHEMA,
       FNCELESALSchema,
     );
-    let itemFNCCONSAL: any = await this.getEntity({entityName: 'FNCCONSAL'});
+    let itemFNCCONSAL: any = await this.getEntity('FNCCONSAL');
     const FNCCONSALSchema = itemFNCCONSAL.data.map((item: any) => {
       return {
         ID: item.id,
@@ -220,7 +220,7 @@ export default class SyncCatalogService {
       FNCCONSALSCHEMA,
       FNCCONSALSchema,
     );
-    let itemFNCELEPER: any = await this.getEntity({entityName: 'FNCELEPER'});
+    let itemFNCELEPER: any = await this.getEntity('FNCELEPER');
     const FNCELEPERSchema = itemFNCELEPER.data.map((item: any) => {
       return {
         ID: item.id,
@@ -234,7 +234,7 @@ export default class SyncCatalogService {
       FNCELEPERSCHEMA,
       FNCELEPERSchema,
     );
-    let itemFNCELEREP: any = await this.getEntity({entityName: 'FNCELEREP'});
+    let itemFNCELEREP: any = await this.getEntity('FNCELEREP');
     const FNCELEREPSchema = itemFNCELEREP.data.map((item: any) => {
       return {
         ID: item.id,
@@ -248,7 +248,7 @@ export default class SyncCatalogService {
       FNCELEREPSCHEMA,
       FNCELEREPSchema,
     );
-    let itemFNCCONPER: any = await this.getEntity({entityName: 'FNCCONPER'});
+    let itemFNCCONPER: any = await this.getEntity('FNCCONPER');
     const FNCCONPERSchema = itemFNCCONPER.data.map((item: any) => {
       return {
         ID: item.id,
@@ -263,7 +263,7 @@ export default class SyncCatalogService {
       FNCCONPERSCHEMA,
       FNCCONPERSchema,
     );
-    let itemFNCCONREP: any = await this.getEntity({entityName: 'FNCCONREP'});
+    let itemFNCCONREP: any = await this.getEntity('FNCCONREP');
     const FNCCONREPSchema = itemFNCCONREP.data.map((item: any) => {
       return {
         ID: item.id,
@@ -278,7 +278,7 @@ export default class SyncCatalogService {
       FNCCONREPSCHEMA,
       FNCCONREPSchema,
     );
-    let itemFNCPUEIND: any = await this.getEntity({entityName: 'FNCPUEIND'});
+    let itemFNCPUEIND: any = await this.getEntity('FNCPUEIND');
     const FNCPUEINDSchema = itemFNCPUEIND.data.map((item: any) => {
       return {
         ID: item.id,
@@ -292,7 +292,7 @@ export default class SyncCatalogService {
       FNCPUEINDSCHEMA,
       FNCPUEINDSchema,
     );
-    let itemFNCORGANI: any = await this.getEntity({entityName: 'FNCORGANI'});
+    let itemFNCORGANI: any = await this.getEntity('FNCORGANI');
     const FNCORGANISchema = itemFNCORGANI.data.map((item: any) => {
       return {
         ID: item.id,
@@ -308,7 +308,7 @@ export default class SyncCatalogService {
       FNCORGANISchema,
     );
     //------------------------------------------------------------------------------------
-    let itemFUCDEPART: any = await this.getEntity({entityName: 'FUCDEPART'});
+    let itemFUCDEPART: any = await this.getEntity('FUCDEPART');
     const FUCDEPARTSCHEMAs = itemFUCDEPART.data.map((item) => {
       return {
         ID: item.id,
@@ -323,9 +323,7 @@ export default class SyncCatalogService {
       FUCDEPARTSCHEMA,
       FUCDEPARTSCHEMAs,
     );
-    let itemFUCMUNICISCHEMAs: any = await this.getEntity({
-      entityName: 'FUCMUNICI',
-    });
+    let itemFUCMUNICISCHEMAs: any = await this.getEntity('FUCMUNICI');
     const FUCMUNICISCHEMAs = itemFUCMUNICISCHEMAs.data.map((item) => {
       return {
         ID: item.id,
@@ -341,9 +339,7 @@ export default class SyncCatalogService {
       FUCMUNICISCHEMA,
       FUCMUNICISCHEMAs,
     );
-    let itemFUCPAISSCHEMAs: any = await this.getEntity({
-      entityName: 'FUCPAIS',
-    });
+    let itemFUCPAISSCHEMAs: any = await this.getEntity('FUCPAIS');
     const FUCPAISSCHEMAs = itemFUCPAISSCHEMAs.data.map((item) => {
       return {
         ID: item.id,
@@ -358,9 +354,7 @@ export default class SyncCatalogService {
       FUCPAISSCHEMA,
       FUCPAISSCHEMAs,
     );
-    let itemFUCTIPTERSCHEMAs: any = await this.getEntity({
-      entityName: 'FUCTIPTER',
-    });
+    let itemFUCTIPTERSCHEMAs: any = await this.getEntity('FUCTIPTER');
     const FUCTIPTERSCHEMAs = itemFUCTIPTERSCHEMAs.data.map((item) => {
       return {
         ID: item.id,
@@ -374,9 +368,7 @@ export default class SyncCatalogService {
       FUCTIPTERSCHEMA,
       FUCTIPTERSCHEMAs,
     );
-    let itemFUCRESGUASCHEMAs: any = await this.getEntity({
-      entityName: 'FUCRESGUA',
-    });
+    let itemFUCRESGUASCHEMAs: any = await this.getEntity('FUCRESGUA');
     const FUCRESGUASCHEMAs = itemFUCRESGUASCHEMAs.data.map((item) => {
       return {
         ID: item.id,
@@ -394,9 +386,7 @@ export default class SyncCatalogService {
       FUCRESGUASCHEMA,
       FUCRESGUASCHEMAs,
     );
-    let itemFUCBARVERSCHEMAs: any = await this.getEntity({
-      entityName: 'FUCBARVER',
-    });
+    let itemFUCBARVERSCHEMAs: any = await this.getEntity('FUCBARVER');
     if (itemFUCBARVERSCHEMAs && itemFUCBARVERSCHEMAs.data.length > 0) {
       const FUCBARVERSCHEMAs = itemFUCBARVERSCHEMAs.data.map((item: any) => {
         return {
@@ -414,9 +404,7 @@ export default class SyncCatalogService {
         FUCBARVERSCHEMAs,
       );
     }
-    let itemFUCZONASCHEMAs: any = await this.getEntity({
-      entityName: 'FUCZONA',
-    });
+    let itemFUCZONASCHEMAs: any = await this.getEntity('FUCZONA');
     const FUCZONASCHEMAs = itemFUCZONASCHEMAs.data.map((item: any) => {
       return {
         ID: item.id,
@@ -430,9 +418,7 @@ export default class SyncCatalogService {
       FUCZONASCHEMA,
       FUCZONASCHEMAs,
     );
-    let itemFNCGENEROs: any = await this.getEntity({
-      entityName: 'FNCGENERO',
-    });
+    let itemFNCGENEROs: any = await this.getEntity('FNCGENERO');
     const FNCGENEROs = itemFNCGENEROs.data.map((item: any) => {
       return {
         ID: item.id,
@@ -446,9 +432,7 @@ export default class SyncCatalogService {
       FNCGENEROSCHEMA,
       FNCGENEROs,
     );
-    let itemFUCUNICUISCHEMAs: any = await this.getEntity({
-      entityName: 'FUCUNICUI',
-    });
+    let itemFUCUNICUISCHEMAs: any = await this.getEntity('FUCUNICUI');
     const FUCUNICUISCHEMAs = itemFUCUNICUISCHEMAs.data.map((item: any) => {
       return {
         ID: item.id,
@@ -463,9 +447,7 @@ export default class SyncCatalogService {
       FUCUNICUISCHEMA,
       FUCUNICUISCHEMAs,
     );
-    let itemFUCZONCUISCHEMAs: any = await this.getEntity({
-      entityName: 'FUCZONCUI',
-    });
+    let itemFUCZONCUISCHEMAs: any = await this.getEntity('FUCZONCUI');
     const FUCZONCUISCHEMAs = itemFUCZONCUISCHEMAs.data.map((item: any) => {
       return {
         ID: item.id,
@@ -481,9 +463,7 @@ export default class SyncCatalogService {
       FUCZONCUISCHEMA,
       FUCZONCUISCHEMAs,
     );
-    let itemFNCLUNINDs: any = await this.getEntity({
-      entityName: 'FNCLUNIND',
-    });
+    let itemFNCLUNINDs: any = await this.getEntity('FNCLUNIND');
     const FNCLUNINDs = itemFNCLUNINDs.data.map((item: any) => {
       return {
         ID: item.id,
@@ -498,9 +478,7 @@ export default class SyncCatalogService {
       FNCLUNINDSCHEMA,
       FNCLUNINDs,
     );
-    let itemFNCPARENs: any = await this.getEntity({
-      entityName: 'FNCPAREN',
-    });
+    let itemFNCPARENs: any = await this.getEntity('FNCPAREN');
     const FNCPARENs = itemFNCPARENs.data.map((item) => {
       return {
         ID: item.id,
@@ -514,9 +492,7 @@ export default class SyncCatalogService {
       FNCPARENSCHEMA,
       FNCPARENs,
     );
-    let itemFNCTIPIDEs: any = await this.getEntity({
-      entityName: 'FNCTIPIDE',
-    });
+    let itemFNCTIPIDEs: any = await this.getEntity('FNCTIPIDE');
     const FNCTIPIDEs = itemFNCTIPIDEs.data.map((item) => {
       return {
         ID: item.id,
