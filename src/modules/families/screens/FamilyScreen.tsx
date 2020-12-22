@@ -123,7 +123,6 @@ const FamilyScreen = (props: any) => {
   );
 
   async function fetchFamilies() {
-    // console.error(props.FUBUBIVIV.ID);
     filterFNBNUCVIV(props.FUBUBIVIV.ID);
   }
 

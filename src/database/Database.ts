@@ -219,7 +219,6 @@ async function clearEntity(entity: string): Promise<void> {
 
 async function getDatabase(): Promise<SQLite.SQLiteDatabase> {
   if (databaseInstance !== undefined) {
-    //console.error(databaseInstance);
     return Promise.resolve(databaseInstance);
   }
   // otherwise: open the database first

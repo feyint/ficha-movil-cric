@@ -43,7 +43,6 @@ export function useFNCGENERO() {
   function getbyID(GENREID: number) {
     let statement = `
       SELECT * FROM {0} WHERE ID = ${GENREID}`;
-      console.error('genero length ', statement);
     database.executeQuery('FNCGENERO', statement).then((results) => {
       const count = results.rows.length;
       const items: FNCGENERO[] = [];

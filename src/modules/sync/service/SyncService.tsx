@@ -30,10 +30,8 @@ export default class SyncService {
           entityName: this.requestbase,
         },
       );
-      console.error(result);
     } catch (error) {
       Alert.alert('Ocurrio un error ', 'error en la sincronizacion');
-      console.error(error);
     }
   }
 }

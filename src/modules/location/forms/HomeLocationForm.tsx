@@ -197,7 +197,6 @@ const _HomeLocationForm = (props: any) => {
   async function getCurrentPosition() {
     Geolocation.getCurrentPosition(
       (pos) => {
-        Alert.alert('location ', JSON.stringify(pos));
         setPosition({
           latitude: '' + pos.coords.latitude,
           longitude: '' + pos.coords.longitude,
@@ -206,7 +205,7 @@ const _HomeLocationForm = (props: any) => {
         setValue('longitude', '' + pos.coords.longitude);
       },
       (e) => {
-        Alert.alert('location ', JSON.stringify(e));
+        Alert.alert('location ERROR', JSON.stringify(e));
       },
       {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000},
     );
@@ -280,7 +279,6 @@ const _HomeLocationForm = (props: any) => {
     }
   }
   const onSubmit = async (data: any) => {
-    console.error('lleha');
     if (props.FUBUBIVIV.CODIGO !== '') {
       let _item: FUBUBIVIV = props.FUBUBIVIV;
       _item.COORDENADA_X = position.latitude;

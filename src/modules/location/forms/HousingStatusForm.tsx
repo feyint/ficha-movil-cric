@@ -91,7 +91,6 @@ const _HousingStatusForm = (props: any) => {
     if (question) {
       const {ID} = props.FNBNUCVIV;
       let ans = await getAnswerquestion(ID, question.FVCELEVIV_ID, type);
-      console.error('ans ', ID, question.FVCELEVIV_ID, type, ans);
       setValue(prop, '' + ans);
     }
   }

@@ -34,7 +34,6 @@ const ViewPersonScreen = (props: any) => {
   }, [itemFNCPERSON]);
   useEffect(() => {
     if (itemFNCGENERO) {
-      console.error('itemFNCGENERO ', itemFNCGENERO);
       if (itemFNCGENERO.CODIGO == PersonParametersConst.onlyGenrecode) {
         setenableSexReproductionHealt(true);
       }

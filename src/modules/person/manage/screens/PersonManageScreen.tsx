@@ -42,7 +42,6 @@ const PersonManageScreen = (props: any) => {
         filterFNCPERSON(props.FNBNUCVIV.ID);
       }
     } catch (error) {
-      console.error(error);
     }
   }
   function searchUser(textToSearch: any) {
@@ -128,7 +127,6 @@ const PersonManageScreen = (props: any) => {
   );
 
   function goViewPersonScreen(data: FNCPERSON) {
-    console.error(data);
     props.setFNCPERSON(data);
     props.navigation.navigate('ViewPersonScreen');
   }

@@ -374,7 +374,6 @@ const _PersonalInformationForm = (props: any) => {
             prompt="Seleccione una opción"
             error={errors.identificationType}
             onChange={(value) => {
-              console.error(`tipo de identificacion value igual a ${value}`);
               setEditable(true);
               if (
                 identificationEx &&

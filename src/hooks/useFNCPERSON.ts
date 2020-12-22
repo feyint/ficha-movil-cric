@@ -239,7 +239,6 @@ export function useFNCPERSON() {
         return await getFNCPERSONbyID(insertId);
       })
       .catch((err) => {
-        console.error(err);
       })
       .finally(() => {
         setLoading(false);

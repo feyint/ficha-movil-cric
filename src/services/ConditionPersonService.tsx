@@ -205,7 +205,6 @@ export default class ConditionPersonService {
         });
       })
       .catch((error) => {
-        console.error(error);
         return error;
       });
   }
@@ -308,7 +307,6 @@ export default class ConditionPersonService {
         return itemsSelect;
       })
       .catch((error) => {
-        console.error(error);
         return error;
       });
     return result;
@@ -353,7 +351,6 @@ export default class ConditionPersonService {
         return itemsSelect;
       })
       .catch((error) => {
-        console.error(error);
         return error;
       });
     return result;

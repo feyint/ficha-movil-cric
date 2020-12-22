@@ -95,14 +95,12 @@ export const saveFNCPERSON = (data: FNCPERSON) => async (
     let personServie: PersonService = new PersonService();
     let sexhealtService: SexAndRepHealthPersonService = new SexAndRepHealthPersonService();
     let result = await personServie.SaveFNCPERSON(data, family.ID);
-    console.error('guardó ', result);
     if (result) {
       data.CODIGO = result.CODIGO;
       data.ID = result.ID;
       sexhealtService.SaveFNCSALREP({
         FNCPERSON_ID: result.ID,
       });
-      console.error('sexhealtService ');
     }
     dispatch(_setPERSON(data));
   } catch (error) {
