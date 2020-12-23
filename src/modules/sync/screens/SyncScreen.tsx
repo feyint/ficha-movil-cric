@@ -1,26 +1,110 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useEffect} from 'react';
-import {View} from 'react-native';
-import {Appbar, Paragraph, Text, withTheme} from 'react-native-paper';
+import React, {useEffect, useState} from 'react';
+import {StyleSheet, View} from 'react-native';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {
+  Appbar,
+  Card,
+  DataTable,
+  FAB,
+  Paragraph,
+  Subheading,
+  Text,
+  withTheme,
+} from 'react-native-paper';
 import {useSYNC} from '../hooks';
+import { FububivivListSync } from '../models/FububivivListSync';
+import SyncService from '../service/SyncService';
 
 const SyncScreen = () => {
-  const {getAllforSync, countToSync} = useSYNC();
+  const {
+    countFububivivToSync,
+    countFnbnucvivToSync,
+    countFnbnucvivFvcconvivToSync,
+    countFnbnucvivFncpersonToSync,
+    getAllCountForSync,
+    getObjectToSync,
+  } = useSYNC();
+  const [loading, setIsLoading] = useState(false);
   useEffect(() => {
     forSync();
   }, []);
   async function forSync() {
-    await getAllforSync();
+    await getAllCountForSync();
+  }
+  async function sync() {
+    setIsLoading(true);
+    const fububivivListSync: FububivivListSync = await getObjectToSync();
+    console.log(JSON.stringify(fububivivListSync));
+    const result = await new SyncService().sendPackageToSincronize(fububivivListSync);
+    console.log(JSON.stringify(result));
+    setIsLoading(false);
+  }
+  function renderRow(
+    catalog: string,
+    loading: boolean,
+    count: number,
+    detail: string = '',
+  ) {
+    return (
+      <DataTable.Row style={styles.row}>
+        <DataTable.Cell>
+          <View>
+            <Subheading>{catalog}</Subheading>
+            {detail.length > 0 ? <Paragraph>{detail}</Paragraph> : null}
+          </View>
+        </DataTable.Cell>
+        <DataTable.Cell numeric>
+          {loading ? 'Cargando..' : count}
+        </DataTable.Cell>
+      </DataTable.Row>
+    );
   }
   return (
     <View>
       <Appbar.Header>
         <Appbar.Content title="Sincronización de información" />
       </Appbar.Header>
-      <Paragraph>Modulo de sincronización de fichas</Paragraph>
-      <Text>Fichas por sincronizar: {countToSync}</Text>
+      <Card style={styles.container}>
+        <DataTable collapsable={true}>
+          <DataTable.Header>
+            <DataTable.Title>Catálogo</DataTable.Title>
+            <DataTable.Title numeric>Cantidad por sincronizar</DataTable.Title>
+          </DataTable.Header>
+          {renderRow('FUBUBIVIV', loading, countFububivivToSync)}
+          {renderRow('FNBNUCVIV', loading, countFnbnucvivToSync)}
+          {renderRow('FNBNUCVIV_FVCCONVIV', loading, countFnbnucvivFvcconvivToSync)}
+          {renderRow('FNBNUCVIV_FNCPERSON', loading, countFnbnucvivFncpersonToSync)}
+        </DataTable>
+      </Card>
+      <FAB
+        loading={loading}
+        label="Sincronizar"
+        style={styles.fab}
+        icon="arrow-up-circle"
+        onPress={() => sync()}
+      />
     </View>
   );
 };
-
+const styles = StyleSheet.create({
+  container: {
+    padding: 10,
+    margin: 20,
+    height: '70%',
+  },
+  titles: {
+    color: 'red',
+    fontSize: 20,
+  },
+  fab: {
+    position: 'absolute',
+    margin: 16,
+    right: 0,
+    bottom: 0,
+  },
+  row: {
+    marginBottom: 10,
+  },
+});
 export default withTheme(SyncScreen);

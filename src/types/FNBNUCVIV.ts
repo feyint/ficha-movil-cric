@@ -1,5 +1,6 @@
 export interface FNBNUCVIV {
   ID?: number;
+  WEB_ID?: string;
   CODIGO: string;
   HUMO_CASA?: boolean;
   ORIGEN_DATA?: string;

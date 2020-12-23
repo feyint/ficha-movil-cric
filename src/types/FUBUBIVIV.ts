@@ -1,5 +1,6 @@
 export interface FUBUBIVIV {
   ID: number;
+  WEB_ID?: string;
   CODIGO: string;
   DIRECCION: string;
   COORDENADA_X: string;
