@@ -1,6 +1,7 @@
 import {useState, useEffect} from 'react';
 import {useDatabase} from '../context/DatabaseContext';
 import {MultiSelectSchema, PickerType} from '../core/utils/types';
+import {capitalizeFirstLetter} from '../core/utils/utils';
 import {SyncCatalogService} from '../services';
 import {FNCCONSAL} from '../types';
 
@@ -15,7 +16,14 @@ export function useFNCCONSAL() {
     // countEntity();
   }, []);
   function getAllFNCCONSAL() {
-    return database.getAllFromEntity('FNCCONSAL').then(setlist);
+    return database.getAllFromEntity('FNCCONSAL', 'NOMBRE').then(setlist);
+  }
+  function getLabel(code: string) {
+    for (let i = 0; i < listFNCCONSAL.length; i++) {
+      if (listFNCCONSAL[i].CODIGO === code) {
+        return capitalizeFirstLetter(listFNCCONSAL[i].NOMBRE);
+      }
+    }
   }
   async function getQuestionsOptions(questionCodes: string[]) {
     setLoading(true);
@@ -130,5 +138,6 @@ export function useFNCCONSAL() {
     getAllFNCCONSAL,
     getQuestionsOptions,
     getMultiselect,
+    getLabel,
   };
 }

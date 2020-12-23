@@ -114,6 +114,7 @@ async function getAllFromEntity(
         return [];
       }
       const count = results.rows.length;
+      console.error(entity , count);
       const items: any[] = [];
       for (let i = 0; i < count; i++) {
         const row = results.rows.item(i);
