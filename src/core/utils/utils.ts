@@ -1,5 +1,5 @@
 import {QuestionFamilyCodes} from './HousingTypes';
-import {PickerType} from './types';
+import {MultiSelectSchema, PickerType} from './types';
 
 export function capitalizeFirstLetter(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
@@ -55,6 +55,18 @@ export function getSelectSchema(items: any[], defaultValue = true) {
   }
   if (defaultValue) {
     item.unshift({value: '-1', label: 'Seleccione', item: null});
+  }
+  return item;
+}
+export function getMSelectSchema(code: string, items: any[]) {
+  let item: MultiSelectSchema = {name: '', id: 0, children: []};
+  item.id = parseInt(code, 10);
+  for (let i = 0; i < items.length; i++) {
+    item.children.push({
+      id: items[i].ID,
+      name: items[i].NOMBRE,
+      item: items[i],
+    });
   }
   return item;
 }

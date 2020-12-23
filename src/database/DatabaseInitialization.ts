@@ -298,6 +298,35 @@ export class DatabaseInitialization {
       );
     `);
     transaction.executeSql(`
+      CREATE TABLE IF NOT EXISTS FNBINFSAL_FNCCONSAL(
+        ID INTEGER PRIMARY KEY AUTOINCREMENT,
+        FNBINFSAL_ID INTEGER,
+        FNCCONSAL_ID INTEGER,
+        FNCELESAL_ID INTEGER
+      );
+    `);
+    transaction.executeSql(`
+      CREATE TABLE IF NOT EXISTS FNCGENERO_FNCDESARM(
+        ID INTEGER PRIMARY KEY AUTOINCREMENT,
+        FNCGENERO_ID INTEGER,
+        FNCDESARM_ID INTEGER
+      );
+    `);
+    transaction.executeSql(`
+      CREATE TABLE IF NOT EXISTS FNBINFSAL_FNCDESARM(
+        ID INTEGER PRIMARY KEY AUTOINCREMENT,
+        FNBINFSAL_ID INTEGER,
+        FNCDESARM_ID INTEGER
+      );
+    `);
+    transaction.executeSql(`
+      CREATE TABLE IF NOT EXISTS FNCPUEIND_FNCDESARM(
+        ID INTEGER PRIMARY KEY AUTOINCREMENT,
+        FNCPUEIND_ID INTEGER,
+        FNCDESARM_ID INTEGER
+      );
+    `);
+    transaction.executeSql(`
       CREATE TABLE IF NOT EXISTS FUBUBIVIV(
         ID INTEGER PRIMARY KEY AUTOINCREMENT,
         CODIGO TEXT,
@@ -465,17 +494,25 @@ export class DatabaseInitialization {
         ESTADO INTEGER DEFAULT 0
       );
     `);
-    // ListItem table
-    // transaction.executeSql(`
-    //   CREATE TABLE IF NOT EXISTS ListItem(
-    //     item_id INTEGER PRIMARY KEY NOT NULL,
-    //     list_id INTEGER,
-    //     text TEXT,
-    //     done INTEGER DEFAULT 0,
-    //     FOREIGN KEY ( list_id ) REFERENCES List ( list_id )
-    //   );
-    // `);
-
+    transaction.executeSql(`
+      CREATE TABLE IF NOT EXISTS FNBINFSAL(
+        ID INTEGER PRIMARY KEY AUTOINCREMENT,
+        PESO INTEGER,
+        TALLA INTEGER,
+        TA_SISTOLICA INTEGER,
+        TA_DIASTOLICA INTEGER,
+        USO_PROTESIS INTEGER,
+        TIEMPO_PROTESIS INTEGER,
+        ULTIMA_VISITA TEXT,
+        FECHA_MUERTE TEXT,
+        FECHA_ACTIVIDAD TEXT,
+        FECHA_CREACION TEXT,
+        FNCPERSON_ID INTEGER,
+        FNCINTIMC_ID INTEGER,
+        FNCINTTEA_ID INTEGER,
+        ESTADO INTEGER DEFAULT 0
+      );
+    `);
     // Version table
     transaction.executeSql(`
       CREATE TABLE IF NOT EXISTS Version(

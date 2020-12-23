@@ -1,10 +1,16 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useState, useEffect} from 'react';
-import {View, StyleSheet, Picker, Alert} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {yupResolver} from '@hookform/resolvers';
 import * as yup from 'yup';
-import {BButton, BMultiSelect, BPicker} from '../../../../core/components';
+import {
+  BButton,
+  BMultiSelect,
+  BPicker,
+  ButtonAction,
+} from '../../../../core/components';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {PersonService} from '../../../../services';
@@ -25,12 +31,15 @@ import {
   getLasHouseCode,
 } from '../../../../modules/location/state/actions';
 import {theme} from '../../../../core/style/theme';
+import {useFNCCONSAL} from '../../../../hooks/useFNCCONSAL';
+import {FNCCONSAL} from '../../../../types';
+import {useFNCDESARM} from '../../../../hooks/useFNCDESARM';
+import {getMSelectSchema, getSelectSchema} from '../../../../core/utils/utils';
 
-const questions = [
+const questionscodes = [
   QuestionPersonCodes.DesarmoniaOccidental,
   QuestionPersonCodes.AntecedentesFamiliares,
 ];
-
 const schemaForm = yup.object().shape({
   DesarmoniaPropia: yup.array().optional(),
   DesarmoniaOccidental: yup.array().required(),
@@ -39,115 +48,85 @@ const schemaForm = yup.object().shape({
 
 const _HealthStatusVisitForm = (props: any) => {
   const syncCatalogService = new PersonService();
-
+  const {
+    getLabel,
+    getQuestionsOptions,
+    getPicker,
+    getMultiselect,
+    listFNCCONSAL,
+  } = useFNCCONSAL();
+  const {listFNCDESARM, getAllFNCDESARM} = useFNCDESARM();
   const [editable, setEditable] = useState(false);
-
-  const [state, setState] = useState({
-    questions: [] as PersonQuestion[],
-  });
-
   const [desarmony, setDesarmony] = useState('');
-  const [desarmonySelect, setDesarmonySelect] = useState<SelectSchema>({
-    id: 0,
-    name: '',
-    children: [],
-  });
-
   const navigation = useNavigation();
-
   const {handleSubmit, control, errors, getValues, setValue} = useForm({
     resolver: yupResolver(schemaForm),
   });
 
   useEffect(() => {
-    fetchQuestions();
+    getQuestionsOptions(questionscodes);
   }, []);
+  useEffect(() => {
+    if (listFNCCONSAL) {
+      fetchQuestions();
+    }
+  }, [listFNCCONSAL]);
 
   async function fetchQuestions() {
-    let result = await props.getQuestionWithOptions(questions);
-    if (result) {
-      setState({
-        ...state,
-        questions: result,
-      });
-    }
-    let FNCDESARM = await props.getEntitySelect('FNCDESARM');
-    setDesarmonySelect(FNCDESARM);
+    getAllFNCDESARM();
+    /**
+     *  getAnswers(
+                  QuestionTypes.multiSelect,
+                  QuestionPersonCodes.DesarmoniaOccidental,
+                  'DesarmoniaOccidental',
+                );
+     */
   }
-
-  async function getAnswers(type: number, code: string, prop: string) {
-    let question = await props.getQuestionAnswer(type, code);
-    setValue(prop, question);
-  }
-
-  const getQuestionlabel = (code: string) => {
-    return syncCatalogService.getQuestionlabel(code, state.questions);
-  };
-
-  const getItemsForQuestionMultiSelect = (code: string) => {
-    return syncCatalogService.getItemsForQuestionMultiSelect(
-      code,
-      state.questions,
-    );
-  };
-  function alert(data: any) {
-    editable
-      ? Alert.alert(
-          '',
-          '¿Desea cancelar el proceso?.',
-          [
-            {
-              text: 'NO',
-              onPress: () => console.log('Cancel Pressed'),
-              style: 'cancel',
-            },
-            {text: 'SI', onPress: () => navigation.goBack()},
-          ],
-          {cancelable: false},
-        )
-      : navigation.goBack();
-  }
-
   function onSubmit(data: any) {
     navigation.goBack();
+  }
+  async function getAnswers(
+    questionCode: string,
+    prop: string,
+    type: 1 | 2 = 1,
+  ) {
+    let question = listFNCCONSAL.find((item: FNCCONSAL) => {
+      return item.QUESTIONCODE === questionCode;
+    });
+    // if (question) {
+    //   const {ID} = props.FNCPERSON;
+    //   let ans = await getAnswerquestion(ID, question.FNCELEPER_ID, type);
+    //   if (ans) {
+    //     if (type == 1) {
+    //       setValue(prop, '' + ans);
+    //     } else {
+    //       setValue(prop, ans);
+    //     }
+    //   }
+    //   return ans;
+    // }
+  }
+  async function SaveAnswers(
+    questionCode: string,
+    answer: any,
+    _type: 1 | 2 = 1,
+    personid = 0,
+  ) {
+    let question = listFNCCONSAL.find((item: FNCCONSAL) => {
+      return item.QUESTIONCODE === questionCode;
+    });
+    if (question) {
+      let ID = props.FNCPERSON.ID;
+      if (personid > 0) {
+        ID = personid;
+      }
+      // saveAnswer(_type, answer, ID, question.FNCELEPER_ID);
+    }
   }
 
   return (
     <KeyboardAwareScrollView>
       <View style={styles.container}>
-        {/* <Controller
-          control={control}
-          render={({onChange, onBlur, value}) => (
-            <BMultiSelect
-              label={'Desarmonia propia'}
-              onBlur={onBlur}
-              error={errors.DesarmoniaOccidental}
-              onChange={(values: any) => {
-                onChange(values);
-                console.log('save');
-                props.saveAnswerLocal(
-                  QuestionTypes.multiSelect,
-                  QuestionPersonCodes.DesarmoniaOccidental,
-                  values,
-                );
-              }}
-              onLoad={() => {
-                console.log('onLoad');
-                getAnswers(
-                  QuestionTypes.multiSelect,
-                  QuestionPersonCodes.DesarmoniaOccidental,
-                  'DesarmoniaOccidental',
-                );
-              }}
-              selectedItems={value}
-              items={getItemsForQuestionMultiSelect(
-                QuestionPersonCodes.DesarmoniaOccidental,
-              )}
-            />
-          )}
-          name="DesarmoniaOccidental"
-        /> */}
-
         <Controller
           control={control}
           render={({onChange, onBlur, value}) => (
@@ -162,8 +141,8 @@ const _HealthStatusVisitForm = (props: any) => {
                 onChange(value);
                 setDesarmony(value);
               }}
-              selectedValue={desarmony}
-              items={desarmonySelect.children}
+              value={desarmony}
+              items={getMSelectSchema('FNCDESARM', listFNCDESARM)}
             />
           )}
           name="DesarmoniaPropia"
@@ -173,31 +152,20 @@ const _HealthStatusVisitForm = (props: any) => {
           control={control}
           render={({onChange, onBlur, value}) => (
             <BMultiSelect
-              label={getQuestionlabel(QuestionPersonCodes.DesarmoniaOccidental)}
+              label={getLabel(QuestionPersonCodes.DesarmoniaOccidental)}
               onBlur={onBlur}
               error={errors.DesarmoniaOccidental}
               onChange={(values: any) => {
                 setEditable(true);
                 onChange(values);
-                console.log('save');
-                props.saveAnswerLocal(
-                  QuestionTypes.multiSelect,
+                SaveAnswers(
                   QuestionPersonCodes.DesarmoniaOccidental,
                   values,
-                );
-              }}
-              onLoad={() => {
-                console.log('onLoad');
-                getAnswers(
-                  QuestionTypes.multiSelect,
-                  QuestionPersonCodes.DesarmoniaOccidental,
-                  'DesarmoniaOccidental',
+                  2,
                 );
               }}
               selectedItems={value}
-              items={getItemsForQuestionMultiSelect(
-                QuestionPersonCodes.DesarmoniaOccidental,
-              )}
+              items={getMultiselect(QuestionPersonCodes.DesarmoniaOccidental)}
             />
           )}
           name="DesarmoniaOccidental"
@@ -207,63 +175,33 @@ const _HealthStatusVisitForm = (props: any) => {
           control={control}
           render={({onChange, onBlur, value}) => (
             <BMultiSelect
-              label={getQuestionlabel(
-                QuestionPersonCodes.AntecedentesFamiliares,
-              )}
+              label={getLabel(QuestionPersonCodes.AntecedentesFamiliares)}
               onBlur={onBlur}
               error={errors.AntecedentesFamiliares}
               onChange={(values: any) => {
                 setEditable(true);
                 onChange(values);
-                console.log('save');
-                props.saveAnswerLocal(
-                  QuestionTypes.multiSelect,
+                SaveAnswers(
                   QuestionPersonCodes.AntecedentesFamiliares,
                   values,
-                );
-              }}
-              onLoad={() => {
-                console.log('onLoad');
-                getAnswers(
-                  QuestionTypes.multiSelect,
-                  QuestionPersonCodes.AntecedentesFamiliares,
-                  'AntecedentesFamiliares',
+                  2,
                 );
               }}
               selectedItems={value}
-              items={getItemsForQuestionMultiSelect(
-                QuestionPersonCodes.AntecedentesFamiliares,
-              )}
+              items={getMultiselect(QuestionPersonCodes.AntecedentesFamiliares)}
             />
           )}
           name="AntecedentesFamiliares"
         />
-
-        <View
-          style={{display: 'flex', flexDirection: 'row', marginLeft: '20%'}}>
-          <BButton
-            style={styles.aceptButon}
-            color="secondary"
-            value="Cancelar"
-            labelStyle={styles.text}
-            onPress={alert}
-          />
-          <BButton
-            style={styles.cancelButon}
-            color="secondary"
-            //labelStyle={styles.text}
-            value="Validar"
-            onPress={handleSubmit(onSubmit, (err) => {
-              console.warn(err);
-            })}
-          />
-        </View>
+        <ButtonAction
+          onAccept={handleSubmit(onSubmit)}
+          onCancel={() => navigation.goBack()}
+        />
       </View>
       <View style={styles.spacer} />
     </KeyboardAwareScrollView>
   );
 };
-
 const styles = StyleSheet.create({
   input: {
     backgroundColor: 'white',
@@ -277,7 +215,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    padding: 8,
+    padding: 15,
   },
   aceptButon: {
     backgroundColor: 'white',
