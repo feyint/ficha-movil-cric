@@ -474,6 +474,7 @@ export class DatabaseInitialization {
     transaction.executeSql(`
       CREATE TABLE IF NOT EXISTS FNCPERSON(
         ID INTEGER PRIMARY KEY AUTOINCREMENT,
+        WEB_ID TEXT DEFAULT NULL,
         CODIGO TEXT,
         IDENTIFICACION TEXT,
         PRIMER_NOMBRE TEXT,
@@ -501,6 +502,7 @@ export class DatabaseInitialization {
     transaction.executeSql(`
       CREATE TABLE IF NOT EXISTS FNBINFSAL(
         ID INTEGER PRIMARY KEY AUTOINCREMENT,
+        WEB_ID TEXT DEFAULT NULL,
         PESO INTEGER,
         TALLA INTEGER,
         TA_SISTOLICA INTEGER,

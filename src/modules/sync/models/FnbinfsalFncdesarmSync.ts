@@ -1,11 +1,11 @@
 import {AssociationSync} from './AssociationSync';
 export class FnbinfsalFncdesarmSync {
-  seleccion: string;
-  fncdesarm: AssociationSync;
   id?: string;
-  constructor(seleccion: string, fncdesarm: AssociationSync, id?: string) {
-    this.seleccion = seleccion;
-    this.fncdesarm = fncdesarm;
+  seleccion: string;
+  fncdesarmSync: AssociationSync;
+  constructor(id: string = "", seleccion: string, fncdesarmSync: AssociationSync) {
     this.id = id;
+    this.seleccion = seleccion;
+    this.fncdesarmSync = fncdesarmSync;
   }
 }

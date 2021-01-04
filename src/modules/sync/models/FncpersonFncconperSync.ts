@@ -6,5 +6,5 @@ export interface FncpersonFncconperSync {
   fnceleperCodigo: string;
   origenData: string;
   usuarioData: string;
-  fncconper: AssociationSync;
+  fncconperSync: AssociationSync;
 }

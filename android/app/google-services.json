@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1004074566081",
+    "firebase_url": "https://ficha-familiar-movil.firebaseio.com",
+    "project_id": "ficha-familiar-movil",
+    "storage_bucket": "ficha-familiar-movil.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1004074566081:android:62b4e2cbf07da6f35a6f40",
+        "android_client_info": {
+          "package_name": "com.ficha_familiar_movil"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1004074566081-nbuhouijvie4rcr4k9vscemmq36t333a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyASWlQCYcO6Dcg74_FJCmpnK-JqBmQn9JA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1004074566081-nbuhouijvie4rcr4k9vscemmq36t333a.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

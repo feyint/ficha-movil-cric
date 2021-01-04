@@ -4,7 +4,7 @@ import {StatusSync} from './StatusSync';
 import {AssociationSync} from './AssociationSync';
 import {FnbinfsalSync} from './FnbinfsalSync';
 export interface FncpersonSync {
-  status?: StatusSync;
+  statusSync?: StatusSync;
   id?: string;
   codigo: string;
   correoElectronico: string;
@@ -18,15 +18,15 @@ export interface FncpersonSync {
   telCelular: string;
   origenData: string;
   usuarioData: string;
-  fncgenero: AssociationSync;
-  fnclunind: AssociationSync;
-  fncocupac: AssociationSync;
-  fncorgani: AssociationSync;
-  fncparen: AssociationSync;
-  fnctipide: AssociationSync;
-  fucmunici: AssociationSync;
-  fvbencue: AssociationSync;
-  fncsalrep: FncsalrepSync;
-  fnbinfsal: FnbinfsalSync;
-  fncpersonFncconper: FncpersonFncconperSync;
+  fncgeneroSync: AssociationSync;
+  fnclunindSync: AssociationSync;
+  fncocupacSync: AssociationSync;
+  fncorganiSync: AssociationSync;
+  fncparenSync: AssociationSync;
+  fnctipideSync: AssociationSync;
+  fucmuniciSync: AssociationSync;
+  fvbencueSync: AssociationSync;
+  fncsalrepSync: FncsalrepSync;
+  fnbinfsalSync: FnbinfsalSync;
+  fncpersonFncconperSync: FncpersonFncconperSync;
 }

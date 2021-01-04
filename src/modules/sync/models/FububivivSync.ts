@@ -1,9 +1,10 @@
+import { FuczoncuiFucbarverSync } from './FuczoncuiFucbarverSync';
 import {FUBUBIVIV} from './../../../types/FUBUBIVIV';
 import {FnbnucvivSync} from './FnbnucvivSync';
 import {StatusSync} from './StatusSync';
 import {AssociationSync} from './AssociationSync';
 export class FububivivSync {
-  status?: StatusSync;
+  statusSync?: StatusSync;
   id: string;
   localId: string;
   codigo: string;
@@ -11,10 +12,10 @@ export class FububivivSync {
   coordenadaY: string;
   direccion: string;
   numNucleos: string;
-  fvbencueSync: AssociationSync;
   origenData?: string;
   usuarioData?: string;
-  fuczoncuiFucbarverSync: AssociationSync;
+  fvbencueSync: AssociationSync;
+  fuczoncuiFucbarverSync: FuczoncuiFucbarverSync;
   fnbnucvivSync: FnbnucvivSync[];
   constructor(
     id: string = '',
@@ -27,7 +28,7 @@ export class FububivivSync {
     origenData: string = '',
     usuarioData: string = '',
     fvbencue: AssociationSync,
-    fuczoncuiFucbarver: AssociationSync,
+    fuczoncuiFucbarver: FuczoncuiFucbarverSync,
   ) {
     this.id = id;
     this.localId = localId;
@@ -54,7 +55,7 @@ export class FububivivSync {
       data.ORIGEN_DATA,
       data.USUARIO_DATA,
       new AssociationSync(data.FVBENCUES_ID?.toString()),
-      new AssociationSync(data.FUCZONCUI_FUCBARVER_ID?.toString()),
+      new FuczoncuiFucbarverSync(data.FUCZONCUI_FUCBARVER_ID?.toString()),
     );
   }
 }

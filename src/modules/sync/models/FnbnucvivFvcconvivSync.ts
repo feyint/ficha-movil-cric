@@ -5,5 +5,5 @@ export interface FnbnucvivFvcconvivSync {
   fvcelevivId: string;
   origenData: string;
   usuarioData: string;
-  fvcconviv: AssociationSync;
+  fvcconvivSync: AssociationSync;
 }

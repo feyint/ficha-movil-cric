@@ -14,8 +14,8 @@ export interface FnbinfsalSync {
   peso: string;
   usuarioData: string;
   origenData: string;
-  fncintimc: AssociationSync;
-  fncinttea: AssociationSync;
-  fnbinfsalFncconsal: FnbinfsalFncconsalSync[];
+  fncintimcSync: AssociationSync;
+  fncintteaSync: AssociationSync;
+  fnbinfsalFncconsalSync: FnbinfsalFncconsalSync[];
   fnbinfsalFncdesarm: FnbinfsalFncdesarmSync[];
 }

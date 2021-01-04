@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
-import {StyleSheet, View} from 'react-native';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {Alert, StyleSheet, View} from 'react-native';
 import {
   Appbar,
   Card,
@@ -13,7 +12,7 @@ import {
   withTheme,
 } from 'react-native-paper';
 import {useSYNC} from '../hooks';
-import { FububivivListSync } from '../models/FububivivListSync';
+import {FububivivListSync} from '../models/FububivivListSync';
 import SyncService from '../service/SyncService';
 
 const SyncScreen = () => {
@@ -22,8 +21,11 @@ const SyncScreen = () => {
     countFnbnucvivToSync,
     countFnbnucvivFvcconvivToSync,
     countFnbnucvivFncpersonToSync,
+    countFncpersonToSync,
+    countFnbinfsalsonToSync,
     getAllCountForSync,
     getObjectToSync,
+    resetSync,
   } = useSYNC();
   const [loading, setIsLoading] = useState(false);
   useEffect(() => {
@@ -34,10 +36,17 @@ const SyncScreen = () => {
   }
   async function sync() {
     setIsLoading(true);
-    const fububivivListSync: FububivivListSync = await getObjectToSync();
-    console.log(JSON.stringify(fububivivListSync));
-    const result = await new SyncService().sendPackageToSincronize(fububivivListSync);
-    console.log(JSON.stringify(result));
+    try {
+      const fububivivListSync: FububivivListSync = await getObjectToSync();
+      console.log(JSON.stringify(fububivivListSync));
+      const result = await new SyncService().sendPackageToSincronize(
+        fububivivListSync,
+      );
+      console.log(JSON.stringify(result));
+    } catch (e) {}
+    
+    Alert.alert('Sincronización exitosa ', 'La sincronización ha finalizado');
+    resetSync();
     setIsLoading(false);
   }
   function renderRow(
@@ -73,8 +82,18 @@ const SyncScreen = () => {
           </DataTable.Header>
           {renderRow('FUBUBIVIV', loading, countFububivivToSync)}
           {renderRow('FNBNUCVIV', loading, countFnbnucvivToSync)}
-          {renderRow('FNBNUCVIV_FVCCONVIV', loading, countFnbnucvivFvcconvivToSync)}
-          {renderRow('FNBNUCVIV_FNCPERSON', loading, countFnbnucvivFncpersonToSync)}
+          {renderRow(
+            'FNBNUCVIV_FVCCONVIV',
+            loading,
+            countFnbnucvivFvcconvivToSync,
+          )}
+          {renderRow(
+            'FNBNUCVIV_FNCPERSON',
+            loading,
+            countFnbnucvivFncpersonToSync,
+          )}
+          {renderRow('FNCPERSON', loading, countFncpersonToSync)}
+          {renderRow('FNBINFSAL', loading, countFnbinfsalsonToSync)}
         </DataTable>
       </Card>
       <FAB

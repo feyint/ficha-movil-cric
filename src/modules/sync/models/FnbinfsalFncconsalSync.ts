@@ -2,17 +2,17 @@ import {AssociationSync} from './AssociationSync';
 export class FnbinfsalFncconsalSync {
   id?: string;
   seleccion: string;
-  fncconsal: AssociationSync;
-  fncelesal: AssociationSync;
+  fncconsalSync: AssociationSync;
+  fncelesalSync: AssociationSync;
   constructor(
     id: string = '',
     seleccion: string,
-    fncconsal: AssociationSync,
-    fncelesal: AssociationSync,
+    fncconsalSync: AssociationSync,
+    fncelesalSync: AssociationSync,
   ) {
     this.seleccion = seleccion;
     this.id = id;
-    this.fncconsal = fncconsal;
-    this.fncelesal = fncelesal;
+    this.fncconsalSync = fncconsalSync;
+    this.fncelesalSync = fncelesalSync;
   }
 }

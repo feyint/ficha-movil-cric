@@ -24,7 +24,7 @@ export default class SyncService {
       );
       return result;
     } catch (error) {
-      Alert.alert('Ocurrio un error ', 'error de conexión ' + error);
+      //Alert.alert('Ocurrio un error ', 'error de conexión ' + error);
       return null;
     }
   }

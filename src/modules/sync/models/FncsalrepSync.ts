@@ -21,5 +21,5 @@ export interface FncsalrepSync {
   accionProstata: string;
   usuarioData: string;
   origenData: string;
-  fncsalrepFncconrep: FncsalrepFncconrepSync[];
+  fncsalrepFncconrepSync: FncsalrepFncconrepSync[];
 }

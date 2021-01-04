@@ -4,5 +4,5 @@ export interface FnbnucvivFncpersonSync {
   seleccion: string;
   origenData: string;
   usuarioData: string;
-  fncperson: FncpersonSync;
+  fncpersonSync: FncpersonSync;
 }
