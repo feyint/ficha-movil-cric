@@ -16,11 +16,6 @@ import {
 import BNumberInput from '../../../../core/components/BNumberInput';
 import {setFNCPERSON} from '../../../../state/person/actions';
 import {QuestionConditionPersonCodes} from '../../../../core/utils/PersonTypes';
-import {
-  getQuestionAnswer,
-  getQuestionWithOptions,
-  saveAnswerLocal,
-} from '../../../../state/ConditionPerson/actions';
 import {PersonParametersConst} from '../../../../core/utils/SystemParameters';
 import {theme} from '../../../../core/style/theme';
 import {
@@ -610,9 +605,6 @@ const mapStateToProps = (state: any) => {
   };
 };
 const mapDispatchToProps = {
-  getQuestionWithOptions,
-  saveAnswerLocal,
-  getQuestionAnswer,
   setFNCPERSON,
 };
 export default connect(

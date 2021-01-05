@@ -1,13 +1,10 @@
 import React, {Component} from 'react';
 import {View} from 'react-native';
-import {Appbar} from 'react-native-paper';
 import {PersonalInformationForm} from '../forms';
 import {NavigationProp} from '@react-navigation/native';
-import {QuestionConditionPersonCodes} from '../../../../core/utils/PersonTypes';
-import {getQuestionWithOptions} from '../../../../state/ConditionPerson/actions';
 import {connect} from 'react-redux';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import { BAppBar } from '../../../../core/components';
+import {BAppBar} from '../../../../core/components';
 
 interface Props {
   navigation: NavigationProp<any>;
@@ -38,8 +35,4 @@ class PersonalInformationScreen extends Component<Props, any> {
     );
   }
 }
-
-const mapDispatchToProps = {
-  getQuestionWithOptions,
-};
-export default connect(null, mapDispatchToProps)(PersonalInformationScreen);
+export default connect(null, null)(PersonalInformationScreen);

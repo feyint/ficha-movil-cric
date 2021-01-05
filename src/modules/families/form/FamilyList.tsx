@@ -1,16 +1,10 @@
 import React, {useState, useEffect} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {HousingService} from '../../../services';
 import {ListItem} from 'react-native-elements';
-import {FNBNUCVIV} from '../../../state/house/types';
 import BEmpty from '../../../core/components/BEmpty';
 
 const _FamilyList = (props: any) => {
-  const [state, setState] = useState({
-    families: props.families ? props.families : ([] as FNBNUCVIV[]),
-  });
-
   useEffect(() => {}, []);
   return (
     <KeyboardAwareScrollView>

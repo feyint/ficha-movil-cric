@@ -1,4 +1,3 @@
-import Realm from 'realm';
 export enum DataBaseSchemas {
   UserSchema = 'User',
   FNCTIPIDESCHEMA = 'FNCTIPIDE', // tipo de identificacion
@@ -534,24 +533,24 @@ export const FNCGENEROSCHEMA = {
 };
 export const allCatalogs = () =>
   new Promise((resolve, reject) => {
-    Realm.open({
-      schema: [FVCCONVIVSCHEMA],
-      schemaVersion: 1,
-    })
-      .then((realm) => {
-        let servicios = realm.objects('FVCCONVIV');
-        realm.close();
-        resolve(servicios);
-      })
-      .catch((error) => {
-        console.log('Error listando');
-        reject(error);
-      });
+    // Realm.open({
+    //   schema: [FVCCONVIVSCHEMA],
+    //   schemaVersion: 1,
+    // })
+    //   .then((realm) => {
+    //     let servicios = realm.objects('FVCCONVIV');
+    //     realm.close();
+    //     resolve(servicios);
+    //   })
+    //   .catch((error) => {
+    //     console.log('Error listando');
+    //     reject(error);
+    //   });
   });
 
 export default class DataBaseProvider {
   async open() {
-    await Realm.open({
+   /* await Realm.open({
       schemaVersion: schemaVersion,
       schema: [
         UserSchema,
@@ -606,7 +605,7 @@ export default class DataBaseProvider {
           username: 'felipe',
           identificationType: 1,
           identification: '1061809552',
-        });
+        });*/
         // realm.create('FUCBARVER', {
         //   ID: 2,
         //   CODIGO: 'CODBV_2',
@@ -725,13 +724,13 @@ export default class DataBaseProvider {
         //   FUBUBIVIV_ID: 123,
         //   FUBUBIVIV_CODE: 'CODVIVI1',
         // });
-      });
+    /*  });
       
       realm.close();
-    });
+    });*/
   }
   async countEntity(entity: string) {
-    let count = await Realm.open({
+   /* let count = await Realm.open({
       schemaVersion: schemaVersion,
       schema: [
         FNCTIPIDESCHEMA,
@@ -765,6 +764,7 @@ export default class DataBaseProvider {
       let count = realm.objects(entity).length;
       return count;
     });
-    return count;
+    return count;*/
+    return 0;
   }
 }

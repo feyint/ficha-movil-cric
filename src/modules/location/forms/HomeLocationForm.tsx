@@ -9,7 +9,7 @@ import {
   BTextInput,
   BPicker,
   ButtonAction,
-  BRow
+  BRow,
 } from '../../../core/components';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';

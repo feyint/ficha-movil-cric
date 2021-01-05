@@ -1,9 +1,8 @@
 import React, {Component} from 'react';
 import {View} from 'react-native';
-import {Appbar} from 'react-native-paper';
 import {NavigationProp} from '@react-navigation/native';
 import {HouseForm} from '../forms';
-import { BAppBar } from '../../../core/components';
+import {BAppBar} from '../../../core/components';
 
 interface Props {
   navigation: NavigationProp<any>;

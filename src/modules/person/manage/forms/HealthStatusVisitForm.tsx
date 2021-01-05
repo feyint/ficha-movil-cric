@@ -9,12 +9,6 @@ import {BMultiSelect, ButtonAction} from '../../../../core/components';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {QuestionPersonCodes} from '../../../../core/utils/PersonTypes';
-import {
-  getQuestionWithOptions,
-  saveAnswerLocal,
-  getQuestionAnswer,
-} from '../../../../state/person/actions';
-import {getEntitySelect} from '../../../../modules/location/state/actions';
 import {theme} from '../../../../core/style/theme';
 import {useFNCCONSAL} from '../../../../hooks/useFNCCONSAL';
 import {FNCCONSAL} from '../../../../types';
@@ -238,19 +232,10 @@ const styles = StyleSheet.create({
     color: theme.colors.primary,
   },
 });
-const mapDispatchToProps = {
-  getQuestionWithOptions,
-  saveAnswerLocal,
-  getQuestionAnswer,
-  getEntitySelect,
-};
 const mapStateToProps = (store: any) => {
   return {
     FNBINFSAL: store.person.FNBINFSAL,
     FNCPERSON: store.person.FNCPERSON,
   };
 };
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(_HealthStatusVisitForm);
+export default connect(mapStateToProps, null)(_HealthStatusVisitForm);

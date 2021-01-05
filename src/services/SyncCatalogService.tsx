@@ -27,7 +27,6 @@ import DataBaseProvider, {
   FNCTIPIDESCHEMA,
   FNCGENEROSCHEMA,
 } from '../providers/DataBaseProvider';
-import Realm from 'realm';
 import {HttpProvider} from '../providers';
 import {Alert} from 'react-native';
 
@@ -35,7 +34,9 @@ export default class SyncCatalogService {
   async getEntity(name: string): Promise<{totalItems: number; data: any[]}> {
     try {
       return await HttpProvider.post('common/v1/entity', {
-        entityName: name.substr(0, 1).toUpperCase() + name.substr(1, name.length - 1).toLowerCase(),
+        entityName:
+          name.substr(0, 1).toUpperCase() +
+          name.substr(1, name.length - 1).toLowerCase(),
       });
     } catch (error) {
       Alert.alert('Ocurrio un error', 'con la entidad : ' + name);
@@ -43,92 +44,7 @@ export default class SyncCatalogService {
       return {totalItems: 0, data: []};
     }
   }
-  async countEntities(entity: string) {
-    let db = new DataBaseProvider();
-    return await db.countEntity(entity);
-  }
-  async clearEntities() {
-    await Realm.open({
-      schema: [
-        FVCCONVIVSCHEMA,
-        FVCELEVIVSCHEMA,
-        FUCDEPARTSCHEMA,
-        FUCMUNICISCHEMA,
-        FUCTIPTERSCHEMA,
-        FUCRESGUASCHEMA,
-        FUCBARVERSCHEMA,
-        FUCZONASCHEMA,
-        FUCUNICUISCHEMA,
-        FUCZONCUISCHEMA,
-        FNCELESALSCHEMA,
-        FNCCONSALSCHEMA,
-        FNCELEPERSCHEMA,
-        FNCCONPERSCHEMA,
-        FNCDESARMSCHEMA,
-        FNCOCUPACSCHEMA,
-        FNCELEREPSCHEMA,
-        FNCCONREPSCHEMA,
-        FUCPAISSCHEMA,
-        FNCPUEINDSCHEMA,
-        FNCPARENSCHEMA,
-        FNCTIPIDESCHEMA,
-        FNCGENEROSCHEMA,
-      ],
-      schemaVersion: schemaVersion,
-    }).then((realm) => {
-      realm.write(() => {
-        let itemsFVCCONVIV = realm.objects('FVCCONVIV');
-        let itemFVCELEVIV = realm.objects('FVCELEVIV');
-        let itemFUCDEPART = realm.objects('FUCDEPART');
-        let itemFUCMUNICI = realm.objects('FUCMUNICI');
-        let itemFUCTIPTER = realm.objects('FUCTIPTER');
-        let itemFUCRESGUA = realm.objects('FUCRESGUA');
-        // let itemFUCBARVER = realm.objects('FUCBARVER');
-        let itemFUCZONA = realm.objects('FUCZONA');
-        let itemFNCGENERO = realm.objects('FNCGENERO');
-        let itemFUCZONCUI = realm.objects('FUCZONCUI');
-        let itemFUCUNICUI = realm.objects('FUCUNICUI');
-        let itemFUCPAISSCHEMA = realm.objects('FUCPAIS');
-        realm.delete(itemsFVCCONVIV);
-        realm.delete(itemFVCELEVIV);
-        realm.delete(itemFUCDEPART);
-        realm.delete(itemFUCMUNICI);
-        realm.delete(itemFUCTIPTER);
-        realm.delete(itemFUCRESGUA);
-        //  realm.delete(itemFUCBARVER);
-        realm.delete(itemFUCZONA);
-        realm.delete(itemFNCGENERO);
-        realm.delete(itemFUCZONCUI);
-        realm.delete(itemFUCUNICUI);
-        realm.delete(itemFUCPAISSCHEMA);
-        let itemFNCELESAL = realm.objects('FNCELESAL');
-        let itemFNCCONSAL = realm.objects('FNCCONSAL');
-        let itemFNCELEPER = realm.objects('FNCELEPER');
-        let itemFNCCONPER = realm.objects('FNCCONPER');
-        let itemFNCELEREP = realm.objects('FNCELEREP');
-        let itemFNCCONREP = realm.objects('FNCCONREP');
-        let itemFNCDESARM = realm.objects('FNCDESARM');
-        let itemFNCPUEIND = realm.objects('FNCPUEIND');
-        let itemFNCOCUPAC = realm.objects('FNCOCUPAC');
-        let itemFNCPAREN = realm.objects('FNCPAREN');
-        let itemFNCTIPIDE = realm.objects('FNCTIPIDE');
-        realm.delete(itemsFVCCONVIV);
-        realm.delete(itemFVCELEVIV);
-        realm.delete(itemFNCELESAL);
-        realm.delete(itemFNCCONSAL);
-        realm.delete(itemFNCELEPER);
-        realm.delete(itemFNCCONPER);
-        realm.delete(itemFNCDESARM);
-        realm.delete(itemFNCELEREP);
-        realm.delete(itemFNCCONREP);
-        realm.delete(itemFNCPUEIND);
-        realm.delete(itemFNCOCUPAC);
-        realm.delete(itemFNCPAREN);
-        realm.delete(itemFNCTIPIDE);
-      });
-      realm.close();
-    });
-  }
+
   async syncEntities() {
     let itemFVCELEVIV: any = await this.getEntity('FVCELEVIV');
     const FVCELEVIVSchema = itemFVCELEVIV.data.map((item: any) => {
@@ -509,38 +425,6 @@ export default class SyncCatalogService {
   }
   async syncSaveEntities(type: string, schema: any, listItems: any[]) {
     if (listItems.length > 0) {
-      await Realm.open({
-        schema: [schema],
-        schemaVersion: schemaVersion,
-      }).then((realm) => {
-        realm.write(() => {
-          for (let i = 0; i < listItems.length; i++) {
-            const item = listItems[i];
-            console.log(type, ' ', item);
-            try {
-              realm.create(type, item);
-            } catch (error) {}
-          }
-        });
-        realm.close();
-      });
     }
-  }
-  allServices() {
-    return new Promise((resolve, reject) => {
-      Realm.open({
-        schema: [FVCCONVIVSCHEMA],
-        schemaVersion: schemaVersion,
-      })
-        .then((realm) => {
-          let servicios = realm.objects('FVCCONVIV');
-          realm.close();
-          resolve(servicios);
-        })
-        .catch((error) => {
-          console.log('Error listando');
-          reject(error);
-        });
-    });
   }
 }

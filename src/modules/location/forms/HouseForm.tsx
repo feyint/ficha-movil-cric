@@ -6,7 +6,6 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {yupResolver} from '@hookform/resolvers';
 import * as yup from 'yup';
 import {
-  BButton,
   BTextInput,
   BPicker,
   BRadioButton,
@@ -25,7 +24,7 @@ import {
   useFVCCONVIV,
 } from '../../../hooks';
 import {FNBNUCVIV, FVCCONVIV} from '../../../types';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 const schemaForm = yup.object().shape({
   housecode: FieldValidator.required(yup, 'Código vivienda'),
   MaterialTecho: FieldValidator.required(yup, 'Material Techo'),

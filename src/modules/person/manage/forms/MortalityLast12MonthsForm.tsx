@@ -17,11 +17,6 @@ import {
   QuestionPersonCodes,
   QuestionTypes,
 } from '../../../../core/utils/PersonTypes';
-import {
-  getQuestionWithOptions,
-  saveAnswerLocal,
-  getQuestionAnswer,
-} from '../../../../state/person/actions';
 import {useFNBINFSAL, useFNBINFSAL_FNCCONSAL} from '../../../../hooks';
 import {FNBINFSAL, FNCCONSAL} from '../../../../types';
 import {useFNCCONSAL} from '../../../../hooks/useFNCCONSAL';
@@ -209,11 +204,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapDispatchToProps = {
-  getQuestionWithOptions,
-  saveAnswerLocal,
-  getQuestionAnswer,
-};
 
 const mapStateToProps = (store: any) => {
   return {
@@ -223,5 +213,5 @@ const mapStateToProps = (store: any) => {
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps,
+  null,
 )(_MortalityLast12MonthsForm);

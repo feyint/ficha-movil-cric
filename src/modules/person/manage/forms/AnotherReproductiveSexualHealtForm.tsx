@@ -14,7 +14,6 @@ import {
 } from '../../../../core/components';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
-import {SexAndRepHealthPersonService} from '../../../../services';
 
 import {
   logicOption,
@@ -22,12 +21,6 @@ import {
   QuestionSexAndRepHealthPersonCodes,
   QuestionTypes,
 } from '../../../../core/utils/PersonTypes';
-import {
-  getQuestionWithOptions,
-  saveAnswerLocal,
-  getQuestionAnswer,
-  saveFNCSALREPPropiety,
-} from '../../../../state/SexAndRepHealthPerson/actions';
 import {SexAndRepHealthPersonQuestion} from '../state/types';
 import {theme} from '../../../../core/style/theme';
 
@@ -50,7 +43,6 @@ const schemaForm = yup.object().shape({
 });
 
 const _AnotherReproductiveSexualHealtForm = (props: any) => {
-  const syncCatalogService = new SexAndRepHealthPersonService();
 
   const [state, setState] = useState({
     questions: [] as SexAndRepHealthPersonQuestion[],
@@ -63,7 +55,6 @@ const _AnotherReproductiveSexualHealtForm = (props: any) => {
   const [editable, setEditable] = useState(false);
 
   const getItemsForQuestionSelect = (code: string) => {
-    return syncCatalogService.getItemsForQuestionSelect(code, state.questions);
   };
 
   const {handleSubmit, control, errors, setValue} = useForm({
@@ -87,41 +78,13 @@ const _AnotherReproductiveSexualHealtForm = (props: any) => {
   async function getAnswersFNCSALREP() {
     setValue('FechaTerminacionDeLaGestacion', props.FNCSALREP.PARTO_ULTIMO);
   }
-
+  function getQuestionlabel(code) {
+   return '';
+  }
   async function getAnswers(type: number, code: string, prop: string) {
     let question = await props.getQuestionAnswer(type, code);
     setValue(prop, question);
   }
-
-  const getQuestionlabel = (code: string) => {
-    return syncCatalogService.getQuestionlabel(code, state.questions);
-  };
-
-  const getItemsForQuestionMultiSelect = (code: string) => {
-    return syncCatalogService.getItemsForQuestionMultiSelect(
-      code,
-      state.questions,
-    );
-  };
-
-  function alert(data: any) {
-    editable
-      ? Alert.alert(
-          '',
-          '¿Desea cancelar el proceso?.',
-          [
-            {
-              text: 'NO',
-              onPress: () => console.log('Cancel Pressed'),
-              style: 'cancel',
-            },
-            {text: 'SI', onPress: () => navigation.goBack()},
-          ],
-          {cancelable: false},
-        )
-      : navigation.goBack();
-  }
-
   function onSubmit(data: any) {
     navigation.goBack();
   }
@@ -132,9 +95,10 @@ const _AnotherReproductiveSexualHealtForm = (props: any) => {
           control={control}
           render={({onChange, onBlur, value}) => (
             <BMultiSelect
-              label={getQuestionlabel(
-                QuestionSexAndRepHealthPersonCodes.MetodoDelPlaneacionFamiliar,
-              )}
+              // label={getQuestionlabel(
+              //   QuestionSexAndRepHealthPersonCodes.MetodoDelPlaneacionFamiliar,
+              // )}
+              label={''}
               onBlur={onBlur}
               error={errors.MetodoDelPlaneacionFamiliar}
               onChange={(values: any) => {
@@ -154,9 +118,9 @@ const _AnotherReproductiveSexualHealtForm = (props: any) => {
                 );
               }}
               selectedItems={value}
-              items={getItemsForQuestionMultiSelect(
-                QuestionSexAndRepHealthPersonCodes.MetodoDelPlaneacionFamiliar,
-              )}
+              // items={getItemsForQuestionMultiSelect(
+              //   QuestionSexAndRepHealthPersonCodes.MetodoDelPlaneacionFamiliar,
+              // )}
             />
           )}
           name="MetodoDelPlaneacionFamiliar"
@@ -186,13 +150,12 @@ const _AnotherReproductiveSexualHealtForm = (props: any) => {
                   'SaludSexual',
                 );
               }}
-              value={value}
               selectedValue={value}
-              items={
-                getItemsForQuestionSelect(
-                  QuestionSexAndRepHealthPersonCodes.SaludSexual,
-                ).children
-              }
+              // items={
+              //   getItemsForQuestionSelect(
+              //     QuestionSexAndRepHealthPersonCodes.SaludSexual,
+              //   ).children
+              // }
             />
           )}
           name="Fuma"
@@ -295,13 +258,12 @@ const _AnotherReproductiveSexualHealtForm = (props: any) => {
                   'ExamenDeProstata',
                 );
               }}
-              value={value}
               selectedValue={value}
-              items={
-                getItemsForQuestionSelect(
-                  QuestionSexAndRepHealthPersonCodes.ExamenDeProstata,
-                ).children
-              }
+              // items={
+              //   getItemsForQuestionSelect(
+              //     QuestionSexAndRepHealthPersonCodes.ExamenDeProstata,
+              //   )
+              // }
             />
           )}
           name="Fuma"
@@ -346,25 +308,6 @@ const _AnotherReproductiveSexualHealtForm = (props: any) => {
           )}
           name="TomoAccionesAnteResultado"
         />
-        <View
-          style={{display: 'flex', flexDirection: 'row', marginLeft: '20%'}}>
-          <BButton
-            style={styles.aceptButon}
-            color="secondary"
-            value="Cancelar"
-            labelStyle={styles.text}
-            onPress={alert}
-          />
-          <BButton
-            style={styles.cancelButon}
-            color="secondary"
-            //labelStyle={styles.text}
-            value="Validar"
-            onPress={handleSubmit(onSubmit, (err) => {
-              console.warn(err);
-            })}
-          />
-        </View>
       </View>
       <View style={styles.spacer} />
     </KeyboardAwareScrollView>
@@ -408,12 +351,6 @@ const styles = StyleSheet.create({
     color: theme.colors.primary,
   },
 });
-const mapDispatchToProps = {
-  getQuestionWithOptions,
-  saveAnswerLocal,
-  getQuestionAnswer,
-  saveFNCSALREPPropiety,
-};
 const mapStateToProps = (sarhealthperson: any) => {
   return {
     FNCSALREP: sarhealthperson.sarhealthperson.FNCSALREP,
@@ -421,5 +358,5 @@ const mapStateToProps = (sarhealthperson: any) => {
 };
 export default connect(
   mapStateToProps,
-  mapDispatchToProps,
+  null,
 )(_AnotherReproductiveSexualHealtForm);

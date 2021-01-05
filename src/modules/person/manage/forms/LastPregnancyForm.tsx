@@ -12,18 +12,11 @@ import {
 } from '../../../../core/components';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
-import {SexAndRepHealthPersonService} from '../../../../services';
 
 import {
   QuestionSexAndRepHealthPersonCodes,
   QuestionTypes,
 } from '../../../../core/utils/PersonTypes';
-import {
-  getQuestionWithOptions,
-  saveAnswerLocal,
-  getQuestionAnswer,
-  saveFNCSALREPPropiety,
-} from '../../../../state/SexAndRepHealthPerson/actions';
 import {SexAndRepHealthPersonQuestion} from '../state/types';
 import {theme} from '../../../../core/style/theme';
 
@@ -43,7 +36,6 @@ const schemaForm = yup.object().shape({
 });
 
 const _LastPregnancyForm = (props: any) => {
-  const syncCatalogService = new SexAndRepHealthPersonService();
 
   const [state, setState] = useState({
     questions: [] as SexAndRepHealthPersonQuestion[],
@@ -56,7 +48,6 @@ const _LastPregnancyForm = (props: any) => {
   const navigation = useNavigation();
 
   const getItemsForQuestionSelect = (code: string) => {
-    return syncCatalogService.getItemsForQuestionSelect(code, state.questions);
   };
 
   const {handleSubmit, control, errors, setValue} = useForm({
@@ -106,14 +97,9 @@ const _LastPregnancyForm = (props: any) => {
   }
 
   const getQuestionlabel = (code: string) => {
-    return syncCatalogService.getQuestionlabel(code, state.questions);
   };
 
   const getItemsForQuestionMultiSelect = (code: string) => {
-    return syncCatalogService.getItemsForQuestionMultiSelect(
-      code,
-      state.questions,
-    );
   };
 
   function alert(data: any) {
@@ -363,15 +349,9 @@ const styles = StyleSheet.create({
     color: theme.colors.primary,
   },
 });
-const mapDispatchToProps = {
-  getQuestionWithOptions,
-  saveAnswerLocal,
-  getQuestionAnswer,
-  saveFNCSALREPPropiety,
-};
 const mapStateToProps = (sarhealthperson: any) => {
   return {
     FNCSALREP: sarhealthperson.sarhealthperson.FNCSALREP,
   };
 };
-export default connect(mapStateToProps, mapDispatchToProps)(_LastPregnancyForm);
+export default connect(mapStateToProps, null)(_LastPregnancyForm);

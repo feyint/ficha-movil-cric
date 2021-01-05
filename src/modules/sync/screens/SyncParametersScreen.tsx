@@ -90,27 +90,27 @@ const SyncParametersScreen = () => {
       loadingFNCCONSAL
     ) {
     } else {
-      syncFVCELEVIV();
-      syncFVCCONVIV();
+      // syncFVCELEVIV();
+      // syncFVCCONVIV();
       syncFUCDEPART();
-      syncFUCMUNICI();
-      syncFUCTIPTER();
-      syncFUCBARVER();
-      syncFUCRESGUA();
-      syncFUCZONCUI();
-      syncFNCTIPIDE();
-      syncFNCPAREN();
-      syncFNCOCUPAC();
-      syncFNCPUEIND();
-      syncFNCLUNIND();
-      syncFNCGENERO();
-      syncFNCELEPER();
-      syncFNCCONPER();
-      syncFUCPAIS();
-      syncFNCORGANI();
-      syncFNCDESARM();
-      syncFNCELESAL();
-      syncFNCCONSAL();
+      // syncFUCMUNICI();
+      // syncFUCTIPTER();
+      // syncFUCBARVER();
+      // syncFUCRESGUA();
+      // syncFUCZONCUI();
+      // syncFNCTIPIDE();
+      // syncFNCPAREN();
+      // syncFNCOCUPAC();
+      // syncFNCPUEIND();
+      // syncFNCLUNIND();
+      // syncFNCGENERO();
+      // syncFNCELEPER();
+      // syncFNCCONPER();
+      // syncFUCPAIS();
+      // syncFNCORGANI();
+      // syncFNCDESARM();
+      // syncFNCELESAL();
+      // syncFNCCONSAL();
     }
 
     //await this.clearPollEntities();

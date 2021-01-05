@@ -5,15 +5,10 @@ import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {yupResolver} from '@hookform/resolvers';
 import * as yup from 'yup';
-import {BButton, BPicker, ButtonAction} from '../../../core/components';
+import {BPicker, ButtonAction} from '../../../core/components';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {QuestionFamilyCodes} from '../../../core/utils/HousingTypes';
-import {
-  saveAnswerLocal,
-  getQuestionAnswer,
-  getQuestionWithOptions,
-} from '../../../state/house/actions';
 import {useFNBNUCVIV_FVCCONVIV, useFVCCONVIV} from '../../../hooks';
 import {FVCCONVIV} from '../../../types';
 const schemaForm = yup.object().shape({
@@ -205,14 +200,9 @@ const styles = StyleSheet.create({
     padding: 8,
   },
 });
-const mapDispatchToProps = {
-  saveAnswerLocal,
-  getQuestionAnswer,
-  getQuestionWithOptions,
-};
 const mapStateToProps = (store: any) => {
   return {
     FNBNUCVIV: store.housing.FNBNUCVIV,
   };
 };
-export default connect(mapStateToProps, mapDispatchToProps)(_HousingStatusForm);
+export default connect(mapStateToProps, null)(_HousingStatusForm);

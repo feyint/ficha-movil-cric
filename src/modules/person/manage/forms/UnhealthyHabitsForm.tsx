@@ -9,11 +9,6 @@ import {BMultiSelect, BPicker, ButtonAction} from '../../../../core/components';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {QuestionPersonCodes} from '../../../../core/utils/PersonTypes';
-import {
-  getQuestionWithOptions,
-  saveAnswerLocal,
-  getQuestionAnswer,
-} from '../../../../state/person/actions';
 import {theme} from '../../../../core/style/theme';
 import {useFNCCONSAL} from '../../../../hooks/useFNCCONSAL';
 import {useFNBINFSAL_FNCCONSAL} from '../../../../hooks';
@@ -243,11 +238,6 @@ const styles = StyleSheet.create({
     color: theme.colors.primary,
   },
 });
-const mapDispatchToProps = {
-  getQuestionWithOptions,
-  saveAnswerLocal,
-  getQuestionAnswer,
-};
 const mapStateToProps = (store: any) => {
   return {
     FNBINFSAL: store.person.FNBINFSAL,
@@ -255,5 +245,5 @@ const mapStateToProps = (store: any) => {
 };
 export default connect(
   mapStateToProps,
-  mapDispatchToProps,
+  null,
 )(_UnhealthyHabitsForm);

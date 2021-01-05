@@ -1,6 +1,4 @@
-import {SexAndRepHealthPersonService} from '../../services';
 import {FNCSALREP} from './types';
-
 export const ActionType = {
   SET_FNCSALREP: 'SET_FNCSALREP',
 };
@@ -75,39 +73,6 @@ export const clearFNCSALREP = () => (dispatch: any) => {
 };
 
 
-export const saveFNCSALREP = (data: any) => async (
-  dispatch: any,
-  getState: any,
-) => {
-  const store = getState();
-  let family: FNCSALREP = store.sarhealthperson.FNCSALREP;
-  let personServie: SexAndRepHealthPersonService = new SexAndRepHealthPersonService();
-  let result = await personServie.SaveFNCSALREP(data);
-  if (result) {
-    family.FNCPERSON_ID = result.FNCPERSON_ID;
-    family.ID = result.ID;
-  }
-  dispatch(_setFNCSALREP(family));
-  return family;
-};
-
-export const saveFNCSALREPPropiety = (propiety: any, value: any) => async (
-  dispatch: any,
-  getState: any,
-) => {
-  const store = getState();
-  let family: any = store.sarhealthperson.FNCSALREP;
-  let personServie: SexAndRepHealthPersonService = new SexAndRepHealthPersonService();
-  let updatedProp = await personServie.SaveFNCSALREPPropiety(
-    family.ID,
-    propiety,
-    value,
-  );
-  if (updatedProp == true) {
-    family[propiety] = value;
-    dispatch(_setFNCSALREP(family));
-  }
-};
 export const setFNCSALREP = (data: any) => (dispatch: any) => {
   dispatch(_setFNCSALREP(data));
 };

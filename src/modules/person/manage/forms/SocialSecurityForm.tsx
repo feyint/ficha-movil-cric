@@ -9,11 +9,6 @@ import {BMultiSelect, BPicker, ButtonAction} from '../../../../core/components';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {QuestionConditionPersonCodes} from '../../../../core/utils/PersonTypes';
-import {
-  getQuestionWithOptions,
-  saveAnswerLocal,
-  getQuestionAnswer,
-} from '../../../../state/ConditionPerson/actions';
 import {useFNCCONPER, useFNCPERSON_FNCCONPER} from '../../../../hooks';
 import {FNCCONPER} from '../../../../types';
 import {PersonParametersConst} from '../../../../core/utils/SystemParameters';
@@ -212,11 +207,6 @@ const styles = StyleSheet.create({
     padding: 8,
   },
 });
-const mapDispatchToProps = {
-  getQuestionWithOptions,
-  saveAnswerLocal,
-  getQuestionAnswer,
-};
 const mapStateToProps = (session: any) => {
   return {
     FNCPERSON: session.person.FNCPERSON,
@@ -224,5 +214,5 @@ const mapStateToProps = (session: any) => {
 };
 export default connect(
   mapStateToProps,
-  mapDispatchToProps,
+  null,
 )(_SocialSecurityForm);

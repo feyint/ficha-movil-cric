@@ -1,16 +1,10 @@
 import React, {Component} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
-import {Appbar} from 'react-native-paper';
+import {StyleSheet, View} from 'react-native';
 import {List} from 'react-native-paper';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
-import {setQuestionWithOptions} from '../../../state/house/actions';
 import {theme} from '../../../core/style/theme';
-import { BAppBar } from '../../../core/components';
+import {BAppBar} from '../../../core/components';
 
-interface Props {
-  navigation: NavigationProp<any>;
-}
 class ManageHousingScreen extends Component<any, any> {
   constructor(props: any) {
     super(props);
@@ -19,7 +13,6 @@ class ManageHousingScreen extends Component<any, any> {
     };
   }
   async componentDidMount() {
-    await this.props.setQuestionWithOptions();
     if (this.props.FUBUBIVIV && this.props.FUBUBIVIV.CODIGO == '') {
       this.goHomeLocation();
     }
@@ -40,7 +33,7 @@ class ManageHousingScreen extends Component<any, any> {
           <List.Subheader>Seleccione una opción</List.Subheader>
           <List.Item
             titleEllipsizeMode={'tail'}
-            titleStyle={{ fontWeight: 'normal', color: theme.colors.secondary}}
+            titleStyle={{fontWeight: 'normal', color: theme.colors.secondary}}
             key={'Ubicacion'}
             title="UBICACIÓN DE LA VIVIENDA"
             left={() => (
@@ -51,7 +44,7 @@ class ManageHousingScreen extends Component<any, any> {
           <View style={styles.divisor} />
           {this.props.FUBUBIVIV && this.props.FUBUBIVIV.CODIGO !== '' && (
             <List.Item
-              titleStyle={{ fontWeight: 'normal', color: theme.colors.secondary}}
+              titleStyle={{fontWeight: 'normal', color: theme.colors.secondary}}
               key={'Nucleo'}
               onPress={() => this.goFamilyScreen()}
               title="NUCLEO FAMILIAR"
@@ -86,10 +79,5 @@ const mapStateToProps = (housing: any) => {
     FUBUBIVIV: housing.housing.FUBUBIVIV,
   };
 };
-const mapDispatchToProps = {
-  setQuestionWithOptions,
-};
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(ManageHousingScreen);
+
+export default connect(mapStateToProps, null)(ManageHousingScreen);

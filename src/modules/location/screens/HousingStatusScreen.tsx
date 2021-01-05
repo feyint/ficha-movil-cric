@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import {View} from 'react-native';
-import {Appbar} from 'react-native-paper';
 import {HousingStatusForm} from '../forms';
 import {NavigationProp} from '@react-navigation/native';
 import {BAppBar} from '../../../core/components';
