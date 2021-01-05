@@ -17,14 +17,9 @@ export function useFNCDESARM() {
   }
   async function createFNCDESARM(newItem: FNCDESARM): Promise<void> {
     let statement = `INSERT INTO {0} 
-    (ID, CODIGO, NOMBRE, ESTADO, COD_FF) 
-    VALUES (?, ?, ?, ?, ?);`;
-    let params = [
-      newItem.ID,
-      newItem.CODIGO,
-      newItem.NOMBRE,
-      newItem.ESTADO,
-    ];
+    (ID, CODIGO, NOMBRE, ESTADO) 
+    VALUES (?, ?, ?, ?);`;
+    let params = [newItem.ID, newItem.CODIGO, newItem.NOMBRE, newItem.ESTADO];
     return await database.executeQuery('FNCDESARM', statement, params);
   }
   async function countEntity(): Promise<void> {
@@ -45,7 +40,7 @@ export function useFNCDESARM() {
   async function syncFNCDESARM() {
     setLoading(true);
     let service = new SyncCatalogService();
-    let result = await service.getEntity('FNCDESARM');
+    let result = await service.getEntity('Fncdesarm');
     result.data.map(async (item: any) => {
       await createFNCDESARM({
         ID: item.id,

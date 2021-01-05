@@ -10,7 +10,6 @@ import {
   clearFNCPERSON,
   setFNCPERSON,
 } from '../../../../state/person/actions';
-import {HousingService} from '../../../../services';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {ListItem} from 'react-native-elements';
 import BFabButton from '../../../../core/components/BFabButton';

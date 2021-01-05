@@ -60,7 +60,7 @@ export function getSelectSchema(items: any[], defaultValue = true) {
 }
 export function getMSelectSchema(code: string, items: any[]) {
   let item: MultiSelectSchema = {name: '', id: 0, children: []};
-  item.id = parseInt(code, 10);
+  item.id = 1;
   for (let i = 0; i < items.length; i++) {
     item.children.push({
       id: items[i].ID,

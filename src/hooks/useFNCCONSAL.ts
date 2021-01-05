@@ -3,11 +3,12 @@ import {useDatabase} from '../context/DatabaseContext';
 import {MultiSelectSchema, PickerType} from '../core/utils/types';
 import {capitalizeFirstLetter} from '../core/utils/utils';
 import {SyncCatalogService} from '../services';
-import {FNCCONSAL} from '../types';
+import {FNCCONSAL, FNCELESAL} from '../types';
 
 export function useFNCCONSAL() {
   const [listFNCCONSAL, setlist] = useState<FNCCONSAL[]>([]);
   const [itemFNCCONSAL, setFNCCONSAL] = useState<FNCCONSAL>();
+  const [listFNCELESAL, setlistLabel] = useState<FNCELESAL[]>([]);
   const [countFNCCONSAL, setCount] = useState<number>(0);
   const [loadingFNCCONSAL, setLoading] = useState<boolean>(false);
 
@@ -19,9 +20,9 @@ export function useFNCCONSAL() {
     return database.getAllFromEntity('FNCCONSAL', 'NOMBRE').then(setlist);
   }
   function getLabel(code: string) {
-    for (let i = 0; i < listFNCCONSAL.length; i++) {
-      if (listFNCCONSAL[i].CODIGO === code) {
-        return capitalizeFirstLetter(listFNCCONSAL[i].NOMBRE);
+    for (let i = 0; i < listFNCELESAL.length; i++) {
+      if (listFNCELESAL[i].CODIGO === code) {
+        return capitalizeFirstLetter(listFNCELESAL[i].NOMBRE);
       }
     }
   }
@@ -31,15 +32,24 @@ export function useFNCCONSAL() {
     inQuery = inQuery.replace('[', '');
     inQuery = inQuery.replace(']', '');
     let statement = `
-    SELECT q.CODIGO as QUESTIONCODE, o.* FROM FNCELESAL q 
+    SELECT q.CODIGO as QUESTIONCODE,q.NOMBRE as QUESTIONNAME, o.* FROM FNCELESAL q
     INNER JOIN FNCCONSAL o ON q.ID = o.FNCELESAL_ID
     WHERE q.CODIGO  in (${inQuery})`;
     await database.executeQuery('FNCCONSAL', statement).then((results) => {
       const count = results.rows.length;
       const items: FNCCONSAL[] = [];
+      const labels: FNCELESAL[] = [];
       for (let i = 0; i < count; i++) {
         const row = results.rows.item(i);
-        const {ID, CODIGO, ESTADO, NOMBRE, FNCELESAL_ID, QUESTIONCODE} = row;
+        const {
+          ID,
+          CODIGO,
+          ESTADO,
+          NOMBRE,
+          FNCELESAL_ID,
+          QUESTIONCODE,
+          QUESTIONNAME,
+        } = row;
         items.push({
           ID: ID,
           CODIGO: CODIGO,
@@ -48,8 +58,14 @@ export function useFNCCONSAL() {
           FNCELESAL_ID: FNCELESAL_ID,
           QUESTIONCODE: QUESTIONCODE,
         });
+        // console.error(ID, CODIGO, NOMBRE);
+        labels.push({
+          CODIGO: QUESTIONCODE,
+          NOMBRE: QUESTIONNAME,
+        });
       }
       setlist(items);
+      setlistLabel(labels);
       setLoading(false);
     });
   }
@@ -112,14 +128,14 @@ export function useFNCCONSAL() {
   async function syncFNCCONSAL() {
     setLoading(true);
     let service = new SyncCatalogService();
-    let result = await service.getEntity('FNCCONSAL');
+    let result = await service.getEntity('Fncconsal');
     result.data.map(async (item: any) => {
       await createFNCCONSAL({
         ID: item.id,
         CODIGO: item.codigo,
         NOMBRE: item.nombre,
         ESTADO: item.estado,
-        FNCELESAL_ID: item.FNCELESALId.id,
+        FNCELESAL_ID: item.fncelesalId.id,
       });
     });
     setLoading(false);

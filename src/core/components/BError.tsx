@@ -14,8 +14,10 @@ class BError extends Component<Props> {
     switch (type) {
       case 'required':
         return 'Campo es requerido';
+      case 'typeError':
+        return 'Campo es requerido, ';
       default:
-        return type + 'Campo requerido invalido';
+        return 'Campo requerido invalido (' + type + ')';
     }
   }
   render() {

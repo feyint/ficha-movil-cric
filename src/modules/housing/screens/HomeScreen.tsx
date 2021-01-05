@@ -25,14 +25,19 @@ const HomeScreen = (props: any) => {
   const [houses, setHouses] = useState<any[]>([]);
   const [filteredHouses, setfilteredHouses] = useState<any[]>([]);
   const [wordHouse, setWordHouse] = useState('');
-  const {listFUBUBIVIV, getAllFUBUBIVIV} = useFUBUBIVIV();
+  const {
+    listFUBUBIVIV,
+    getAllFUBUBIVIV,
+    itemsFilter,
+    filterFUBUBIVIVDETAILS,
+  } = useFUBUBIVIV();
   const navigation = useNavigation();
 
   useEffect(() => {
     setHouses(listFUBUBIVIV);
   }, [listFUBUBIVIV]);
   useEffect(() => {
-    getAllFUBUBIVIV();
+    filterFUBUBIVIVDETAILS('');
   }, []);
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -46,16 +51,17 @@ const HomeScreen = (props: any) => {
   }
   function searchHouse(textToSearch: any) {
     setWordHouse(textToSearch);
-    let Result = houses.filter(
-      (i) =>
-        i.CODIGO.includes(textToSearch) || i.DIRECCION.includes(textToSearch),
-    );
-    setfilteredHouses(Result);
+    filterFUBUBIVIVDETAILS(textToSearch);
+    // let Result = houses.filter(
+    //   (i) =>
+    //     i.CODIGO.includes(textToSearch) || i.DIRECCION.includes(textToSearch),
+    // );
+    // setfilteredHouses(Result);
   }
   return (
     <View style={{flex: 1, backgroundColor: 'white'}}>
       <Appbar.Header>
-        <Appbar.Content title="INICIO" />
+        <Appbar.Content title="SIPSALUD" />
       </Appbar.Header>
       {/* <Card>
         <Card.Cover source={require('../../../core/assets/img20.jpg')} />
@@ -63,108 +69,52 @@ const HomeScreen = (props: any) => {
           <Card.Title title="Bienvenido a la ficha familiar"> </Card.Title>
         </Card.Content>
       </Card> */}
-      <Searchbar
-        placeholder="Ingrese codigo de ficha a buscar"
-        onChangeText={(text: any) => {
-          searchHouse(text);
-        }}
-        value={''}
-      />
+      <Text style={styles.title}>Ingresa número de cédula a buscar</Text>
+      <View style={styles.searchbar}>
+        <Searchbar
+          placeholder=""
+          onChangeText={(text: any) => {
+            searchHouse(text);
+          }}
+          value={wordHouse}
+        />
+      </View>
       <View>
+        <Text style={styles.textred}>Registros existentes</Text>
         <KeyboardAwareScrollView>
           <View style={styles.container}>
-            {filteredHouses && filteredHouses.length > 0 ? (
-              filteredHouses.map((house: any, i: number) => {
-                return (
-                  <CardView
-                    key={i}
-                    cardElevation={8}
-                    cardMaxElevation={10}
-                    cornerRadius={6}
-                    style={styles.cardView1}>
-                    <TouchableOpacity onPress={() => goToHouse(house)}>
-                      <View style={{flex: 1, padding: 20}}>
-                        <Text style={styles.textTouchable}>
+            {itemsFilter.map((house: any, i: number) => {
+              return (
+                <CardView
+                  key={i}
+                  cardElevation={8}
+                  cardMaxElevation={10}
+                  cornerRadius={6}
+                  style={styles.cardView1}>
+                  <TouchableOpacity onPress={() => goToHouse(house)}>
+                    <View style={{flex: 1, padding: 20}}>
+                      {/* <Text style={styles.textTouchable}>
                           {house.DIRECCION}
-                        </Text>
-                        <View style={styles.viewCardItem} />
-                        <CardItem title="Código" value={house.CODIGO} />
-                        <CardItem title="Núcleos" value={house.NUM_NUCLEOS} />
-                        <CardItem
-                          title="Fecha"
-                          value={
-                            house.FECHA_CREACION
-                              ? `${house.FECHA_CREACION.getDate()}/${
-                                  house.FECHA_CREACION.getMonth() + 1
-                                }/${house.FECHA_CREACION.getFullYear()}`
-                              : ''
-                          }
-                        />
-                        <CardItem
-                          title="Hora"
-                          value={
-                            house.FECHA_CREACION
-                              ? `${house.FECHA_CREACION.getHours()}:${house.FECHA_CREACION.getMinutes()}`
-                              : ''
-                          }
-                        />
-                      </View>
-                    </TouchableOpacity>
-                  </CardView>
-                );
-              })
-            ) : filteredHouses.length == 0 && wordHouse != '' ? (
-              <View>
-                <Image
-                  source={{
-                    uri:
-                      'https://image.flaticon.com/icons/png/512/64/64670.png',
-                  }}
-                  style={styles.imageStyle}
-                />
-                <Text style={styles.noResultsText}>¡Sin resultados!</Text>
-              </View>
-            ) : (
-              houses.map((house: any, i: number) => {
-                return (
-                  <CardView
-                    key={i}
-                    cardElevation={8}
-                    cardMaxElevation={10}
-                    cornerRadius={6}
-                    style={styles.cardView1}>
-                    <TouchableOpacity onPress={() => goToHouse(house)}>
-                      <View style={{flex: 1, padding: 20}}>
-                        <Text style={styles.textTouchable}>
-                          {house.DIRECCION}
-                        </Text>
-                        <View style={styles.viewCardItem} />
-                        <CardItem title="Código" value={house.CODIGO} />
-                        <CardItem title="Núcleos" value={house.NUM_NUCLEOS} />
-                        <CardItem
-                          title="Fecha"
-                          value={
-                            house.FECHA_CREACION
-                              ? `${house.FECHA_CREACION.getDate()}/${
-                                  house.FECHA_CREACION.getMonth() + 1
-                                }/${house.FECHA_CREACION.getFullYear()}`
-                              : ''
-                          }
-                        />
-                        <CardItem
-                          title="Hora"
-                          value={
-                            house.FECHA_CREACION
-                              ? `${house.FECHA_CREACION.getHours()}:${house.FECHA_CREACION.getMinutes()}`
-                              : ''
-                          }
-                        />
-                      </View>
-                    </TouchableOpacity>
-                  </CardView>
-                );
-              })
-            )}
+                        </Text> */}
+                      {/* <View style={styles.viewCardItem} /> */}
+                      <CardItem
+                        title="Nombre"
+                        value={`${house.PRIMER_NOMBRE} ${house.SEGUNDO_NOMBRE} ${house.PRIMER_APELLIDO} ${house.SEGUNDO_APELLIDO}`}
+                      />
+                      <CardItem title="Dirección" value={house.DIRECCION} />
+                      <CardItem
+                        title="Barrio - Vereda"
+                        value={house.BARRIO_VEREDA}
+                      />
+                      <CardItem
+                        title="Zona de cuidado"
+                        value={house.ZONA_CUIDADO}
+                      />
+                    </View>
+                  </TouchableOpacity>
+                </CardView>
+              );
+            })}
           </View>
           <View style={styles.spacer} />
         </KeyboardAwareScrollView>
@@ -204,6 +154,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 8,
   },
+  searchbar: {
+    margin: 20,
+  },
   cardView1: {
     margin: 15,
     backgroundColor: '#ffffff',
@@ -213,6 +166,19 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     color: theme.colors.gray,
+  },
+  title: {
+    margin: 20,
+    fontSize: 17,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: theme.colors.primary,
+  },
+  textred: {
+    fontSize: 17,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: theme.colors.accent,
   },
   viewCardItem: {
     height: 1,

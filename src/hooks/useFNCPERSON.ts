@@ -1,7 +1,7 @@
 import {useState, useEffect} from 'react';
-import {useFNBNUCVIV_FNCPERSON} from '.';
+import {useFNBINFSAL, useFNBNUCVIV_FNCPERSON} from '.';
 import {useDatabase} from '../context/DatabaseContext';
-import {FNCPERSON, FUBUBIVIVDETAILS} from '../types';
+import {FNCPERSON, FUBUBIVIVDETAILS, FNBINFSAL} from '../types';
 
 export function useFNCPERSON() {
   const [listFNCPERSON, setItem] = useState<FNCPERSON[]>([]);
@@ -15,6 +15,7 @@ export function useFNCPERSON() {
     itemFNBNUCVIV_FNCPERSON,
     createFNBNUCVIV_FNCPERSON,
   } = useFNBNUCVIV_FNCPERSON();
+  const {createFNBINFSAL} = useFNBINFSAL();
   const database = useDatabase();
   useEffect(() => {}, []);
   function getAllFNCPERSON() {
@@ -236,10 +237,13 @@ export function useFNCPERSON() {
           FNCPERSON_ID: insertId,
           FNBNUCVIV_ID: FNBNUCVIVID,
         });
+        let fnbifsal: FNBINFSAL = {
+          FNCPERSON_ID: insertId,
+        };
+        await createFNBINFSAL(fnbifsal);
         return await getFNCPERSONbyID(insertId);
       })
-      .catch((err) => {
-      })
+      .catch((err) => {})
       .finally(() => {
         setLoading(false);
       });

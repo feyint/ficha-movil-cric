@@ -9,6 +9,7 @@ import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {authAction} from '../state/actions';
 import {Snackbar} from 'react-native-paper';
+import {useEffect} from 'react';
 
 const schemaForm = yup.object().shape({
   username: yup.string().required(),
@@ -29,6 +30,10 @@ const _LoginForm = (props: any) => {
       setVisible(!visible);
     }
   };
+  useEffect(() => {
+    navigation.navigate('MenuHome');
+  }, []);
+
   const onDismissSnackBar = () => setVisible(false);
   return (
     <View style={styles.container1}>

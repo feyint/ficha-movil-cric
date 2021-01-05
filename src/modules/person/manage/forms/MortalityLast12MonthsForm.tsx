@@ -13,7 +13,6 @@ import {
   BPicker,
   ButtonAction,
 } from '../../../../core/components';
-import {PersonService} from '../../../../services';
 import {
   QuestionPersonCodes,
   QuestionTypes,
@@ -23,67 +22,61 @@ import {
   saveAnswerLocal,
   getQuestionAnswer,
 } from '../../../../state/person/actions';
-import {PersonQuestion} from '../state/types';
-import {useFNCCONPER, useFNCPERSON_FNCCONPER} from '../../../../hooks';
-import { FNCCONPER } from '../../../../types';
-const questions = [
+import {useFNBINFSAL, useFNBINFSAL_FNCCONSAL} from '../../../../hooks';
+import {FNBINFSAL, FNCCONSAL} from '../../../../types';
+import {useFNCCONSAL} from '../../../../hooks/useFNCCONSAL';
+const questionscodes = [
   QuestionPersonCodes.CausaDeLaMuerte,
-  QuestionPersonCodes.RealizacionRitualOPracticasCulturales,
+  QuestionPersonCodes.PracticasCulturales,
 ];
 
 const schemaForm = yup.object().shape({
   FechaMuerte: yup.date().required(),
   CausaDeLaMuerte: yup.number().required(),
-  RealizacionritualOpracticasculturales: yup.number().required(),
-  Soportes: yup.array().required(),
+  PracticasCulturales: yup.number().required(),
+  Soportes: yup.array().optional(),
 });
 
 const _MortalityLast12MonthsForm = (props: any) => {
   const {
-    listFNCCONPER,
-    getLabel,
     getQuestionsOptions,
-    getPicker,
+    getLabel,
     getMultiselect,
-    getByID,
-    getBycodes,
-  } = useFNCCONPER();
-  const {saveAnswer, getAnswerquestion} = useFNCPERSON_FNCCONPER();
+    getPicker,
+    listFNCCONSAL,
+  } = useFNCCONSAL();
+  const {saveAnswer, getAnswerquestion} = useFNBINFSAL_FNCCONSAL();
+  const {itemFNBINFSAL, updateFNBINFSAL, loadingFNBINFSAL} = useFNBINFSAL();
   useEffect(() => {
-    getQuestionsOptions(questions);
+    getQuestionsOptions(questionscodes);
   }, []);
   useEffect(() => {
-    fetchQuestions();
-  }, [listFNCCONPER]);
-  const syncCatalogService = new PersonService();
-  const [state, setState] = useState({
-    questions: [] as PersonQuestion[],
-  });
-
+    if (listFNCCONSAL) {
+      fetchQuestions();
+    }
+  }, [listFNCCONSAL]);
   const navigation = useNavigation();
   var aYearFromNow = new Date();
   aYearFromNow.setFullYear(aYearFromNow.getFullYear() - 1);
   const {handleSubmit, control, errors, setValue} = useForm({
     resolver: yupResolver(schemaForm),
   });
-
-  async function getAnswers2(type: number, code: string, prop: string) {
-    let question = await props.getQuestionAnswer(type, code);
-    setValue(prop, question);
-  }
   async function fetchQuestions() {
-    let result = await props.getQuestionWithOptions(questions);
-    if (result) {
-      setState({
-        ...state,
-        questions: result,
-      });
-    }
+    const {FECHA_MUERTE} = props.FNBINFSAL as FNBINFSAL;
+    setValue('FechaMuerte', FECHA_MUERTE);
+    getAnswers(QuestionPersonCodes.CausaDeLaMuerte, 'CausaDeLaMuerte');
+    getAnswers(QuestionPersonCodes.PracticasCulturales, 'PracticasCulturales');
   }
-  const getItemsForQuestionSelect = (code: string) => {
-    return syncCatalogService.getItemsForQuestionSelect(code, state.questions);
-  };
-  function onSubmit(data: any) {
+  async function onSubmit(data: any) {
+    let newItem: FNBINFSAL = props.FNBINFSAL;
+    newItem.ESTADO = 0;
+    newItem.FECHA_MUERTE = data.FechaMuerte;
+    await updateFNBINFSAL(newItem);
+    SaveAnswers(QuestionPersonCodes.CausaDeLaMuerte, data.CausaDeLaMuerte);
+    SaveAnswers(
+      QuestionPersonCodes.PracticasCulturales,
+      data.PracticasCulturales,
+    );
     navigation.goBack();
   }
   async function getAnswers(
@@ -91,12 +84,12 @@ const _MortalityLast12MonthsForm = (props: any) => {
     prop: string,
     type: 1 | 2 = 1,
   ) {
-    let question = listFNCCONPER.find((item: FNCCONPER) => {
+    let question = listFNCCONSAL.find((item: FNCCONSAL) => {
       return item.QUESTIONCODE === questionCode;
     });
     if (question) {
-      const {ID} = props.FNCPERSON;
-      let ans = await getAnswerquestion(ID, question.FNCELEPER_ID, type);
+      const {ID} = props.FNBINFSAL;
+      let ans = await getAnswerquestion(ID, question.FNCELESAL_ID, type);
       if (ans) {
         if (type == 1) {
           setValue(prop, '' + ans);
@@ -113,15 +106,15 @@ const _MortalityLast12MonthsForm = (props: any) => {
     type: 1 | 2 = 1,
     personid = 0,
   ) {
-    let question = listFNCCONPER.find((item: FNCCONPER) => {
+    let question = listFNCCONSAL.find((item: FNCCONSAL) => {
       return item.QUESTIONCODE === questionCode;
     });
     if (question) {
-      let ID = props.FNCPERSON.ID;
+      let ID = props.FNBINFSAL.ID;
       if (personid > 0) {
         ID = personid;
       }
-      saveAnswer(type, answer, ID, question.FNCELEPER_ID);
+      saveAnswer(type, answer, ID, question.FNCELESAL_ID);
     }
   }
   return (
@@ -155,24 +148,9 @@ const _MortalityLast12MonthsForm = (props: any) => {
               error={errors.CausaDeLaMuerte}
               onChange={(value: any) => {
                 onChange(value);
-                props.saveAnswerLocal(
-                  QuestionTypes.selectOne,
-                  QuestionPersonCodes.CausaDeLaMuerte,
-                  value,
-                );
-              }}
-              onLoad={() => {
-                getAnswers2(
-                  QuestionTypes.selectOne,
-                  QuestionPersonCodes.CausaDeLaMuerte,
-                  'CausaDeLaMuerte',
-                );
               }}
               selectedValue={value}
-              items={
-                getItemsForQuestionSelect(QuestionPersonCodes.CausaDeLaMuerte)
-                  .children
-              }
+              items={getPicker(QuestionPersonCodes.CausaDeLaMuerte)}
             />
           )}
           name="CausaDeLaMuerte"
@@ -181,36 +159,16 @@ const _MortalityLast12MonthsForm = (props: any) => {
           control={control}
           render={({onChange, value}) => (
             <BPicker
-              label={
-                getItemsForQuestionSelect(
-                  QuestionPersonCodes.RealizacionRitualOPracticasCulturales,
-                ).name
-              }
-              error={errors.RealizacionRitualOPracticasCulturales}
+              label={getLabel(QuestionPersonCodes.PracticasCulturales)}
+              error={errors.PracticasCulturales}
               onChange={(value: any) => {
                 onChange(value);
-                props.saveAnswerLocal(
-                  QuestionTypes.selectOne,
-                  QuestionPersonCodes.RealizacionRitualOPracticasCulturales,
-                  value,
-                );
-              }}
-              onLoad={() => {
-                getAnswers2(
-                  QuestionTypes.selectOne,
-                  QuestionPersonCodes.RealizacionRitualOPracticasCulturales,
-                  'RealizacionRitualOPracticasCulturales',
-                );
               }}
               selectedValue={value}
-              items={
-                getItemsForQuestionSelect(
-                  QuestionPersonCodes.RealizacionRitualOPracticasCulturales,
-                ).children
-              }
+              items={getPicker(QuestionPersonCodes.PracticasCulturales)}
             />
           )}
-          name="RealizacionRitualOPracticasCulturales"
+          name="PracticasCulturales"
         />
 
         <Controller
@@ -229,7 +187,9 @@ const _MortalityLast12MonthsForm = (props: any) => {
           name="Soporte"
         />
         <ButtonAction
-          onAccept={handleSubmit(onSubmit)}
+          onAccept={handleSubmit(onSubmit, (err) => {
+            console.error(err);
+          })}
           onCancel={() => navigation.goBack()}
         />
       </View>
@@ -255,9 +215,9 @@ const mapDispatchToProps = {
   getQuestionAnswer,
 };
 
-const mapStateToProps = (session: any) => {
+const mapStateToProps = (store: any) => {
   return {
-    user: session.session.user,
+    FNBINFSAL: store.person.FNBINFSAL,
   };
 };
 

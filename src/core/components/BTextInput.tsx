@@ -72,13 +72,7 @@ export default class BTextInput extends Component<Props, State> {
           maxLength={50}
           underlineColorAndroid="transparent"
         />
-        {this.props.error ? (
-          <HelperText type="error">
-            {this.props.error
-              ? this.props.error.message
-              : 'El campo es requerido'}
-          </HelperText>
-        ) : null}
+        <BError error={this.props.error} />
       </View>
     );
   }

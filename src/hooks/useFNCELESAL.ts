@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import {useState, useEffect} from 'react';
 import {useDatabase} from '../context/DatabaseContext';
 import {SyncCatalogService} from '../services';
@@ -40,7 +41,7 @@ export function useFNCELESAL() {
   async function syncFNCELESAL() {
     setLoading(true);
     let service = new SyncCatalogService();
-    let result = await service.getEntity('FNCELESAL');
+    let result = await service.getEntity('Fncelesal');
     result.data.map(async (item: any) => {
       await createFNCELESAL({
         ID: item.id,

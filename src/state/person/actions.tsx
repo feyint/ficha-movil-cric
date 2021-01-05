@@ -8,7 +8,6 @@ import {
 } from './types';
 import PersonRelationService from '../../services/PersonRelationService';
 import {FNBNUCVIV} from '../house/types';
-import {Alert} from 'react-native';
 
 export const ActionType = {
   SET_FNCPERSON: 'SET_FNCPERSON',

@@ -9,8 +9,8 @@ import {connect} from 'react-redux';
 import {setFNCNCSALREP} from '../../../../state/SexAndRepHealthPerson/actions';
 import {theme} from '../../../../core/style/theme';
 import {FNBNUCVIV, FNCPERSON} from '../../../../types';
-import {useFNCGENERO, useFNCPERSON} from '../../../../hooks';
-import {setFNCPERSON} from '../../../../state/person/actions';
+import {useFNBINFSAL, useFNCGENERO, useFNCPERSON} from '../../../../hooks';
+import {setFNCPERSON, setFNBINFSAL} from '../../../../state/person/actions';
 import {PersonParametersConst} from '../../../../core/utils/SystemParameters';
 
 interface Props {
@@ -22,6 +22,7 @@ const ViewPersonScreen = (props: any) => {
   const navigation = useNavigation();
   const {itemFNCPERSON, getFNCPERSONbyID} = useFNCPERSON();
   const {itemFNCGENERO, getbyID} = useFNCGENERO();
+  const {itemFNBINFSAL, getFNBINFSALbyID} = useFNBINFSAL();
   const [created, setcreated] = useState<boolean>(false);
   const [enableSexReproductionHealt, setenableSexReproductionHealt] = useState<
     boolean
@@ -29,6 +30,7 @@ const ViewPersonScreen = (props: any) => {
   useEffect(() => {
     if (itemFNCPERSON) {
       getbyID(itemFNCPERSON.FNCGENERO_ID);
+      getFNBINFSALbyID(-1, itemFNCPERSON.ID);
       props.setFNCPERSON(itemFNCPERSON);
     }
   }, [itemFNCPERSON]);
@@ -40,7 +42,13 @@ const ViewPersonScreen = (props: any) => {
     }
   }, [itemFNCGENERO]);
   useEffect(() => {
+    if (itemFNBINFSAL) {
+      props.setFNBINFSAL(itemFNBINFSAL);
+    }
+  }, [itemFNBINFSAL]);
+  useEffect(() => {
     getbyID(props.FNCPERSON.FNCGENERO_ID);
+    getFNBINFSALbyID(-1, props.FNCPERSON.ID);
   }, [props.FNCPERSON]);
   useFocusEffect(() => {
     if (!props.FNCPERSON.ID) {
@@ -68,7 +76,6 @@ const ViewPersonScreen = (props: any) => {
             subtitle={`${props.FNCPERSON.PRIMER_NOMBRE} ${props.FNCPERSON.PRIMER_APELLIDO}`}
           />
         </Appbar.Header>
-
         <Text style={{fontSize: 16, padding: 10}}>
           <Text style={{fontWeight: 'bold'}}>Nucleo familiar:</Text>{' '}
           {props.FNBNUCVIV.CODIGO}
@@ -205,6 +212,7 @@ const styles = StyleSheet.create({
 const mapDispatchToProps = {
   setFNCNCSALREP,
   setFNCPERSON,
+  setFNBINFSAL,
 };
 const mapStateToProps = (reducer: any) => {
   return {

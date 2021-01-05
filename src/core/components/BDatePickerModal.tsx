@@ -4,7 +4,7 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import moment from 'moment';
 import 'moment/locale/es';
 import {HelperText} from 'react-native-paper';
-import { BLabel } from '.';
+import { BError, BLabel } from '.';
 
 interface State {
   isVisible: boolean;
@@ -75,13 +75,7 @@ export default class BDatePickerModal extends Component<Props, State> {
           onConfirm={this.handleConfirm}
           onCancel={this.hideDatePicket}
         />
-        {this.props.error ? (
-          <HelperText type="error">
-            {this.props.error.type
-              ? this.props.error.type
-              : 'El campo es requerido'}
-          </HelperText>
-        ) : null}
+        <BError error={this.props.error} />
       </View>
     );
   }

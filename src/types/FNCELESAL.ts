@@ -1,8 +1,8 @@
 export interface FNCELESAL {
-  ID: number;
+  ID?: number;
   CODIGO: string;
   NOMBRE: string;
-  ESTADO: boolean;
+  ESTADO?: boolean;
   SECCION?: string;
   REQUERIDO?: number;
 }

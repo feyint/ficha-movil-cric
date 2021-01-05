@@ -12,13 +12,14 @@ export const QuestionPersonCodes = {
   Fuma: '11',
   EstadoNutricional: '12',
   RealizacionDePruebasDeCerologiaYVihEnElUltimoTrimestreGestacional: '13',
-  RealizacionRitualOPracticasCulturales: '14',
+  PracticasCulturales: '14',
   CausaDeLaMuerte: '15',
   ColoresSemaforo: '16',
   DesparasitacionExterna: '17',
   EvidenciaConsumoSustanciasPsicoactivas: '17',
   ConsumeBebidasAlcoholicas: '18',
   EvidenciaViolencia: '19',
+  FactoresRiesgo: '2',
 };
 
 export const QuestionConditionPersonCodes = {

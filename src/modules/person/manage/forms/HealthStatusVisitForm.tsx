@@ -5,36 +5,25 @@ import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {yupResolver} from '@hookform/resolvers';
 import * as yup from 'yup';
-import {
-  BButton,
-  BMultiSelect,
-  BPicker,
-  ButtonAction,
-} from '../../../../core/components';
+import {BMultiSelect, ButtonAction} from '../../../../core/components';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
-import {PersonService} from '../../../../services';
-
-import {
-  QuestionPersonCodes,
-  QuestionTypes,
-} from '../../../../core/utils/PersonTypes';
+import {QuestionPersonCodes} from '../../../../core/utils/PersonTypes';
 import {
   getQuestionWithOptions,
   saveAnswerLocal,
   getQuestionAnswer,
 } from '../../../../state/person/actions';
-import {PersonQuestion} from '../state/types';
-import {SelectSchema} from '../../../../core/utils/types';
-import {
-  getEntitySelect,
-  getLasHouseCode,
-} from '../../../../modules/location/state/actions';
+import {getEntitySelect} from '../../../../modules/location/state/actions';
 import {theme} from '../../../../core/style/theme';
 import {useFNCCONSAL} from '../../../../hooks/useFNCCONSAL';
 import {FNCCONSAL} from '../../../../types';
 import {useFNCDESARM} from '../../../../hooks/useFNCDESARM';
-import {getMSelectSchema, getSelectSchema} from '../../../../core/utils/utils';
+import {getMSelectSchema} from '../../../../core/utils/utils';
+import {
+  useFNBINFSAL_FNCDESARM,
+  useFNBINFSAL_FNCCONSAL,
+} from '../../../../hooks';
 
 const questionscodes = [
   QuestionPersonCodes.DesarmoniaOccidental,
@@ -47,19 +36,17 @@ const schemaForm = yup.object().shape({
 });
 
 const _HealthStatusVisitForm = (props: any) => {
-  const syncCatalogService = new PersonService();
   const {
     getLabel,
     getQuestionsOptions,
-    getPicker,
     getMultiselect,
     listFNCCONSAL,
   } = useFNCCONSAL();
   const {listFNCDESARM, getAllFNCDESARM} = useFNCDESARM();
-  const [editable, setEditable] = useState(false);
-  const [desarmony, setDesarmony] = useState('');
+  const {saveAnswerDESARM, getAnswerquestionDESARM} = useFNBINFSAL_FNCDESARM();
+  const {saveAnswer, getAnswerquestion} = useFNBINFSAL_FNCCONSAL();
   const navigation = useNavigation();
-  const {handleSubmit, control, errors, getValues, setValue} = useForm({
+  const {handleSubmit, setValue, control, errors} = useForm({
     resolver: yupResolver(schemaForm),
   });
 
@@ -74,16 +61,18 @@ const _HealthStatusVisitForm = (props: any) => {
 
   async function fetchQuestions() {
     getAllFNCDESARM();
-    /**
-     *  getAnswers(
-                  QuestionTypes.multiSelect,
-                  QuestionPersonCodes.DesarmoniaOccidental,
-                  'DesarmoniaOccidental',
-                );
-     */
-  }
-  function onSubmit(data: any) {
-    navigation.goBack();
+    let desarm = await getAnswerquestionDESARM(props.FNBINFSAL.ID);
+    setValue('DesarmoniaPropia', desarm);
+    await getAnswers(
+      QuestionPersonCodes.DesarmoniaOccidental,
+      'DesarmoniaOccidental',
+      2,
+    );
+    await getAnswers(
+      QuestionPersonCodes.AntecedentesFamiliares,
+      'AntecedentesFamiliares',
+      2,
+    );
   }
   async function getAnswers(
     questionCode: string,
@@ -93,34 +82,57 @@ const _HealthStatusVisitForm = (props: any) => {
     let question = listFNCCONSAL.find((item: FNCCONSAL) => {
       return item.QUESTIONCODE === questionCode;
     });
-    // if (question) {
-    //   const {ID} = props.FNCPERSON;
-    //   let ans = await getAnswerquestion(ID, question.FNCELEPER_ID, type);
-    //   if (ans) {
-    //     if (type == 1) {
-    //       setValue(prop, '' + ans);
-    //     } else {
-    //       setValue(prop, ans);
-    //     }
-    //   }
-    //   return ans;
-    // }
+    if (question) {
+      let ans = await getAnswerquestion(
+        props.FNBINFSAL.ID,
+        question.FNCELESAL_ID,
+        type,
+      );
+      if (ans) {
+        if (type == 1) {
+          setValue(prop, '' + ans);
+        } else {
+          setValue(prop, ans);
+        }
+      }
+      return ans;
+    }
+  }
+  async function onSubmit(data: any) {
+    if (data.DesarmoniaPropia) {
+      await saveAnswerDESARM(data.DesarmoniaPropia, props.FNBINFSAL.ID);
+    }
+    if (data.DesarmoniaOccidental) {
+      await SaveAnswers(
+        QuestionPersonCodes.DesarmoniaOccidental,
+        2,
+        data.DesarmoniaOccidental,
+      );
+    }
+    if (data.AntecedentesFamiliares) {
+      await SaveAnswers(
+        QuestionPersonCodes.AntecedentesFamiliares,
+        2,
+        data.AntecedentesFamiliares,
+      );
+    }
+    navigation.goBack();
   }
   async function SaveAnswers(
     questionCode: string,
-    answer: any,
     _type: 1 | 2 = 1,
-    personid = 0,
+    answer: any,
   ) {
     let question = listFNCCONSAL.find((item: FNCCONSAL) => {
       return item.QUESTIONCODE === questionCode;
     });
     if (question) {
-      let ID = props.FNCPERSON.ID;
-      if (personid > 0) {
-        ID = personid;
-      }
-      // saveAnswer(_type, answer, ID, question.FNCELEPER_ID);
+      await saveAnswer(
+        _type,
+        answer,
+        props.FNBINFSAL.ID,
+        question.FNCELESAL_ID,
+      );
     }
   }
 
@@ -137,11 +149,9 @@ const _HealthStatusVisitForm = (props: any) => {
               onBlur={onBlur}
               error={errors.DesarmoniaPropia}
               onChange={(value: any) => {
-                setEditable(true);
                 onChange(value);
-                setDesarmony(value);
               }}
-              value={desarmony}
+              selectedItems={value}
               items={getMSelectSchema('FNCDESARM', listFNCDESARM)}
             />
           )}
@@ -156,13 +166,7 @@ const _HealthStatusVisitForm = (props: any) => {
               onBlur={onBlur}
               error={errors.DesarmoniaOccidental}
               onChange={(values: any) => {
-                setEditable(true);
                 onChange(values);
-                SaveAnswers(
-                  QuestionPersonCodes.DesarmoniaOccidental,
-                  values,
-                  2,
-                );
               }}
               selectedItems={value}
               items={getMultiselect(QuestionPersonCodes.DesarmoniaOccidental)}
@@ -179,13 +183,8 @@ const _HealthStatusVisitForm = (props: any) => {
               onBlur={onBlur}
               error={errors.AntecedentesFamiliares}
               onChange={(values: any) => {
-                setEditable(true);
                 onChange(values);
-                SaveAnswers(
-                  QuestionPersonCodes.AntecedentesFamiliares,
-                  values,
-                  2,
-                );
+                //SaveAnswers(QuestionPersonCodes.AntecedentesFamiliares, 2);
               }}
               selectedItems={value}
               items={getMultiselect(QuestionPersonCodes.AntecedentesFamiliares)}
@@ -245,9 +244,10 @@ const mapDispatchToProps = {
   getQuestionAnswer,
   getEntitySelect,
 };
-const mapStateToProps = (session: any) => {
+const mapStateToProps = (store: any) => {
   return {
-    user: session.session.user,
+    FNBINFSAL: store.person.FNBINFSAL,
+    FNCPERSON: store.person.FNCPERSON,
   };
 };
 export default connect(

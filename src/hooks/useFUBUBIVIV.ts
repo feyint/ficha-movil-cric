@@ -8,6 +8,7 @@ export function useFUBUBIVIV() {
   const [itemFUBUBIVIVDETAILS, setFUBUBIVIVDETAILS] = useState<
     FUBUBIVIVDETAILS
   >();
+  const [itemsFilter, setItemsFilter] = useState<any>([]);
   const [countFUBUBIVIV, setCount] = useState<number>(0);
   const [loadingFUBUBIVIV, setLoading] = useState<boolean>(false);
   const database = useDatabase();
@@ -124,6 +125,66 @@ export function useFUBUBIVIV() {
       setFUBUBIVIVDETAILS(items[0]);
     });
   }
+  function filterFUBUBIVIVDETAILS(identification: string) {
+    let statement = `
+    SELECT 
+    p.PRIMER_NOMBRE, p.SEGUNDO_NOMBRE , p.PRIMER_APELLIDO , p.SEGUNDO_APELLIDO,
+    viv.DIRECCION , barver.NOMBRE as BARRIO_VEREDA, zoncui.NOMBRE as ZONA_CUIDADO, viv.*
+    FROM FNCPERSON p
+    LEFT JOIN FNBNUCVIV_FNCPERSON nvp on nvp.FNCPERSON_ID = p.ID 
+    LEFT JOIN FNBNUCVIV nucviv on nucviv.ID = nvp.FNBNUCVIV_ID 
+    LEFT JOIN FUBUBIVIV viv on viv.ID  = nucviv.FUBUBIVIV_ID 
+    LEFT JOIN FUCZONCUI_FUCBARVER fbar on fbar.ID = viv.FUCZONCUI_FUCBARVER_ID 
+    LEFT JOIN  FUCBARVER barver on barver.ID  = fbar.FUCBARVER_ID  
+    LEFT JOIN FUCZONCUI zoncui on zoncui.ID = fbar.FUCZONCUI_ID 
+    where p.IDENTIFICACION  LIKE '%${identification}%';`;
+    database.executeQuery('', statement).then((results) => {
+      const count = results.rows.length;
+      const items: any[] = [];
+      for (let i = 0; i < count; i++) {
+        const row = results.rows.item(i);
+        const {
+          ID,
+          CODIGO,
+          DIRECCION,
+          COORDENADA_X,
+          COORDENADA_Y,
+          FVBENCUES_ID,
+          FUCZONCUI_FUCBARVER_ID,
+          FECHA_ACTIVIDAD,
+          FECHA_CREACION,
+          ORIGEN_DATA,
+          USUARIO_DATA,
+          PRIMER_NOMBRE,
+          SEGUNDO_NOMBRE,
+          PRIMER_APELLIDO,
+          SEGUNDO_APELLIDO,
+          BARRIO_VEREDA,
+          ZONA_CUIDADO,
+        } = row;
+        items.push({
+          ID,
+          CODIGO,
+          DIRECCION,
+          COORDENADA_X,
+          COORDENADA_Y,
+          FVBENCUES_ID,
+          FUCZONCUI_FUCBARVER_ID,
+          FECHA_ACTIVIDAD,
+          FECHA_CREACION,
+          ORIGEN_DATA,
+          USUARIO_DATA,
+          PRIMER_NOMBRE,
+          SEGUNDO_NOMBRE,
+          PRIMER_APELLIDO,
+          SEGUNDO_APELLIDO,
+          BARRIO_VEREDA,
+          ZONA_CUIDADO,
+        });
+      }
+      setItemsFilter(items);
+    });
+  }
   async function createFUBUBIVIV(newItem: FUBUBIVIV): Promise<void> {
     let statement = `INSERT INTO {0} 
     (CODIGO, DIRECCION, COORDENADA_X, COORDENADA_Y, FVBENCUES_ID, FUCZONCUI_FUCBARVER_ID) 
@@ -183,6 +244,7 @@ export function useFUBUBIVIV() {
     setFUBUBIVIV(list);
   }
   return {
+    itemsFilter,
     itemFUBUBIVIVDETAILS,
     itemFUBUBIVIV,
     listFUBUBIVIV,
@@ -196,5 +258,6 @@ export function useFUBUBIVIV() {
     selectFUBUBIVIV,
     getAllFUBUBIVIV,
     filterFUBUBIVIV,
+    filterFUBUBIVIVDETAILS,
   };
 }

@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {HelperText, TextInput} from 'react-native-paper';
 import {StyleSheet, View} from 'react-native';
+import { BError } from '.';
 
 interface Props {
   label?: string;
@@ -33,13 +34,7 @@ export default class BNumberInput extends Component<Props, any> {
           value={this.props.value}
           maxLength={50}
         />
-        {this.props.error ? (
-          <HelperText type="error">
-            {this.props.error.type
-              ? this.props.error.type
-              : 'El campo es requerido'}
-          </HelperText>
-        ) : null}
+        <BError error={this.props.error} />
       </View>
     );
   }
@@ -47,7 +42,7 @@ export default class BNumberInput extends Component<Props, any> {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 1,

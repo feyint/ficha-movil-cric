@@ -65,7 +65,7 @@ export default (state = initialState, action: any) => {
     case ActionType.SET_FNBINFSAL:
       return {
         ...state,
-        FNBINFSAL: action.FNBINFSAL,
+        FNBINFSAL: action.data,
       };
     default:
       return state;

@@ -31,6 +31,9 @@ import {
   useFVCCONVIV,
   useFVCELEVIV,
 } from '../../../hooks';
+import {useFNCCONSAL} from '../../../hooks/useFNCCONSAL';
+import {useFNCDESARM} from '../../../hooks/useFNCDESARM';
+import {useFNCELESAL} from '../../../hooks/useFNCELESAL';
 import {useFNCORGANI} from '../../../hooks/useFNCORGANI';
 
 const SyncParametersScreen = () => {
@@ -52,6 +55,9 @@ const SyncParametersScreen = () => {
   const {countFNCCONPER, syncFNCCONPER, loadingFNCCONPER} = useFNCCONPER();
   const {countFUCPAIS, syncFUCPAIS, loadingFUCPAIS} = useFUCPAIS();
   const {countFNCORGANI, syncFNCORGANI, loadingFNCORGANI} = useFNCORGANI();
+  const {countFNCDESARM, syncFNCDESARM, loadingFNCDESARM} = useFNCDESARM();
+  const {countFNCELESAL, syncFNCELESAL, loadingFNCELESAL} = useFNCELESAL();
+  const {countFNCCONSAL, syncFNCCONSAL, loadingFNCCONSAL} = useFNCCONSAL();
   const {
     countFUCZONCUI_FUCBARVER,
     loadingFUCZONCUI_FUCBARVER,
@@ -78,7 +84,10 @@ const SyncParametersScreen = () => {
       loadingFNCGENERO ||
       loadingFNCELEPER ||
       loadingFNCCONPER ||
-      loadingFNCORGANI
+      loadingFNCORGANI ||
+      loadingFNCDESARM ||
+      loadingFNCELESAL ||
+      loadingFNCCONSAL
     ) {
     } else {
       syncFVCELEVIV();
@@ -99,6 +108,9 @@ const SyncParametersScreen = () => {
       syncFNCCONPER();
       syncFUCPAIS();
       syncFNCORGANI();
+      syncFNCDESARM();
+      syncFNCELESAL();
+      syncFNCCONSAL();
     }
 
     //await this.clearPollEntities();
@@ -226,6 +238,13 @@ const SyncParametersScreen = () => {
               loadingFNCORGANI,
               countFNCORGANI,
             )}
+            {renderRow(
+              'FNCORGANI(Desarmonia)',
+              loadingFNCDESARM,
+              countFNCDESARM,
+            )}
+            {renderRow('FNCELESAL()', loadingFNCELESAL, countFNCELESAL)}
+            {renderRow('FNCCONSAL()', loadingFNCCONSAL, countFNCCONSAL)}
           </DataTable>
         </Card>
       </KeyboardAwareScrollView>
@@ -246,7 +265,9 @@ const SyncParametersScreen = () => {
           loadingFNCGENERO ||
           loadingFNCELEPER ||
           loadingFNCCONPER ||
-          loadingFNCORGANI
+          loadingFNCORGANI ||
+          loadingFNCDESARM ||
+          loadingFNCELESAL
         }
         label="Sincronizar Catalogos"
         style={styles.fab}

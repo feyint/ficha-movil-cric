@@ -24,3 +24,6 @@ export {useFNCCONPER} from './useFNCCONPER';
 export {useFNBNUCVIV_FNCPERSON} from './useFNBNUCVIV_FNCPERSON';
 export {useFNCPERSON_FNCCONPER} from './useFNCPERSON_FNCCONPER';
 export {useFUCPAIS} from './useFUCPAIS';
+export {useFNBINFSAL_FNCCONSAL} from './useFNBINFSAL_FNCCONSAL';
+export {useFNBINFSAL_FNCDESARM} from './useFNBINFSAL_FNCDESARM';
+export {useFNBINFSAL} from './useFNBINFSAL';

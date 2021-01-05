@@ -52,13 +52,7 @@ class BRadioButton extends Component<Props, any> {
               : null}
           </RadioButton.Group>
         </View>
-        {this.props.error ? (
-          <HelperText type="error">
-            {this.props.error
-              ? this.props.error.message
-              : 'El campo es requerido'}
-          </HelperText>
-        ) : null}
+        <BError error={this.props.error} />
       </View>
     );
   }

@@ -1,5 +1,4 @@
 import {ActionType} from './actions';
-import {HousingQuestion} from '../../modules/housing/state/types';
 const FNCSALREPDATA = {
   ID: null,
   FNCPERSON_ID: null,
@@ -28,20 +27,9 @@ const FNCSALREPDATA = {
 };
 const initialState = {
   FNCSALREP: FNCSALREPDATA,
-  CONDITIONPERSONQUESTIONLIST: [] as HousingQuestion[],
 };
 export default (state = initialState, action: any) => {
   switch (action.type) {
-    case ActionType.SET_SEXANDREPHEALTHPERSON_QUESTION_LIST:
-      return {
-        ...state,
-        SEXANDREPHEALTHPERSONQUESTIONLIST: action.data,
-      };
-    case ActionType.SET_FNCSALREP:
-      return {
-        ...state,
-        FNCSALREP: action.data,
-      };
     case ActionType.SET_FNCSALREP:
       return {
         ...state,
