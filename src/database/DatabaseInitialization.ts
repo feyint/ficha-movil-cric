@@ -4,7 +4,7 @@ export class DatabaseInitialization {
   // Perform any updates to the database schema. These can occur during initial configuration, or after an app store update.
   // This should be called each time the database is opened.
   public updateDatabaseTables(database: SQLite.SQLiteDatabase): Promise<void> {
-    let dbVersion: number = 0;
+    let dbVersion: number = 1;
     console.log('Beginning database updates...');
 
     // First: create tables if they do not already exist
@@ -285,6 +285,7 @@ export class DatabaseInitialization {
     transaction.executeSql(`
       CREATE TABLE IF NOT EXISTS FNBNUCVIV_FVCCONVIV(
         ID INTEGER PRIMARY KEY AUTOINCREMENT,
+        WEB_ID TEXT DEFAULT NULL,
         FNBNUCVIV_ID INTEGER,
         FVCCONVIV_ID INTEGER,
         FVCELEVIV_ID INTEGER
@@ -293,6 +294,7 @@ export class DatabaseInitialization {
     transaction.executeSql(`
       CREATE TABLE IF NOT EXISTS FNBNUCVIV_FNCPERSON(
         ID INTEGER PRIMARY KEY AUTOINCREMENT,
+        WEB_ID TEXT DEFAULT NULL,
         FNBNUCVIV_ID INTEGER,
         FNCPERSON_ID INTEGER
       );
@@ -329,6 +331,7 @@ export class DatabaseInitialization {
     transaction.executeSql(`
       CREATE TABLE IF NOT EXISTS FUBUBIVIV(
         ID INTEGER PRIMARY KEY AUTOINCREMENT,
+        WEB_ID TEXT DEFAULT NULL,
         CODIGO TEXT,
         DIRECCION TEXT,
         COORDENADA_X TEXT,
@@ -449,6 +452,7 @@ export class DatabaseInitialization {
     transaction.executeSql(`
       CREATE TABLE IF NOT EXISTS FNBNUCVIV(
         ID INTEGER PRIMARY KEY AUTOINCREMENT,
+        WEB_ID TEXT DEFAULT NULL,
         CODIGO TEXT,
         OBSERVACION TEXT,
         HUMO_CASA BOOLEAN,
@@ -470,6 +474,7 @@ export class DatabaseInitialization {
     transaction.executeSql(`
       CREATE TABLE IF NOT EXISTS FNCPERSON(
         ID INTEGER PRIMARY KEY AUTOINCREMENT,
+        WEB_ID TEXT DEFAULT NULL,
         CODIGO TEXT,
         IDENTIFICACION TEXT,
         PRIMER_NOMBRE TEXT,
@@ -497,6 +502,7 @@ export class DatabaseInitialization {
     transaction.executeSql(`
       CREATE TABLE IF NOT EXISTS FNBINFSAL(
         ID INTEGER PRIMARY KEY AUTOINCREMENT,
+        WEB_ID TEXT DEFAULT NULL,
         PESO INTEGER,
         TALLA INTEGER,
         TA_SISTOLICA INTEGER,
