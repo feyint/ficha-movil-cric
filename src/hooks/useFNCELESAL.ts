@@ -40,6 +40,7 @@ export function useFNCELESAL() {
   }
   async function syncFNCELESAL() {
     setLoading(true);
+    await database.clearEntity('Fncelesal');
     let service = new SyncCatalogService();
     let result = await service.getEntity('Fncelesal');
     result.data.map(async (item: any) => {

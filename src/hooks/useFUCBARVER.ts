@@ -85,9 +85,7 @@ export function useFUCBARVER() {
       params.push(newItem.FUCRESGUA_ID);
       params.push(newItem.FUCZONA_ID);
     });
-    return await database
-      .executeQuery('FUCBARVER', statement, params)
-      .then(countEntity);
+    return await database.executeQuery('FUCBARVER', statement, params);
   }
   async function countEntity(): Promise<void> {
     return database.countEntity('FUCBARVER').then(setCount);

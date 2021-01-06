@@ -89,9 +89,7 @@ export function useFUCRESGUA() {
       params.push(newItem.FUCTIPRES_ID);
       params.push(newItem.FUCTERCRI_ID);
     });
-    return await database
-      .executeQuery('FUCRESGUA', statement, params)
-      .then(countEntity);
+    return await database.executeQuery('FUCRESGUA', statement, params);
   }
   async function countEntity(): Promise<void> {
     return database.countEntity('FUCRESGUA').then(setCount);

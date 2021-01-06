@@ -70,16 +70,13 @@ export function useFNBINFSAL() {
     let statement = `INSERT INTO {0} 
             (FNCPERSON_ID) 
             VALUES ('${item.FNCPERSON_ID}');`;
-    return database
+    return await database
       .executeQuery('FNBINFSAL', statement)
       .then(async (results) => {
-        console.error('inserto createFNBINFSAL');
         const {insertId} = results;
         return await getFNBINFSALbyID(insertId);
       })
-      .catch((err) => {
-        console.error('error createFNBINFSAL');
-      })
+      .catch((err) => {console.error('error createFNBINFSAL');})
       .finally(() => {
         setLoading(false);
       });

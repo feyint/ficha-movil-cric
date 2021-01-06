@@ -14,7 +14,7 @@ export function useFNCTIPIDE() {
     countEntity();
   }, []);
   function getAllFNCTIPIDE() {
-    return database.getAllFromEntity('FNCTIPIDE').then(setlist);
+    return database.getAllFromEntity('FNCTIPIDE', 'NOMBRE').then(setlist);
   }
   async function createFNCTIPIDE(newItem: FNCTIPIDE): Promise<void> {
     let statement = `INSERT INTO {0} 
@@ -40,6 +40,7 @@ export function useFNCTIPIDE() {
   }
   async function syncFNCTIPIDE() {
     setLoading(true);
+    await database.clearEntity('FNCTIPIDE');
     let service = new SyncCatalogService();
     let result = await service.getEntity('FNCTIPIDE');
     result.data.map(async (item: any) => {

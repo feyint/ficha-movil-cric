@@ -7,7 +7,6 @@ import * as yup from 'yup';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {
-  BButton,
   BDatePickerModal,
   BPicker,
   BTextInput,
@@ -17,7 +16,6 @@ import BNumberInput from '../../../../core/components/BNumberInput';
 import {setFNCPERSON} from '../../../../state/person/actions';
 import {QuestionConditionPersonCodes} from '../../../../core/utils/PersonTypes';
 import {PersonParametersConst} from '../../../../core/utils/SystemParameters';
-import {theme} from '../../../../core/style/theme';
 import {
   useFNBNUCVIV,
   useFNBNUCVIV_FNCPERSON,
@@ -43,10 +41,10 @@ const schemaForm = yup.object().shape({
   lastname: FieldValidator.required(yup, 'Primer apellido'),
   secondlastname: yup.string().optional(),
   identification: yup.string().optional(),
-  identificationType: FieldValidator.required(yup, 'Tipo de identificacion'),
+  identificationType: yup.number().required(),
   gender: FieldValidator.required(yup, 'Genero'),
-  GrupoEtnico: FieldValidator.required(yup, 'Grupo etnico'),
-  birthdate: FieldValidator.required(yup, 'Fecha de nacimiento'),
+  GrupoEtnico: yup.number().required(),
+  birthdate: yup.date().required(),
 });
 const _PersonalInformationForm = (props: any) => {
   const navigation = useNavigation();
@@ -81,6 +79,10 @@ const _PersonalInformationForm = (props: any) => {
     fetchQuestions();
   }, []);
   useEffect(() => {
+    if (listFNCTIPIDE && props.FNCPERSON.ID) {
+      setValue('identificationType', '' + props.FNCPERSON.FNCTIPIDE_ID);
+      setIdentificationType('' + props.FNCPERSON.FNCTIPIDE_ID);
+    }
     let idtypeEx: any[] = [];
     listFNCTIPIDE.forEach((item) => {
       if (
@@ -101,9 +103,14 @@ const _PersonalInformationForm = (props: any) => {
     }
   }, [listFNCCONPER]);
   useEffect(() => {
+    if (listFNCGENERO && props.FNCPERSON.ID) {
+      setValue('gender', '' + props.FNCPERSON.FNCGENERO_ID);
+      setGender('' + props.FNCPERSON.FNCGENERO_ID);
+    }
+  }, [listFNCGENERO]);
+  useEffect(() => {
     if (itemFNCPERSON) {
       props.setFNCPERSON(itemFNCPERSON);
-      navigation.goBack();
     }
   }, [itemFNCPERSON]);
   useEffect(() => {
@@ -124,10 +131,6 @@ const _PersonalInformationForm = (props: any) => {
       }
       setValue('parentezcoGrupoFamiliar', '' + props.FNCPERSON.FNCPAREN_ID);
       setParentezcoGrupoFamiliar('' + props.FNCPERSON.FNCPAREN_ID);
-      setValue('identificationType', '' + props.FNCPERSON.FNCTIPIDE_ID);
-      setIdentificationType('' + props.FNCPERSON.FNCTIPIDE_ID);
-      setValue('gender', '' + props.FNCPERSON.FNCGENERO_ID);
-      setGender('' + props.FNCPERSON.FNCGENERO_ID);
       // getAnswers(QuestionConditionPersonCodes.GrupoEtnico, 'GrupoEtnico');
     }
   }, [person]);
@@ -181,6 +184,7 @@ const _PersonalInformationForm = (props: any) => {
         );
       }
     }
+    navigation.goBack();
   };
   async function asociateExistingPerson(item: FNCPERSON) {
     let asociated = await createFNBNUCVIV_FNCPERSON({
@@ -275,26 +279,6 @@ const _PersonalInformationForm = (props: any) => {
     }, 1000);
     return delayDebounceFn;
   }
-  const validateIdentification = () => {
-    if (
-      (identificationType !== 4 || identificationType !== 7) &&
-      identification != ''
-    ) {
-      Alert.alert(
-        'Identificación Requerida',
-        `El tipo de identificación ${identificationType} es necesario, \n Valide la información.. ident ${identification}`,
-        [
-          {
-            text: 'aceptar',
-          },
-        ],
-        {cancelable: false},
-      );
-      return true;
-    } else {
-      return false;
-    }
-  };
   function validateRelationship(value: any) {
     let isValid = true;
     if (
@@ -396,15 +380,7 @@ const _PersonalInformationForm = (props: any) => {
             }}
             onLoad={() => {}}
             selectedValue={identificationType}
-            items={getSelectSchema(listFNCTIPIDE).sort(function (a, b) {
-              if (a.label == b.label) return 0;
-              if (a.label == 'Seleccione') return -1;
-              if (b.label == 'Seleccione') return 1;
-
-              if (a.label < b.label) return -1;
-              if (a.label > b.label) return 1;
-              return 0;
-            })}
+            items={getSelectSchema(listFNCTIPIDE)}
           />
         )}
         name="identificationType"

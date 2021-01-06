@@ -9,7 +9,12 @@ import {connect} from 'react-redux';
 import {setFNCNCSALREP} from '../../../../state/SexAndRepHealthPerson/actions';
 import {theme} from '../../../../core/style/theme';
 import {FNBNUCVIV, FNCPERSON} from '../../../../types';
-import {useFNBINFSAL, useFNCGENERO, useFNCPERSON} from '../../../../hooks';
+import {
+  useFNBINFSAL,
+  useFNCGENERO,
+  useFNCPERSON,
+  useFNCSALREP,
+} from '../../../../hooks';
 import {setFNCPERSON, setFNBINFSAL} from '../../../../state/person/actions';
 import {PersonParametersConst} from '../../../../core/utils/SystemParameters';
 
@@ -23,6 +28,7 @@ const ViewPersonScreen = (props: any) => {
   const {itemFNCPERSON, getFNCPERSONbyID} = useFNCPERSON();
   const {itemFNCGENERO, getbyID} = useFNCGENERO();
   const {itemFNBINFSAL, getFNBINFSALbyID} = useFNBINFSAL();
+  const {itemFNCSALREP, getFNCSALREPbyID} = useFNCSALREP();
   const [created, setcreated] = useState<boolean>(false);
   const [enableSexReproductionHealt, setenableSexReproductionHealt] = useState<
     boolean
@@ -31,6 +37,7 @@ const ViewPersonScreen = (props: any) => {
     if (itemFNCPERSON) {
       getbyID(itemFNCPERSON.FNCGENERO_ID);
       getFNBINFSALbyID(-1, itemFNCPERSON.ID);
+      getFNCSALREPbyID(-1, itemFNCPERSON.ID);
       props.setFNCPERSON(itemFNCPERSON);
     }
   }, [itemFNCPERSON]);
@@ -47,8 +54,14 @@ const ViewPersonScreen = (props: any) => {
     }
   }, [itemFNBINFSAL]);
   useEffect(() => {
+    if (itemFNCSALREP) {
+      props.setFNCNCSALREP(itemFNCSALREP);
+    }
+  }, [itemFNCSALREP]);
+  useEffect(() => {
     getbyID(props.FNCPERSON.FNCGENERO_ID);
     getFNBINFSALbyID(-1, props.FNCPERSON.ID);
+    getFNCSALREPbyID(-1, props.FNCPERSON.ID);
   }, [props.FNCPERSON]);
   useFocusEffect(() => {
     if (!props.FNCPERSON.ID) {

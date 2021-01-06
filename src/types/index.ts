@@ -36,3 +36,5 @@ export type {FNCELESAL} from './FNCELESAL';
 export type {FNBINFSAL_FNCCONSAL} from './FNBINFSAL_FNCCONSAL';
 export type {FNBINFSAL_FNCDESARM} from './FNBINFSAL_FNCDESARM';
 export type {FNBINFSAL} from './FNBINFSAL';
+export type {FNCSALREP} from './FNCSALREP';
+export type {FNCSALREP_FNCCONREP} from './FNCSALREP_FNCCONREP';

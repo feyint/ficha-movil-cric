@@ -39,6 +39,7 @@ export function useFNCDESARM() {
   }
   async function syncFNCDESARM() {
     setLoading(true);
+    await database.clearEntity('Fncdesarm');
     let service = new SyncCatalogService();
     let result = await service.getEntity('Fncdesarm');
     result.data.map(async (item: any) => {

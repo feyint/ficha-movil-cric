@@ -147,11 +147,12 @@ export function useFVCCONVIV() {
     }
     return item;
   }
+
   async function syncFVCCONVIV() {
+    await database.clearEntity('FVCCONVIV');
     setLoading(true);
     let service = new SyncCatalogService();
     let result = await service.getEntity('FVCCONVIV');
-    
     let items: Array<FVCCONVIV> = [];
     for (let i = 0; i < result.data.length; i++) {
       const item = result.data[i];

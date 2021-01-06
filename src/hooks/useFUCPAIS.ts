@@ -42,6 +42,7 @@ export function useFUCPAIS() {
   }
   async function syncFUCPAIS() {
     setLoading(true);
+    await database.clearEntity('FUCPAIS');
     let service = new SyncCatalogService();
     let result = await service.getEntity('FUCPAIS');
     result.data.map((item: any) => {

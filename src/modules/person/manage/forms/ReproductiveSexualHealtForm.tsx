@@ -6,11 +6,11 @@ import {yupResolver} from '@hookform/resolvers';
 import * as yup from 'yup';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
-import {BButton} from '../../../../core/components';
+import {BButton, ButtonAction} from '../../../../core/components';
 import BNumberInput from '../../../../core/components/BNumberInput';
-import {FNCPERSON} from '../../../../state/person/types';
-import {FNCSALREP} from '../../../../state/SexAndRepHealthPerson/types';
 import {theme} from '../../../../core/style/theme';
+import { useFNCSALREP } from '../../../../hooks';
+import { FNCSALREP } from '../../../../types';
 
 const schemaForm = yup.object().shape({
   agemenstruation: yup.number().integer().min(1),
@@ -26,7 +26,6 @@ const _ReproductiveSexualHealtForm = (props: any) => {
   const {handleSubmit, control, errors, setValue} = useForm({
     resolver: yupResolver(schemaForm),
   });
-  const [editable, setEditable] = useState(false);
   const [agemenstruation, setagemenstruation] = useState<number>();
   const [pregnancynumber, setpregnancynumber] = useState<number>(0);
   const [parideznumber, setparideznumber] = useState<number>(0);
@@ -34,28 +33,48 @@ const _ReproductiveSexualHealtForm = (props: any) => {
   const [cesariannumber, setcesariannumber] = useState<number>(0);
   const [bornnumber, setbornnumber] = useState<number>(0);
   const [bornnumberdeath, setbornnumberdeath] = useState<number>(0);
+  const {itemFNCSALREP, updateFNCSALREP, loadingFNCSALREP} = useFNCSALREP();
   useEffect(() => {
     fetchQuestions();
   }, []);
   const fetchQuestions = async () => {
-    if (props.FNCPERSON.ID) {
-    }
+    const {
+      EDAD_PRIMERA_REGLA,
+      EDAD_GESTACION,
+      PARIDEZ,
+      ABORTO,
+      CESAREA,
+      NACIDOS_VIVOS,
+      NACIDOS_MUERTOS,
+    } = props.FNCSALREP as FNCSALREP;
+    setValue('agemenstruation', '' + EDAD_PRIMERA_REGLA);
+    setagemenstruation(EDAD_PRIMERA_REGLA);
+    setValue('pregnancynumber', '' + EDAD_GESTACION);
+    setpregnancynumber(Number(EDAD_GESTACION));
+    setValue('parideznumber', '' + PARIDEZ);
+    setparideznumber(PARIDEZ);
+    setValue('abortionnumber', '' + ABORTO);
+    setabortionnumber(ABORTO);
+    setValue('cesariannumber', '' + CESAREA);
+    setcesariannumber(CESAREA);
+    setValue('bornnumber', '' + NACIDOS_VIVOS);
+    setbornnumber(NACIDOS_VIVOS);
+    setValue('bornnumberdeath', '' + NACIDOS_MUERTOS);
+    setbornnumberdeath(NACIDOS_MUERTOS);
   };
   const onSubmit = async (data: any) => {
-    let item: FNCSALREP = props.FNCSALREPDATA;
+    let item: FNCSALREP = props.FNCSALREP;
     if (validatepregnancynumber()) {
       if (valideateBornPregnancy()) {
         if (item.ID) {
-          let fncsalrep: any = {};
-          fncsalrep.EDAD_PRIMERA_REGLA = data.agemenstruation;
-          fncsalrep.GRAVIDEZ = data.pregnancynumber;
-          fncsalrep.PARIDEZ = data.parideznumber;
-          fncsalrep.ABORTO = data.abortionnumber;
-          fncsalrep.CESAREA = data.cesariannumber;
-          fncsalrep.NACIDOS_VIVOS = data.bornnumber;
-          fncsalrep.NACIDOS_MUERTOS = data.bornnumberdeath;
-          fncsalrep.ID = item.ID;
-          await props.updateFNCSALREP(fncsalrep);
+          item.EDAD_PRIMERA_REGLA = data.agemenstruation;
+          item.GRAVIDEZ = data.pregnancynumber;
+          item.PARIDEZ = data.parideznumber;
+          item.ABORTO = data.abortionnumber;
+          item.CESAREA = data.cesariannumber;
+          item.NACIDOS_VIVOS = data.bornnumber;
+          item.NACIDOS_MUERTOS = data.bornnumberdeath;
+          await updateFNCSALREP(item);
           navigation.goBack();
         }
       } else {
@@ -89,24 +108,6 @@ const _ReproductiveSexualHealtForm = (props: any) => {
     return isValid;
   };
 
-  function alert(data: any) {
-    editable
-      ? Alert.alert(
-          '',
-          '¿Desea cancelar el proceso?.',
-          [
-            {
-              text: 'NO',
-              onPress: () => console.log('Cancel Pressed'),
-              style: 'cancel',
-            },
-            {text: 'SI', onPress: () => navigation.goBack()},
-          ],
-          {cancelable: false},
-        )
-      : navigation.goBack();
-  }
-
   const valideateBornPregnancy = () => {
     let isValid = false;
     if (pregnancynumber > 0) {
@@ -128,7 +129,6 @@ const _ReproductiveSexualHealtForm = (props: any) => {
               label="Edad de la primera menstruación"
               error={errors.agemenstruation}
               onChange={(value) => {
-                setEditable(true);
                 onChange(value);
                 setagemenstruation(parseInt(value, 10));
               }}
@@ -145,7 +145,6 @@ const _ReproductiveSexualHealtForm = (props: any) => {
               label="Número de gravidez"
               error={errors.pregnancynumber}
               onChange={(value) => {
-                setEditable(true);
                 onChange(value);
                 if (!isNaN(value)) {
                   setpregnancynumber(parseInt(value, 10));
@@ -164,7 +163,6 @@ const _ReproductiveSexualHealtForm = (props: any) => {
               disabled={!pregnancynumber || pregnancynumber == 0}
               error={errors.parideznumber}
               onChange={(value) => {
-                setEditable(true);
                 onChange(value);
                 //if (validatepregnancynumber(parseInt(value, 10))) {
                 validateField(parseInt(value, 10))
@@ -189,7 +187,6 @@ const _ReproductiveSexualHealtForm = (props: any) => {
               label="Número de abortos"
               error={errors.abortionnumber}
               onChange={(value) => {
-                setEditable(true);
                 onChange(value);
                 //if (validatepregnancynumber(parseInt(value, 10))) {
                 validateField(parseInt(value, 10))
@@ -214,7 +211,6 @@ const _ReproductiveSexualHealtForm = (props: any) => {
               label="Número cesárea"
               error={errors.cesariannumber}
               onChange={(value) => {
-                setEditable(true);
                 onChange(value);
                 //if (validatepregnancynumber(parseInt(value, 10))) {
                 validateField(parseInt(value, 10))
@@ -239,7 +235,6 @@ const _ReproductiveSexualHealtForm = (props: any) => {
               label="Número de nacidos vivos"
               error={errors.bornnumber}
               onChange={(value) => {
-                setEditable(true);
                 onChange(value);
                 validateField(parseInt(value, 10))
                   ? setbornnumber(parseInt(value, 10))
@@ -261,7 +256,6 @@ const _ReproductiveSexualHealtForm = (props: any) => {
               label="Número de nacidos muertos"
               error={errors.bornnumberdeath}
               onChange={(value) => {
-                setEditable(true);
                 onChange(value);
                 validateField(parseInt(value, 10))
                   ? setbornnumberdeath(parseInt(value, 10))
@@ -275,25 +269,10 @@ const _ReproductiveSexualHealtForm = (props: any) => {
           )}
           name="bornnumberdeath"
         />
-        <View
-          style={{display: 'flex', flexDirection: 'row', marginLeft: '20%'}}>
-          <BButton
-            style={styles.aceptButon}
-            color="secondary"
-            value="Cancelar"
-            labelStyle={styles.text}
-            onPress={alert}
-          />
-          <BButton
-            style={styles.cancelButon}
-            color="secondary"
-            //labelStyle={styles.text}
-            value="Validar"
-            onPress={handleSubmit(onSubmit, (err) => {
-              console.warn(err);
-            })}
-          />
-        </View>
+        <ButtonAction
+          onAccept={handleSubmit(onSubmit)}
+          onCancel={() => navigation.goBack()}
+        />
       </View>
     </KeyboardAwareScrollView>
   );
@@ -336,7 +315,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (store: any) => {
   return {
     FNCPERSON: store.person.FNCPERSON,
-    FNCSALREPDATA: store.sarhealthperson.FNCSALREPDATA,
+    FNCSALREP: store.sarhealthperson.FNCSALREP,
   };
 };
 export default connect(mapStateToProps, null)(_ReproductiveSexualHealtForm);

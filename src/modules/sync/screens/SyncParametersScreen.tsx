@@ -31,8 +31,10 @@ import {
   useFVCCONVIV,
   useFVCELEVIV,
 } from '../../../hooks';
+import { useFNCCONREP } from '../../../hooks/useFNCCONREP';
 import {useFNCCONSAL} from '../../../hooks/useFNCCONSAL';
 import {useFNCDESARM} from '../../../hooks/useFNCDESARM';
+import { useFNCELEREP } from '../../../hooks/useFNCELEREP';
 import {useFNCELESAL} from '../../../hooks/useFNCELESAL';
 import {useFNCORGANI} from '../../../hooks/useFNCORGANI';
 
@@ -58,6 +60,8 @@ const SyncParametersScreen = () => {
   const {countFNCDESARM, syncFNCDESARM, loadingFNCDESARM} = useFNCDESARM();
   const {countFNCELESAL, syncFNCELESAL, loadingFNCELESAL} = useFNCELESAL();
   const {countFNCCONSAL, syncFNCCONSAL, loadingFNCCONSAL} = useFNCCONSAL();
+  const {countFNCELEREP, syncFNCELEREP, loadingFNCELEREP} = useFNCELEREP();
+  const {countFNCCONREP, syncFNCCONREP, loadingFNCCONREP} = useFNCCONREP();
   const {
     countFUCZONCUI_FUCBARVER,
     loadingFUCZONCUI_FUCBARVER,
@@ -87,30 +91,34 @@ const SyncParametersScreen = () => {
       loadingFNCORGANI ||
       loadingFNCDESARM ||
       loadingFNCELESAL ||
-      loadingFNCCONSAL
+      loadingFNCCONSAL ||
+      loadingFNCELEREP ||
+      loadingFNCCONREP
     ) {
     } else {
-      // syncFVCELEVIV();
-      // syncFVCCONVIV();
+      syncFVCELEVIV();
+      syncFVCCONVIV();
       syncFUCDEPART();
-      // syncFUCMUNICI();
-      // syncFUCTIPTER();
-      // syncFUCBARVER();
-      // syncFUCRESGUA();
-      // syncFUCZONCUI();
-      // syncFNCTIPIDE();
-      // syncFNCPAREN();
-      // syncFNCOCUPAC();
-      // syncFNCPUEIND();
-      // syncFNCLUNIND();
-      // syncFNCGENERO();
-      // syncFNCELEPER();
-      // syncFNCCONPER();
-      // syncFUCPAIS();
-      // syncFNCORGANI();
-      // syncFNCDESARM();
-      // syncFNCELESAL();
-      // syncFNCCONSAL();
+      syncFUCMUNICI();
+      syncFUCTIPTER();
+      syncFUCBARVER();
+      syncFUCRESGUA();
+      syncFUCZONCUI();
+      syncFNCTIPIDE();
+      syncFNCPAREN();
+      syncFNCOCUPAC();
+      syncFNCPUEIND();
+      syncFNCLUNIND();
+      syncFNCGENERO();
+      syncFNCELEPER();
+      syncFNCCONPER();
+      syncFUCPAIS();
+      syncFNCORGANI();
+      syncFNCDESARM();
+      syncFNCELESAL();
+      syncFNCCONSAL();
+      syncFNCELEREP();
+      syncFNCCONREP();
     }
 
     //await this.clearPollEntities();
@@ -125,8 +133,8 @@ const SyncParametersScreen = () => {
     return (
       <DataTable.Row style={styles.row}>
         <DataTable.Cell>
+          {catalog}
           <View>
-            <Subheading>{catalog}</Subheading>
             {detail.length > 0 ? <Paragraph>{detail}</Paragraph> : null}
           </View>
         </DataTable.Cell>
@@ -245,6 +253,8 @@ const SyncParametersScreen = () => {
             )}
             {renderRow('FNCELESAL()', loadingFNCELESAL, countFNCELESAL)}
             {renderRow('FNCCONSAL()', loadingFNCCONSAL, countFNCCONSAL)}
+            {renderRow('FNCELEREP()', loadingFNCELEREP, countFNCELEREP)}
+            {renderRow('FNCCONREP()', loadingFNCCONREP, countFNCCONREP)}
           </DataTable>
         </Card>
       </KeyboardAwareScrollView>
@@ -267,7 +277,9 @@ const SyncParametersScreen = () => {
           loadingFNCCONPER ||
           loadingFNCORGANI ||
           loadingFNCDESARM ||
-          loadingFNCELESAL
+          loadingFNCELESAL ||
+          loadingFNCELEREP ||
+          loadingFNCCONREP
         }
         label="Sincronizar Catalogos"
         style={styles.fab}

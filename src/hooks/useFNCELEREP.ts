@@ -39,6 +39,7 @@ export function useFNCELEREP() {
   }
   async function syncFNCELEREP() {
     setLoading(true);
+    await database.clearEntity('FNCELEREP');
     let service = new SyncCatalogService();
     let result = await service.getEntity('FNCELEREP');
     result.data.map(async (item: any) => {

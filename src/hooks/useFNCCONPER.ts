@@ -148,6 +148,7 @@ export function useFNCCONPER() {
   }
   async function syncFNCCONPER() {
     setLoading(true);
+    await database.clearEntity('FNCCONPER');
     let service = new SyncCatalogService();
     let result = await service.getEntity('FNCCONPER');
     result.data.map(async (item: any) => {

@@ -243,7 +243,4 @@ const mapStateToProps = (store: any) => {
     FNBINFSAL: store.person.FNBINFSAL,
   };
 };
-export default connect(
-  mapStateToProps,
-  null,
-)(_UnhealthyHabitsForm);
+export default connect(mapStateToProps, null)(_UnhealthyHabitsForm);

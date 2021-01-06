@@ -67,6 +67,7 @@ export function useFUCDEPART() {
   }
   async function syncFUCDEPART() {
     setLoading(true);
+    await database.clearEntity('FUCDEPART');
     let service = new SyncCatalogService();
     let result = await service.getEntity('FUCDEPART');
     result.data.map((item: any) => {

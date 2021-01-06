@@ -59,6 +59,7 @@ export function useFVCELEVIV() {
     setFVCELEVIV(list);
   }
   async function syncFVCELEVIV() {
+    await database.clearEntity('FVCELEVIV');
     setLoading(true);
     let service = new SyncCatalogService();
     let result = await service.getEntity('FVCELEVIV');

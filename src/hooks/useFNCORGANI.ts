@@ -47,6 +47,7 @@ export function useFNCORGANI() {
   }
   async function syncFNCORGANI() {
     setLoading(true);
+    await database.clearEntity('FNCORGANI');
     let service = new SyncCatalogService();
     let result = await service.getEntity('FNCORGANI');
     result.data.map(async (item: any) => {

@@ -50,6 +50,7 @@ export function useFUCTIPTER_FUCRESGUA() {
   async function countEntity(): Promise<void> {
     return database.countEntity('FUCTIPTER_FUCRESGUA').then(setCount);
   }
+
   async function syncFUCTIPTER_FUCRESGUA() {
     setLoading(true);
     await database.clearEntity('FUCTIPTER_FUCRESGUA');

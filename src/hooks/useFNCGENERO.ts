@@ -65,6 +65,7 @@ export function useFNCGENERO() {
   }
   async function syncFNCGENERO() {
     setLoading(true);
+    await database.clearEntity('FNCGENERO');
     let service = new SyncCatalogService();
     let result = await service.getEntity('FNCGENERO');
     result.data.map(async (item: any) => {

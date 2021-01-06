@@ -66,9 +66,10 @@ export function useFUCZONCUI() {
   async function selectFUCZONCUI(list: FUCZONCUI) {
     setFUCZONCUI(list);
   }
+
   async function syncFUCZONCUI() {
-    setLoading(true);
     await database.clearEntity('FUCZONCUI');
+    setLoading(true);
     let service = new SyncCatalogService();
     let result = await service.getEntity('FUCZONCUI');
     result.data.map((item: any) => {

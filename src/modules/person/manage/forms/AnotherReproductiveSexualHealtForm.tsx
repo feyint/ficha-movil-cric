@@ -5,12 +5,10 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {yupResolver} from '@hookform/resolvers';
 import * as yup from 'yup';
 import {
-  BButton,
-  BDatePickerModal,
   BMultiSelect,
   BPicker,
   BRadioButton,
-  BTextInput,
+  ButtonAction,
 } from '../../../../core/components';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
@@ -19,12 +17,13 @@ import {
   logicOption,
   examOption,
   QuestionSexAndRepHealthPersonCodes,
-  QuestionTypes,
 } from '../../../../core/utils/PersonTypes';
-import {SexAndRepHealthPersonQuestion} from '../state/types';
 import {theme} from '../../../../core/style/theme';
+import {useFNCSALREP, useFNCSALREP_FNCCONREP} from '../../../../hooks';
+import {useFNCCONREP} from '../../../../hooks/useFNCCONREP';
+import {FNCCONREP} from '../../../../types';
 
-const questions = [
+const questionscodes = [
   QuestionSexAndRepHealthPersonCodes.MetodoDelPlaneacionFamiliar,
   QuestionSexAndRepHealthPersonCodes.CitologiaCervicoUterina,
   QuestionSexAndRepHealthPersonCodes.AutoexamenDeMama,
@@ -43,49 +42,89 @@ const schemaForm = yup.object().shape({
 });
 
 const _AnotherReproductiveSexualHealtForm = (props: any) => {
-
-  const [state, setState] = useState({
-    questions: [] as SexAndRepHealthPersonQuestion[],
-  });
-
-  //const [pikerEnable, setPikerEnable] = useState(false);
-
   const navigation = useNavigation();
-
-  const [editable, setEditable] = useState(false);
-
-  const getItemsForQuestionSelect = (code: string) => {
-  };
-
   const {handleSubmit, control, errors, setValue} = useForm({
     resolver: yupResolver(schemaForm),
   });
-
+  const {itemFNCSALREP, updateFNCSALREP, loadingFNCSALREP} = useFNCSALREP();
+  const {
+    getQuestionsOptions,
+    getMultiselect,
+    getPicker,
+    getLabel,
+    listFNCCONREP,
+  } = useFNCCONREP();
+  const {saveAnswer, getAnswerquestion} = useFNCSALREP_FNCCONREP();
   useEffect(() => {
-    fetchQuestions();
+    getQuestionsOptions(questionscodes);
   }, []);
-
-  async function fetchQuestions() {
-    let result = await props.getQuestionWithOptions(questions);
-    if (result) {
-      setState({
-        ...state,
-        questions: result,
-      });
+  useEffect(() => {
+    if (listFNCCONREP) {
+      fetchQuestions();
     }
-    getAnswersFNCSALREP();
+  }, [listFNCCONREP]);
+  async function fetchQuestions() {
+    // getAnswersFNCSALREP();
   }
-  async function getAnswersFNCSALREP() {
-    setValue('FechaTerminacionDeLaGestacion', props.FNCSALREP.PARTO_ULTIMO);
+  async function getAnswers(
+    questionCode: string,
+    prop: string,
+    type: 1 | 2 = 1,
+  ) {
+    let question = listFNCCONREP.find((item: FNCCONREP) => {
+      return item.QUESTIONCODE === questionCode;
+    });
+    if (question) {
+      const {ID} = props.FNCSALREP;
+      let ans = await getAnswerquestion(ID, question.FNCELEREP_ID, type);
+      if (ans) {
+        if (type == 1) {
+          setValue(prop, '' + ans);
+        } else {
+          setValue(prop, ans);
+        }
+      }
+      return ans;
+    }
   }
-  function getQuestionlabel(code) {
-   return '';
+  async function SaveAnswers(
+    questionCode: string,
+    answer: any,
+    type: 1 | 2 = 1,
+    personid = 0,
+  ) {
+    let question = listFNCCONREP.find((item: FNCCONREP) => {
+      return item.QUESTIONCODE === questionCode;
+    });
+    if (question) {
+      let ID = props.FNCSALREP.ID;
+      if (personid > 0) {
+        ID = personid;
+      }
+      saveAnswer(type, answer, ID, question.FNCELEREP_ID);
+    }
   }
-  async function getAnswers(type: number, code: string, prop: string) {
-    let question = await props.getQuestionAnswer(type, code);
-    setValue(prop, question);
-  }
-  function onSubmit(data: any) {
+  async function onSubmit(data: any) {
+    SaveAnswers(
+      QuestionSexAndRepHealthPersonCodes.MetodoDelPlaneacionFamiliar,
+      data.MetodoDelPlaneacionFamiliar,
+    );
+    SaveAnswers(
+      QuestionSexAndRepHealthPersonCodes.SaludSexual,
+      data.SaludSexual,
+    );
+    SaveAnswers(
+      QuestionSexAndRepHealthPersonCodes.ExamenDeProstata,
+      data.ExamenDeProstata,
+    );
+    SaveAnswers(
+      QuestionSexAndRepHealthPersonCodes.AutoexamenDeMama,
+      data.AutoexamenDeMama,
+    );
+    SaveAnswers(
+      QuestionSexAndRepHealthPersonCodes.CitologiaCervicoUterina,
+      data.CitologiaCervicoUterina,
+    );
     navigation.goBack();
   }
   return (
@@ -93,180 +132,98 @@ const _AnotherReproductiveSexualHealtForm = (props: any) => {
       <View style={styles.container}>
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BMultiSelect
-              // label={getQuestionlabel(
-              //   QuestionSexAndRepHealthPersonCodes.MetodoDelPlaneacionFamiliar,
-              // )}
-              label={''}
-              onBlur={onBlur}
+              label={getLabel(
+                QuestionSexAndRepHealthPersonCodes.MetodoDelPlaneacionFamiliar,
+              )}
               error={errors.MetodoDelPlaneacionFamiliar}
               onChange={(values: any) => {
-                setEditable(true);
                 onChange(values);
-                props.saveAnswerLocal(
-                  QuestionTypes.multiSelect,
-                  QuestionSexAndRepHealthPersonCodes.MetodoDelPlaneacionFamiliar,
-                  values,
-                );
-              }}
-              onLoad={() => {
-                getAnswers(
-                  QuestionTypes.multiSelect,
-                  QuestionSexAndRepHealthPersonCodes.MetodoDelPlaneacionFamiliar,
-                  'MetodoDelPlaneacionFamiliar',
-                );
               }}
               selectedItems={value}
-              // items={getItemsForQuestionMultiSelect(
-              //   QuestionSexAndRepHealthPersonCodes.MetodoDelPlaneacionFamiliar,
-              // )}
+              items={getMultiselect(
+                QuestionSexAndRepHealthPersonCodes.MetodoDelPlaneacionFamiliar,
+              )}
             />
           )}
           name="MetodoDelPlaneacionFamiliar"
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BPicker
-              label={getQuestionlabel(
-                QuestionSexAndRepHealthPersonCodes.SaludSexual,
-              )}
-              onBlur={onBlur}
+              label={getLabel(QuestionSexAndRepHealthPersonCodes.SaludSexual)}
               error={errors.SaludSexual}
               onChange={(value: any) => {
-                setEditable(true);
                 onChange(value);
-                props.saveAnswerLocal(
-                  QuestionTypes.selectOne,
-                  QuestionSexAndRepHealthPersonCodes.SaludSexual,
-                  value,
-                );
-              }}
-              onLoad={() => {
-                getAnswers(
-                  QuestionTypes.selectOne,
-                  QuestionSexAndRepHealthPersonCodes.SaludSexual,
-                  'SaludSexual',
-                );
               }}
               selectedValue={value}
-              // items={
-              //   getItemsForQuestionSelect(
-              //     QuestionSexAndRepHealthPersonCodes.SaludSexual,
-              //   ).children
-              // }
+              items={getPicker(QuestionSexAndRepHealthPersonCodes.SaludSexual)}
             />
           )}
-          name="Fuma"
+          name="SaludSexual"
         />
-        {/* <Controller
+        <Controller
           control={control}
           render={({onChange, onBlur, value}) => (
             <BPicker
-            enabled={false}
-              label={getQuestionlabel(
+              enabled={false}
+              label={getLabel(
                 QuestionSexAndRepHealthPersonCodes.AutoexamenDeMama,
               )}
               onBlur={onBlur}
               error={errors.AutoexamenDeMama}
               onChange={(value: any) => {
                 onChange(value);
-                console.log('save: ', value);
-                props.saveAnswerLocal(
-                  QuestionTypes.selectOne,
-                  QuestionSexAndRepHealthPersonCodes.AutoexamenDeMama,
-                  value,
-                );
               }}
-              onLoad={() => {
-                getAnswers(
-                  QuestionTypes.selectOne,
-                  QuestionSexAndRepHealthPersonCodes.AutoexamenDeMama,
-                  'AutoexamenDeMama',
-                );
-              }}
-              value={value}
               selectedValue={value}
-              items={
-                getItemsForQuestionSelect(
-                  QuestionSexAndRepHealthPersonCodes.AutoexamenDeMama,
-                ).children
-              }
+              items={getPicker(
+                QuestionSexAndRepHealthPersonCodes.AutoexamenDeMama,
+              )}
             />
           )}
-          name="Fuma"
+          name="AutoexamenDeMama"
         />
         <Controller
           control={control}
           render={({onChange, onBlur, value}) => (
             <BPicker
-              label={getQuestionlabel(
+              label={getLabel(
                 QuestionSexAndRepHealthPersonCodes.CitologiaCervicoUterina,
               )}
               onBlur={onBlur}
               error={errors.CitologiaCervicoUterina}
               onChange={(value: any) => {
                 onChange(value);
-                console.log('save: ', value);
-                props.saveAnswerLocal(
-                  QuestionTypes.selectOne,
-                  QuestionSexAndRepHealthPersonCodes.CitologiaCervicoUterina,
-                  value,
-                );
               }}
-              onLoad={() => {
-                getAnswers(
-                  QuestionTypes.selectOne,
-                  QuestionSexAndRepHealthPersonCodes.CitologiaCervicoUterina,
-                  'CitologiaCervicoUterina',
-                );
-              }}
-              value={value}
               selectedValue={value}
-              items={
-                getItemsForQuestionSelect(
-                  QuestionSexAndRepHealthPersonCodes.CitologiaCervicoUterina,
-                ).children
-              }
+              items={getPicker(
+                QuestionSexAndRepHealthPersonCodes.CitologiaCervicoUterina,
+              )}
             />
           )}
-          name="Fuma"
-            />*/}
+          name="CitologiaCervicoUterina"
+        />
         <Controller
           control={control}
           render={({onChange, onBlur, value}) => (
             <BPicker
-              label={getQuestionlabel(
+              label={getLabel(
                 QuestionSexAndRepHealthPersonCodes.ExamenDeProstata,
               )}
               onBlur={onBlur}
               error={errors.ExamenDeProstata}
               onChange={(value: any) => {
-                setEditable(true);
                 onChange(value);
-                props.saveAnswerLocal(
-                  QuestionTypes.selectOne,
-                  QuestionSexAndRepHealthPersonCodes.ExamenDeProstata,
-                  value,
-                );
-              }}
-              onLoad={() => {
-                getAnswers(
-                  QuestionTypes.selectOne,
-                  QuestionSexAndRepHealthPersonCodes.ExamenDeProstata,
-                  'ExamenDeProstata',
-                );
               }}
               selectedValue={value}
-              // items={
-              //   getItemsForQuestionSelect(
-              //     QuestionSexAndRepHealthPersonCodes.ExamenDeProstata,
-              //   )
-              // }
+              items={getPicker(
+                QuestionSexAndRepHealthPersonCodes.ExamenDeProstata,
+              )}
             />
           )}
-          name="Fuma"
+          name="ExamenDeProstata"
         />
 
         <Controller
@@ -278,7 +235,6 @@ const _AnotherReproductiveSexualHealtForm = (props: any) => {
               error={errors.ResultadoDelExamen}
               items={logicOption}
               onChange={(value: any) => {
-                setEditable(true);
                 if (value) {
                   onChange(value);
                   //props.saveFNBNUCVIVPropiety('HUMO_CASA', JSON.parse(value));
@@ -298,7 +254,6 @@ const _AnotherReproductiveSexualHealtForm = (props: any) => {
               error={errors.TomoAccionesAnteResultado}
               items={examOption}
               onChange={(value: any) => {
-                setEditable(true);
                 if (value) {
                   onChange(value);
                   //props.saveFNBNUCVIVPropiety('HUMO_CASA', JSON.parse(value));
@@ -307,6 +262,10 @@ const _AnotherReproductiveSexualHealtForm = (props: any) => {
             />
           )}
           name="TomoAccionesAnteResultado"
+        />
+        <ButtonAction
+          onAccept={handleSubmit(onSubmit)}
+          onCancel={() => navigation.goBack()}
         />
       </View>
       <View style={styles.spacer} />
@@ -351,9 +310,9 @@ const styles = StyleSheet.create({
     color: theme.colors.primary,
   },
 });
-const mapStateToProps = (sarhealthperson: any) => {
+const mapStateToProps = (store: any) => {
   return {
-    FNCSALREP: sarhealthperson.sarhealthperson.FNCSALREP,
+    FNCSALREP: store.sarhealthperson.FNCSALREP,
   };
 };
 export default connect(

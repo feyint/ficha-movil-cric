@@ -40,6 +40,7 @@ export function useFNCPAREN() {
   }
   async function syncFNCPAREN() {
     setLoading(true);
+    await database.clearEntity('FNCPAREN');
     let service = new SyncCatalogService();
     let result = await service.getEntity('FNCPAREN');
     result.data.map(async (item: any) => {
