@@ -38,7 +38,9 @@ export default class BDatePickerModal extends Component<Props, State> {
     this.setState({isVisible: false});
   };
   showDatePicket = () => {
-    this.setState({isVisible: true});
+    if (!this.props.disabled) {
+      this.setState({isVisible: true});
+    }
   };
   handleConfirm = (date: Date) => {
     this.hideDatePicket();

@@ -113,11 +113,11 @@ export function useFNCSALREP() {
     PARTO_ESTIMADO='${item.PARTO_ESTIMADO ? item.PARTO_ESTIMADO : ''}',
     PARTO_ULTIMO='${item.PARTO_ULTIMO ? item.PARTO_ULTIMO : ''}',
     ULTIMA_REGLA='${item.ULTIMA_REGLA ? item.ULTIMA_REGLA : ''}',
-    PRESENCIA_FAM=${item.PRESENCIA_FAM ? item.PRESENCIA_FAM : null},
+    PRESENCIA_FAM=${item.PRESENCIA_FAM ? (item.PRESENCIA_FAM ? 1 : 0) : null},
     RESUL_CITOLOGIA='${item.RESUL_CITOLOGIA ? item.RESUL_CITOLOGIA : ''}',
     RESUL_PROSTATA='${item.RESUL_PROSTATA ? item.RESUL_PROSTATA : ''}',
-    SEROLOGIA=${item.SEROLOGIA ? item.SEROLOGIA : null},
-    VIH=${item.VIH ? item.VIH : null},
+    SEROLOGIA=${item.SEROLOGIA ? (item.SEROLOGIA ? 1 : 0) : null},
+    VIH=${item.VIH ? (item.VIH ? 1 : 0) : null},
     ESTADO=${item.ESTADO ? item.ESTADO : 0}
     WHERE ID = ${item.ID}`;
     return await database

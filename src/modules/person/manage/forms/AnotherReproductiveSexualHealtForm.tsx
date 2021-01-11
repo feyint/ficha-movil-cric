@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useState, useEffect} from 'react';
 import {View, StyleSheet, Alert} from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
@@ -21,7 +22,7 @@ import {
 import {theme} from '../../../../core/style/theme';
 import {useFNCSALREP, useFNCSALREP_FNCCONREP} from '../../../../hooks';
 import {useFNCCONREP} from '../../../../hooks/useFNCCONREP';
-import {FNCCONREP} from '../../../../types';
+import {FNCCONREP, FNCSALREP} from '../../../../types';
 
 const questionscodes = [
   QuestionSexAndRepHealthPersonCodes.MetodoDelPlaneacionFamiliar,
@@ -33,14 +34,15 @@ const questionscodes = [
 
 const schemaForm = yup.object().shape({
   MetodoDelPlaneacionFamiliar: yup.array().required(),
-  //CitologiaCervicoUterina: yup.number().required(),
-  //AutoexamenDeMama: yup.number().required(),
+  CitologiaCervicoUterina: yup.number().required(),
+  AutoexamenDeMama: yup.number().required(),
   SaludSexual: yup.number().required(),
   ExamenDeProstata: yup.number().required(),
-  ResultadoDelExamen: yup.boolean().required(),
-  TomoAccionesAnteResultado: yup.boolean().required(),
+  RESUL_CITOLOGIA: yup.string().required(),
+  ACCION_CITOLOGIA: yup.boolean().required(),
+  RESUL_PROSTATA: yup.string().required(),
+  ACCION_PROSTATA: yup.boolean().required(),
 });
-
 const _AnotherReproductiveSexualHealtForm = (props: any) => {
   const navigation = useNavigation();
   const {handleSubmit, control, errors, setValue} = useForm({
@@ -64,7 +66,34 @@ const _AnotherReproductiveSexualHealtForm = (props: any) => {
     }
   }, [listFNCCONREP]);
   async function fetchQuestions() {
-    // getAnswersFNCSALREP();
+    const {
+      RESUL_CITOLOGIA,
+      ACCION_CITOLOGIA,
+      RESUL_PROSTATA,
+      ACCION_PROSTATA,
+    } = props.FNCSALREP as FNCSALREP;
+    setValue('RESUL_CITOLOGIA', RESUL_CITOLOGIA);
+    setValue('ACCION_CITOLOGIA', Boolean(ACCION_CITOLOGIA));
+    setValue('RESUL_PROSTATA', RESUL_PROSTATA);
+    setValue('ACCION_PROSTATA', Boolean(ACCION_PROSTATA));
+    getAnswers(
+      QuestionSexAndRepHealthPersonCodes.MetodoDelPlaneacionFamiliar,
+      'MetodoDelPlaneacionFamiliar',
+      2,
+    );
+    getAnswers(QuestionSexAndRepHealthPersonCodes.SaludSexual, 'SaludSexual');
+    getAnswers(
+      QuestionSexAndRepHealthPersonCodes.ExamenDeProstata,
+      'ExamenDeProstata',
+    );
+    getAnswers(
+      QuestionSexAndRepHealthPersonCodes.AutoexamenDeMama,
+      'AutoexamenDeMama',
+    );
+    getAnswers(
+      QuestionSexAndRepHealthPersonCodes.CitologiaCervicoUterina,
+      'CitologiaCervicoUterina',
+    );
   }
   async function getAnswers(
     questionCode: string,
@@ -105,9 +134,18 @@ const _AnotherReproductiveSexualHealtForm = (props: any) => {
     }
   }
   async function onSubmit(data: any) {
+    let item: FNCSALREP = props.FNCSALREP;
+    if (item.ID) {
+      item.RESUL_CITOLOGIA = data.RESUL_CITOLOGIA;
+      item.ACCION_CITOLOGIA = data.ACCION_CITOLOGIA;
+      item.RESUL_PROSTATA = data.RESUL_PROSTATA;
+      item.ACCION_PROSTATA = data.ACCION_PROSTATA;
+      await updateFNCSALREP(item);
+    }
     SaveAnswers(
       QuestionSexAndRepHealthPersonCodes.MetodoDelPlaneacionFamiliar,
       data.MetodoDelPlaneacionFamiliar,
+      2,
     );
     SaveAnswers(
       QuestionSexAndRepHealthPersonCodes.SaludSexual,
@@ -151,24 +189,63 @@ const _AnotherReproductiveSexualHealtForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({onChange, value}) => (
+          render={({onChange, onBlur, value}) => (
             <BPicker
-              label={getLabel(QuestionSexAndRepHealthPersonCodes.SaludSexual)}
-              error={errors.SaludSexual}
+              label={getLabel(
+                QuestionSexAndRepHealthPersonCodes.CitologiaCervicoUterina,
+              )}
+              onBlur={onBlur}
+              error={errors.CitologiaCervicoUterina}
               onChange={(value: any) => {
                 onChange(value);
               }}
               selectedValue={value}
-              items={getPicker(QuestionSexAndRepHealthPersonCodes.SaludSexual)}
+              items={getPicker(
+                QuestionSexAndRepHealthPersonCodes.CitologiaCervicoUterina,
+              )}
             />
           )}
-          name="SaludSexual"
+          name="CitologiaCervicoUterina"
+        />
+        <Controller
+          control={control}
+          render={({onChange, value}) => (
+            <BRadioButton
+              label="Resultado del examen"
+              value={value}
+              error={errors.RESUL_CITOLOGIA}
+              items={examOption}
+              onChange={(value: any) => {
+                if (value) {
+                  onChange(value);
+                  //props.saveFNBNUCVIVPropiety('HUMO_CASA', JSON.parse(value));
+                }
+              }}
+            />
+          )}
+          name="RESUL_CITOLOGIA"
+        />
+        <Controller
+          control={control}
+          render={({onChange, value}) => (
+            <BRadioButton
+              label="¿Tomó acciones ante el resultado?"
+              value={value}
+              error={errors.ACCION_CITOLOGIA}
+              items={logicOption}
+              onChange={(value: any) => {
+                if (value) {
+                  onChange(value);
+                }
+              }}
+            />
+          )}
+          name="ACCION_CITOLOGIA"
         />
         <Controller
           control={control}
           render={({onChange, onBlur, value}) => (
             <BPicker
-              enabled={false}
               label={getLabel(
                 QuestionSexAndRepHealthPersonCodes.AutoexamenDeMama,
               )}
@@ -187,23 +264,18 @@ const _AnotherReproductiveSexualHealtForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BPicker
-              label={getLabel(
-                QuestionSexAndRepHealthPersonCodes.CitologiaCervicoUterina,
-              )}
-              onBlur={onBlur}
-              error={errors.CitologiaCervicoUterina}
+              label={getLabel(QuestionSexAndRepHealthPersonCodes.SaludSexual)}
+              error={errors.SaludSexual}
               onChange={(value: any) => {
                 onChange(value);
               }}
               selectedValue={value}
-              items={getPicker(
-                QuestionSexAndRepHealthPersonCodes.CitologiaCervicoUterina,
-              )}
+              items={getPicker(QuestionSexAndRepHealthPersonCodes.SaludSexual)}
             />
           )}
-          name="CitologiaCervicoUterina"
+          name="SaludSexual"
         />
         <Controller
           control={control}
@@ -225,33 +297,13 @@ const _AnotherReproductiveSexualHealtForm = (props: any) => {
           )}
           name="ExamenDeProstata"
         />
-
         <Controller
           control={control}
           render={({onChange, value}) => (
             <BRadioButton
               label="Resultado del examen"
               value={value}
-              error={errors.ResultadoDelExamen}
-              items={logicOption}
-              onChange={(value: any) => {
-                if (value) {
-                  onChange(value);
-                  //props.saveFNBNUCVIVPropiety('HUMO_CASA', JSON.parse(value));
-                }
-              }}
-            />
-          )}
-          name="ResultadoDelExamen"
-        />
-
-        <Controller
-          control={control}
-          render={({onChange, value}) => (
-            <BRadioButton
-              label="¿Tomó acciones ante el resultado?"
-              value={value}
-              error={errors.TomoAccionesAnteResultado}
+              error={errors.RESUL_PROSTATA}
               items={examOption}
               onChange={(value: any) => {
                 if (value) {
@@ -261,7 +313,24 @@ const _AnotherReproductiveSexualHealtForm = (props: any) => {
               }}
             />
           )}
-          name="TomoAccionesAnteResultado"
+          name="RESUL_PROSTATA"
+        />
+        <Controller
+          control={control}
+          render={({onChange, value}) => (
+            <BRadioButton
+              label="¿Tomó acciones ante el resultado?"
+              value={value}
+              error={errors.ACCION_PROSTATA}
+              items={logicOption}
+              onChange={(value: any) => {
+                if (value) {
+                  onChange(value);
+                }
+              }}
+            />
+          )}
+          name="ACCION_PROSTATA"
         />
         <ButtonAction
           onAccept={handleSubmit(onSubmit)}
