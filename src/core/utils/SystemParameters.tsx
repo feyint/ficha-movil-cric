@@ -10,4 +10,5 @@ export const PersonParametersConst = {
   onlyGenrecode: 'F',
   doesNotApplyCode: 'NA',
   puebloWayuuCode: '23',
+  parentCode: '1',
 };

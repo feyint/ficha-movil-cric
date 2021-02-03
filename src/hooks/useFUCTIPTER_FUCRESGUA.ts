@@ -15,21 +15,21 @@ export function useFUCTIPTER_FUCRESGUA() {
   const database = useDatabase();
   useEffect(() => {
     countEntity();
-    createFUCTIPTER_FUCRESGUA({
-      ID: 1,
-      FUCRESGUA_ID: 1925,
-      FUCTIPTER_ID: 2,
-    });
-    createFUCTIPTER_FUCRESGUA({
-      ID: 2,
-      FUCRESGUA_ID: 1926,
-      FUCTIPTER_ID: 2,
-    });
-    createFUCTIPTER_FUCRESGUA({
-      ID: 3,
-      FUCRESGUA_ID: 1927,
-      FUCTIPTER_ID: 2,
-    });
+    // createFUCTIPTER_FUCRESGUA({
+    //   ID: 1,
+    //   FUCRESGUA_ID: 1925,
+    //   FUCTIPTER_ID: 2,
+    // });
+    // createFUCTIPTER_FUCRESGUA({
+    //   ID: 2,
+    //   FUCRESGUA_ID: 1926,
+    //   FUCTIPTER_ID: 2,
+    // });
+    // createFUCTIPTER_FUCRESGUA({
+    //   ID: 3,
+    //   FUCRESGUA_ID: 1927,
+    //   FUCTIPTER_ID: 2,
+    // });
   }, []);
   function getAllFUCTIPTER_FUCRESGUA() {
     return database.getAllFromEntity('FUCTIPTER_FUCRESGUA').then(setItem);
@@ -55,12 +55,12 @@ export function useFUCTIPTER_FUCRESGUA() {
     setLoading(true);
     await database.clearEntity('FUCTIPTER_FUCRESGUA');
     let service = new SyncCatalogService();
-    let result = await service.getEntity('FUCTIPTER_FUCRESGUA');
+    let result = await service.getEntity('FuctipterFucresgua');
     result.data.map((item: any) => {
       createFUCTIPTER_FUCRESGUA({
-        ID: item.id,
-        FUCRESGUA_ID: item.fucresguaId.id,
-        FUCTIPTER_ID: item.fuctiperId.id,
+        ID: item.fuctipterFucresguaPK.id,
+        FUCRESGUA_ID: item.fuctipterFucresguaPK.fucresguaId,
+        FUCTIPTER_ID: item.fuctipterFucresguaPK.fuctipterId,
       });
     });
     setLoading(false);

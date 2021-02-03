@@ -7,7 +7,7 @@ import MultiSelect from 'react-native-multiple-select';
 import SectionedMultiSelect from 'react-native-sectioned-multi-select';
 import {MultiSelectSchema} from '../utils/types';
 import BLabel from './BLabel';
-import { BError } from '.';
+import {BError} from '.';
 
 interface Props {
   label?: string;

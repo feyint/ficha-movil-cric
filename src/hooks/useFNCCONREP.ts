@@ -128,7 +128,7 @@ export function useFNCCONREP() {
     setLoading(true);
     await database.clearEntity('FNCCONREP');
     let service = new SyncCatalogService();
-    let result = await service.getEntity('FNCCONREP');
+    let result = await service.getEntity('Fncconrep');
     result.data.map(async (item: any) => {
       await createFNCCONREP({
         ID: item.id,

@@ -1,16 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
-import {Button, Image, StyleSheet, Text, View} from 'react-native';
-import {BSearchBarV2} from '../../../core/components';
+import {StyleSheet, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import {
-  Appbar,
-  Avatar,
-  Card,
-  Paragraph,
-  Searchbar,
-  Title,
-} from 'react-native-paper';
+import {Appbar, Checkbox, Searchbar, Text} from 'react-native-paper';
 import {connect} from 'react-redux';
 import {setFUBUBIVIV, clearFUBUBIVIV} from '../../../state/house/actions';
 import {theme} from '../../../core/style/theme';
@@ -25,11 +17,13 @@ const HomeScreen = (props: any) => {
   const [houses, setHouses] = useState<any[]>([]);
   const [filteredHouses, setfilteredHouses] = useState<any[]>([]);
   const [wordHouse, setWordHouse] = useState('');
+  const [checked, setChecked] = useState(false);
   const {
     listFUBUBIVIV,
     getAllFUBUBIVIV,
     itemsFilter,
-    filterFUBUBIVIVDETAILS,
+    search,
+    filterFUBUBIVIV,
   } = useFUBUBIVIV();
   const navigation = useNavigation();
 
@@ -37,7 +31,14 @@ const HomeScreen = (props: any) => {
     setHouses(listFUBUBIVIV);
   }, [listFUBUBIVIV]);
   useEffect(() => {
-    filterFUBUBIVIVDETAILS('');
+    if (checked) {
+      search('', true);
+    } else {
+      search('');
+    }
+  }, [checked]);
+  useEffect(() => {
+    search('');
   }, []);
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -45,32 +46,37 @@ const HomeScreen = (props: any) => {
     });
     return unsubscribe;
   }, [navigation]);
-
   async function fetchHouses() {
     getAllFUBUBIVIV();
   }
   function searchHouse(textToSearch: any) {
     setWordHouse(textToSearch);
-    filterFUBUBIVIVDETAILS(textToSearch);
-    // let Result = houses.filter(
-    //   (i) =>
-    //     i.CODIGO.includes(textToSearch) || i.DIRECCION.includes(textToSearch),
-    // );
-    // setfilteredHouses(Result);
+    if (checked) {
+      search(textToSearch, true);
+    } else {
+      search(textToSearch);
+    }
   }
   return (
     <View style={{flex: 1, backgroundColor: 'white'}}>
       <Appbar.Header>
         <Appbar.Content title="SIPSALUD" />
       </Appbar.Header>
-      {/* <Card>
-        <Card.Cover source={require('../../../core/assets/img20.jpg')} />
-        <Card.Content>
-          <Card.Title title="Bienvenido a la ficha familiar"> </Card.Title>
-        </Card.Content>
-      </Card> */}
-      <Text style={styles.title}>Ingresa número de cédula a buscar</Text>
+      <View style={styles.checkboxContainer}>
+        <Checkbox
+          status={checked ? 'checked' : 'unchecked'}
+          onPress={() => {
+            setChecked(!checked);
+          }}
+        />
+        <Text style={styles.label}>Busqueda por documento de identidad?</Text>
+      </View>
       <View style={styles.searchbar}>
+        <Text style={styles.title}>
+          {checked
+            ? 'Ingresa número de cédula a buscar'
+            : 'Ingresa el codigo de vivienda'}
+        </Text>
         <Searchbar
           placeholder=""
           onChangeText={(text: any) => {
@@ -82,40 +88,7 @@ const HomeScreen = (props: any) => {
       <View>
         <Text style={styles.textred}>Registros existentes</Text>
         <KeyboardAwareScrollView>
-          <View style={styles.container}>
-            {itemsFilter.map((house: any, i: number) => {
-              return (
-                <CardView
-                  key={i}
-                  cardElevation={8}
-                  cardMaxElevation={10}
-                  cornerRadius={6}
-                  style={styles.cardView1}>
-                  <TouchableOpacity onPress={() => goToHouse(house)}>
-                    <View style={{flex: 1, padding: 20}}>
-                      {/* <Text style={styles.textTouchable}>
-                          {house.DIRECCION}
-                        </Text> */}
-                      {/* <View style={styles.viewCardItem} /> */}
-                      <CardItem
-                        title="Nombre"
-                        value={`${house.PRIMER_NOMBRE} ${house.SEGUNDO_NOMBRE} ${house.PRIMER_APELLIDO} ${house.SEGUNDO_APELLIDO}`}
-                      />
-                      <CardItem title="Dirección" value={house.DIRECCION} />
-                      <CardItem
-                        title="Barrio - Vereda"
-                        value={house.BARRIO_VEREDA}
-                      />
-                      <CardItem
-                        title="Zona de cuidado"
-                        value={house.ZONA_CUIDADO}
-                      />
-                    </View>
-                  </TouchableOpacity>
-                </CardView>
-              );
-            })}
-          </View>
+          {checked ? renderPerson(itemsFilter) : renderHouse(itemsFilter)}
           <View style={styles.spacer} />
         </KeyboardAwareScrollView>
       </View>
@@ -123,12 +96,77 @@ const HomeScreen = (props: any) => {
     </View>
   );
 
+  function renderHouse(items) {
+    return (
+      <View style={styles.container}>
+        {items.map((house: any, i: number) => {
+          return (
+            <CardView
+              key={i}
+              cardElevation={8}
+              cardMaxElevation={10}
+              cornerRadius={6}
+              style={styles.cardView1}>
+              <TouchableOpacity onPress={() => goToHouse(house)}>
+                <View style={{flex: 1, padding: 20}}>
+                  <CardItem title="Codigo" value={`${house.CODIGO}`} />
+                  <CardItem title="Dirección" value={house.DIRECCION} />
+                  <CardItem title="Barrio - Vereda" value={house.barver} />
+                  <CardItem
+                    title="Ciudad - dep"
+                    value={('' + house.Muni, ' - ', house.Dept)}
+                  />
+                </View>
+              </TouchableOpacity>
+            </CardView>
+          );
+        })}
+      </View>
+    );
+  }
+  function renderPerson(items: any) {
+    return (
+      <View style={styles.container}>
+        {items.map((house: any, i: number) => {
+          return (
+            <CardView
+              key={i}
+              cardElevation={8}
+              cardMaxElevation={10}
+              cornerRadius={6}
+              style={styles.cardView1}>
+              <TouchableOpacity onPress={() => goToHouse(house)}>
+                <View style={{flex: 1, padding: 20}}>
+                  <CardItem
+                    title="Nombre"
+                    value={`${house.PRIMER_NOMBRE} ${house.SEGUNDO_NOMBRE} ${house.PRIMER_APELLIDO} ${house.SEGUNDO_APELLIDO}`}
+                  />
+                  <CardItem title="Dirección" value={house.DIRECCION} />
+                  <CardItem
+                    title="Barrio - Vereda"
+                    value={house.BARRIO_VEREDA}
+                  />
+                  <CardItem
+                    title="Zona de cuidado"
+                    value={house.ZONA_CUIDADO}
+                  />
+                </View>
+              </TouchableOpacity>
+            </CardView>
+          );
+        })}
+      </View>
+    );
+  }
   function createNew() {
     props.clearFUBUBIVIV();
     navigation.navigate('ManageHousingScreen');
   }
   async function goToHouse(value: any) {
-    await props.setFUBUBIVIV(value);
+    console.error(value);
+    let vi = await filterFUBUBIVIV(value.ID, true);
+    console.error(vi);
+    await props.setFUBUBIVIV(vi);
     navigation.navigate('ManageHousingScreen');
   }
 };
@@ -146,6 +184,22 @@ const CardItem = (data: any) => {
 };
 
 const styles = StyleSheet.create({
+  container2: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkboxContainer: {
+    marginLeft: 20,
+    marginTop: 5,
+    flexDirection: 'row',
+  },
+  checkbox: {
+    alignSelf: 'center',
+  },
+  label: {
+    margin: 8,
+  },
   spacer: {
     height: 150,
   },
@@ -155,7 +209,8 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   searchbar: {
-    margin: 20,
+    marginLeft: 20,
+    marginRight: 20,
   },
   cardView1: {
     margin: 15,

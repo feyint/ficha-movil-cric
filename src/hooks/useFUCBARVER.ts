@@ -17,6 +17,8 @@ export function useFUCBARVER() {
     return database.getAllFromEntity('FUCBARVER').then(setItem);
   }
   function filterFUCBARVER(FUCRESGUA: number) {
+    console.error('FUCRESGUA ', FUCRESGUA);
+    
     let statement = `SELECT * FROM {0} WHERE FUCRESGUA_ID = ${FUCRESGUA}`;
     database.executeQuery('FUCBARVER', statement).then((results) => {
       const count = results.rows.length;
@@ -106,7 +108,7 @@ export function useFUCBARVER() {
     setLoading(true);
     await database.clearEntity('FUCBARVER');
     let service = new SyncCatalogService();
-    let result = await service.getEntity('FUCBARVER');
+    let result = await service.getEntity('Fucbarver');
     let items: Array<FUCBARVER> = [];
     for (let i = 0; i < result.data.length; i++) {
       const item = result.data[i];
@@ -141,6 +143,6 @@ export function useFUCBARVER() {
     syncFUCBARVER,
     getAllFUCBARVER,
     filterFUCBARVER,
-    bulkFUCBARVER
+    bulkFUCBARVER,
   };
 }

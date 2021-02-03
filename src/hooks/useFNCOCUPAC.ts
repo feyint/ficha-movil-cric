@@ -67,7 +67,7 @@ export function useFNCOCUPAC() {
     setLoading(true);
     await database.clearEntity('FNCOCUPAC');
     let service = new SyncCatalogService();
-    let result = await service.getEntity('FNCOCUPAC');
+    let result = await service.getEntity('Fncocupac');
     let items: Array<FNCOCUPAC> = [];
     for (let i = 0; i < result.data.length; i++) {
       const item = result.data[i];

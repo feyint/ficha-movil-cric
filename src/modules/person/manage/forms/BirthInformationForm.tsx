@@ -178,6 +178,8 @@ const _BirthInformationForm = (props: any) => {
       <View style={styles.container}>
         <Text>Edad actual</Text>
         <Text style={styles.containerage}>{ageActual}</Text>
+        <Text>Edad en la visita</Text>
+        <Text style={styles.containerage}>{ageActual}</Text>
         <Controller
           control={control}
           render={({onChange}) => (

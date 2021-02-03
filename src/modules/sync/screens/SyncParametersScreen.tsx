@@ -1,15 +1,7 @@
 import React, {useEffect} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {
-  Appbar,
-  Card,
-  DataTable,
-  FAB,
-  Paragraph,
-  Subheading,
-} from 'react-native-paper';
-import {Text} from 'react-native-paper/lib/typescript/src/components/Avatar/Avatar';
+import {Appbar, Card, DataTable, FAB, Paragraph} from 'react-native-paper';
 import {
   useFNCCONPER,
   useFNCELEPER,
@@ -30,11 +22,12 @@ import {
   useFUCZONCUI_FUCBARVER,
   useFVCCONVIV,
   useFVCELEVIV,
+  useSGCSISPAR,
 } from '../../../hooks';
-import { useFNCCONREP } from '../../../hooks/useFNCCONREP';
+import {useFNCCONREP} from '../../../hooks/useFNCCONREP';
 import {useFNCCONSAL} from '../../../hooks/useFNCCONSAL';
 import {useFNCDESARM} from '../../../hooks/useFNCDESARM';
-import { useFNCELEREP } from '../../../hooks/useFNCELEREP';
+import {useFNCELEREP} from '../../../hooks/useFNCELEREP';
 import {useFNCELESAL} from '../../../hooks/useFNCELESAL';
 import {useFNCORGANI} from '../../../hooks/useFNCORGANI';
 
@@ -62,6 +55,7 @@ const SyncParametersScreen = () => {
   const {countFNCCONSAL, syncFNCCONSAL, loadingFNCCONSAL} = useFNCCONSAL();
   const {countFNCELEREP, syncFNCELEREP, loadingFNCELEREP} = useFNCELEREP();
   const {countFNCCONREP, syncFNCCONREP, loadingFNCCONREP} = useFNCCONREP();
+  const {countSGCSISPAR, syncSGCSISPAR, loadingSGCSISPAR} = useSGCSISPAR();
   const {
     countFUCZONCUI_FUCBARVER,
     loadingFUCZONCUI_FUCBARVER,
@@ -69,6 +63,7 @@ const SyncParametersScreen = () => {
   const {
     countFUCTIPTER_FUCRESGUA,
     loadingFUCTIPTER_FUCRESGUA,
+    syncFUCTIPTER_FUCRESGUA,
   } = useFUCTIPTER_FUCRESGUA();
   useEffect(() => {}, []);
   function syncCatalogs() {
@@ -93,7 +88,9 @@ const SyncParametersScreen = () => {
       loadingFNCELESAL ||
       loadingFNCCONSAL ||
       loadingFNCELEREP ||
-      loadingFNCCONREP
+      loadingFNCCONREP ||
+      loadingFUCTIPTER_FUCRESGUA ||
+      loadingSGCSISPAR
     ) {
     } else {
       syncFVCELEVIV();
@@ -119,6 +116,8 @@ const SyncParametersScreen = () => {
       syncFNCCONSAL();
       syncFNCELEREP();
       syncFNCCONREP();
+      syncFUCTIPTER_FUCRESGUA();
+      syncSGCSISPAR();
     }
 
     //await this.clearPollEntities();
@@ -251,6 +250,11 @@ const SyncParametersScreen = () => {
               loadingFNCDESARM,
               countFNCDESARM,
             )}
+            {renderRow(
+              'PARAMTEROS DEL SISTEMA ',
+              loadingSGCSISPAR,
+              countSGCSISPAR,
+            )}
             {renderRow('FNCELESAL()', loadingFNCELESAL, countFNCELESAL)}
             {renderRow('FNCCONSAL()', loadingFNCCONSAL, countFNCCONSAL)}
             {renderRow('FNCELEREP()', loadingFNCELEREP, countFNCELEREP)}
@@ -279,7 +283,9 @@ const SyncParametersScreen = () => {
           loadingFNCDESARM ||
           loadingFNCELESAL ||
           loadingFNCELEREP ||
-          loadingFNCCONREP
+          loadingFNCCONREP ||
+          loadingFUCTIPTER_FUCRESGUA ||
+          loadingSGCSISPAR
         }
         label="Sincronizar Catalogos"
         style={styles.fab}

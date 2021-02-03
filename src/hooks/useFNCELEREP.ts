@@ -41,7 +41,7 @@ export function useFNCELEREP() {
     setLoading(true);
     await database.clearEntity('FNCELEREP');
     let service = new SyncCatalogService();
-    let result = await service.getEntity('FNCELEREP');
+    let result = await service.getEntity('Fncelerep');
     result.data.map(async (item: any) => {
       await createFNCELEREP({
         ID: item.id,

@@ -45,7 +45,7 @@ export function useFUCTIPTER() {
     setLoading(true);
     await database.clearEntity('FUCTIPTER');
     let service = new SyncCatalogService();
-    let result = await service.getEntity('FUCTIPTER');
+    let result = await service.getEntity('Fuctipter');
     result.data.map((item: any) => {
       createFUCTIPTER({
         ID: item.id,

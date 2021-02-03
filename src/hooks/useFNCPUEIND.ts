@@ -50,7 +50,7 @@ export function useFNCPUEIND() {
     setLoading(true);
     await database.clearEntity('FNCPUEIND');
     let service = new SyncCatalogService();
-    let result = await service.getEntity('FNCPUEIND');
+    let result = await service.getEntity('Fncpueind');
     result.data.map(async (item: any) => {
       await createFNCPUEIND({
         ID: item.id,

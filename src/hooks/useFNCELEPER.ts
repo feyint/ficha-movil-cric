@@ -41,7 +41,7 @@ export function useFNCELEPER() {
     setLoading(true);
     await database.clearEntity('FNCELEPER');
     let service = new SyncCatalogService();
-    let result = await service.getEntity('FNCELEPER');
+    let result = await service.getEntity('Fnceleper');
     result.data.map(async (item: any) => {
       await createFNCELEPER({
         ID: item.id,

@@ -48,10 +48,18 @@ const schemaForm = yup.object().shape({
 });
 const _PersonalInformationForm = (props: any) => {
   const navigation = useNavigation();
-  const {handleSubmit, control, errors, setValue} = useForm({
+  const {
+    handleSubmit,
+    control,
+    errors,
+    setError,
+    clearErrors,
+    setValue,
+  } = useForm({
     resolver: yupResolver(schemaForm),
   });
   const [editable, setEditable] = useState(false);
+  const [isHead, setIsHEAD] = useState(false);
   const [person, setPerson] = useState<FNCPERSON>();
   const [identificationEx, setidentificationEx] = useState<any[]>([]);
   const [gender, setGender] = useState<any>();
@@ -66,7 +74,11 @@ const _PersonalInformationForm = (props: any) => {
   const {listFNCPAREN, getAllFNCPAREN} = useFNCPAREN();
   const {alreadyexistParent} = useFNBNUCVIV();
   const {listFNCCONPER, getQuestionsOptions} = useFNCCONPER();
-  const {validateExist, createFNBNUCVIV_FNCPERSON} = useFNBNUCVIV_FNCPERSON();
+  const {
+    validateExist,
+    createFNBNUCVIV_FNCPERSON,
+    deleteFNBNUCVIV_FNCPERSONbyID,
+  } = useFNBNUCVIV_FNCPERSON();
   const {
     itemFNCPERSON,
     createFNCPERSON,
@@ -77,6 +89,7 @@ const _PersonalInformationForm = (props: any) => {
   const {saveAnswer, getAnswerquestion} = useFNCPERSON_FNCCONPER();
   useEffect(() => {
     fetchQuestions();
+    setIsHEAD(props.FIRSTPERSON);
   }, []);
   useEffect(() => {
     if (listFNCTIPIDE && props.FNCPERSON.ID) {
@@ -102,6 +115,17 @@ const _PersonalInformationForm = (props: any) => {
       }
     }
   }, [listFNCCONPER]);
+  useEffect(() => {
+    if (listFNCPAREN) {
+      if (listFNCPAREN.length > 0 && props.FIRSTPERSON) {
+        listFNCPAREN.forEach((item) => {
+          if (item.CODIGO == PersonParametersConst.parentCode) {
+            setParentezcoGrupoFamiliar('' + item.ID);
+          }
+        });
+      }
+    }
+  }, [listFNCPAREN]);
   useEffect(() => {
     if (listFNCGENERO && props.FNCPERSON.ID) {
       setValue('gender', '' + props.FNCPERSON.FNCGENERO_ID);
@@ -162,6 +186,15 @@ const _PersonalInformationForm = (props: any) => {
       await props.setFNCPERSON(item);
       SaveAnswers(QuestionConditionPersonCodes.GrupoEtnico, data.GrupoEtnico);
     } else {
+      if (
+        !data.identification ||
+        (data.identification && data.identification.length == 0)
+      ) {
+        console.error('identiicación');
+        setError('identification', {
+          type: 'required',
+        });
+      }
       let item: FNCPERSON = {
         PRIMER_NOMBRE: data.firstname,
         SEGUNDO_NOMBRE: data.middlename ? data.middlename : '',
@@ -186,7 +219,10 @@ const _PersonalInformationForm = (props: any) => {
     }
     navigation.goBack();
   };
-  async function asociateExistingPerson(item: FNCPERSON) {
+  async function asociateExistingPerson(item: FNCPERSON, desvincular = false) {
+    if (desvincular) {
+      await deleteFNBNUCVIV_FNCPERSONbyID(item.ID);
+    }
     let asociated = await createFNBNUCVIV_FNCPERSON({
       FNBNUCVIV_ID: props.FNBNUCVIV.ID,
       FNCPERSON_ID: item.ID,
@@ -234,10 +270,16 @@ const _PersonalInformationForm = (props: any) => {
             if (item.FNCPAREN_ID == 7) {
               Alert.alert(
                 'Identificación existente',
-                `La persona ${item.PRIMER_NOMBRE} ${item.SEGUNDO_NOMBRE} ${item.PRIMER_NOMBRE} ${item.SEGUNDO_APELLIDO} \ncon identificación ${item.IDENTIFICACION} ya esta asociada a un nucleo familiar \nDesea asociarla a este nucle familiar cómo "CABEZA DE FAMILIA"?`,
+                `La persona ${item.PRIMER_NOMBRE} ${item.SEGUNDO_NOMBRE} ${item.PRIMER_NOMBRE} ${item.SEGUNDO_APELLIDO} \ncon identificación ${item.IDENTIFICACION} ya se encuentra vinculada al núcleo familiar \n ¿Desea vincularla a este núcleo también? como "CABEZA DE FAMILIA"?`,
                 [
                   {
-                    text: 'Si, Asociar',
+                    text: 'Sí y desvincular del anterior',
+                    onPress: async () => {
+                      await asociateExistingPerson(item, true);
+                    },
+                  },
+                  {
+                    text: 'Sí y no desvincular del anterior',
                     onPress: async () => {
                       await asociateExistingPerson(item);
                     },
@@ -359,16 +401,17 @@ const _PersonalInformationForm = (props: any) => {
                 identificationEx.find((i) => i.ID == identificationType)
               ) {
                 if (!identificationEx.find((i) => i.ID == value)) {
-                  setIdentification('');
+                  setIdentification(null);
                 } else if (value == 4 || value == 7) {
                   // adulto sin ID o menor sin ID
+                  clearErrors('identification');
                   setIdentification(
                     `${Math.floor(Math.random() * 100000) + 10000}I${Math.floor(Math.random() * 10000) + 1000}`,
                   );
                 }
               } else {
                 if (identificationEx.find((i) => i.ID == value)) {
-                  setIdentification('');
+                  setIdentification(null);
                 } else if (value == 4 || value == 7) {
                   setIdentification(
                     `${Math.floor(Math.random() * 100000) + 10000}I${Math.floor(Math.random() * 10000) + 1000}`,
@@ -402,7 +445,7 @@ const _PersonalInformationForm = (props: any) => {
             />
           ) : (
             <BTextInput
-              label="Identificación"
+              label="Número de identificación"
               error={errors.identification}
               onChange={(value) => {
                 setEditable(true);
@@ -518,12 +561,12 @@ const _PersonalInformationForm = (props: any) => {
         control={control}
         render={({onChange, onBlur, value}) => (
           <BPicker
+            enabled={!isHead}
             label="Parentesco en el grupo familiar"
             prompt="Selecione una opcion"
             onBlur={onBlur}
             error={errors.parentezcoGrupoFamiliar}
             onChange={(value: any) => {
-              setEditable(true);
               if (value) {
                 onChange(value);
                 setParentezcoGrupoFamiliar(value);
@@ -577,6 +620,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state: any) => {
   return {
     FNCPERSON: state.person.FNCPERSON,
+    FIRSTPERSON: state.person.FIRSTPERSON,
     FNBNUCVIV: state.housing.FNBNUCVIV,
   };
 };

@@ -45,6 +45,7 @@ const FNCPERSON = {
 };
 
 const initialState = {
+  FIRSTPERSON: false,
   FNCPERSON: FNCPERSON,
   FNBINFSAL: FNBINFSAL,
   PERSONQUESTIONLIST: [] as HousingQuestion[],
@@ -66,6 +67,11 @@ export default (state = initialState, action: any) => {
       return {
         ...state,
         FNBINFSAL: action.data,
+      };
+    case ActionType.SET_FIRSTPERSON:
+      return {
+        ...state,
+        FIRSTPERSON: action.data,
       };
     default:
       return state;

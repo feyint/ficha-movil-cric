@@ -9,6 +9,7 @@ import {
   clearFNBINFSAL,
   clearFNCPERSON,
   setFNCPERSON,
+  setFIRSTPERSON,
 } from '../../../../state/person/actions';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {ListItem} from 'react-native-elements';
@@ -32,6 +33,11 @@ const PersonManageScreen = (props: any) => {
   useEffect(() => {
     if (listFNCPERSON) {
       setPersons(listFNCPERSON);
+      if (listFNCPERSON.length == 0) {
+        props.setFIRSTPERSON(true);
+      } else {
+        props.setFIRSTPERSON(false);
+      }
     }
   }, [listFNCPERSON]);
 
@@ -40,8 +46,7 @@ const PersonManageScreen = (props: any) => {
       if (props.FNBNUCVIV.ID) {
         filterFNCPERSON(props.FNBNUCVIV.ID);
       }
-    } catch (error) {
-    }
+    } catch (error) {}
   }
   function searchUser(textToSearch: any) {
     // setState({
@@ -98,7 +103,9 @@ const PersonManageScreen = (props: any) => {
                 }}
                 style={styles.imageStyle}
               />
-              <Text style={styles.noResultsText}>¡Sin resultados!</Text>
+              <Text style={styles.noResultsText}>
+                No se encontraron datos coincidentes con los valores registrados
+              </Text>
             </View>
           ) : (
             persons.map((person: FNCPERSON, i: any) => (
@@ -140,6 +147,7 @@ const mapDispatchToProps = {
   clearFNCPERSON,
   setFNCPERSON,
   clearFNBINFSAL,
+  setFIRSTPERSON,
 };
 const mapStateToProps = (store: any) => {
   return {

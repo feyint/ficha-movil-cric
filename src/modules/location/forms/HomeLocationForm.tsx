@@ -41,7 +41,7 @@ const schemaForm = yup.object().shape({
   territoryType: FieldValidator.required(yup, 'Tipo de territorio'),
   shelterOrCouncil: FieldValidator.required(yup, 'Centro poblado'),
   sidewalk: FieldValidator.required(yup, 'Barrio o Vereda'),
-  carezone: yup.mixed().optional(),
+  carezone: yup.mixed().required(),
   latitude: yup.string().optional(),
   longitude: yup.string().optional(),
   address: FieldValidator.required(yup, 'Direccion'),
@@ -57,6 +57,7 @@ const _HomeLocationForm = (props: any) => {
   const {handleSubmit, control, errors, setValue} = useForm({
     resolver: yupResolver(schemaForm),
   });
+  const [loaded, setLoaded] = useState(false);
   const {listFUCDEPART, getAllFUCDEPART} = useFUCDEPART();
   const {listFUCMUNICI, getFUCMUNICIFromDept} = useFUCMUNICI();
   const {listFUCTIPTER, getAllFUCTIPTER} = useFUCTIPTER();
@@ -151,6 +152,7 @@ const _HomeLocationForm = (props: any) => {
   }, [itemFUCBARVER]);
   useEffect(() => {
     if (itemFUBUBIVIVDETAILS) {
+      console.error('itemFUBUBIVIVDETAILS', itemFUBUBIVIVDETAILS);
       filterFUCZONCUI(itemFUBUBIVIVDETAILS.FUCBARVER_ID);
       setZonacuidado('' + itemFUBUBIVIVDETAILS.FUCZONCUI_ID);
       setBarrioVereda('' + itemFUBUBIVIVDETAILS.FUCBARVER_ID);
@@ -172,6 +174,9 @@ const _HomeLocationForm = (props: any) => {
       setValue('territoryType', '' + itemFUBUBIVIVDETAILS.FUCTIPTER_ID);
       setValue('sidewalk', '' + itemFUBUBIVIVDETAILS.FUCRESGUA_ID);
       setValue('shelterOrCouncil', '' + itemFUBUBIVIVDETAILS.FUCBARVER_ID);
+      setTimeout(() => {
+        setLoaded(true);
+      }, 2000);
     }
   }, [itemFUBUBIVIVDETAILS]);
   async function fetchQuestions() {
@@ -215,33 +220,41 @@ const _HomeLocationForm = (props: any) => {
     onChangeMuni(null, null);
   }
   async function onChangeMuni(munid: any, typeid: any) {
-    if (munid && typeid) {
-      getFilterFUCRESGUA(munid, typeid);
+    if (loaded) {
+      if (munid && typeid) {
+        getFilterFUCRESGUA(munid, typeid);
+        setValue('shelterOrCouncil', '');
+        setBarrioVereda('');
+        setValue('sidewalk', '');
+        setZonacuidado('');
+        setBarrioVeredaSelect([]);
+        setFUCZONCUIItems([]);
+        setValue('carezone', '');
+        setCentropoblado('');
+      } else {
+        setValue('municipality', '');
+        setMunicipio('');
+        setrescentropSelect(getSelectSchema([]));
+        onChangeCentroOResgua(null);
+      }
+    }
+  }
+  async function onChangeTypeTerr(typeid: any) {
+    if (loaded) {
+      let muni = null;
+      if (municipio && municipio != '') {
+        muni = parseInt(municipio, 10);
+      }
+      getFilterFUCRESGUA(muni, typeid);
       setValue('shelterOrCouncil', '');
       setBarrioVereda('');
       setValue('sidewalk', '');
       setZonacuidado('');
-      setBarrioVeredaSelect([]);
-      setFUCZONCUIItems([]);
       setValue('carezone', '');
       setCentropoblado('');
-    } else {
-      setValue('municipality', '');
-      setMunicipio('');
-      setrescentropSelect(getSelectSchema([]));
       onChangeCentroOResgua(null);
+      await changeLabelType(typeid);
     }
-  }
-  async function onChangeTypeTerr(typeid: any) {
-    getFilterFUCRESGUA(parseInt(municipio, 10), typeid);
-    setValue('shelterOrCouncil', '');
-    setBarrioVereda('');
-    setValue('sidewalk', '');
-    setZonacuidado('');
-    setValue('carezone', '');
-    setCentropoblado('');
-    onChangeCentroOResgua(null);
-    await changeLabelType(typeid);
   }
   async function changeLabelType(codigo: string) {
     if (codigo == '1') {
@@ -353,7 +366,9 @@ const _HomeLocationForm = (props: any) => {
               error={errors.municipality}
               onChange={(value: any) => {
                 onChange(value);
-                setMunicipio(value);
+                if (value) {
+                  setMunicipio(value);
+                }
                 onChangeMuni(value, tipoterritorio);
               }}
               selectedValue={municipio}

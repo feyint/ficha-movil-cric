@@ -111,7 +111,7 @@ export function useFUCMUNICI() {
     setLoading(true);
     await database.clearEntity('FUCMUNICI');
     let service = new SyncCatalogService();
-    let result = await service.getEntity('FUCMUNICI');
+    let result = await service.getEntity('Fucmunici');
     let items: Array<FUCMUNICI> = [];
     for (let i = 0; i < result.data.length; i++) {
       const item = result.data[i];

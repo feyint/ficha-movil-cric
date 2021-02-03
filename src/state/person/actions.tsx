@@ -1,9 +1,9 @@
-import {FNBINFSAL, FNCPERSON} from './types';;
-
+import {FNBINFSAL, FNCPERSON} from './types';
 export const ActionType = {
   SET_FNCPERSON: 'SET_FNCPERSON',
   SET_PERSON_QUESTION_LIST: 'SET_PERSON_QUESTION_LIST',
   SET_FNBINFSAL: 'SET_FNBINFSAL',
+  SET_FIRSTPERSON: 'SET_FIRSTPERSON',
 };
 
 const _setPERSON = (data: any) => {
@@ -70,4 +70,8 @@ export const setFNBINFSAL = (data: FNBINFSAL) => async (dispatch: any) => {
 };
 export const setFNCPERSON = (data: FNCPERSON) => async (dispatch: any) => {
   dispatch(_setPERSON(data));
+};
+
+export const setFIRSTPERSON = (data: boolean) => async (dispatch: any) => {
+  dispatch({type: ActionType.SET_FIRSTPERSON, data});
 };

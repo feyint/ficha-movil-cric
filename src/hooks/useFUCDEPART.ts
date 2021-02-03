@@ -69,7 +69,7 @@ export function useFUCDEPART() {
     setLoading(true);
     await database.clearEntity('FUCDEPART');
     let service = new SyncCatalogService();
-    let result = await service.getEntity('FUCDEPART');
+    let result = await service.getEntity('Fucdepart');
     result.data.map((item: any) => {
       createFUCDEPART({
         ID: item.id,

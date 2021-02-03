@@ -71,7 +71,7 @@ export function useFUCZONCUI() {
     await database.clearEntity('FUCZONCUI');
     setLoading(true);
     let service = new SyncCatalogService();
-    let result = await service.getEntity('FUCZONCUI');
+    let result = await service.getEntity('Fuczoncui');
     result.data.map((item: any) => {
       createFUCZONCUI({
         ID: item.id,

@@ -42,7 +42,7 @@ export function useFNCTIPIDE() {
     setLoading(true);
     await database.clearEntity('FNCTIPIDE');
     let service = new SyncCatalogService();
-    let result = await service.getEntity('FNCTIPIDE');
+    let result = await service.getEntity('Fnctipide');
     result.data.map(async (item: any) => {
       await createFNCTIPIDE({
         ID: item.id,

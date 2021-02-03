@@ -127,7 +127,7 @@ export function useFNCCONSAL() {
   }
   async function syncFNCCONSAL() {
     setLoading(true);
-    await database.clearEntity('Fncconsal');
+    await database.clearEntity('FNCCONSAL');
     let service = new SyncCatalogService();
     let result = await service.getEntity('Fncconsal');
     result.data.map(async (item: any) => {

@@ -50,39 +50,42 @@ export function useFUBUBIVIV() {
     return code;
   }
 
-  function filterFUBUBIVIV(_fububiviv: number, single = false) {
+  async function filterFUBUBIVIV(_fububiviv: number, single = false) {
     let statement = `
-     SELECT FUBUBIVIV.* FROM {0} WHERE ID = ${_fububiviv}`;
-    database.executeQuery('FUBUBIVIV', statement).then((results) => {
-      const count = results.rows.length;
-      const items: FUBUBIVIV[] = [];
-      for (let i = 0; i < count; i++) {
-        const row = results.rows.item(i);
-        const {
-          ID,
-          CODIGO,
-          COORDENADA_X,
-          COORDENADA_Y,
-          FVBENCUES_ID,
-          FUCZONCUI_FUCBARVER_ID,
-          DIRECCION,
-        } = row;
-        items.push({
-          ID: ID,
-          CODIGO: CODIGO,
-          DIRECCION: DIRECCION,
-          COORDENADA_X: COORDENADA_X,
-          COORDENADA_Y: COORDENADA_Y,
-          FVBENCUES_ID: FVBENCUES_ID,
-          FUCZONCUI_FUCBARVER_ID: FUCZONCUI_FUCBARVER_ID,
-        });
-      }
-      if (single) {
-        setFUBUBIVIV(items[0]);
-      } else {
-        setItem(items);
-      }
-    });
+     SELECT * FROM {0} WHERE ID = ${_fububiviv}`;
+    return await database
+      .executeQuery('FUBUBIVIV', statement)
+      .then((results) => {
+        const count = results.rows.length;
+        const items: FUBUBIVIV[] = [];
+        for (let i = 0; i < count; i++) {
+          const row = results.rows.item(i);
+          const {
+            ID,
+            CODIGO,
+            COORDENADA_X,
+            COORDENADA_Y,
+            FVBENCUES_ID,
+            FUCZONCUI_FUCBARVER_ID,
+            DIRECCION,
+          } = row;
+          items.push({
+            ID: ID,
+            CODIGO: CODIGO,
+            DIRECCION: DIRECCION,
+            COORDENADA_X: COORDENADA_X,
+            COORDENADA_Y: COORDENADA_Y,
+            FVBENCUES_ID: FVBENCUES_ID,
+            FUCZONCUI_FUCBARVER_ID: FUCZONCUI_FUCBARVER_ID,
+          });
+        }
+        if (single) {
+          setFUBUBIVIV(items[0]);
+          return items[0];
+        } else {
+          setItem(items);
+        }
+      });
   }
   function getFUBUBIVIVDETAILS(_fububiviv: number) {
     let statement = `
@@ -98,7 +101,7 @@ export function useFUBUBIVIV() {
     WHERE f.ID = ${_fububiviv};`;
     database.executeQuery('FUBUBIVIV', statement).then((results) => {
       const count = results.rows.length;
-      const items: FUBUBIVIVDETAILS[] = [];
+      const items: any[] = [];
       for (let i = 0; i < count; i++) {
         const row = results.rows.item(i);
         const {
@@ -125,7 +128,7 @@ export function useFUBUBIVIV() {
       setFUBUBIVIVDETAILS(items[0]);
     });
   }
-  function filterFUBUBIVIVDETAILS(identification: string) {
+  function search(query: string, person = false) {
     let statement = `
     SELECT 
     p.PRIMER_NOMBRE, p.SEGUNDO_NOMBRE , p.PRIMER_APELLIDO , p.SEGUNDO_APELLIDO,
@@ -137,50 +140,115 @@ export function useFUBUBIVIV() {
     LEFT JOIN FUCZONCUI_FUCBARVER fbar on fbar.ID = viv.FUCZONCUI_FUCBARVER_ID 
     LEFT JOIN  FUCBARVER barver on barver.ID  = fbar.FUCBARVER_ID  
     LEFT JOIN FUCZONCUI zoncui on zoncui.ID = fbar.FUCZONCUI_ID 
-    where p.IDENTIFICACION  LIKE '%${identification}%';`;
+    where p.IDENTIFICACION  LIKE '%${query}%';`;
+    if (!person) {
+      statement = `
+      SELECT bv.NOMBRE as barver, dep.NOMBRE as Dept, mu.NOMBRE as Muni , tipt.CODIGO as CODIGOTERRITORIO, f.*  FROM FUBUBIVIV f 
+      LEFT JOIN FUCZONCUI_FUCBARVER ff  ON ff.ID = f.FUCZONCUI_FUCBARVER_ID 
+      LEFT JOIN FUCZONCUI zc ON zc.ID = ff.FUCZONCUI_ID 	
+      LEFT JOIN FUCBARVER bv ON bv.ID  = ff.FUCBARVER_ID 
+      LEFT JOIN FUCRESGUA re ON re.ID = bv.FUCRESGUA_ID 
+      LEFT JOIN FUCMUNICI mu ON mu.ID  = re.FUCMUNICI_ID 
+      LEFT JOIN FUCTIPTER_FUCRESGUA tipregu ON tipregu.FUCRESGUA_ID =  re.ID 
+      LEFT JOIN FUCTIPTER tipt ON tipt.ID  = tipregu.FUCTIPTER_ID 
+      LEFT JOIN FUCDEPART dep ON dep.ID = mu.FUCDEPART_ID 
+      WHERE f.DIRECCION LIKE '%${query}%' 
+      OR bv.NOMBRE  like '%${query}%' or f.CODIGO like '%${query}%' 
+      or dep.NOMBRE like '%${query}%' or mu.NOMBRE  like '%${query}%'
+      `;
+    }
     database.executeQuery('', statement).then((results) => {
       const count = results.rows.length;
       const items: any[] = [];
       for (let i = 0; i < count; i++) {
         const row = results.rows.item(i);
-        const {
-          ID,
-          CODIGO,
-          DIRECCION,
-          COORDENADA_X,
-          COORDENADA_Y,
-          FVBENCUES_ID,
-          FUCZONCUI_FUCBARVER_ID,
-          FECHA_ACTIVIDAD,
-          FECHA_CREACION,
-          ORIGEN_DATA,
-          USUARIO_DATA,
-          PRIMER_NOMBRE,
-          SEGUNDO_NOMBRE,
-          PRIMER_APELLIDO,
-          SEGUNDO_APELLIDO,
-          BARRIO_VEREDA,
-          ZONA_CUIDADO,
-        } = row;
-        items.push({
-          ID,
-          CODIGO,
-          DIRECCION,
-          COORDENADA_X,
-          COORDENADA_Y,
-          FVBENCUES_ID,
-          FUCZONCUI_FUCBARVER_ID,
-          FECHA_ACTIVIDAD,
-          FECHA_CREACION,
-          ORIGEN_DATA,
-          USUARIO_DATA,
-          PRIMER_NOMBRE,
-          SEGUNDO_NOMBRE,
-          PRIMER_APELLIDO,
-          SEGUNDO_APELLIDO,
-          BARRIO_VEREDA,
-          ZONA_CUIDADO,
-        });
+        if (!person) {
+          const {
+            ID,
+            CODIGO,
+            DIRECCION,
+            COORDENADA_X,
+            COORDENADA_Y,
+            FVBENCUES_ID,
+            FUCZONCUI_FUCBARVER_ID,
+            FECHA_ACTIVIDAD,
+            FECHA_CREACION,
+            ORIGEN_DATA,
+            USUARIO_DATA,
+            PRIMER_NOMBRE,
+            SEGUNDO_NOMBRE,
+            PRIMER_APELLIDO,
+            SEGUNDO_APELLIDO,
+            BARRIO_VEREDA,
+            ZONA_CUIDADO,
+          } = row;
+          items.push({
+            ID,
+            CODIGO,
+            DIRECCION,
+            COORDENADA_X,
+            COORDENADA_Y,
+            FVBENCUES_ID,
+            FUCZONCUI_FUCBARVER_ID,
+            FECHA_ACTIVIDAD,
+            FECHA_CREACION,
+            ORIGEN_DATA,
+            USUARIO_DATA,
+            PRIMER_NOMBRE,
+            SEGUNDO_NOMBRE,
+            PRIMER_APELLIDO,
+            SEGUNDO_APELLIDO,
+            BARRIO_VEREDA,
+            ZONA_CUIDADO,
+          });
+        } else {
+          const {
+            barver,
+            Dept,
+            Muni,
+            CODIGOTERRITORIO,
+            ID,
+            CODIGO,
+            DIRECCION,
+            COORDENADA_X,
+            COORDENADA_Y,
+            FVBENCUES_ID,
+            FUCZONCUI_FUCBARVER_ID,
+            FECHA_ACTIVIDAD,
+            FECHA_CREACION,
+            ORIGEN_DATA,
+            USUARIO_DATA,
+            PRIMER_NOMBRE,
+            SEGUNDO_NOMBRE,
+            PRIMER_APELLIDO,
+            SEGUNDO_APELLIDO,
+            BARRIO_VEREDA,
+            ZONA_CUIDADO,
+          } = row;
+          items.push({
+            barver,
+            Dept,
+            Muni,
+            CODIGOTERRITORIO,
+            ID,
+            CODIGO,
+            DIRECCION,
+            COORDENADA_X,
+            COORDENADA_Y,
+            FVBENCUES_ID,
+            FUCZONCUI_FUCBARVER_ID,
+            FECHA_ACTIVIDAD,
+            FECHA_CREACION,
+            ORIGEN_DATA,
+            USUARIO_DATA,
+            PRIMER_NOMBRE,
+            SEGUNDO_NOMBRE,
+            PRIMER_APELLIDO,
+            SEGUNDO_APELLIDO,
+            BARRIO_VEREDA,
+            ZONA_CUIDADO,
+          });
+        }
       }
       setItemsFilter(items);
     });
@@ -258,6 +326,6 @@ export function useFUBUBIVIV() {
     selectFUBUBIVIV,
     getAllFUBUBIVIV,
     filterFUBUBIVIV,
-    filterFUBUBIVIVDETAILS,
+    search,
   };
 }

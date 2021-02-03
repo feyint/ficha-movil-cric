@@ -37,8 +37,8 @@ class ButtonAction extends Component<Props, any> {
   }
   alert() {
     Alert.alert(
-      this.props.title ? this.props.title : '',
-      this.props.message ? this.props.message : '¿Desea cancelar el proceso?',
+      this.props.title ? this.props.title : 'Los datos no han sido guardados',
+      this.props.message ? this.props.message : ' ¿Desea salir?',
       [
         {
           text: 'NO',

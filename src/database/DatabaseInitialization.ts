@@ -441,6 +441,15 @@ export class DatabaseInitialization {
       );
     `);
     transaction.executeSql(`
+      CREATE TABLE IF NOT EXISTS SGCSISPAR(
+        ID INTEGER PRIMARY KEY NOT NULL,
+        CODIGO TEXT,
+        VALOR TEXT,
+        NOMBRE TEXT,
+        ESTADO INTEGER
+      );
+    `);
+    transaction.executeSql(`
       CREATE TABLE IF NOT EXISTS FNCORGANI(
         ID INTEGER PRIMARY KEY NOT NULL,
         CODIGO TEXT,

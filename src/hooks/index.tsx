@@ -29,3 +29,4 @@ export {useFNBINFSAL_FNCDESARM} from './useFNBINFSAL_FNCDESARM';
 export {useFNBINFSAL} from './useFNBINFSAL';
 export {useFNCSALREP} from './useFNCSALREP';
 export {useFNCSALREP_FNCCONREP} from './useFNCSALREP_FNCCONREP';
+export {useSGCSISPAR} from './useSGCSISPAR';

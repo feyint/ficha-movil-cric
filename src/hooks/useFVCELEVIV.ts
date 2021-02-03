@@ -62,7 +62,7 @@ export function useFVCELEVIV() {
     await database.clearEntity('FVCELEVIV');
     setLoading(true);
     let service = new SyncCatalogService();
-    let result = await service.getEntity('FVCELEVIV');
+    let result = await service.getEntity('Fvceleviv');
     let items: Array<FVCELEVIV> = [];
     for (let i = 0; i < result.data.length; i++) {
       const item = result.data[i];

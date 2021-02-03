@@ -23,6 +23,7 @@ export function useFUCRESGUA() {
     let statement = `SELECT f.* FROM FUCTIPTER_FUCRESGUA ff
     INNER JOIN FUCRESGUA f ON f.ID  = ff.FUCRESGUA_ID 
     WHERE  ff.FUCTIPTER_ID  = ${FUCTIPTER} AND FUCMUNICI_ID = ${FUCMUNICI}`;
+    console.log(statement);
     database.executeQuery('FUCRESGUA', statement).then((results) => {
       const count = results.rows.length;
       const items: FUCRESGUA[] = [];
@@ -110,7 +111,7 @@ export function useFUCRESGUA() {
     setLoading(true);
     await database.clearEntity('FUCRESGUA');
     let service = new SyncCatalogService();
-    let result = await service.getEntity('FUCRESGUA');
+    let result = await service.getEntity('Fucresgua');
     let items: Array<FUCRESGUA> = [];
     for (let i = 0; i < result.data.length; i++) {
       const item = result.data[i];

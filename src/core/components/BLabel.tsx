@@ -26,7 +26,7 @@ class BLabel extends Component<Props, any> {
 const styles = StyleSheet.create({
   label: {
     fontWeight: 'bold',
-    color: theme.colors.accent,
+    color: theme.colors.secondary,
   },
 });
 

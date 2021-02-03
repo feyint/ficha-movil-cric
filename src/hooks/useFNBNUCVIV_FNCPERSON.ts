@@ -56,6 +56,11 @@ export function useFNBNUCVIV_FNCPERSON() {
       setFNBNUCVIV_FNCPERSON(items[0]);
     });
   }
+  async function deleteFNBNUCVIV_FNCPERSONbyID(personid: number) {
+    let statement = `
+     DELETE  FROM {0} WHERE FNCPERSON_ID = ${personid}`;
+    await database.executeQuery('FNBNUCVIV_FNCPERSON', statement);
+  }
   async function createFNBNUCVIV_FNCPERSON(
     item: FNBNUCVIV_FNCPERSON,
   ): Promise<boolean> {
@@ -98,6 +103,7 @@ export function useFNBNUCVIV_FNCPERSON() {
     return await database
       .executeQuery('FNBNUCVIV_FNCPERSON', statement)
       .then((results) => {
+        console.error(results);
         const count = results.rows.length;
         for (let i = 0; i < count; i++) {
           const row = results.rows.item(i);
@@ -118,5 +124,6 @@ export function useFNBNUCVIV_FNCPERSON() {
     selectFNBNUCVIV_FNCPERSON,
     getAllFNBNUCVIV_FNCPERSON,
     filterFNBNUCVIV_FNCPERSON,
+    deleteFNBNUCVIV_FNCPERSONbyID,
   };
 }
