@@ -152,7 +152,6 @@ const _HomeLocationForm = (props: any) => {
   }, [itemFUCBARVER]);
   useEffect(() => {
     if (itemFUBUBIVIVDETAILS) {
-      console.error('itemFUBUBIVIVDETAILS', itemFUBUBIVIVDETAILS);
       filterFUCZONCUI(itemFUBUBIVIVDETAILS.FUCBARVER_ID);
       setZonacuidado('' + itemFUBUBIVIVDETAILS.FUCZONCUI_ID);
       setBarrioVereda('' + itemFUBUBIVIVDETAILS.FUCBARVER_ID);
@@ -196,6 +195,7 @@ const _HomeLocationForm = (props: any) => {
       setHouseCode(props.FUBUBIVIV.CODIGO);
     } else {
       getCurrentPosition();
+      setLoaded(true);
     }
   }
 
