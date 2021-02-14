@@ -100,7 +100,7 @@ const _OtherIdentificationDataForm = (props: any) => {
       if (pueblo && pueblo.CODIGO == PersonParametersConst.puebloWayuuCode) {
         setEnableCasta(true);
       } else {
-        setEnableCasta(true);
+        setEnableCasta(false);
       }
     } else {
       setEnableCasta(true);
@@ -116,18 +116,22 @@ const _OtherIdentificationDataForm = (props: any) => {
       let ocupacion = getOcupacionByID(parseInt(ocupacionPrincipal, 10));
       if (
         ocupacion &&
-        ocupacion.CODIGO !== PersonParametersConst.doesNotApplyCode
+        ocupacion.CODIGO_FF !== PersonParametersConst.doesNotApplyCode
       ) {
         setEnableTipoTrabajo(true);
-      } else {
+      } else if (
+        ocupacion &&
+        ocupacion.CODIGO_FF == PersonParametersConst.doesNotApplyCode
+      ) {
         setEnableTipoTrabajo(false);
+        setValue('TipoTrabajo', '');
       }
     }
   }, [ocupacionPrincipal, listFNCOCUPAC]);
   async function fetchQuestions() {
     getAllFNCORGANI();
     getAllFNCOCUPAC();
-    getAllFNCPUEIND();
+    await getAllFNCPUEIND();
     const {ID, FNCOCUPAC_ID, FNCORGANI_ID, FNCPUEIND_ID} = props.FNCPERSON;
     if (ID) {
       setValue('puebloIndigena', FNCPUEIND_ID);
@@ -286,7 +290,6 @@ const _OtherIdentificationDataForm = (props: any) => {
       saveAnswer(type, answer, ID, question.FNCELEPER_ID);
     }
   }
-
   return (
     <KeyboardAwareScrollView>
       <View style={styles.container}>
@@ -294,7 +297,7 @@ const _OtherIdentificationDataForm = (props: any) => {
           control={control}
           render={({onChange, onBlur}) => (
             <BPicker
-              label="Organizacion"
+              label="Organización"
               prompt="Selecione una opcion"
               onBlur={onBlur}
               error={errors.organizacion}
@@ -316,7 +319,7 @@ const _OtherIdentificationDataForm = (props: any) => {
             render={({onChange, onBlur, value}) => (
               <BPicker
                 style={enableTipoTrabajo ? styles.input : {width: '100%'}}
-                label="Ocupacion Principal"
+                label="Ocupación Principal"
                 prompt="Selecione una opcion"
                 onBlur={onBlur}
                 error={errors.ocupacionPrincipal}
@@ -326,6 +329,10 @@ const _OtherIdentificationDataForm = (props: any) => {
                     onChange(value);
                     SaveAnswersFNCPERSON('FNCOCUPAC_ID', value);
                     setOcupacionPrincipal(value);
+                  } else {
+                    setOcupacionPrincipal('');
+                    setEnableTipoTrabajo(false);
+                    setValue('TipoTrabajo', '');
                   }
                 }}
                 selectedValue={ocupacionPrincipal}
@@ -366,7 +373,7 @@ const _OtherIdentificationDataForm = (props: any) => {
             control={control}
             render={({onChange, onBlur, value}) => (
               <BPicker
-                label="Pueblo Indigena"
+                label="Pueblo"
                 prompt="Selecione una opcion"
                 onBlur={onBlur}
                 error={errors.puebloIndigena}
@@ -438,6 +445,11 @@ const _OtherIdentificationDataForm = (props: any) => {
                       value,
                     );
                     validateLenguaMaterna(value);
+                  } else {
+                    setEnableLenguaMaterna(false);
+                    setValue('DominioLenguaMaterna', '');
+                    setEnableSegundaLengua(false);
+                    setValue('DominioSegundaLenguaMaterna', '');
                   }
                 }}
                 selectedValue={value}
@@ -494,6 +506,9 @@ const _OtherIdentificationDataForm = (props: any) => {
                       value,
                     );
                     validateSegundaLengua(value);
+                  } else {
+                    setEnableSegundaLengua(false);
+                    setValue('DominioSegundaLenguaMaterna', '');
                   }
                 }}
                 selectedValue={value}

@@ -29,7 +29,14 @@ import {theme} from '../../../../core/style/theme';
 import BNumberInput from '../../../../core/components/BNumberInput';
 import {useFNCCONSAL} from '../../../../hooks/useFNCCONSAL';
 import {FNBINFSAL, FNCCONSAL} from '../../../../types';
-import {useFNBINFSAL, useFNBINFSAL_FNCCONSAL} from '../../../../hooks';
+import {
+  useFNBINFSAL,
+  useFNBINFSAL_FNCCONSAL,
+  useSGCSISPAR,
+} from '../../../../hooks';
+import {FNCPERSON} from '../../../../state/person/types';
+import moment from 'moment';
+import {PersonParametersConst, SystemParameterEnum} from '../../../../core/utils/SystemParameters';
 
 const questionscodes = [
   QuestionPersonCodes.FactoresRiesgo,
@@ -50,8 +57,8 @@ const schemaForm = yup.object().shape({
   TALLA: yup.number().required(),
   IMC: yup.number().required(),
   FactoresDeRiesgo: yup.string().optional(),
-  TensionArterialSistolica: yup.string().required(),
-  TensionArterialDiastólica: yup.string().required(),
+  TensionArterialSistolica: yup.number(),
+  TensionArterialDiastólica: yup.number(),
   InterpretacionTensionArterial: yup.number().required(),
   SaludVisual: yup.number().required(),
   SaludAuditivaComunicativa: yup.number().required(),
@@ -71,6 +78,10 @@ const _HealthInformationForm = (props: any) => {
   const [altura, setAltura] = useState<number>();
   const [imc, setImc] = useState<number>();
   const [enableProtesis, setEnableProtesis] = useState<boolean>(false);
+  const [enableTension, setenableTension] = useState<boolean>(false);
+  const [enableDiabetes, setenableDiabetes] = useState<boolean>(false);
+  const [enableSaludVisual, setenableSaludVisual] = useState<boolean>(false);
+  const [enableDesparacitacion, setenableDesparacitacion] = useState<boolean>(false);
   const {
     getQuestionsOptions,
     getMultiselect,
@@ -79,11 +90,14 @@ const _HealthInformationForm = (props: any) => {
   } = useFNCCONSAL();
   const {saveAnswer, getAnswerquestion} = useFNBINFSAL_FNCCONSAL();
   const {itemFNBINFSAL, updateFNBINFSAL, loadingFNBINFSAL} = useFNBINFSAL();
+  const {getByCode} = useSGCSISPAR();
   const navigation = useNavigation();
 
-  const {handleSubmit, control, errors, setValue} = useForm({
-    resolver: yupResolver(schemaForm),
-  });
+  const {handleSubmit, control, errors, setValue, setError, register} = useForm(
+    {
+      resolver: yupResolver(schemaForm),
+    },
+  );
 
   useEffect(() => {
     getQuestionsOptions(questionscodes);
@@ -113,12 +127,92 @@ const _HealthInformationForm = (props: any) => {
       ULTIMA_VISITA,
       TIEMPO_PROTESIS,
     } = props.FNBINFSAL as FNBINFSAL;
-    setValue('PESO', '' + PESO);
-    setValue('TALLA', '' + TALLA);
-    setAltura(TALLA);
-    setPeso(PESO);
-    setValue('TensionArterialSistolica', '' + TA_SISTOLICA);
-    setValue('TensionArterialDiastólica', '' + TA_DIASTOLICA);
+    const {FECHA_NACIMIENTO} = props.FNCPERSON as FNCPERSON;
+    if (PESO == null || PESO == 'null') {
+    } else {
+      setValue('PESO', '' + PESO);
+      setPeso(PESO);
+    }
+    if (TALLA == null || TALLA == 'null') {
+    } else {
+      setValue('TALLA', '' + TALLA);
+      setAltura(TALLA);
+    }
+    if (FECHA_NACIMIENTO) {
+      let birthDate = moment(FECHA_NACIMIENTO).toDate();
+      var years = moment().diff(moment(birthDate, 'DD-MM-YYYY'), 'years');
+      var days = moment().diff(moment(birthDate, 'DD-MM-YYYY'), 'days');
+      let edadMinima = await getByCode(SystemParameterEnum.PRM016);
+      let edadSaludVisual = await getByCode(SystemParameterEnum.PRM014);
+      let mayorDeEdad = await getByCode(SystemParameterEnum.PRM009);
+      let edad10 = await getByCode(SystemParameterEnum.PRM017);
+      if (days <= Number(edadMinima.VALOR)) {
+        setenableTension(false);
+      } else {
+        setenableTension(true);
+      }
+      if (days <= Number(edadSaludVisual.VALOR)) {
+        setenableSaludVisual(false);
+        for (let i = 0; i < listFNCCONSAL.length; i++) {
+          const element = listFNCCONSAL[i];
+          if (
+            element.QUESTIONCODE == QuestionPersonCodes.SaludVisual &&
+            element.NOMBRE.includes('No aplica')
+          ) {
+            setValue('SaludVisual', '' + element.ID);
+          }
+        }
+      } else {
+        setenableSaludVisual(true);
+      }
+      if (years < Number(mayorDeEdad.VALOR)) {
+        setenableDiabetes(false);
+        for (let i = 0; i < listFNCCONSAL.length; i++) {
+          const element = listFNCCONSAL[i];
+          if (
+            element.QUESTIONCODE == QuestionPersonCodes.RiesgoPadecerDiabetes &&
+            element.NOMBRE.includes('No aplica')
+          ) {
+            setValue('RiesgoPadecerDiabetes', '' + element.ID);
+          }
+        }
+      } else {
+        setenableDiabetes(true);
+        getAnswers(
+          QuestionPersonCodes.RiesgoPadecerDiabetes,
+          'RiesgoPadecerDiabetes',
+        );
+      }
+      console.error(days, edad10.VALOR);
+      if (days < Number(edad10.VALOR)) {
+        setenableDesparacitacion(false);
+        for (let i = 0; i < listFNCCONSAL.length; i++) {
+          const element = listFNCCONSAL[i];
+          if (
+            element.QUESTIONCODE ==
+            QuestionPersonCodes.DesparasitacionInterna &&
+            element.NOMBRE.includes('No aplica')
+          ) {
+            setValue('DesparasitacionInternaUltimoSemestre', [element.ID]);
+          }
+        }
+      } else {
+        setenableDesparacitacion(true);
+        getAnswers(
+          QuestionPersonCodes.DesparasitacionInterna,
+          'DesparasitacionInternaUltimoSemestre',
+          2,
+        );
+      }
+    }
+    if (TA_SISTOLICA == null || TA_SISTOLICA == 'null') {
+    } else {
+      setValue('TensionArterialSistolica', '' + TA_SISTOLICA);
+    }
+    if (TA_DIASTOLICA == null || TA_DIASTOLICA == 'null') {
+    } else {
+      setValue('TensionArterialDiastólica', '' + TA_DIASTOLICA);
+    }
     setValue('UtilizaProtesis', Boolean(USO_PROTESIS));
     if (USO_PROTESIS) {
       setEnableProtesis(true);
@@ -133,19 +227,10 @@ const _HealthInformationForm = (props: any) => {
     );
     getAnswers(QuestionPersonCodes.SaludBucal, 'SaludBucal', 2);
     getAnswers(
-      QuestionPersonCodes.RiesgoPadecerDiabetes,
-      'RiesgoPadecerDiabetes',
-    );
-    getAnswers(
       QuestionPersonCodes.SintomaticoRespiratorio,
       'SintomaticoRespiratorio',
     );
     getAnswers(QuestionPersonCodes.SintomaticoDeMalaria, 'SintomaticoMalaria');
-    getAnswers(
-      QuestionPersonCodes.DesparasitacionInterna,
-      'DesparasitacionInternaUltimoSemestre',
-      2,
-    );
     getAnswers(
       QuestionPersonCodes.DesparasitacionExterna,
       'DesparasitacionExternaUltimoSemestre',
@@ -201,6 +286,28 @@ const _HealthInformationForm = (props: any) => {
     }
   }
   async function onSubmit(data: any) {
+    if (enableTension) {
+      if (
+        !data.TensionArterialSistolica ||
+        data.TensionArterialSistolica == null ||
+        data.TensionArterialSistolica == 'null'
+      ) {
+        setError('TensionArterialSistolica', {
+          type: 'required',
+        });
+        return;
+      }
+      if (
+        !data.TensionArterialDiastólica ||
+        data.TensionArterialDiastólica == null ||
+        data.TensionArterialDiastólica == 'null'
+      ) {
+        setError('TensionArterialDiastólica', {
+          type: 'required',
+        });
+        return;
+      }
+    }
     let newItem: FNBINFSAL = props.FNBINFSAL;
     newItem.ESTADO = 0;
     newItem.PESO = data.PESO;
@@ -245,6 +352,13 @@ const _HealthInformationForm = (props: any) => {
     );
     navigation.goBack();
   }
+  function ConTwoDecDigit(digit) {
+    return digit.indexOf(".")>0?
+            digit.split(".").length>=2?
+             digit.split(".")[0]+"."+digit.split(".")[1].substring(-1,2)
+            : digit
+           : digit
+  }
   return (
     <KeyboardAwareScrollView>
       <View style={styles.container}>
@@ -255,6 +369,9 @@ const _HealthInformationForm = (props: any) => {
               label={'Peso en Kilogramos'}
               onBlur={onBlur}
               onChange={(value: any) => {
+                if (value) {
+                  value = ConTwoDecDigit(value);
+                }
                 onChange(value);
                 setPeso(value);
               }}
@@ -271,6 +388,9 @@ const _HealthInformationForm = (props: any) => {
               label={'Altura en centrimetros'}
               onBlur={onBlur}
               onChange={(value: any) => {
+                if (value) {
+                  value = ConTwoDecDigit(value);
+                }
                 onChange(value);
                 setAltura(value);
               }}
@@ -305,13 +425,6 @@ const _HealthInformationForm = (props: any) => {
               onChange={(value: any) => {
                 onChange(value);
               }}
-              onLoad={() => {
-                getAnswers(
-                  QuestionTypes.selectOne,
-                  QuestionSexAndRepHealthPersonCodes.ExamenDeProstata,
-                  'ExamenDeProstata',
-                );
-              }}
               error={errors.FactoresDeRiesgo}
               selectedValue={value}
               items={getPicker(QuestionPersonCodes.FactoresRiesgo)}
@@ -319,38 +432,42 @@ const _HealthInformationForm = (props: any) => {
           )}
           name="FactoresDeRiesgo"
         />
-        <Controller
-          control={control}
-          render={({onChange, onBlur, value}) => (
-            <BTextInput
-              label={'Tensión arterial sistólica'}
-              keyboardType="number-pad"
-              onBlur={onBlur}
-              onChange={(value: any) => {
-                onChange(value);
-              }}
-              error={errors.TensionArterialSistolica}
-              value={value}
-            />
-          )}
-          name="TensionArterialSistolica"
-        />
-        <Controller
-          control={control}
-          render={({onChange, onBlur, value}) => (
-            <BTextInput
-              label={'Tensión arterial diastólica'}
-              keyboardType="number-pad"
-              onBlur={onBlur}
-              onChange={(value: any) => {
-                onChange(value);
-              }}
-              error={errors.TensionArterialDiastólica}
-              value={value}
-            />
-          )}
-          name="TensionArterialDiastólica"
-        />
+        {enableTension ? (
+          <Controller
+            control={control}
+            render={({onChange, onBlur, value}) => (
+              <BNumberInput
+                maxLength={3}
+                label={'Tensión arterial sistólica'}
+                onBlur={onBlur}
+                onChange={(value: any) => {
+                  onChange(value);
+                }}
+                error={errors.TensionArterialSistolica}
+                value={value}
+              />
+            )}
+            name="TensionArterialSistolica"
+          />
+        ) : null}
+        {enableTension ? (
+          <Controller
+            control={control}
+            render={({onChange, onBlur, value}) => (
+              <BNumberInput
+                maxLength={3}
+                label={'Tensión arterial diastólica'}
+                onBlur={onBlur}
+                onChange={(value: any) => {
+                  onChange(value);
+                }}
+                error={errors.TensionArterialDiastólica}
+                value={value}
+              />
+            )}
+            name="TensionArterialDiastólica"
+          />
+        ) : null}
         <Controller
           control={control}
           render={({onChange, onBlur, value}) => (
@@ -372,17 +489,11 @@ const _HealthInformationForm = (props: any) => {
           control={control}
           render={({onChange, onBlur, value}) => (
             <BPicker
+              enabled={enableSaludVisual}
               label={'Salud visual'}
               onBlur={onBlur}
               onChange={(value: any) => {
                 onChange(value);
-              }}
-              onLoad={() => {
-                getAnswers(
-                  QuestionTypes.selectOne,
-                  QuestionSexAndRepHealthPersonCodes.ExamenDeProstata,
-                  'ExamenDeProstata',
-                );
               }}
               error={errors.SaludVisual}
               selectedValue={value}
@@ -400,13 +511,6 @@ const _HealthInformationForm = (props: any) => {
               onChange={(value: any) => {
                 onChange(value);
               }}
-              onLoad={() => {
-                getAnswers(
-                  QuestionTypes.selectOne,
-                  QuestionSexAndRepHealthPersonCodes.ExamenDeProstata,
-                  'ExamenDeProstata',
-                );
-              }}
               error={errors.SaludAuditivaComunicativa}
               selectedValue={value}
               items={getPicker(QuestionPersonCodes.SaludAuditivaYComunicativa)}
@@ -422,13 +526,6 @@ const _HealthInformationForm = (props: any) => {
               onBlur={onBlur}
               onChange={(values: any) => {
                 onChange(values);
-              }}
-              onLoad={() => {
-                getAnswers(
-                  QuestionTypes.multiSelect,
-                  QuestionSexAndRepHealthPersonCodes.PracticasCulturalesDuranteLaGestacion,
-                  'PracticasCulturalesDuranteLaGestacion',
-                );
               }}
               error={errors.SaludBucal}
               selectedItems={value}
@@ -478,17 +575,11 @@ const _HealthInformationForm = (props: any) => {
           control={control}
           render={({onChange, onBlur, value}) => (
             <BPicker
+              enabled={enableDiabetes}
               label={'Riesgo de padecer Diabetes'}
               onBlur={onBlur}
               onChange={(value: any) => {
                 onChange(value);
-              }}
-              onLoad={() => {
-                getAnswers(
-                  QuestionTypes.selectOne,
-                  QuestionSexAndRepHealthPersonCodes.ExamenDeProstata,
-                  'ExamenDeProstata',
-                );
               }}
               error={errors.RiesgoPadecerDiabetes}
               items={getPicker(QuestionPersonCodes.RiesgoPadecerDiabetes)}
@@ -506,13 +597,6 @@ const _HealthInformationForm = (props: any) => {
               onChange={(value: any) => {
                 onChange(value);
               }}
-              onLoad={() => {
-                getAnswers(
-                  QuestionTypes.selectOne,
-                  QuestionSexAndRepHealthPersonCodes.ExamenDeProstata,
-                  'ExamenDeProstata',
-                );
-              }}
               error={errors.SintomaticoRespiratorio}
               selectedValue={value}
               items={getPicker(QuestionPersonCodes.SintomaticoRespiratorio)}
@@ -529,13 +613,6 @@ const _HealthInformationForm = (props: any) => {
               onChange={(value: any) => {
                 onChange(value);
               }}
-              onLoad={() => {
-                getAnswers(
-                  QuestionTypes.selectOne,
-                  QuestionSexAndRepHealthPersonCodes.ExamenDeProstata,
-                  'ExamenDeProstata',
-                );
-              }}
               error={errors.SintomaticoMalaria}
               selectedValue={value}
               items={getPicker(QuestionPersonCodes.SintomaticoDeMalaria)}
@@ -547,17 +624,11 @@ const _HealthInformationForm = (props: any) => {
           control={control}
           render={({onChange, onBlur, value}) => (
             <BMultiSelect
-              label={'Desparasitación interna en el último semestre'}
+              enabled={enableDesparacitacion}
+              label={'Desparasitación interna último semestre'}
               onBlur={onBlur}
               onChange={(values: any) => {
                 onChange(values);
-              }}
-              onLoad={() => {
-                getAnswers(
-                  QuestionTypes.multiSelect,
-                  QuestionSexAndRepHealthPersonCodes.PracticasCulturalesDuranteLaGestacion,
-                  'PracticasCulturalesDuranteLaGestacion',
-                );
               }}
               error={errors.DesparasitacionInternaUltimoSemestre}
               items={getMultiselect(QuestionPersonCodes.DesparasitacionInterna)}
@@ -570,17 +641,10 @@ const _HealthInformationForm = (props: any) => {
           control={control}
           render={({onChange, onBlur, value}) => (
             <BPicker
-              label={'Desparasitación Externa en el último semestre'}
+              label={'Desparasitación externa último semestre'}
               onBlur={onBlur}
               onChange={(value: any) => {
                 onChange(value);
-              }}
-              onLoad={() => {
-                getAnswers(
-                  QuestionTypes.selectOne,
-                  QuestionSexAndRepHealthPersonCodes.ExamenDeProstata,
-                  'ExamenDeProstata',
-                );
               }}
               error={errors.DesparasitacionExternaUltimoSemestre}
               selectedValue={value}

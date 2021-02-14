@@ -45,6 +45,19 @@ export const QuestionConditionPersonCodes = {
   DominioSegundaLenguaMaterna: '19',
 };
 
+export const IdentificationTypes = {
+  CC: 'CC',
+  TI: 'TI',
+  RC: 'RC',
+  AS: 'AS',
+  CE: 'CE',
+  PA: 'PA',
+  MS: 'MS',
+  CN: 'CN',
+  SC: 'SC',
+  CD: 'CD',
+  PE: 'PE',
+};
 export const QuestionSexAndRepHealthPersonCodes = {
   acompanamientoDeGestacion: '1',
   AutoexamenDeMama: '2',

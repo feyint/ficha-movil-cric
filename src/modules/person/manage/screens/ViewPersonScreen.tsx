@@ -88,6 +88,7 @@ const ViewPersonScreen = (props: any) => {
             title="Ver persona"
             subtitle={`${props.FNCPERSON.PRIMER_NOMBRE} ${props.FNCPERSON.PRIMER_APELLIDO}`}
           />
+          <Appbar.Action icon="magnify" onPress={() => {}} />
         </Appbar.Header>
         <Text style={{fontSize: 16, padding: 10}}>
           <Text style={{fontWeight: 'bold'}}>Nucleo familiar:</Text>{' '}

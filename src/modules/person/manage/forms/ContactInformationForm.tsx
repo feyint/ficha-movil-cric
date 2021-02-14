@@ -10,12 +10,17 @@ import {connect} from 'react-redux';
 import {BTextInput, ButtonAction} from '../../../../core/components';
 import BNumberInput from '../../../../core/components/BNumberInput';
 import {FNCPERSON} from '../../../../state/person/types';
-import {useFNCPERSON} from '../../../../hooks';
+import {useFNCPERSON, useSGCSISPAR} from '../../../../hooks';
 import {setFNCPERSON} from '../../../../state/person/actions';
+import moment from 'moment';
+import {SystemParameterEnum} from '../../../../core/utils/SystemParameters';
 const schemaForm = yup.object().shape({
-  phonenumber: yup.string().required(),
-  phonenumber2: yup.string().required(),
-  email: yup.string().email('Correo invalido').required('Correo requerido'),
+  phonenumber: yup.number().required(),
+  phonenumber2: yup.number().required(),
+  email: yup
+    .string()
+    .email('El correo ingresado no es válido')
+    .required('Correo requerido'),
 });
 const _ContactInformationForm = (props: any) => {
   const navigation = useNavigation();
@@ -23,9 +28,12 @@ const _ContactInformationForm = (props: any) => {
     resolver: yupResolver(schemaForm),
   });
   const [phonenumber, setphonenumber] = useState();
+  const [disableForm, setDisbale] = useState<boolean>(false);
+  const [phoneLength, setPhoneLength] = useState<number>();
   const [phonenumber2, setphonenumber2] = useState();
   const [email, setEmail] = useState();
   const {itemFNCPERSON, updateFNCPERSON} = useFNCPERSON();
+  const {getByCode} = useSGCSISPAR();
   useEffect(() => {
     fetchQuestions();
   }, []);
@@ -42,6 +50,7 @@ const _ContactInformationForm = (props: any) => {
       setphonenumber2(props.FNCPERSON.TEL_ALTERNO);
       setValue('email', props.FNCPERSON.CORREO_ELECTRONICO);
       setEmail(props.FNCPERSON.CORREO_ELECTRONICO);
+      validateParameters();
     }
   };
   const onSubmit = async (data: any) => {
@@ -52,6 +61,22 @@ const _ContactInformationForm = (props: any) => {
     await updateFNCPERSON(person);
     navigation.goBack();
   };
+  const validateParameters = async () => {
+    let person: FNCPERSON = props.FNCPERSON;
+    if (person.FECHA_NACIMIENTO) {
+      let birthDe = moment(person.FECHA_NACIMIENTO).toDate();
+      var years = moment().diff(moment(birthDe, 'DD-MM-YYYY'), 'years');
+      var days = moment().diff(moment(birthDe, 'DD-MM-YYYY'), 'days');
+      let edad = await getByCode(SystemParameterEnum.PRM009);
+      if (years < Number(edad.VALOR)) {
+        setDisbale(true);
+      } else {
+        let max = await getByCode(SystemParameterEnum.PRM006);
+        console.error(max.VALOR);
+        setPhoneLength(Number(max.VALOR));
+      }
+    }
+  };
   return (
     <KeyboardAwareScrollView>
       <View style={styles.container}>
@@ -59,6 +84,8 @@ const _ContactInformationForm = (props: any) => {
           control={control}
           render={({onChange, value}) => (
             <BNumberInput
+              maxLength={phoneLength}
+              disabled={disableForm}
               label="Número teléfono celular"
               error={errors.phonenumber}
               onChange={(value) => {
@@ -74,6 +101,8 @@ const _ContactInformationForm = (props: any) => {
           control={control}
           render={({onChange, value}) => (
             <BNumberInput
+              maxLength={phoneLength}
+              disabled={disableForm}
               label="Número teléfono 2"
               error={errors.phonenumber2}
               onChange={(value) => {
@@ -89,6 +118,7 @@ const _ContactInformationForm = (props: any) => {
           control={control}
           render={({onChange, onBlur, value}) => (
             <BTextInput
+              disabled={disableForm}
               label="Correo electrónico"
               onBlur={onBlur}
               error={errors.email}

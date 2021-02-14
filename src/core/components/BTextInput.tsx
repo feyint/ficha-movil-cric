@@ -17,6 +17,7 @@ interface Props {
   disabled?: boolean;
   multiline?: boolean;
   numberOfLines?: number;
+  multipleSpace?: boolean;
   isPassword?: boolean;
   onBlur?: any;
   icon?: any;
@@ -31,7 +32,6 @@ export default class BTextInput extends Component<Props, State> {
   }; */
 
   handleOnChangeText = async (content: any) => {
-    console.log('entro al handle');
     if (content === '') {
       return true;
     }
@@ -61,7 +61,12 @@ export default class BTextInput extends Component<Props, State> {
             this.handleOnChangeText(text);
             //(await this.handleOnChangeText(text)) === true ? null : (text = '');
             //this.handleOnPaste(text) ? (text = '') : null;
-            text = text.replace(/\s/g, '');
+            if (!/\S/.test(text)) {
+              text = text.replace(/\s/g, '');
+            }
+            if (!this.props.multipleSpace) {
+              text = text.replace(/\s/g, '');
+            }
             this.props.onChange(text);
           }}
           value={this.props.value}

@@ -28,7 +28,7 @@ export function useFNCPERSON() {
   }
   function filterFNCPERSON(FNBNUCVIV: number, single = false) {
     let statement = `
-        SELECT * FROM FNCPERSON p
+        SELECT p.* FROM FNCPERSON p
         INNER JOIN FNBNUCVIV_FNCPERSON nf ON nf.FNCPERSON_ID  = p.ID 
         WHERE nf.FNBNUCVIV_ID  = ${FNBNUCVIV}`;
     database.executeQuery('FNCPERSON', statement).then((results) => {

@@ -275,6 +275,25 @@ export function useFNBNUCVIV() {
         return _id;
       });
   }
+  async function alreadyexistConyugue(FNBNUCVIV_ID: number) {
+    let statement = `
+    SELECT prnt.ID FROM FNCPERSON p 
+    INNER JOIN FNBNUCVIV_FNCPERSON np ON np.FNCPERSON_ID  = p.ID
+    LEFT JOIN FNCPAREN prnt ON prnt.ID = p.FNCPAREN_ID 
+    WHERE  np .FNBNUCVIV_ID = ${FNBNUCVIV_ID} AND prnt.CODIGO = '${PersonParametersConst.fncpersonConyugueheadercode}'`;
+    return await database
+      .executeQuery('FNCPERSON', statement)
+      .then((results) => {
+        let _id = null;
+        const count = results.rows.length;
+        for (let i = 0; i < count; i++) {
+          const row = results.rows.item(i);
+          const {ID} = row;
+          _id = ID;
+        }
+        return _id;
+      });
+  }
   return {
     itemFUBUBIVIVDETAILS,
     itemFNBNUCVIV,
@@ -282,6 +301,7 @@ export function useFNBNUCVIV() {
     countFNBNUCVIV,
     loadingFNBNUCVIV,
     alreadyexistParent,
+    alreadyexistConyugue,
     getFNBNUCVIVbyID,
     createFNBNUCVIV,
     deleteFNBNUCVIV,

@@ -1,5 +1,6 @@
 import {useState, useEffect} from 'react';
 import {useDatabase} from '../context/DatabaseContext';
+import {SystemParameterEnum} from '../core/utils/SystemParameters';
 import {SyncCatalogService} from '../services';
 import {SGCSISPAR} from '../types';
 
@@ -21,10 +22,37 @@ export function useSGCSISPAR() {
     let statement = `INSERT INTO {0} 
     (ID, CODIGO, NOMBRE, VALOR, ESTADO) 
     VALUES (?, ?, ?, ?, ?);`;
-    let params = [newItem.ID, newItem.CODIGO, newItem.NOMBRE, newItem.ESTADO];
+    let params = [
+      newItem.ID,
+      newItem.CODIGO,
+      newItem.NOMBRE,
+      newItem.VALOR,
+      newItem.ESTADO,
+    ];
     return await database
       .executeQuery('SGCSISPAR', statement, params)
       .then(countEntity);
+  }
+  async function getByCode(parameter: SystemParameterEnum) {
+    let statement = `SELECT * FROM SGCSISPAR s WHERE s.CODIGO  = '${SystemParameterEnum[parameter]}'`;
+    return await database
+      .executeQuery('SGCSISPAR', statement)
+      .then((results) => {
+        const count = results.rows.length;
+        const items: SGCSISPAR[] = [];
+        for (let i = 0; i < count; i++) {
+          const row = results.rows.item(i);
+          const {ID, CODIGO, VALOR, NOMBRE, ESTADO} = row;
+          items.push({
+            ID,
+            CODIGO,
+            VALOR,
+            NOMBRE,
+            ESTADO,
+          });
+        }
+        return items[0];
+      });
   }
   async function countEntity(): Promise<void> {
     return database.countEntity('SGCSISPAR').then(setCount);
@@ -67,5 +95,6 @@ export function useSGCSISPAR() {
     selectSGCSISPAR,
     syncSGCSISPAR,
     getAllSGCSISPAR,
+    getByCode,
   };
 }

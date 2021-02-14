@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
-import {BSearchBarV2} from '../../../../core/components';
-import {Image, StyleSheet, View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import {Appbar, Text} from 'react-native-paper';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
@@ -19,8 +18,6 @@ import {useFNCPERSON} from '../../../../hooks';
 
 const PersonManageScreen = (props: any) => {
   const [persons, setPersons] = useState<FNCPERSON[]>([]);
-  const [filteredPersons, setFilter] = useState<FNCPERSON[]>([]);
-  const [word, setWord] = useState<string>('');
   const navigation = useNavigation();
   const {listFNCPERSON, filterFNCPERSON} = useFNCPERSON();
 
@@ -48,21 +45,6 @@ const PersonManageScreen = (props: any) => {
       }
     } catch (error) {}
   }
-  function searchUser(textToSearch: any) {
-    // setState({
-    //   filteredPersons: persons.filter(
-    //     (i) =>
-    //       i.PRIMER_NOMBRE.toLowerCase().includes(textToSearch.toLowerCase()) ||
-    //       i.IDENTIFICACION.toLowerCase().includes(textToSearch.toLowerCase()) ||
-    //       i.PRIMER_APELLIDO.toLowerCase().includes(
-    //         textToSearch.toLowerCase(),
-    //       ) ||
-    //       i.SEGUNDO_NOMBRE.toLowerCase().includes(textToSearch.toLowerCase()) ||
-    //       i.SEGUNDO_APELLIDO.toLowerCase().includes(textToSearch.toLowerCase()),
-    //   ),
-    //   word: textToSearch,
-    // });
-  }
   return (
     <View style={{flex: 1}}>
       <Appbar.Header>
@@ -74,56 +56,22 @@ const PersonManageScreen = (props: any) => {
         {props.FNBNUCVIV.CODIGO}
       </Text>
       <KeyboardAwareScrollView>
-        <BSearchBarV2
-          placeholder="Ingrese identificacion o nombre de persona a buscar"
-          onChange={(text: any) => {
-            searchUser(text);
-          }}
-        />
         <View style={styles.container}>
-          {filteredPersons && filteredPersons.length > 0 ? (
-            filteredPersons.map((person: FNCPERSON, i: any) => (
-              <ListItem
-                onPress={() => {
-                  goViewPersonScreen(person);
-                }}
-                key={i}
-                bottomDivider>
-                <ListItem.Content>
-                  <ListItem.Title>{`${person.PRIMER_NOMBRE}  ${person.SEGUNDO_NOMBRE}  ${person.PRIMER_APELLIDO}  ${person.SEGUNDO_APELLIDO}`}</ListItem.Title>
-                  <ListItem.Subtitle>{person.IDENTIFICACION}</ListItem.Subtitle>
-                </ListItem.Content>
-              </ListItem>
-            ))
-          ) : filteredPersons.length == 0 && word != '' ? (
-            <View>
-              <Image
-                source={{
-                  uri: 'https://image.flaticon.com/icons/png/512/64/64670.png',
-                }}
-                style={styles.imageStyle}
-              />
-              <Text style={styles.noResultsText}>
-                No se encontraron datos coincidentes con los valores registrados
-              </Text>
-            </View>
-          ) : (
-            persons.map((person: FNCPERSON, i: any) => (
-              <ListItem
-                onPress={() => {
-                  goViewPersonScreen(person);
-                }}
-                key={i}
-                bottomDivider>
-                <ListItem.Content>
-                  <ListItem.Title>
-                    {`${person.PRIMER_NOMBRE}  ${person.SEGUNDO_NOMBRE}  ${person.PRIMER_APELLIDO}  ${person.SEGUNDO_APELLIDO}`}
-                  </ListItem.Title>
-                  <ListItem.Subtitle>{person.IDENTIFICACION}</ListItem.Subtitle>
-                </ListItem.Content>
-              </ListItem>
-            ))
-          )}
+          {persons.map((person: FNCPERSON, i: any) => (
+            <ListItem
+              onPress={() => {
+                goViewPersonScreen(person);
+              }}
+              key={i}
+              bottomDivider>
+              <ListItem.Content>
+                <ListItem.Title>
+                  {`${person.PRIMER_NOMBRE}  ${person.SEGUNDO_NOMBRE}  ${person.PRIMER_APELLIDO}  ${person.SEGUNDO_APELLIDO}`}
+                </ListItem.Title>
+                <ListItem.Subtitle>{person.IDENTIFICACION}</ListItem.Subtitle>
+              </ListItem.Content>
+            </ListItem>
+          ))}
         </View>
         <View style={styles.spacer} />
       </KeyboardAwareScrollView>

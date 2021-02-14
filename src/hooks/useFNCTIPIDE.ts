@@ -35,6 +35,26 @@ export function useFNCTIPIDE() {
     // otherwise:
     return Promise.reject(Error('Could not delete an undefined item'));
   }
+  async function getIDEByID(id: number) {
+    let statement = `SELECT * FROM FNCTIPIDE s WHERE s.ID  = '${id}'`;
+    return await database
+      .executeQuery('FNCTIPIDE', statement)
+      .then((results) => {
+        const count = results.rows.length;
+        const items: FNCTIPIDE[] = [];
+        for (let i = 0; i < count; i++) {
+          const row = results.rows.item(i);
+          const {ID, CODIGO, NOMBRE, ESTADO} = row;
+          items.push({
+            ID,
+            CODIGO,
+            NOMBRE,
+            ESTADO,
+          });
+        }
+        return items[0];
+      });
+  }
   async function selectFNCTIPIDE(list: FNCTIPIDE) {
     setFNCTIPIDE(list);
   }
@@ -64,5 +84,6 @@ export function useFNCTIPIDE() {
     selectFNCTIPIDE,
     syncFNCTIPIDE,
     getAllFNCTIPIDE,
+    getIDEByID,
   };
 }

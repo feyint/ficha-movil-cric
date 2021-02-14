@@ -14,8 +14,14 @@ import {
 } from '../../../../core/components';
 import BNumberInput from '../../../../core/components/BNumberInput';
 import {setFNCPERSON} from '../../../../state/person/actions';
-import {QuestionConditionPersonCodes} from '../../../../core/utils/PersonTypes';
-import {PersonParametersConst} from '../../../../core/utils/SystemParameters';
+import {
+  IdentificationTypes,
+  QuestionConditionPersonCodes,
+} from '../../../../core/utils/PersonTypes';
+import {
+  PersonParametersConst,
+  SystemParameterEnum,
+} from '../../../../core/utils/SystemParameters';
 import {
   useFNBNUCVIV,
   useFNBNUCVIV_FNCPERSON,
@@ -25,6 +31,7 @@ import {
   useFNCPERSON,
   useFNCPERSON_FNCCONPER,
   useFNCTIPIDE,
+  useSGCSISPAR,
 } from '../../../../hooks';
 import {getSelectSchema} from '../../../../core/utils/utils';
 import {FNCCONPER, FNCPERSON} from '../../../../types';
@@ -55,6 +62,7 @@ const _PersonalInformationForm = (props: any) => {
     setError,
     clearErrors,
     setValue,
+    getValues,
   } = useForm({
     resolver: yupResolver(schemaForm),
   });
@@ -64,16 +72,21 @@ const _PersonalInformationForm = (props: any) => {
   const [identificationEx, setidentificationEx] = useState<any[]>([]);
   const [gender, setGender] = useState<any>();
   const [alreadyHeaderID, setalreadyHeaderID] = useState<number>(0);
+  const [lreadyConyugueID, setalreadyConyugueID] = useState<number>(0);
   const [identification, setIdentification] = useState('');
   const [identificationType, setIdentificationType] = useState<any>();
   const [grupoEtnico, setGrupoEtnico] = useState<any>();
   const [parentezcoGrupoFamiliar, setParentezcoGrupoFamiliar] = useState<any>();
-  const [birthDate, setbirthDate] = useState<Date>(new Date());
-  const {listFNCTIPIDE, getAllFNCTIPIDE} = useFNCTIPIDE();
+  const [birthDate, setbirthDate] = useState<Date>();
+  const {listFNCTIPIDE, getAllFNCTIPIDE, getIDEByID} = useFNCTIPIDE();
   const {listFNCGENERO, getAllFNCGENERO} = useFNCGENERO();
   const {listFNCPAREN, getAllFNCPAREN} = useFNCPAREN();
-  const {alreadyexistParent} = useFNBNUCVIV();
+  const {alreadyexistParent, alreadyexistConyugue} = useFNBNUCVIV();
+  const {getByCode} = useSGCSISPAR();
   const {listFNCCONPER, getQuestionsOptions} = useFNCCONPER();
+  const [disabledIdentification, setDisabledIdentification] = useState<boolean>(
+    false,
+  );
   const {
     validateExist,
     createFNBNUCVIV_FNCPERSON,
@@ -164,24 +177,106 @@ const _PersonalInformationForm = (props: any) => {
     getAllFNCPAREN();
     getQuestionsOptions([QuestionConditionPersonCodes.GrupoEtnico]);
     let alreadyexistheader = await alreadyexistParent(props.FNBNUCVIV.ID);
+    let alreadyexistCony = await alreadyexistConyugue(props.FNBNUCVIV.ID);
+    if (alreadyexistCony) {
+      setalreadyConyugueID(alreadyexistCony);
+    }
     if (alreadyexistheader) {
       setalreadyHeaderID(alreadyexistheader);
     }
   };
+  const validateParameters = async () => {
+    let error = false;
+    let date = getValues('birthdate');
+    let type = getValues('identificationType');
+    if (date && type) {
+      let birthDe = moment(date).toDate();
+      var years = moment().diff(moment(birthDe, 'DD-MM-YYYY'), 'years');
+      var days = moment().diff(moment(birthDe, 'DD-MM-YYYY'), 'days');
+      let typeID = await getIDEByID(type);
+      if (typeID.CODIGO == IdentificationTypes.RC) {
+        let edad = await getByCode(SystemParameterEnum.PRM025);
+        if (days > Number(edad.VALOR)) {
+          setbirthDate(undefined);
+          setValue('birthdate', undefined);
+          error = true;
+        }
+      }
+      if (
+        typeID.CODIGO == IdentificationTypes.RC ||
+        typeID.CODIGO == IdentificationTypes.TI ||
+        typeID.CODIGO == IdentificationTypes.MS
+      ) {
+        let edad = await getByCode(SystemParameterEnum.PRM009);
+        if (years > Number(edad.VALOR)) {
+          setbirthDate(undefined);
+          setValue('birthdate', undefined);
+          error = true;
+        }
+      }
+      if (typeID.CODIGO == IdentificationTypes.MS) {
+        let edad = await getByCode(SystemParameterEnum.PRM026);
+        if (days > Number(edad.VALOR)) {
+          setbirthDate(undefined);
+          setValue('birthdate', undefined);
+          error = true;
+        }
+      }
+      if (typeID.CODIGO == IdentificationTypes.AS) {
+        let edad = await getByCode(SystemParameterEnum.PRM009);
+        if (years < Number(edad.VALOR)) {
+          setbirthDate(undefined);
+          setValue('birthdate', undefined);
+          error = true;
+        }
+      }
+      if (typeID.CODIGO == IdentificationTypes.TI) {
+        let edad = await getByCode(SystemParameterEnum.PRM009);
+        let edadmin = await getByCode(SystemParameterEnum.PRM025);
+        if (years > Number(edad.VALOR) || edadmin.VALOR > days) {
+          setbirthDate(undefined);
+          setValue('birthdate', undefined);
+          error = true;
+        }
+      }
+      if (
+        typeID.CODIGO == IdentificationTypes.CC ||
+        typeID.CODIGO == IdentificationTypes.CE ||
+        typeID.CODIGO == IdentificationTypes.PA
+      ) {
+        let edad = await getByCode(SystemParameterEnum.PRM009);
+        if (years < Number(edad.VALOR)) {
+          setbirthDate(undefined);
+          setValue('birthdate', undefined);
+          error = true;
+        }
+      }
+    }
+    if (error) {
+      Alert.alert(
+        'Error',
+        'El tipo de identificación no corresponde a la edad',
+        [
+          {
+            text: 'Aceptar',
+            onPress: async () => {},
+          },
+        ],
+      );
+    }
+  };
   const onSubmit = async (data: any) => {
     if (person && person.ID != null) {
-      let item: FNCPERSON = {
-        ID: person.ID,
-        PRIMER_NOMBRE: data.firstname,
-        SEGUNDO_NOMBRE: data.middlename ? data.middlename : '',
-        PRIMER_APELLIDO: data.lastname,
-        SEGUNDO_APELLIDO: data.secondlastname ? data.secondlastname : '',
-        IDENTIFICACION: data.identification,
-        FNCTIPIDE_ID: JSON.parse(data.identificationType),
-        FNCGENERO_ID: JSON.parse(data.gender),
-        FNCPAREN_ID: JSON.parse(data.parentezcoGrupoFamiliar),
-        FECHA_NACIMIENTO: birthDate,
-      };
+      let item = person;
+      item.PRIMER_NOMBRE = data.firstname;
+      item.SEGUNDO_NOMBRE = data.middlename ? data.middlename : '';
+      item.PRIMER_APELLIDO = data.lastname;
+      item.SEGUNDO_APELLIDO = data.secondlastname ? data.secondlastname : '';
+      item.IDENTIFICACION = data.identification;
+      item.FNCTIPIDE_ID = JSON.parse(data.identificationType);
+      item.FNCGENERO_ID = JSON.parse(data.gender);
+      item.FNCPAREN_ID = JSON.parse(data.parentezcoGrupoFamiliar);
+      item.FECHA_NACIMIENTO = birthDate;
       await updateFNCPERSON(item);
       await props.setFNCPERSON(item);
       SaveAnswers(QuestionConditionPersonCodes.GrupoEtnico, data.GrupoEtnico);
@@ -190,7 +285,6 @@ const _PersonalInformationForm = (props: any) => {
         !data.identification ||
         (data.identification && data.identification.length == 0)
       ) {
-        console.error('identiicación');
         setError('identification', {
           type: 'required',
         });
@@ -230,6 +324,7 @@ const _PersonalInformationForm = (props: any) => {
     if (asociated) {
       props.setFNCPERSON(item);
       setPerson(item);
+      navigation.goBack();
       // await refreshPerson(item);
     } else {
       Alert.alert(
@@ -335,7 +430,7 @@ const _PersonalInformationForm = (props: any) => {
     if (!isValid) {
       Alert.alert(
         'Ya existe un cabeza de familia',
-        'El nucleo familiar no puede tener mas de un cabeza de familia',
+        'El núcleo familiar debe tener solo un cabeza de núcleo ',
         [
           {
             text: 'aceptar',
@@ -345,8 +440,26 @@ const _PersonalInformationForm = (props: any) => {
       setParentezcoGrupoFamiliar('-1');
       setValue('parentezcoGrupoFamiliar', '');
     }
+    isValid = true;
+    if (
+      person &&
+      person.FNCPAREN_ID !== lreadyConyugueID &&
+      value == lreadyConyugueID
+    ) {
+      isValid = false;
+    } else if (!person && value == lreadyConyugueID) {
+      isValid = false;
+    }
+    if (!isValid) {
+      Alert.alert('Error', 'El núcleo familiar debe tener solo un cónyuge', [
+        {
+          text: 'aceptar',
+        },
+      ]);
+      setParentezcoGrupoFamiliar('-1');
+      setValue('parentezcoGrupoFamiliar', '');
+    }
     //TODO Validar si la identificacion pertenece a mas de un nucleo no puede cambiar el parentezo
-    //TODO validar si es la unica persona del nucleo debe ser cabeza de hogar
   }
   async function getAnswers(
     questionCode: string,
@@ -395,6 +508,7 @@ const _PersonalInformationForm = (props: any) => {
             prompt="Seleccione una opción"
             error={errors.identificationType}
             onChange={(value) => {
+              setDisabledIdentification(false);
               setEditable(true);
               if (
                 identificationEx &&
@@ -405,21 +519,20 @@ const _PersonalInformationForm = (props: any) => {
                 } else if (value == 4 || value == 7) {
                   // adulto sin ID o menor sin ID
                   clearErrors('identification');
-                  setIdentification(
-                    `${Math.floor(Math.random() * 100000) + 10000}I${Math.floor(Math.random() * 10000) + 1000}`,
-                  );
+                  setDisabledIdentification(true);
+                  setIdentification(null);
                 }
               } else {
                 if (identificationEx.find((i) => i.ID == value)) {
                   setIdentification(null);
                 } else if (value == 4 || value == 7) {
-                  setIdentification(
-                    `${Math.floor(Math.random() * 100000) + 10000}I${Math.floor(Math.random() * 10000) + 1000}`,
-                  );
+                  setDisabledIdentification(true);
+                  setIdentification(null);
                 }
               }
               onChange(value);
               setIdentificationType(value);
+              validateParameters();
             }}
             onLoad={() => {}}
             selectedValue={identificationType}
@@ -445,6 +558,7 @@ const _PersonalInformationForm = (props: any) => {
             />
           ) : (
             <BTextInput
+              disabled={disabledIdentification}
               label="Número de identificación"
               error={errors.identification}
               onChange={(value) => {
@@ -488,6 +602,7 @@ const _PersonalInformationForm = (props: any) => {
               onChange(value);
               if (value) {
                 setbirthDate(value);
+                validateParameters();
               }
             }}
             onLoad={() => {}}
@@ -500,6 +615,7 @@ const _PersonalInformationForm = (props: any) => {
         control={control}
         render={({onChange, value}) => (
           <BTextInput
+            multipleSpace={true}
             label="Primer nombre"
             error={errors.firstname}
             onChange={(value) => {
@@ -516,6 +632,7 @@ const _PersonalInformationForm = (props: any) => {
         control={control}
         render={({onChange, value}) => (
           <BTextInput
+            multipleSpace={true}
             label="Segundo nombre"
             error={errors.middlename}
             onChange={(value) => {

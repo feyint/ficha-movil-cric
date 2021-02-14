@@ -5,6 +5,7 @@ import { BError } from '.';
 
 interface Props {
   label?: string;
+  maxLength?: number;
   value?: string;
   error?: any;
   onChange?: any;
@@ -27,12 +28,12 @@ export default class BNumberInput extends Component<Props, any> {
           keyboardType="numeric"
           onChangeText={(text) => {
             text = text.replace(/\s/g, '');
-            text = text.replace(/[^\d,]/g, '');
+            text = text.replace(/[^\d.]/g, '');
             this.props.onChange(text);
           }}
           onBlur={this.props.onBlur ? this.props.onBlur() : null}
           value={this.props.value}
-          maxLength={50}
+          maxLength={this.props.maxLength ? this.props.maxLength : 50}
         />
         <BError error={this.props.error} />
       </View>

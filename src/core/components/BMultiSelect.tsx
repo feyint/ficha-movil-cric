@@ -47,6 +47,20 @@ class BMultiSelect extends Component<Props, State> {
     }
   }
   onSelectedItemsChange(selectedItems: any) {
+    //No aplica
+    let items: any = this.props.items?.children;
+    for (let e = 0; e < selectedItems.length; e++) {
+      for (let index = 0; index < items.length; index++) {
+        const element = items[index];
+        if (
+          element.id == selectedItems[e] &&
+          (element.name.includes('No aplica') ||
+            (element.CODIGO && element.CODIGO.includes('NA')))
+        ) {
+          selectedItems = [selectedItems[e]];
+        }
+      }
+    }
     this.props.onChange(selectedItems);
     this.setState({selectedItems: selectedItems});
   }

@@ -10,7 +10,7 @@ import {connect} from 'react-redux';
 import {BPicker, ButtonAction} from '../../../../core/components';
 import {QuestionConditionPersonCodes} from '../../../../core/utils/PersonTypes';
 import moment from 'moment';
-import {PersonParametersConst} from '../../../../core/utils/SystemParameters';
+import {SystemParameterEnum,} from '../../../../core/utils/SystemParameters';
 import {Text} from 'react-native-paper';
 import {setFNCPERSON} from '../../../../state/person/actions';
 
@@ -22,6 +22,7 @@ import {
   useFUCDEPART,
   useFUCMUNICI,
   useFUCPAIS,
+  useSGCSISPAR,
 } from '../../../../hooks';
 import {FNCCONPER, FNCPERSON} from '../../../../types';
 import {getSelectSchema} from '../../../../core/utils/utils';
@@ -44,6 +45,7 @@ const _BirthInformationForm = (props: any) => {
     resolver: yupResolver(schemaForm),
   });
   const {listFNCCONPER, getQuestionsOptions, getPicker} = useFNCCONPER();
+  const {getByCode} = useSGCSISPAR();
   const {saveAnswer, getAnswerquestion} = useFNCPERSON_FNCCONPER();
   const {listFUCPAIS, getAllFUCPAIS} = useFUCPAIS();
   const {listFUCDEPART, getDeptfromPais} = useFUCDEPART();
@@ -52,6 +54,7 @@ const _BirthInformationForm = (props: any) => {
   const {listFNCLUNIND, getAllFNCLUNIND} = useFNCLUNIND();
   const [fucmunici, setfucmunici] = useState<string>();
   const [fucdepat, setfucdepat] = useState<string>();
+  const [loaded, setLoaded] = useState<boolean>(false);
   const [fucpais, setfucpais] = useState<string>();
   const [fnclunind, setfnclunind] = useState<string>();
   const [enablelacmaterna, setenablelacmaterna] = useState<boolean>(false);
@@ -59,6 +62,12 @@ const _BirthInformationForm = (props: any) => {
   useEffect(() => {
     getQuestionsOptions(questions);
   }, []);
+  useEffect(() => {
+    if (listFUCDEPART && fucdepat) {
+      setValue('fucdepat', fucdepat);
+      setfucdepat('' + fucdepat);
+    }
+  }, [listFUCDEPART]);
   useEffect(() => {
     fetchQuestions();
   }, [listFNCCONPER]);
@@ -75,20 +84,30 @@ const _BirthInformationForm = (props: any) => {
         setValue('fnclunind', props.FNCPERSON.FNCLUNIND_ID);
         setfnclunind('' + props.FNCPERSON.FNCLUNIND_ID);
       }
+      console.error('mm ', props.FNCPERSON);
       if (props.FNCPERSON.FUCMUNICI_ID) {
         let details = await getDetails(props.FNCPERSON.FUCMUNICI_ID);
+        setValue('fucdepat', details.FUCDEPART_ID);
+        setfucdepat('' + details.FUCDEPART_ID);
         getDeptfromPais(details.FUCPAIS_ID);
         getFUCMUNICIFromDept(details.FUCDEPART_ID);
         setValue('fucpais', details.FUCPAIS_ID);
         setfucpais('' + details.FUCPAIS_ID);
-        setValue('fucdepat', details.FUCDEPART_ID);
-        setfucdepat('' + details.FUCDEPART_ID);
+        console.error(details.FUCDEPART_ID);
         setValue('fucmunici', props.FNCPERSON.FUCMUNICI_ID);
         setfucmunici('' + props.FNCPERSON.FUCMUNICI_ID);
         getAnswers(QuestionConditionPersonCodes.LactanciaMaterna, 'lacmaterna');
         getAnswers(QuestionConditionPersonCodes.LunaOccidental, 'fnclunocci');
+        setTimeout(() => {
+          setLoaded(true);
+        }, 2000);
+      } else {
+        setTimeout(() => {
+          setLoaded(true);
+        }, 2000);
       }
     }
+    console.error(props.FNCPERSON.FECHA_NACIMIENTO);
     if (props.FNCPERSON.ID && props.FNCPERSON.FECHA_NACIMIENTO) {
       let birthDate = moment(props.FNCPERSON.FECHA_NACIMIENTO).toDate();
       var years = moment().diff(moment(birthDate, 'DD-MM-YYYY'), 'years');
@@ -101,7 +120,14 @@ const _BirthInformationForm = (props: any) => {
         'months',
         true,
       );
-      if (days <= PersonParametersConst.PRM021) {
+      let edadLactancia = await getByCode(SystemParameterEnum.PRM021);
+      console.error(
+        'dias de edad ',
+        days,
+        'edadLactancia',
+        edadLactancia.VALOR,
+      );
+      if (days <= Number(edadLactancia.VALOR)) {
         setenablelacmaterna(true);
       }
       if (days >= 0 && days <= 30) {
@@ -136,9 +162,11 @@ const _BirthInformationForm = (props: any) => {
     setfucdepat('');
   }
   async function onChangeDept(idDept: any) {
-    getFUCMUNICIFromDept(idDept);
-    setValue('fucmunici', '');
-    setfucmunici('');
+    if (loaded) {
+      getFUCMUNICIFromDept(idDept);
+      setValue('fucmunici', '');
+      setfucmunici('');
+    }
   }
   async function getAnswers(
     questionCode: string,
