@@ -163,9 +163,7 @@ const HomeScreen = (props: any) => {
     navigation.navigate('ManageHousingScreen');
   }
   async function goToHouse(value: any) {
-    console.error(value);
     let vi = await filterFUBUBIVIV(value.ID, true);
-    console.error(vi);
     await props.setFUBUBIVIV(vi);
     navigation.navigate('ManageHousingScreen');
   }

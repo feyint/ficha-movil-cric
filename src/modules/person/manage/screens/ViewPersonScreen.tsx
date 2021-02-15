@@ -14,9 +14,14 @@ import {
   useFNCGENERO,
   useFNCPERSON,
   useFNCSALREP,
+  useSGCSISPAR,
 } from '../../../../hooks';
 import {setFNCPERSON, setFNBINFSAL} from '../../../../state/person/actions';
-import {PersonParametersConst} from '../../../../core/utils/SystemParameters';
+import {
+  PersonParametersConst,
+  SystemParameterEnum,
+} from '../../../../core/utils/SystemParameters';
+import moment from 'moment';
 
 interface Props {
   FNCPERSON: FNCPERSON;
@@ -29,6 +34,7 @@ const ViewPersonScreen = (props: any) => {
   const {itemFNCGENERO, getbyID} = useFNCGENERO();
   const {itemFNBINFSAL, getFNBINFSALbyID} = useFNBINFSAL();
   const {itemFNCSALREP, getFNCSALREPbyID} = useFNCSALREP();
+  const {getByCode} = useSGCSISPAR();
   const [created, setcreated] = useState<boolean>(false);
   const [enableSexReproductionHealt, setenableSexReproductionHealt] = useState<
     boolean
@@ -44,7 +50,7 @@ const ViewPersonScreen = (props: any) => {
   useEffect(() => {
     if (itemFNCGENERO) {
       if (itemFNCGENERO.CODIGO == PersonParametersConst.onlyGenrecode) {
-        setenableSexReproductionHealt(true);
+        validteGenre();
       }
     }
   }, [itemFNCGENERO]);
@@ -78,6 +84,22 @@ const ViewPersonScreen = (props: any) => {
   }, []);
   function _goBack() {
     navigation.goBack();
+  }
+
+  async function validteGenre() {
+    const {FECHA_NACIMIENTO} = props.FNCPERSON as FNCPERSON;
+    if (FECHA_NACIMIENTO) {
+      let birthDate = moment(FECHA_NACIMIENTO).toDate();
+      var days = moment().diff(moment(birthDate, 'DD-MM-YYYY'), 'days');
+      let fecha = await getByCode(SystemParameterEnum.PRM027);
+      if (days <= Number(fecha.VALOR)) {
+        setenableSexReproductionHealt(false);
+      } else {
+        setenableSexReproductionHealt(true);
+      }
+    } else {
+      setenableSexReproductionHealt(false);
+    }
   }
   return (
     <View>
@@ -174,7 +196,7 @@ const ViewPersonScreen = (props: any) => {
                 ? navigate('ReproductiveSexualHealtScreen')
                 : Alert.alert(
                     'Acción no permitida',
-                    'solo aplica para genero "Femenino"',
+                    'solo aplica para genero "Femenino" y edad mayor o igual al parametro PRM027',
                   );
             }}
           />

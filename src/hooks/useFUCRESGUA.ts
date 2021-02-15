@@ -23,7 +23,6 @@ export function useFUCRESGUA() {
     let statement = `SELECT f.* FROM FUCTIPTER_FUCRESGUA ff
     INNER JOIN FUCRESGUA f ON f.ID  = ff.FUCRESGUA_ID 
     WHERE  ff.FUCTIPTER_ID  = ${FUCTIPTER} AND FUCMUNICI_ID = ${FUCMUNICI}`;
-    console.error(statement);
     database.executeQuery('FUCRESGUA', statement).then((results) => {
       const count = results.rows.length;
       const items: FUCRESGUA[] = [];

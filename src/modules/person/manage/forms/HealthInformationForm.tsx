@@ -32,6 +32,7 @@ import {FNBINFSAL, FNCCONSAL} from '../../../../types';
 import {
   useFNBINFSAL,
   useFNBINFSAL_FNCCONSAL,
+  useFNCINTIMC,
   useSGCSISPAR,
 } from '../../../../hooks';
 import {FNCPERSON} from '../../../../state/person/types';
@@ -82,6 +83,7 @@ const _HealthInformationForm = (props: any) => {
   const [enableDiabetes, setenableDiabetes] = useState<boolean>(false);
   const [enableSaludVisual, setenableSaludVisual] = useState<boolean>(false);
   const [enableDesparacitacion, setenableDesparacitacion] = useState<boolean>(false);
+  const [visitDate, setvisitDate] = useState<Date>();
   const {
     getQuestionsOptions,
     getMultiselect,
@@ -90,6 +92,7 @@ const _HealthInformationForm = (props: any) => {
   } = useFNCCONSAL();
   const {saveAnswer, getAnswerquestion} = useFNBINFSAL_FNCCONSAL();
   const {itemFNBINFSAL, updateFNBINFSAL, loadingFNBINFSAL} = useFNBINFSAL();
+  const {getAllFNCINTIMC, getIMC, getImcPicker} = useFNCINTIMC();
   const {getByCode} = useSGCSISPAR();
   const navigation = useNavigation();
 
@@ -101,6 +104,7 @@ const _HealthInformationForm = (props: any) => {
 
   useEffect(() => {
     getQuestionsOptions(questionscodes);
+    getAllFNCINTIMC();
   }, []);
   useEffect(() => {
     if (listFNCCONSAL) {
@@ -126,6 +130,7 @@ const _HealthInformationForm = (props: any) => {
       USO_PROTESIS,
       ULTIMA_VISITA,
       TIEMPO_PROTESIS,
+      FNCINTIMC_ID,
     } = props.FNBINFSAL as FNBINFSAL;
     const {FECHA_NACIMIENTO} = props.FNCPERSON as FNCPERSON;
     if (PESO == null || PESO == 'null') {
@@ -183,7 +188,6 @@ const _HealthInformationForm = (props: any) => {
           'RiesgoPadecerDiabetes',
         );
       }
-      console.error(days, edad10.VALOR);
       if (days < Number(edad10.VALOR)) {
         setenableDesparacitacion(false);
         for (let i = 0; i < listFNCCONSAL.length; i++) {
@@ -205,6 +209,10 @@ const _HealthInformationForm = (props: any) => {
         );
       }
     }
+    if (FNCINTIMC_ID == null || FNCINTIMC_ID == 'null') {
+    } else {
+      setValue('InterpretacionTensionArterial', '' + FNCINTIMC_ID);
+    }
     if (TA_SISTOLICA == null || TA_SISTOLICA == 'null') {
     } else {
       setValue('TensionArterialSistolica', '' + TA_SISTOLICA);
@@ -218,7 +226,10 @@ const _HealthInformationForm = (props: any) => {
       setEnableProtesis(true);
       setValue('TiempoProtesis', Boolean(TIEMPO_PROTESIS));
     }
-    setValue('FechaUltimaVisita', ULTIMA_VISITA);
+    if (ULTIMA_VISITA) {
+      setvisitDate(moment(ULTIMA_VISITA).toDate());
+      setValue('FechaUltimaVisita', ULTIMA_VISITA);
+    }
     getAnswers(QuestionPersonCodes.FactoresRiesgo, 'FactoresDeRiesgo');
     getAnswers(QuestionPersonCodes.SaludVisual, 'SaludVisual');
     getAnswers(
@@ -238,10 +249,13 @@ const _HealthInformationForm = (props: any) => {
   }
   async function calculateIMC(_peso: any, _altura: any) {
     if (_peso && _altura) {
-      let alturaMT = _altura / 100;
-      let imc = _peso / (alturaMT * alturaMT);
-      setValue('IMC', '' + imc.toFixed(1));
-      setImc(imc);
+      let imcx = _peso / (_altura * _altura);
+      setValue('IMC', '' + imcx.toFixed(5));
+      setImc(imcx);
+      let imc = await getIMC(imcx);
+      if (imc) {
+        setValue('InterpretacionTensionArterial', '' + imc.ID);
+      }
     } else {
       setValue('IMC', '');
       setImc(undefined);
@@ -315,7 +329,8 @@ const _HealthInformationForm = (props: any) => {
     newItem.USO_PROTESIS = data.UtilizaProtesis;
     newItem.TA_SISTOLICA = data.TensionArterialSistolica;
     newItem.TA_DIASTOLICA = data.TensionArterialDiastólica;
-    newItem.ULTIMA_VISITA = data.FechaUltimaVisita;
+    newItem.FNCINTIMC_ID = data.InterpretacionTensionArterial;
+    newItem.ULTIMA_VISITA = visitDate;
     if (data.UtilizaProtesis) {
       newItem.TIEMPO_PROTESIS = data.TiempoProtesis;
     } else {
@@ -385,7 +400,7 @@ const _HealthInformationForm = (props: any) => {
           control={control}
           render={({onChange, onBlur, value}) => (
             <BNumberInput
-              label={'Altura en centrimetros'}
+              label={'Altura en metros'}
               onBlur={onBlur}
               onChange={(value: any) => {
                 if (value) {
@@ -480,7 +495,7 @@ const _HealthInformationForm = (props: any) => {
               }}
               error={errors.InterpretacionTensionArterial}
               selectedValue={value}
-              items={[{label: 'Normal', value: '0'}]}
+              items={getImcPicker()}
             />
           )}
           name="InterpretacionTensionArterial"
@@ -661,9 +676,10 @@ const _HealthInformationForm = (props: any) => {
               maximumDate={new Date()}
               onChange={(value: any) => {
                 onChange(value);
+                setvisitDate(value);
               }}
               error={errors.FechaUltimaVisita}
-              value={value}
+              value={visitDate}
             />
           )}
           name="FechaUltimaVisita"

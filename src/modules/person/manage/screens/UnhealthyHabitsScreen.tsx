@@ -19,7 +19,7 @@ class SocialSecurityScreen extends Component<Props, any> {
         <BAppBar
           backH={true}
           onPress={() => this._goBack()}
-          title="Habitos no saludables"
+          title="Hábitos no saludables"
         />
         <UnhealthyHabitsForm />
       </View>

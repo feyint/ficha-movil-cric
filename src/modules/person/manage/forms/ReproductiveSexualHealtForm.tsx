@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
 import {View, StyleSheet, Alert} from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
@@ -9,8 +10,11 @@ import {connect} from 'react-redux';
 import {BButton, ButtonAction} from '../../../../core/components';
 import BNumberInput from '../../../../core/components/BNumberInput';
 import {theme} from '../../../../core/style/theme';
-import { useFNCSALREP } from '../../../../hooks';
-import { FNCSALREP } from '../../../../types';
+import {useFNCSALREP, useSGCSISPAR} from '../../../../hooks';
+import {FNCPERSON, FNCSALREP} from '../../../../types';
+import {SystemParameterEnum} from '../../../../core/utils/SystemParameters';
+import moment from 'moment';
+import { setFNCNCSALREP } from '../../../../state/SexAndRepHealthPerson/actions';
 
 const schemaForm = yup.object().shape({
   agemenstruation: yup.number().integer().min(1),
@@ -23,7 +27,7 @@ const schemaForm = yup.object().shape({
 });
 const _ReproductiveSexualHealtForm = (props: any) => {
   const navigation = useNavigation();
-  const {handleSubmit, control, errors, setValue} = useForm({
+  const {handleSubmit, control, errors, setValue, getValues} = useForm({
     resolver: yupResolver(schemaForm),
   });
   const [agemenstruation, setagemenstruation] = useState<number>();
@@ -34,13 +38,31 @@ const _ReproductiveSexualHealtForm = (props: any) => {
   const [bornnumber, setbornnumber] = useState<number>(0);
   const [bornnumberdeath, setbornnumberdeath] = useState<number>(0);
   const {itemFNCSALREP, updateFNCSALREP, loadingFNCSALREP} = useFNCSALREP();
+  const {getByCode} = useSGCSISPAR();
+  const [loaded, setLoaded] = useState<boolean>(false);
   useEffect(() => {
     fetchQuestions();
   }, []);
+  useEffect(() => {
+    if (loaded && (!pregnancynumber || pregnancynumber == 0)) {
+      setValue('parideznumber', '' + 0);
+      setparideznumber(0);
+      setValue('pregnancynumber', '' + 0);
+      setValue('abortionnumber', '' + 0);
+      setabortionnumber(0);
+      setValue('cesariannumber', '' + 0);
+      setcesariannumber(0);
+      setValue('bornnumber', '' + 0);
+      setbornnumber(0);
+      setValue('bornnumberdeath', '' + 0);
+      setbornnumberdeath(0);
+    }
+  }, [pregnancynumber]);
   const fetchQuestions = async () => {
     const {
       EDAD_PRIMERA_REGLA,
       EDAD_GESTACION,
+      GRAVIDEZ,
       PARIDEZ,
       ABORTO,
       CESAREA,
@@ -49,18 +71,39 @@ const _ReproductiveSexualHealtForm = (props: any) => {
     } = props.FNCSALREP as FNCSALREP;
     setValue('agemenstruation', '' + EDAD_PRIMERA_REGLA);
     setagemenstruation(EDAD_PRIMERA_REGLA);
-    setValue('pregnancynumber', '' + EDAD_GESTACION);
-    setpregnancynumber(Number(EDAD_GESTACION));
-    setValue('parideznumber', '' + PARIDEZ);
-    setparideznumber(PARIDEZ);
-    setValue('abortionnumber', '' + ABORTO);
-    setabortionnumber(ABORTO);
-    setValue('cesariannumber', '' + CESAREA);
-    setcesariannumber(CESAREA);
-    setValue('bornnumber', '' + NACIDOS_VIVOS);
-    setbornnumber(NACIDOS_VIVOS);
-    setValue('bornnumberdeath', '' + NACIDOS_MUERTOS);
-    setbornnumberdeath(NACIDOS_MUERTOS);
+    if (PARIDEZ == null || PARIDEZ == 'null') {
+    } else {
+      setValue('parideznumber', '' + PARIDEZ);
+      setparideznumber(PARIDEZ);
+    }
+    if (ABORTO == null || ABORTO == 'null') {
+    } else {
+      setValue('abortionnumber', '' + ABORTO);
+      setabortionnumber(ABORTO);
+    }
+    if (CESAREA == null || CESAREA == 'null') {
+    } else {
+      setValue('cesariannumber', '' + CESAREA);
+      setcesariannumber(CESAREA);
+    }
+    if (NACIDOS_VIVOS == null || NACIDOS_VIVOS == 'null') {
+    } else {
+      setValue('bornnumber', '' + NACIDOS_VIVOS);
+      setbornnumber(NACIDOS_VIVOS);
+    }
+    if (NACIDOS_MUERTOS == null || NACIDOS_MUERTOS == 'null') {
+    } else {
+      setValue('bornnumberdeath', '' + NACIDOS_MUERTOS);
+      setbornnumberdeath(NACIDOS_MUERTOS);
+    }
+    if (GRAVIDEZ == null || GRAVIDEZ == 'null') {
+    } else {
+      setValue('pregnancynumber', '' + GRAVIDEZ);
+      setpregnancynumber(Number(GRAVIDEZ));
+    }
+    setTimeout(() => {
+      setLoaded(true);
+    }, 500);
   };
   const onSubmit = async (data: any) => {
     let item: FNCSALREP = props.FNCSALREP;
@@ -74,7 +117,8 @@ const _ReproductiveSexualHealtForm = (props: any) => {
           item.CESAREA = data.cesariannumber;
           item.NACIDOS_VIVOS = data.bornnumber;
           item.NACIDOS_MUERTOS = data.bornnumberdeath;
-          await updateFNCSALREP(item);
+          let result = await updateFNCSALREP(item);
+          await props.setFNCNCSALREP(result);
           navigation.goBack();
         }
       } else {
@@ -90,32 +134,66 @@ const _ReproductiveSexualHealtForm = (props: any) => {
       );
     }
   };
-  const validateField = (value: any) => {
-    if (value > pregnancynumber) {
-      return false;
-    } else {
-      return true;
+  function validateGravidez(type = 0) {
+    let pregnancyr = Number(getValues('pregnancynumber'));
+    let paridez = Number(getValues('parideznumber'));
+    let abortion = Number(getValues('abortionnumber'));
+    let cesarian = Number(getValues('cesariannumber'));
+    let sum = paridez + abortion + cesarian;
+    if (sum > pregnancyr) {
+      switch (type) {
+        case 1:
+          setValue('parideznumber', `${pregnancyr - (abortion + cesarian)}`);
+          break;
+        case 2:
+          setValue('abortionnumber', `${pregnancyr - (paridez + cesarian)}`);
+          break;
+        case 3:
+          setValue('cesariannumber', `${pregnancyr - (abortion + paridez)}`);
+          break;
+      }
     }
-  };
+  }
+  function validateBorn(type = 0) {
+    let pregnancyr = Number(getValues('pregnancynumber'));
+    let born = Number(getValues('bornnumber'));
+    let bornD = Number(getValues('bornnumberdeath'));
+    let sum = born + bornD;
+    if (sum < pregnancyr) {
+      let saldo = pregnancyr - sum;
+      switch (type) {
+        case 1:
+          if (born < pregnancyr && bornD == 0) {
+          } else {
+            setValue('bornnumber', `${sum + saldo}`);
+          }
+          break;
+        case 2:
+          setValue('bornnumberdeath', `${saldo}`);
+          break;
+      }
+    }
+  }
   const validatepregnancynumber = () => {
     let isValid = false;
-    if (pregnancynumber > 0) {
-      let sum = parideznumber + abortionnumber + cesariannumber;
-      if (sum == pregnancynumber) {
-        isValid = true;
-      }
+    let pregnancyr = Number(getValues('pregnancynumber'));
+    let paridez = Number(getValues('parideznumber'));
+    let abortion = Number(getValues('abortionnumber'));
+    let cesarian = Number(getValues('cesariannumber'));
+    let sum = paridez + abortion + cesarian;
+    if (sum == pregnancyr) {
+      isValid = true;
     }
     return isValid;
   };
-
   const valideateBornPregnancy = () => {
     let isValid = false;
-    if (pregnancynumber > 0) {
-      let suma = bornnumber + bornnumberdeath;
-      //console.warn(`${suma}`);
-      if (suma >= pregnancynumber) {
-        isValid = true;
-      }
+    let pregnancyr = Number(getValues('pregnancynumber'));
+    let born = Number(getValues('bornnumber'));
+    let bornD = Number(getValues('bornnumberdeath'));
+    let sum = born + bornD;
+    if (sum >= pregnancyr) {
+      isValid = true;
     }
     return isValid;
   };
@@ -126,6 +204,7 @@ const _ReproductiveSexualHealtForm = (props: any) => {
           control={control}
           render={({onChange, value}) => (
             <BNumberInput
+              maxLength={3}
               label="Edad de la primera menstruación"
               error={errors.agemenstruation}
               onChange={(value) => {
@@ -141,16 +220,17 @@ const _ReproductiveSexualHealtForm = (props: any) => {
           control={control}
           render={({onChange, value}) => (
             <BNumberInput
+              maxLength={3}
               disabled={agemenstruation && agemenstruation > 0 ? false : true}
               label="Número de gravidez"
               error={errors.pregnancynumber}
               onChange={(value) => {
+                value = Number(value.replace(/[^\d]/g, ''));
                 onChange(value);
-                if (!isNaN(value)) {
-                  setpregnancynumber(parseInt(value, 10));
-                }
+                setpregnancynumber(value);
+                validateGravidez();
               }}
-              value={!isNaN(pregnancynumber) ? '' + pregnancynumber : ''}
+              value={value ? '' + value : ''}
             />
           )}
           name="pregnancynumber"
@@ -159,22 +239,16 @@ const _ReproductiveSexualHealtForm = (props: any) => {
           control={control}
           render={({onChange, value}) => (
             <BNumberInput
-              label="Número paridez"
+              maxLength={3}
+              label="Número de paridez"
               disabled={!pregnancynumber || pregnancynumber == 0}
               error={errors.parideznumber}
               onChange={(value) => {
+                value = Number(value.replace(/[^\d]/g, ''));
                 onChange(value);
-                //if (validatepregnancynumber(parseInt(value, 10))) {
-                validateField(parseInt(value, 10))
-                  ? setparideznumber(parseInt(value, 10))
-                  : Alert.alert(
-                      'Valor mayor al de gravidez',
-                      'Ingrese un valor correcto',
-                    );
-
-                //}
+                validateGravidez(1);
               }}
-              value={parideznumber ? ' ' + parideznumber : '0'}
+              value={value ? '' + value : ''}
             />
           )}
           name="parideznumber"
@@ -183,22 +257,16 @@ const _ReproductiveSexualHealtForm = (props: any) => {
           control={control}
           render={({onChange, value}) => (
             <BNumberInput
+              maxLength={3}
               disabled={!pregnancynumber || pregnancynumber == 0}
               label="Número de abortos"
               error={errors.abortionnumber}
               onChange={(value) => {
+                value = Number(value.replace(/[^\d]/g, ''));
                 onChange(value);
-                //if (validatepregnancynumber(parseInt(value, 10))) {
-                validateField(parseInt(value, 10))
-                  ? setabortionnumber(parseInt(value, 10))
-                  : Alert.alert(
-                      'Valor mayor al de gravidez',
-                      'Ingrese un valor correcto',
-                    );
-
-                //}
+                validateGravidez(2);
               }}
-              value={abortionnumber ? ' ' + abortionnumber : '0'}
+              value={value ? '' + value : ''}
             />
           )}
           name="abortionnumber"
@@ -207,22 +275,16 @@ const _ReproductiveSexualHealtForm = (props: any) => {
           control={control}
           render={({onChange, value}) => (
             <BNumberInput
+              maxLength={3}
               disabled={!pregnancynumber || pregnancynumber == 0}
-              label="Número cesárea"
+              label="Número de cesárea"
               error={errors.cesariannumber}
               onChange={(value) => {
+                value = Number(value.replace(/[^\d]/g, ''));
                 onChange(value);
-                //if (validatepregnancynumber(parseInt(value, 10))) {
-                validateField(parseInt(value, 10))
-                  ? setcesariannumber(parseInt(value, 10))
-                  : Alert.alert(
-                      'Valor mayor al de gravidez',
-                      'Ingrese un valor correcto',
-                    );
-
-                //}
+                validateGravidez(3);
               }}
-              value={cesariannumber ? ' ' + cesariannumber : '0'}
+              value={value ? '' + value : ''}
             />
           )}
           name="cesariannumber"
@@ -231,19 +293,16 @@ const _ReproductiveSexualHealtForm = (props: any) => {
           control={control}
           render={({onChange, value}) => (
             <BNumberInput
+              maxLength={3}
               disabled={!pregnancynumber || pregnancynumber == 0}
               label="Número de nacidos vivos"
               error={errors.bornnumber}
               onChange={(value) => {
+                value = Number(value.replace(/[^\d]/g, ''));
                 onChange(value);
-                validateField(parseInt(value, 10))
-                  ? setbornnumber(parseInt(value, 10))
-                  : Alert.alert(
-                      'Valor mayor al de gravidez',
-                      'Ingrese un valor correcto',
-                    );
+                validateBorn(1);
               }}
-              value={bornnumber ? ' ' + bornnumber : '0'}
+              value={value ? '' + value : ''}
             />
           )}
           name="bornnumber"
@@ -252,19 +311,16 @@ const _ReproductiveSexualHealtForm = (props: any) => {
           control={control}
           render={({onChange, value}) => (
             <BNumberInput
+              maxLength={3}
               disabled={!pregnancynumber || pregnancynumber == 0}
               label="Número de nacidos muertos"
               error={errors.bornnumberdeath}
               onChange={(value) => {
+                value = Number(value.replace(/[^\d]/g, ''));
                 onChange(value);
-                validateField(parseInt(value, 10))
-                  ? setbornnumberdeath(parseInt(value, 10))
-                  : Alert.alert(
-                      'Valor mayor al de gravidez',
-                      'Ingrese un valor correcto',
-                    );
+                validateBorn(2);
               }}
-              value={bornnumberdeath ? ' ' + bornnumberdeath : '0'}
+              value={value ? '' + value : ''}
             />
           )}
           name="bornnumberdeath"
@@ -318,4 +374,10 @@ const mapStateToProps = (store: any) => {
     FNCSALREP: store.sarhealthperson.FNCSALREP,
   };
 };
-export default connect(mapStateToProps, null)(_ReproductiveSexualHealtForm);
+const mapDispatchToProps = {
+  setFNCNCSALREP,
+};
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(_ReproductiveSexualHealtForm);

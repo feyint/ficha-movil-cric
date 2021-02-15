@@ -34,7 +34,7 @@ export function useFNCCONREP() {
     let statement = `
     SELECT q.CODIGO as QUESTIONCODE, q.NOMBRE as QUESTIONNAME, o.* FROM FNCELEREP q 
     INNER JOIN FNCCONREP o ON q.ID = o.FNCELEREP_ID
-    WHERE q.CODIGO  in (${inQuery})`;
+    WHERE q.CODIGO  in (${inQuery}) ORDER BY NOMBRE ASC`;
     await database.executeQuery('FNCCONREP', statement).then((results) => {
       const count = results.rows.length;
       const items: FNCCONREP[] = [];

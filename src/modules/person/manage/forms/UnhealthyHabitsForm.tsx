@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
@@ -11,8 +11,10 @@ import {connect} from 'react-redux';
 import {QuestionPersonCodes} from '../../../../core/utils/PersonTypes';
 import {theme} from '../../../../core/style/theme';
 import {useFNCCONSAL} from '../../../../hooks/useFNCCONSAL';
-import {useFNBINFSAL_FNCCONSAL} from '../../../../hooks';
-import {FNCCONSAL} from '../../../../types';
+import {useFNBINFSAL_FNCCONSAL, useSGCSISPAR} from '../../../../hooks';
+import {FNCCONSAL, FNCPERSON} from '../../../../types';
+import moment from 'moment';
+import { SystemParameterEnum } from '../../../../core/utils/SystemParameters';
 
 const questionscodes = [
   QuestionPersonCodes.Fuma,
@@ -37,6 +39,11 @@ const _UnhealthyHabitsForm = (props: any) => {
     listFNCCONSAL,
   } = useFNCCONSAL();
   const {saveAnswer, getAnswerquestion} = useFNBINFSAL_FNCCONSAL();
+  const {getByCode} = useSGCSISPAR();
+  const [enableFuma, setenableFuma] = useState<boolean>(false);
+  const [enableBebidas, setenableBebidas] = useState<boolean>(false);
+  const [enableEvidencia, setenableEvidencia] = useState<boolean>(false);
+
   const navigation = useNavigation();
   const {handleSubmit, control, errors, setValue} = useForm({
     resolver: yupResolver(schemaForm),
@@ -108,15 +115,52 @@ const _UnhealthyHabitsForm = (props: any) => {
   }
 
   async function fetchQuestions() {
-    getAnswers(QuestionPersonCodes.Fuma, 'Fuma');
-    getAnswers(
-      QuestionPersonCodes.ConsumeBebidasAlcoholicas,
-      'ConsumeBebidasAlcoholicas',
-    );
-    getAnswers(
-      QuestionPersonCodes.EvidenciaConsumoSustanciasPsicoactivas,
-      'EvidenciaConsumoSustanciasPsicoactivas',
-    );
+    const {FECHA_NACIMIENTO} = props.FNCPERSON as FNCPERSON;
+    if (FECHA_NACIMIENTO) {
+      let birthDate = moment(FECHA_NACIMIENTO).toDate();
+      var years = moment().diff(moment(birthDate, 'DD-MM-YYYY'), 'years');
+      var days = moment().diff(moment(birthDate, 'DD-MM-YYYY'), 'days');
+      let edadMinima = await getByCode(SystemParameterEnum.PRM012);
+      if (days <= Number(edadMinima.VALOR)) {
+        setenableFuma(false);
+        setenableBebidas(false);
+        setenableEvidencia(false);
+        for (let i = 0; i < listFNCCONSAL.length; i++) {
+          const element = listFNCCONSAL[i];
+          if (
+            element.QUESTIONCODE == QuestionPersonCodes.Fuma &&
+            element.NOMBRE.includes('No aplica')
+          ) {
+            setValue('Fuma', '' + element.ID);
+          }
+          if (
+            element.QUESTIONCODE == QuestionPersonCodes.ConsumeBebidasAlcoholicas &&
+            element.NOMBRE.includes('No aplica')
+          ) {
+            setValue('ConsumeBebidasAlcoholicas', '' + element.ID);
+          }
+          if (
+            element.QUESTIONCODE == QuestionPersonCodes.EvidenciaConsumoSustanciasPsicoactivas &&
+            element.NOMBRE.includes('No aplica')
+          ) {
+            setValue('EvidenciaConsumoSustanciasPsicoactivas', '' + element.ID);
+          }
+        }
+      } else {
+        setenableFuma(true);
+        setenableBebidas(true);
+        setenableEvidencia(true);
+        getAnswers(QuestionPersonCodes.Fuma, 'Fuma');
+        getAnswers(
+          QuestionPersonCodes.ConsumeBebidasAlcoholicas,
+          'ConsumeBebidasAlcoholicas',
+        );
+        getAnswers(
+          QuestionPersonCodes.EvidenciaConsumoSustanciasPsicoactivas,
+          'EvidenciaConsumoSustanciasPsicoactivas',
+        );
+      }
+    }
     getAnswers(QuestionPersonCodes.EvidenciaViolencia, 'EvidenciaViolencia', 2);
   }
 
@@ -127,6 +171,7 @@ const _UnhealthyHabitsForm = (props: any) => {
           control={control}
           render={({onChange, onBlur, value}) => (
             <BPicker
+              enabled={enableFuma}
               label={getLabel(QuestionPersonCodes.Fuma)}
               onBlur={onBlur}
               error={errors.Fuma}
@@ -143,6 +188,7 @@ const _UnhealthyHabitsForm = (props: any) => {
           control={control}
           render={({onChange, onBlur, value}) => (
             <BPicker
+              enabled={enableBebidas}
               label={getLabel(QuestionPersonCodes.ConsumeBebidasAlcoholicas)}
               onBlur={onBlur}
               error={errors.ConsumeBebidasAlcoholicas}
@@ -159,6 +205,7 @@ const _UnhealthyHabitsForm = (props: any) => {
           control={control}
           render={({onChange, onBlur, value}) => (
             <BPicker
+              enabled={enableEvidencia}
               label={getLabel(
                 QuestionPersonCodes.EvidenciaConsumoSustanciasPsicoactivas,
               )}
@@ -241,6 +288,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (store: any) => {
   return {
     FNBINFSAL: store.person.FNBINFSAL,
+    FNCPERSON: store.person.FNCPERSON,
   };
 };
 export default connect(mapStateToProps, null)(_UnhealthyHabitsForm);

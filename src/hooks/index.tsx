@@ -30,3 +30,6 @@ export {useFNBINFSAL} from './useFNBINFSAL';
 export {useFNCSALREP} from './useFNCSALREP';
 export {useFNCSALREP_FNCCONREP} from './useFNCSALREP_FNCCONREP';
 export {useSGCSISPAR} from './useSGCSISPAR';
+export {useFNCINTIMC} from './useFNCINTIMC';
+export {useFSCSEMAFO} from './useFSCSEMAFO';
+export {useFNCINTTEA} from './useFNCINTTEA';

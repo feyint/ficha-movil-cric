@@ -103,7 +103,6 @@ export function useFNBNUCVIV_FNCPERSON() {
     return await database
       .executeQuery('FNBNUCVIV_FNCPERSON', statement)
       .then((results) => {
-        console.error(results);
         const count = results.rows.length;
         for (let i = 0; i < count; i++) {
           const row = results.rows.item(i);

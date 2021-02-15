@@ -450,6 +450,38 @@ export class DatabaseInitialization {
       );
     `);
     transaction.executeSql(`
+      CREATE TABLE IF NOT EXISTS FNCINTIMC(
+        ID INTEGER PRIMARY KEY NOT NULL,
+        CODIGO TEXT,
+        NOMBRE TEXT,
+        VALOR_INF INTEGER,
+        VALOR_SUP INTEGER,
+        ESTADO INTEGER,
+        FSCSEMAFO_ID INTEGER
+      );
+    `);
+    transaction.executeSql(`
+      CREATE TABLE IF NOT EXISTS FNCINTTEA(
+        ID INTEGER PRIMARY KEY NOT NULL,
+        CODIGO TEXT,
+        NOMBRE TEXT,
+        PAS_INFERIOR INTEGER,
+        PAS_SUPERIOR INTEGER,
+        PAD_INFERIOR INTEGER,
+        PAD_SUPERIOR INTEGER,
+        ESTADO INTEGER,
+        FSCSEMAFO_ID INTEGER
+      );
+    `);
+    transaction.executeSql(`
+      CREATE TABLE IF NOT EXISTS FSCSEMAFO(
+        ID INTEGER PRIMARY KEY NOT NULL,
+        CODIGO TEXT,
+        NOMBRE TEXT,
+        ESTADO INTEGER
+      );
+    `);
+    transaction.executeSql(`
       CREATE TABLE IF NOT EXISTS FNCORGANI(
         ID INTEGER PRIMARY KEY NOT NULL,
         CODIGO TEXT,
@@ -544,7 +576,7 @@ export class DatabaseInitialization {
         GRAVIDEZ INTEGER,
         PARIDEZ INTEGER,
         ABORTO INTEGER,
-        CESAREA TEXT,
+        CESAREA INTEGER,
         NACIDOS_VIVOS INTEGER,
         NACIDOS_MUERTOS INTEGER,
         PARTO_ULTIMO TEXT,

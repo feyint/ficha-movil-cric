@@ -17,8 +17,6 @@ export function useFUCBARVER() {
     return database.getAllFromEntity('FUCBARVER').then(setItem);
   }
   function filterFUCBARVER(FUCRESGUA: number) {
-    console.error('FUCRESGUA ', FUCRESGUA);
-    
     let statement = `SELECT * FROM {0} WHERE FUCRESGUA_ID = ${FUCRESGUA}`;
     database.executeQuery('FUCBARVER', statement).then((results) => {
       const count = results.rows.length;

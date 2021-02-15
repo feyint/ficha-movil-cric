@@ -5,7 +5,7 @@ export interface FNCSALREP {
   GRAVIDEZ?: number;
   PARIDEZ?: number;
   ABORTO?: number;
-  CESAREA?: string;
+  CESAREA?: number;
   NACIDOS_VIVOS?: number;
   NACIDOS_MUERTOS?: number;
   PARTO_ULTIMO?: Date;

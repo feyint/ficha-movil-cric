@@ -182,9 +182,7 @@ const _MortalityLast12MonthsForm = (props: any) => {
           name="Soporte"
         />
         <ButtonAction
-          onAccept={handleSubmit(onSubmit, (err) => {
-            console.error(err);
-          })}
+          onAccept={handleSubmit(onSubmit)}
           onCancel={() => navigation.goBack()}
         />
       </View>

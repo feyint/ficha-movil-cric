@@ -33,7 +33,7 @@ export const clearFNCNCSALREP = () => (dispatch: any) => {
   dispatch(_setFNCSALREP(NCSALREP));
 };
 
-export const setFNCNCSALREP = (data: FNCSALREP) => async (dispatch: any) => {
+export const setFNCNCSALREP = (data: any) => async (dispatch: any) => {
   dispatch(_setFNCSALREP(data));
 };
 

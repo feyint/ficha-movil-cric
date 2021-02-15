@@ -6,11 +6,14 @@ import {
   useFNCCONPER,
   useFNCELEPER,
   useFNCGENERO,
+  useFNCINTIMC,
+  useFNCINTTEA,
   useFNCLUNIND,
   useFNCOCUPAC,
   useFNCPAREN,
   useFNCPUEIND,
   useFNCTIPIDE,
+  useFSCSEMAFO,
   useFUCBARVER,
   useFUCDEPART,
   useFUCMUNICI,
@@ -56,6 +59,9 @@ const SyncParametersScreen = () => {
   const {countFNCELEREP, syncFNCELEREP, loadingFNCELEREP} = useFNCELEREP();
   const {countFNCCONREP, syncFNCCONREP, loadingFNCCONREP} = useFNCCONREP();
   const {countSGCSISPAR, syncSGCSISPAR, loadingSGCSISPAR} = useSGCSISPAR();
+  const {countFNCINTIMC, syncFNCINTIMC, loadingFNCINTIMC} = useFNCINTIMC();
+  const {countFSCSEMAFO, syncFSCSEMAFO, loadingFSCSEMAFO} = useFSCSEMAFO();
+  const {countFNCINTTEA, syncFNCINTTEA, loadingFNCINTTEA} = useFNCINTTEA();
   const {
     countFUCZONCUI_FUCBARVER,
     loadingFUCZONCUI_FUCBARVER,
@@ -90,7 +96,10 @@ const SyncParametersScreen = () => {
       loadingFNCELEREP ||
       loadingFNCCONREP ||
       loadingFUCTIPTER_FUCRESGUA ||
-      loadingSGCSISPAR
+      loadingSGCSISPAR ||
+      loadingFNCINTIMC ||
+      loadingFSCSEMAFO ||
+      loadingFNCINTTEA
     ) {
     } else {
       syncFVCELEVIV();
@@ -118,6 +127,9 @@ const SyncParametersScreen = () => {
       syncFNCCONREP();
       syncFUCTIPTER_FUCRESGUA();
       syncSGCSISPAR();
+      syncFNCINTIMC();
+      syncFSCSEMAFO();
+      syncFNCINTTEA();
     }
 
     //await this.clearPollEntities();
@@ -259,6 +271,9 @@ const SyncParametersScreen = () => {
             {renderRow('FNCCONSAL()', loadingFNCCONSAL, countFNCCONSAL)}
             {renderRow('FNCELEREP()', loadingFNCELEREP, countFNCELEREP)}
             {renderRow('FNCCONREP()', loadingFNCCONREP, countFNCCONREP)}
+            {renderRow('FNCINTIMC()', loadingFNCINTIMC, countFNCINTIMC)}
+            {renderRow('FSCSEMAFO()', loadingFSCSEMAFO, countFSCSEMAFO)}
+            {renderRow('FNCINTTEA()', loadingFNCINTTEA, countFNCINTTEA)}
           </DataTable>
         </Card>
       </KeyboardAwareScrollView>
@@ -285,7 +300,10 @@ const SyncParametersScreen = () => {
           loadingFNCELEREP ||
           loadingFNCCONREP ||
           loadingFUCTIPTER_FUCRESGUA ||
-          loadingSGCSISPAR
+          loadingSGCSISPAR ||
+          loadingFNCINTIMC ||
+          loadingFSCSEMAFO ||
+          loadingFNCINTTEA
         }
         label="Sincronizar Catalogos"
         style={styles.fab}

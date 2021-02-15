@@ -96,19 +96,20 @@ export function useFNCSALREP() {
         setLoading(false);
       });
   }
-  async function updateFNCSALREP(item: FNCSALREP): Promise<void> {
+  async function updateFNCSALREP(item: FNCSALREP) {
     setLoading(true);
     let statement = `UPDATE {0}  SET
     ABORTO=${item.ABORTO ? item.ABORTO : null}, 
     ACCION_CITOLOGIA=${item.ACCION_CITOLOGIA ? item.ACCION_CITOLOGIA : null}, 
     ACCION_PROSTATA=${item.ACCION_PROSTATA ? item.ACCION_PROSTATA : null}, 
-    CESAREA='${item.CESAREA ? item.CESAREA : ''}',
+    CESAREA=${item.CESAREA ? item.CESAREA : null},
     EDAD_GESTACION='${item.EDAD_GESTACION ? item.EDAD_GESTACION : ''}',
     EDAD_PRIMERA_REGLA=${
       item.EDAD_PRIMERA_REGLA ? item.EDAD_PRIMERA_REGLA : null
     },
     GRAVIDEZ=${item.GRAVIDEZ ? item.GRAVIDEZ : null},
     NACIDOS_MUERTOS=${item.NACIDOS_MUERTOS ? item.NACIDOS_MUERTOS : null},
+    NACIDOS_VIVOS=${item.NACIDOS_VIVOS ? item.NACIDOS_VIVOS : null},
     PARIDEZ=${item.PARIDEZ ? item.PARIDEZ : null},
     PARTO_ESTIMADO='${item.PARTO_ESTIMADO ? item.PARTO_ESTIMADO : ''}',
     PARTO_ULTIMO='${item.PARTO_ULTIMO ? item.PARTO_ULTIMO : ''}',
@@ -122,8 +123,8 @@ export function useFNCSALREP() {
     WHERE ID = ${item.ID}`;
     return await database
       .executeQuery('FNCSALREP', statement)
-      .then((results) => {
-        getFNCSALREPbyID(item.ID);
+      .then(async (results) => {
+        return await getFNCSALREPbyID(item.ID);
       })
       .finally(() => {
         setLoading(false);

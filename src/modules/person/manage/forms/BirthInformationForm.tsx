@@ -84,7 +84,6 @@ const _BirthInformationForm = (props: any) => {
         setValue('fnclunind', props.FNCPERSON.FNCLUNIND_ID);
         setfnclunind('' + props.FNCPERSON.FNCLUNIND_ID);
       }
-      console.error('mm ', props.FNCPERSON);
       if (props.FNCPERSON.FUCMUNICI_ID) {
         let details = await getDetails(props.FNCPERSON.FUCMUNICI_ID);
         setValue('fucdepat', details.FUCDEPART_ID);
@@ -93,7 +92,6 @@ const _BirthInformationForm = (props: any) => {
         getFUCMUNICIFromDept(details.FUCDEPART_ID);
         setValue('fucpais', details.FUCPAIS_ID);
         setfucpais('' + details.FUCPAIS_ID);
-        console.error(details.FUCDEPART_ID);
         setValue('fucmunici', props.FNCPERSON.FUCMUNICI_ID);
         setfucmunici('' + props.FNCPERSON.FUCMUNICI_ID);
         getAnswers(QuestionConditionPersonCodes.LactanciaMaterna, 'lacmaterna');
@@ -107,7 +105,6 @@ const _BirthInformationForm = (props: any) => {
         }, 2000);
       }
     }
-    console.error(props.FNCPERSON.FECHA_NACIMIENTO);
     if (props.FNCPERSON.ID && props.FNCPERSON.FECHA_NACIMIENTO) {
       let birthDate = moment(props.FNCPERSON.FECHA_NACIMIENTO).toDate();
       var years = moment().diff(moment(birthDate, 'DD-MM-YYYY'), 'years');
@@ -121,12 +118,6 @@ const _BirthInformationForm = (props: any) => {
         true,
       );
       let edadLactancia = await getByCode(SystemParameterEnum.PRM021);
-      console.error(
-        'dias de edad ',
-        days,
-        'edadLactancia',
-        edadLactancia.VALOR,
-      );
       if (days <= Number(edadLactancia.VALOR)) {
         setenablelacmaterna(true);
       }

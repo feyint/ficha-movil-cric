@@ -34,7 +34,7 @@ export function useFNCCONSAL() {
     let statement = `
     SELECT q.CODIGO as QUESTIONCODE,q.NOMBRE as QUESTIONNAME, o.* FROM FNCELESAL q
     INNER JOIN FNCCONSAL o ON q.ID = o.FNCELESAL_ID
-    WHERE q.CODIGO  in (${inQuery})`;
+    WHERE q.CODIGO  in (${inQuery}) ORDER BY NOMBRE ASC`;
     await database.executeQuery('FNCCONSAL', statement).then((results) => {
       const count = results.rows.length;
       const items: FNCCONSAL[] = [];

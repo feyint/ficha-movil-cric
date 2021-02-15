@@ -72,7 +72,6 @@ const _ContactInformationForm = (props: any) => {
         setDisbale(true);
       } else {
         let max = await getByCode(SystemParameterEnum.PRM006);
-        console.error(max.VALOR);
         setPhoneLength(Number(max.VALOR));
       }
     }
