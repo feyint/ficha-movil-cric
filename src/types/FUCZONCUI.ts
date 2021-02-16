@@ -3,5 +3,6 @@ export interface FUCZONCUI {
   CODIGO: string;
   NOMBRE: string;
   ESTADO: boolean;
+  CODIGO_FF: number;
   FUBSEDCUI_ID: number;
 }

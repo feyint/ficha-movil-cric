@@ -21,17 +21,20 @@ export function useFUCZONCUI() {
      INNER JOIN FUCZONCUI_FUCBARVER ON 
      FUCZONCUI_FUCBARVER.FUCZONCUI_ID = FUCZONCUI.ID
      WHERE FUCBARVER_ID = ${FUCBARVER}`;
+    console.error(statement);
     database.executeQuery('FUCZONCUI', statement).then((results) => {
       const count = results.rows.length;
+      console.error(results);
       const items: FUCZONCUI[] = [];
       for (let i = 0; i < count; i++) {
         const row = results.rows.item(i);
-        const {ID, CODIGO, NOMBRE, ESTADO, FUBSEDCUI_ID} = row;
+        const {ID, CODIGO, NOMBRE, ESTADO, CODIGO_FF, FUBSEDCUI_ID} = row;
         items.push({
           ID: ID,
           CODIGO: CODIGO,
           NOMBRE: NOMBRE,
           ESTADO: ESTADO,
+          CODIGO_FF: CODIGO_FF,
           FUBSEDCUI_ID: FUBSEDCUI_ID,
         });
       }
@@ -40,13 +43,14 @@ export function useFUCZONCUI() {
   }
   async function createFUCZONCUI(newItem: FUCZONCUI): Promise<void> {
     let statement = `INSERT INTO {0} 
-    (ID, CODIGO, NOMBRE, ESTADO, FUBSEDCUI_ID) 
-    VALUES (?, ?, ?, ?, ?);`;
+    (ID, CODIGO, NOMBRE, ESTADO,CODIGO_FF, FUBSEDCUI_ID) 
+    VALUES (?, ?, ?, ?,?, ?);`;
     let params = [
       newItem.ID,
       newItem.CODIGO,
       newItem.NOMBRE,
       newItem.ESTADO,
+      newItem.CODIGO_FF,
       newItem.FUBSEDCUI_ID,
     ];
     return await database.executeQuery('FUCZONCUI', statement, params);
@@ -78,6 +82,7 @@ export function useFUCZONCUI() {
         CODIGO: item.codigo,
         NOMBRE: item.nombre,
         ESTADO: item.estado,
+        CODIGO_FF: item.codigoFf,
         FUBSEDCUI_ID: item.fubsedcuiId.id,
       });
     });

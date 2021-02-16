@@ -13,11 +13,11 @@ export function useFUCZONCUI_FUCBARVER() {
   const database = useDatabase();
   useEffect(() => {
     countEntity();
-    createFUCZONCUI_FUCBARVER({
-      ID: 1,
-      FUCBARVER_ID: 2,
-      FUCZONCUI_ID: 1,
-    });
+    // createFUCZONCUI_FUCBARVER({
+    //   ID: 1,
+    //   FUCBARVER_ID: 2,
+    //   FUCZONCUI_ID: 1,
+    // });
   }, []);
   function getAllFUCZONCUI_FUCBARVER() {
     return database.getAllFromEntity('FUCZONCUI_FUCBARVER').then(setItem);
@@ -77,12 +77,12 @@ export function useFUCZONCUI_FUCBARVER() {
     setLoading(true);
     await database.clearEntity('FUCZONCUI_FUCBARVER');
     let service = new SyncCatalogService();
-    let result = await service.getEntity('FUCZONCUI_FUCBARVER');
+    let result = await service.getEntity('FuczoncuiFucbarver');
     result.data.map((item: any) => {
       createFUCZONCUI_FUCBARVER({
-        ID: item.id,
-        FUCBARVER_ID: item.fucbarverId.id,
-        FUCZONCUI_ID: item.fuczonaId.id,
+        ID: item.fuczoncuiFucbarverPK.id,
+        FUCBARVER_ID: item.fuczoncuiFucbarverPK.fucbarverId,
+        FUCZONCUI_ID: item.fuczoncuiFucbarverPK.fuczoncuiId,
       });
     });
     setLoading(false);

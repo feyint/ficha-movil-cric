@@ -36,7 +36,7 @@ import {
   HealthInformationScreen,
 } from '../modules/person/manage/screens';
 import {FamilyScreen} from '../modules/families/screens';
-import { StyleSheet } from 'react-native';
+import {StyleSheet} from 'react-native';
 
 const DashboardStack = createStackNavigator();
 export const Dashboard = () => {

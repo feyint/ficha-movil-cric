@@ -63,6 +63,7 @@ const SyncParametersScreen = () => {
   const {countFSCSEMAFO, syncFSCSEMAFO, loadingFSCSEMAFO} = useFSCSEMAFO();
   const {countFNCINTTEA, syncFNCINTTEA, loadingFNCINTTEA} = useFNCINTTEA();
   const {
+    syncFUCZONCUI_FUCBARVER,
     countFUCZONCUI_FUCBARVER,
     loadingFUCZONCUI_FUCBARVER,
   } = useFUCZONCUI_FUCBARVER();
@@ -82,6 +83,7 @@ const SyncParametersScreen = () => {
       loadingFUCBARVER ||
       loadingFUCRESGUA ||
       loadingFUCZONCUI ||
+      loadingFUCZONCUI_FUCBARVER ||
       loadingFNCTIPIDE ||
       loadingFNCOCUPAC ||
       loadingFNCPUEIND ||
@@ -102,34 +104,35 @@ const SyncParametersScreen = () => {
       loadingFNCINTTEA
     ) {
     } else {
-      syncFVCELEVIV();
-      syncFVCCONVIV();
-      syncFUCDEPART();
-      syncFUCMUNICI();
-      syncFUCTIPTER();
-      syncFUCBARVER();
-      syncFUCRESGUA();
+      // syncFVCELEVIV();
+      // syncFVCCONVIV();
+      // syncFUCDEPART();
+      // syncFUCMUNICI();
+      // syncFUCTIPTER();
+      // syncFUCBARVER();
+      // syncFUCRESGUA();
       syncFUCZONCUI();
-      syncFNCTIPIDE();
-      syncFNCPAREN();
-      syncFNCOCUPAC();
-      syncFNCPUEIND();
-      syncFNCLUNIND();
-      syncFNCGENERO();
-      syncFNCELEPER();
-      syncFNCCONPER();
-      syncFUCPAIS();
-      syncFNCORGANI();
-      syncFNCDESARM();
-      syncFNCELESAL();
-      syncFNCCONSAL();
-      syncFNCELEREP();
-      syncFNCCONREP();
-      syncFUCTIPTER_FUCRESGUA();
-      syncSGCSISPAR();
-      syncFNCINTIMC();
-      syncFSCSEMAFO();
-      syncFNCINTTEA();
+      syncFUCZONCUI_FUCBARVER();
+      // syncFNCTIPIDE();
+      // syncFNCPAREN();
+      // syncFNCOCUPAC();
+      // syncFNCPUEIND();
+      // syncFNCLUNIND();
+      // syncFNCGENERO();
+      // syncFNCELEPER();
+      // syncFNCCONPER();
+      // syncFUCPAIS();
+      // syncFNCORGANI();
+      // syncFNCDESARM();
+      // syncFNCELESAL();
+      // syncFNCCONSAL();
+      // syncFNCELEREP();
+      // syncFNCCONREP();
+      // syncFUCTIPTER_FUCRESGUA();
+      // syncSGCSISPAR();
+      // syncFNCINTIMC();
+      // syncFSCSEMAFO();
+      // syncFNCINTTEA();
     }
 
     //await this.clearPollEntities();
@@ -287,6 +290,7 @@ const SyncParametersScreen = () => {
           loadingFUCBARVER ||
           loadingFUCRESGUA ||
           loadingFUCZONCUI ||
+          loadingFUCZONCUI_FUCBARVER ||
           loadingFNCTIPIDE ||
           loadingFNCOCUPAC ||
           loadingFNCPUEIND ||
