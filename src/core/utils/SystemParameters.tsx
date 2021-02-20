@@ -9,6 +9,7 @@ export const PersonParametersConst = {
   PRM016: 30, //en años
   poplacionpobrenoaseguradacode: '1',
   onlyGenrecode: 'F',
+  maleCode: 'M',
   doesNotApplyCode: 'NA',
   puebloWayuuCode: '23',
   parentCode: '1',

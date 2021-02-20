@@ -4,13 +4,14 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import moment from 'moment';
 import 'moment/locale/es';
 import {HelperText} from 'react-native-paper';
-import { BError, BLabel } from '.';
+import {BError, BLabel} from '.';
 
 interface State {
   isVisible: boolean;
 }
 interface Props {
   mode?: 'date' | 'time' | 'datetime';
+  id?: any;
   label?: string;
   value?: Date;
   error?: any;
@@ -28,6 +29,16 @@ export default class BDatePickerModal extends Component<Props, State> {
     this.state = {
       isVisible: this.props.isVisible ? this.props.isVisible : false,
     };
+  }
+  makeid(length) {
+    var result = '';
+    var characters =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
   }
   UNSAFE_componentWillMount() {
     if (this.props.onLoad) {
@@ -69,6 +80,7 @@ export default class BDatePickerModal extends Component<Props, State> {
           </TouchableOpacity>
         </View>
         <DateTimePickerModal
+          key={this.makeid(5)}
           minimumDate={this.props.minimumDate}
           maximumDate={this.props.maximumDate}
           isVisible={this.state.isVisible}

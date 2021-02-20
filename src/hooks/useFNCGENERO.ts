@@ -40,25 +40,28 @@ export function useFNCGENERO() {
     // otherwise:
     return Promise.reject(Error('Could not delete an undefined item'));
   }
-  function getbyID(GENREID: number) {
+  async function getbyID(GENREID: number) {
     let statement = `
       SELECT * FROM {0} WHERE ID = ${GENREID}`;
-    database.executeQuery('FNCGENERO', statement).then((results) => {
-      const count = results.rows.length;
-      const items: FNCGENERO[] = [];
-      for (let i = 0; i < count; i++) {
-        const row = results.rows.item(i);
-        const {ID, CODIGO, COD_FF, ESTADO, NOMBRE} = row;
-        items.push({
-          ID,
-          CODIGO,
-          COD_FF,
-          ESTADO,
-          NOMBRE,
-        });
-      }
-      setFNCGENERO(items[0]);
-    });
+    return await database
+      .executeQuery('FNCGENERO', statement)
+      .then((results) => {
+        const count = results.rows.length;
+        const items: FNCGENERO[] = [];
+        for (let i = 0; i < count; i++) {
+          const row = results.rows.item(i);
+          const {ID, CODIGO, COD_FF, ESTADO, NOMBRE} = row;
+          items.push({
+            ID,
+            CODIGO,
+            COD_FF,
+            ESTADO,
+            NOMBRE,
+          });
+        }
+        setFNCGENERO(items[0]);
+        return items[0];
+      });
   }
   async function selectFNCGENERO(list: FNCGENERO) {
     setFNCGENERO(list);

@@ -6,10 +6,8 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {yupResolver} from '@hookform/resolvers';
 import * as yup from 'yup';
 import {
-  BButton,
   BDatePickerModal,
   BMultiSelect,
-  BPicker,
   BRadioButton,
   BTextInput,
   ButtonAction,
@@ -20,20 +18,19 @@ import {connect} from 'react-redux';
 import {
   logicOption,
   QuestionSexAndRepHealthPersonCodes,
-  QuestionTypes,
 } from '../../../../core/utils/PersonTypes';
 import {theme} from '../../../../core/style/theme';
 import {useFNCSALREP, useFNCSALREP_FNCCONREP} from '../../../../hooks';
 import {useFNCCONREP} from '../../../../hooks/useFNCCONREP';
 import {FNCCONREP, FNCSALREP} from '../../../../types';
 import moment from 'moment';
+import { Text } from 'react-native-paper';
 
 const questionscodes = [
   QuestionSexAndRepHealthPersonCodes.PracticasCulturalesDuranteLaGestacion,
   QuestionSexAndRepHealthPersonCodes.acompanamientoDeGestacion,
   QuestionSexAndRepHealthPersonCodes.FactoresDeRiesgoGestante,
 ];
-
 const schemaForm = yup.object().shape({
   FechaUltimaMenstruacion: yup.date().required(),
   PracticasCulturalesDuranteLaGestacion: yup.array().required(),
@@ -49,9 +46,12 @@ const _CurrentPregnancyForm = (props: any) => {
   const {handleSubmit, control, errors, setValue} = useForm({
     resolver: yupResolver(schemaForm),
   });
-  const [EdadGestacional, setEdadGestacional] = useState('');
-  const [FechaProbableParto, setFechaProbableParto] = useState(new Date());
+  const [edadGestacional, setEdadGestacional] = useState('');
+  const [fechaUltimaM, setfechaUltimaM] = useState<any>();
+  const [fechaProbableParto, setFechaProbableParto] = useState<any>();
   const {itemFNCSALREP, updateFNCSALREP, loadingFNCSALREP} = useFNCSALREP();
+  const [loaded, setLoaded] = useState<boolean>(false);
+
   const {
     getQuestionsOptions,
     getMultiselect,
@@ -62,6 +62,7 @@ const _CurrentPregnancyForm = (props: any) => {
   const {saveAnswer, getAnswerquestion} = useFNCSALREP_FNCCONREP();
   useEffect(() => {
     getQuestionsOptions(questionscodes);
+    validatepregnancynumber();
   }, []);
   useEffect(() => {
     if (listFNCCONREP) {
@@ -78,13 +79,22 @@ const _CurrentPregnancyForm = (props: any) => {
       SEROLOGIA,
       VIH,
     } = props.FNCSALREP as FNCSALREP;
-    setValue('FechaUltimaMenstruacion', moment(ULTIMA_REGLA).toDate());
-    calculateGestacion(moment(ULTIMA_REGLA).toDate());
+    if (ULTIMA_REGLA) {
+      //setfechaUltimaM(moment(value1).toDate());
+      setValue('FechaUltimaMenstruacion', moment(ULTIMA_REGLA).toDate());
+      calculateGestacion(ULTIMA_REGLA);
+    }
     setValue('EdadGestacional', EDAD_GESTACION);
-    setValue('FechaProbableParto', PARTO_ESTIMADO);
-    setValue('AcompanamientoFamilia', Boolean(PRESENCIA_FAM));
-    setValue('RealizacionPruebaSerologia', Boolean(SEROLOGIA));
-    setValue('RealizacionPruebaVIH', Boolean(VIH));
+    //setValue('FechaProbableParto', PARTO_ESTIMADO);
+    if (PRESENCIA_FAM) {
+      setValue('AcompanamientoFamilia', Boolean(PRESENCIA_FAM));
+    }
+    if (SEROLOGIA) {
+      setValue('RealizacionPruebaSerologia', Boolean(SEROLOGIA));
+    }
+    if (VIH) {
+      setValue('RealizacionPruebaVIH', Boolean(VIH));
+    }
     getAnswers(
       QuestionSexAndRepHealthPersonCodes.PracticasCulturalesDuranteLaGestacion,
       'PracticasCulturalesDuranteLaGestacion',
@@ -143,9 +153,9 @@ const _CurrentPregnancyForm = (props: any) => {
   async function onSubmit(data: any) {
     let item: FNCSALREP = props.FNCSALREP;
     if (item.ID) {
-      item.ULTIMA_REGLA = data.FechaUltimaMenstruacion;
-      item.EDAD_GESTACION = EdadGestacional;
-      item.PARTO_ESTIMADO = FechaProbableParto;
+      item.ULTIMA_REGLA = fechaUltimaM;
+      item.EDAD_GESTACION = edadGestacional;
+      item.PARTO_ESTIMADO = fechaProbableParto;
       item.PRESENCIA_FAM = data.AcompanamientoFamilia;
       item.SEROLOGIA = data.RealizacionPruebaSerologia;
       item.VIH = data.RealizacionPruebaVIH;
@@ -169,15 +179,55 @@ const _CurrentPregnancyForm = (props: any) => {
     navigation.goBack();
   }
   function calculateGestacion(value: any) {
+    const value1 = value;
     if (value) {
-      var diff = (new Date().getTime() - value.getTime()) / 1000;
-      diff /= 60 * 60 * 24 * 7;
-      setEdadGestacional(`${Math.abs(Math.round(diff))} Semanas`);
-      var newDate = new Date(value.setMonth(value.getMonth() + 8));
-      setFechaProbableParto(newDate);
+      let bdate = moment(value).toDate();
+      var days = moment().diff(moment(bdate, 'DD-MM-YYYY'), 'days');
+      console.error('days ', days);
+      if (days > 280) {
+        Alert.alert(
+          'Error',
+          'La fecha de la última menstruación es mayor a 9 meses y 7 días',
+        );
+        setfechaUltimaM(null);
+        setValue('FechaUltimaMenstruacion', null);
+        setFechaProbableParto('');
+        setEdadGestacional('');
+      } else {
+        setfechaUltimaM(moment(value1).toDate());
+        var diff = (new Date().getTime() - value.getTime()) / 1000;
+        diff /= 60 * 60 * 24 * 7;
+        setEdadGestacional(`${Math.abs(Math.round(diff))} Semanas`);
+        //var newDate = new Date(value2.setMonth(value2.getMonth() + 8));
+        let newDate = moment(value1).add(8, 'months').calendar();
+        setFechaProbableParto(newDate);
+      }
     } else {
       setEdadGestacional('');
     }
+  }
+  function validatepregnancynumber() {
+    const {GRAVIDEZ, PARIDEZ, ABORTO, CESAREA} = props.FNCSALREP as FNCSALREP;
+    let isValid = false;
+    let pregnancyr = Number(GRAVIDEZ);
+    if (!pregnancyr || pregnancyr == 'null' || pregnancyr == 0) {
+      Alert.alert(
+        'Acción no permitida',
+        'El número de gravidez debe ser mayor a cero',
+      );
+      navigation.goBack();
+    }
+    let paridez = Number(PARIDEZ);
+    let abortion = Number(ABORTO);
+    let cesarian = Number(CESAREA);
+    let sum =
+      (paridez ? paridez : 0) +
+      (abortion ? abortion : 0) +
+      (cesarian ? cesarian : 0);
+    if (sum == pregnancyr) {
+      isValid = true;
+    }
+    return isValid;
   }
   return (
     <KeyboardAwareScrollView>
@@ -193,7 +243,7 @@ const _CurrentPregnancyForm = (props: any) => {
                 onChange(value);
                 calculateGestacion(value);
               }}
-              value={value}
+              value={fechaUltimaM}
             />
           )}
           name="FechaUltimaMenstruacion"
@@ -210,26 +260,12 @@ const _CurrentPregnancyForm = (props: any) => {
               onChange={(value: any) => {
                 onChange(value);
               }}
-              value={EdadGestacional}
+              value={edadGestacional}
             />
           )}
           name="EdadGestacional"
         />
-        <Controller
-          control={control}
-          render={({onChange, value}) => (
-            <BDatePickerModal
-              disabled={true}
-              label="Fecha Probable de parto"
-              error={errors.FechaProbableParto}
-              onChange={(value: any) => {
-                onChange(value);
-              }}
-              value={FechaProbableParto}
-            />
-          )}
-          name="FechaProbableParto"
-        />
+        <Text style={styles.containerage}>{fechaProbableParto}</Text>
         <Controller
           control={control}
           render={({onChange, value}) => (
@@ -356,6 +392,15 @@ const styles = StyleSheet.create({
     height: 40,
     padding: 10,
     borderRadius: 4,
+  },
+  containerage: {
+    fontSize: 16,
+    padding: 10,
+    marginBottom: 5,
+    color: 'black',
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: 'black',
   },
   spacer: {
     height: 50,

@@ -5,25 +5,29 @@ import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {yupResolver} from '@hookform/resolvers';
 import * as yup from 'yup';
-import {
-  BMultiSelect,
-  BPicker,
-  BRadioButton,
-  ButtonAction,
-} from '../../../../core/components';
+import {BMultiSelect, BPicker, ButtonAction} from '../../../../core/components';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
-
 import {
-  logicOption,
   examOption,
   QuestionSexAndRepHealthPersonCodes,
+  logicOption2,
 } from '../../../../core/utils/PersonTypes';
 import {theme} from '../../../../core/style/theme';
-import {useFNCSALREP, useFNCSALREP_FNCCONREP} from '../../../../hooks';
+import {
+  useFNCGENERO,
+  useFNCSALREP,
+  useFNCSALREP_FNCCONREP,
+  useSGCSISPAR,
+} from '../../../../hooks';
 import {useFNCCONREP} from '../../../../hooks/useFNCCONREP';
 import {FNCCONREP, FNCSALREP} from '../../../../types';
-
+import {FNCPERSON} from '../../../../state/person/types';
+import {
+  PersonParametersConst,
+  SystemParameterEnum,
+} from '../../../../core/utils/SystemParameters';
+import moment from 'moment';
 const questionscodes = [
   QuestionSexAndRepHealthPersonCodes.MetodoDelPlaneacionFamiliar,
   QuestionSexAndRepHealthPersonCodes.CitologiaCervicoUterina,
@@ -31,23 +35,23 @@ const questionscodes = [
   QuestionSexAndRepHealthPersonCodes.SaludSexual,
   QuestionSexAndRepHealthPersonCodes.ExamenDeProstata,
 ];
-
 const schemaForm = yup.object().shape({
   MetodoDelPlaneacionFamiliar: yup.array().required(),
-  CitologiaCervicoUterina: yup.number().required(),
-  AutoexamenDeMama: yup.number().required(),
+  CitologiaCervicoUterina: yup.number().optional(),
+  AutoexamenDeMama: yup.number().optional(),
   SaludSexual: yup.number().required(),
-  ExamenDeProstata: yup.number().required(),
-  RESUL_CITOLOGIA: yup.string().required(),
-  ACCION_CITOLOGIA: yup.boolean().required(),
-  RESUL_PROSTATA: yup.string().required(),
-  ACCION_PROSTATA: yup.boolean().required(),
+  ExamenDeProstata: yup.number().optional(),
+  RESUL_CITOLOGIA: yup.string().optional(),
+  ACCION_CITOLOGIA: yup.number().optional(),
+  RESUL_PROSTATA: yup.string().optional(),
+  ACCION_PROSTATA: yup.number().optional(),
 });
 const _AnotherReproductiveSexualHealtForm = (props: any) => {
   const navigation = useNavigation();
-  const {handleSubmit, control, errors, setValue} = useForm({
+  const {handleSubmit, control, errors, setValue, getValues} = useForm({
     resolver: yupResolver(schemaForm),
   });
+  const {itemFNCGENERO, getbyID} = useFNCGENERO();
   const {itemFNCSALREP, updateFNCSALREP, loadingFNCSALREP} = useFNCSALREP();
   const {
     getQuestionsOptions,
@@ -56,7 +60,20 @@ const _AnotherReproductiveSexualHealtForm = (props: any) => {
     getLabel,
     listFNCCONREP,
   } = useFNCCONREP();
+  const {getByCode} = useSGCSISPAR();
   const {saveAnswer, getAnswerquestion} = useFNCSALREP_FNCCONREP();
+  const [resultPro, setresultPro] = useState<any>('');
+  const [resultCito, setresultCito] = useState<any>('');
+  const [resultCitoAcc, setresultCitoAcc] = useState<any>('');
+  const [resultProacc, setresultProAcc] = useState<any>('');
+  const [enableFGenre, setenableFGenre] = useState<boolean>(false);
+  const [enableMGenre, setenableMGenre] = useState<boolean>(false);
+  const [enableCito, setenableCito] = useState<boolean>(false);
+  const [enableCitoResu, setenableCitoResu] = useState<boolean>(false);
+  const [enablePros, setenablePros] = useState<boolean>(false);
+  const [enableProsResu, setenableProsResu] = useState<boolean>(false);
+  const [enableAutoEx, setenableAutoEx] = useState<boolean>(false);
+  const [loaded, setLoaded] = useState<boolean>(false);
   useEffect(() => {
     getQuestionsOptions(questionscodes);
   }, []);
@@ -72,10 +89,100 @@ const _AnotherReproductiveSexualHealtForm = (props: any) => {
       RESUL_PROSTATA,
       ACCION_PROSTATA,
     } = props.FNCSALREP as FNCSALREP;
-    setValue('RESUL_CITOLOGIA', RESUL_CITOLOGIA);
-    setValue('ACCION_CITOLOGIA', Boolean(ACCION_CITOLOGIA));
-    setValue('RESUL_PROSTATA', RESUL_PROSTATA);
-    setValue('ACCION_PROSTATA', Boolean(ACCION_PROSTATA));
+    console.error(RESUL_PROSTATA);
+    const {FNCGENERO_ID, FECHA_NACIMIENTO} = props.FNCPERSON as FNCPERSON;
+    if (FNCGENERO_ID) {
+      let genre = await getbyID(FNCGENERO_ID);
+      if (genre.CODIGO == PersonParametersConst.onlyGenrecode) {
+        setenableFGenre(true);
+        if (FECHA_NACIMIENTO) {
+          let edadMinima = await getByCode(SystemParameterEnum.PRM018);
+          let birthDate = moment(FECHA_NACIMIENTO).toDate();
+          var years = moment().diff(moment(birthDate, 'DD-MM-YYYY'), 'years');
+          var days = moment().diff(moment(birthDate, 'DD-MM-YYYY'), 'days');
+          if (days < Number(edadMinima.VALOR)) {
+            for (let i = 0; i < listFNCCONREP.length; i++) {
+              const element = listFNCCONREP[i];
+              if (
+                element.QUESTIONCODE ==
+                  QuestionSexAndRepHealthPersonCodes.AutoexamenDeMama &&
+                element.NOMBRE.includes('No aplica')
+              ) {
+                setValue('AutoexamenDeMama', '' + element.ID);
+                setenableAutoEx(false);
+              }
+              if (
+                element.QUESTIONCODE ==
+                  QuestionSexAndRepHealthPersonCodes.ExamenDeProstata &&
+                element.NOMBRE.includes('No aplica')
+              ) {
+                setValue('ExamenDeProstata', '' + element.ID);
+                setenablePros(false);
+              }
+            }
+          } else {
+            setenableAutoEx(true);
+            getAnswers(
+              QuestionSexAndRepHealthPersonCodes.AutoexamenDeMama,
+              'AutoexamenDeMama',
+            );
+            setenableCito(true);
+            setValue('RESUL_CITOLOGIA', RESUL_CITOLOGIA);
+            setresultCito(RESUL_CITOLOGIA);
+            setValue('ACCION_CITOLOGIA', '' + ACCION_CITOLOGIA);
+            setresultCitoAcc('' + ACCION_CITOLOGIA);
+          }
+        }
+        for (let i = 0; i < listFNCCONREP.length; i++) {
+          const element = listFNCCONREP[i];
+          if (
+            element.QUESTIONCODE ==
+              QuestionSexAndRepHealthPersonCodes.ExamenDeProstata &&
+            element.NOMBRE.includes('No aplica')
+          ) {
+            setValue('ExamenDeProstata', '' + element.ID);
+            setenablePros(false);
+          }
+        }
+      } else if (genre.CODIGO == PersonParametersConst.maleCode) {
+        setenableMGenre(true);
+        if (FECHA_NACIMIENTO) {
+          let edadMinima = await getByCode(SystemParameterEnum.PRM019);
+          let birthDate = moment(FECHA_NACIMIENTO).toDate();
+          var years = moment().diff(moment(birthDate, 'DD-MM-YYYY'), 'years');
+          var days = moment().diff(moment(birthDate, 'DD-MM-YYYY'), 'days');
+          if (days < Number(edadMinima.VALOR)) {
+            for (let i = 0; i < listFNCCONREP.length; i++) {
+              const element = listFNCCONREP[i];
+              if (
+                element.QUESTIONCODE ==
+                  QuestionSexAndRepHealthPersonCodes.ExamenDeProstata &&
+                element.NOMBRE.includes('No aplica')
+              ) {
+                setenableMGenre(false);
+                setValue('ExamenDeProstata', '' + element.ID);
+                setenablePros(false);
+              }
+            }
+          } else {
+            setenableMGenre(true);
+            getAnswers(
+              QuestionSexAndRepHealthPersonCodes.ExamenDeProstata,
+              'ExamenDeProstata',
+            );
+            setenablePros(true);
+            setValue('RESUL_PROSTATA', RESUL_PROSTATA);
+            setresultPro(RESUL_PROSTATA);
+            if (RESUL_PROSTATA == 'ANORMAL') {
+              setenableProsResu(true);
+              console.error(ACCION_PROSTATA);
+              setValue('ACCION_PROSTATA', '' + ACCION_PROSTATA);
+              setresultProAcc('' + ACCION_PROSTATA);
+            }
+          }
+        }
+      }
+    }
     getAnswers(
       QuestionSexAndRepHealthPersonCodes.MetodoDelPlaneacionFamiliar,
       'MetodoDelPlaneacionFamiliar',
@@ -83,17 +190,12 @@ const _AnotherReproductiveSexualHealtForm = (props: any) => {
     );
     getAnswers(QuestionSexAndRepHealthPersonCodes.SaludSexual, 'SaludSexual');
     getAnswers(
-      QuestionSexAndRepHealthPersonCodes.ExamenDeProstata,
-      'ExamenDeProstata',
-    );
-    getAnswers(
-      QuestionSexAndRepHealthPersonCodes.AutoexamenDeMama,
-      'AutoexamenDeMama',
-    );
-    getAnswers(
       QuestionSexAndRepHealthPersonCodes.CitologiaCervicoUterina,
       'CitologiaCervicoUterina',
     );
+    setTimeout(() => {
+      setLoaded(true);
+    }, 500);
   }
   async function getAnswers(
     questionCode: string,
@@ -165,6 +267,76 @@ const _AnotherReproductiveSexualHealtForm = (props: any) => {
     );
     navigation.goBack();
   }
+  async function validateCitolo() {
+    if (loaded) {
+      let Examen = getValues('CitologiaCervicoUterina');
+      if (Examen) {
+        setenableCito(true);
+        for (let i = 0; i < listFNCCONREP.length; i++) {
+          const element = listFNCCONREP[i];
+          if (
+            element.QUESTIONCODE ==
+              QuestionSexAndRepHealthPersonCodes.CitologiaCervicoUterina &&
+            (element.NOMBRE.includes('No aplica') ||
+              element.NOMBRE.includes('Nunca'))
+          ) {
+            if (element.ID == Examen) {
+              setenableCito(false);
+            }
+          }
+        }
+        if (!enableCito) {
+          setenableCitoResu(false);
+          setValue('RESUL_CITOLOGIA', '');
+          setValue('ACCION_CITOLOGIA', '');
+        }
+      }
+    }
+  }
+  async function validateProsta() {
+    if (loaded) {
+      let Examen = getValues('ExamenDeProstata');
+      if (Examen) {
+        setenablePros(true);
+        for (let i = 0; i < listFNCCONREP.length; i++) {
+          const element = listFNCCONREP[i];
+          if (
+            element.QUESTIONCODE ==
+              QuestionSexAndRepHealthPersonCodes.ExamenDeProstata &&
+            (element.NOMBRE.includes('No aplica') ||
+              element.NOMBRE.includes('Nunca'))
+          ) {
+            if (element.ID == Examen) {
+              setenablePros(false);
+              setenableProsResu(false);
+            }
+          }
+        }
+        if (!enablePros) {
+          setenableProsResu(false);
+          setValue('RESUL_PROSTATA', '');
+          setresultPro('');
+          setValue('ACCION_PROSTATA', '');
+        }
+      }
+    }
+  }
+  async function validateProstataResu() {
+    if (loaded) {
+      let result = getValues('RESUL_PROSTATA');
+      if (result) {
+        setenableProsResu(true);
+        if (result == 'ANORMAL') {
+          setenablePros(true);
+          setenableProsResu(true);
+        } else {
+          setresultProAcc('');
+          setenableProsResu(false);
+          setValue('ACCION_PROSTATA', '');
+        }
+      }
+    }
+  }
   return (
     <KeyboardAwareScrollView>
       <View style={styles.container}>
@@ -187,81 +359,92 @@ const _AnotherReproductiveSexualHealtForm = (props: any) => {
           )}
           name="MetodoDelPlaneacionFamiliar"
         />
-        <Controller
-          control={control}
-          render={({onChange, onBlur, value}) => (
-            <BPicker
-              label={getLabel(
-                QuestionSexAndRepHealthPersonCodes.CitologiaCervicoUterina,
-              )}
-              onBlur={onBlur}
-              error={errors.CitologiaCervicoUterina}
-              onChange={(value: any) => {
-                onChange(value);
-              }}
-              selectedValue={value}
-              items={getPicker(
-                QuestionSexAndRepHealthPersonCodes.CitologiaCervicoUterina,
-              )}
-            />
-          )}
-          name="CitologiaCervicoUterina"
-        />
-        <Controller
-          control={control}
-          render={({onChange, value}) => (
-            <BRadioButton
-              label="Resultado del examen"
-              value={value}
-              error={errors.RESUL_CITOLOGIA}
-              items={examOption}
-              onChange={(value: any) => {
-                if (value) {
+        {enableFGenre ? (
+          <Controller
+            control={control}
+            render={({onChange, value}) => (
+              <BPicker
+                label={getLabel(
+                  QuestionSexAndRepHealthPersonCodes.CitologiaCervicoUterina,
+                )}
+                error={errors.CitologiaCervicoUterina}
+                onChange={(value: any) => {
                   onChange(value);
-                  //props.saveFNBNUCVIVPropiety('HUMO_CASA', JSON.parse(value));
-                }
-              }}
-            />
-          )}
-          name="RESUL_CITOLOGIA"
-        />
-        <Controller
-          control={control}
-          render={({onChange, value}) => (
-            <BRadioButton
-              label="¿Tomó acciones ante el resultado?"
-              value={value}
-              error={errors.ACCION_CITOLOGIA}
-              items={logicOption}
-              onChange={(value: any) => {
-                if (value) {
+                  validateCitolo();
+                }}
+                selectedValue={value}
+                items={getPicker(
+                  QuestionSexAndRepHealthPersonCodes.CitologiaCervicoUterina,
+                )}
+              />
+            )}
+            name="CitologiaCervicoUterina"
+          />
+        ) : null}
+        {enableCito ? (
+          <Controller
+            control={control}
+            render={({onChange, value}) => (
+              <BPicker
+                label={'Resultado del examen'}
+                error={errors.RESUL_CITOLOGIA}
+                onChange={(value: any) => {
                   onChange(value);
-                }
-              }}
-            />
-          )}
-          name="ACCION_CITOLOGIA"
-        />
-        <Controller
-          control={control}
-          render={({onChange, onBlur, value}) => (
-            <BPicker
-              label={getLabel(
-                QuestionSexAndRepHealthPersonCodes.AutoexamenDeMama,
-              )}
-              onBlur={onBlur}
-              error={errors.AutoexamenDeMama}
-              onChange={(value: any) => {
-                onChange(value);
-              }}
-              selectedValue={value}
-              items={getPicker(
-                QuestionSexAndRepHealthPersonCodes.AutoexamenDeMama,
-              )}
-            />
-          )}
-          name="AutoexamenDeMama"
-        />
+                  setresultCito(value);
+                  if (value) {
+                    setenableCitoResu(true);
+                  } else {
+                    setenableCitoResu(false);
+                    setValue('ACCION_CITOLOGIA', '');
+                  }
+                }}
+                selectedValue={resultCito}
+                items={examOption}
+              />
+            )}
+            name="RESUL_CITOLOGIA"
+          />
+        ) : null}
+        {enableCitoResu ? (
+          <Controller
+            control={control}
+            render={({onChange, value}) => (
+              <BPicker
+                label={'¿Tomó acciones ante el resultado?'}
+                error={errors.ACCION_CITOLOGIA}
+                onChange={(value: any) => {
+                  setresultCitoAcc(value);
+                  onChange(value);
+                }}
+                selectedValue={resultCitoAcc}
+                items={logicOption2}
+              />
+            )}
+            name="ACCION_CITOLOGIA"
+          />
+        ) : null}
+        {enableFGenre ? (
+          <Controller
+            control={control}
+            render={({onChange, value}) => (
+              <BPicker
+                enabled={enableAutoEx}
+                label={getLabel(
+                  QuestionSexAndRepHealthPersonCodes.AutoexamenDeMama,
+                )}
+                error={errors.AutoexamenDeMama}
+                onChange={(value: any) => {
+                  onChange(value);
+                }}
+                selectedValue={value}
+                items={getPicker(
+                  QuestionSexAndRepHealthPersonCodes.AutoexamenDeMama,
+                )}
+              />
+            )}
+            name="AutoexamenDeMama"
+          />
+        ) : null}
         <Controller
           control={control}
           render={({onChange, value}) => (
@@ -279,15 +462,16 @@ const _AnotherReproductiveSexualHealtForm = (props: any) => {
         />
         <Controller
           control={control}
-          render={({onChange, onBlur, value}) => (
+          render={({onChange, value}) => (
             <BPicker
+              enabled={enableMGenre}
               label={getLabel(
                 QuestionSexAndRepHealthPersonCodes.ExamenDeProstata,
               )}
-              onBlur={onBlur}
               error={errors.ExamenDeProstata}
               onChange={(value: any) => {
                 onChange(value);
+                validateProsta();
               }}
               selectedValue={value}
               items={getPicker(
@@ -297,41 +481,45 @@ const _AnotherReproductiveSexualHealtForm = (props: any) => {
           )}
           name="ExamenDeProstata"
         />
-        <Controller
-          control={control}
-          render={({onChange, value}) => (
-            <BRadioButton
-              label="Resultado del examen"
-              value={value}
-              error={errors.RESUL_PROSTATA}
-              items={examOption}
-              onChange={(value: any) => {
-                if (value) {
+        {enablePros ? (
+          <Controller
+            control={control}
+            render={({onChange, value}) => (
+              <BPicker
+                enabled={true}
+                label={'Resultado del examen'}
+                error={errors.RESUL_PROSTATA}
+                onChange={(value: any) => {
                   onChange(value);
-                  //props.saveFNBNUCVIVPropiety('HUMO_CASA', JSON.parse(value));
-                }
-              }}
-            />
-          )}
-          name="RESUL_PROSTATA"
-        />
-        <Controller
-          control={control}
-          render={({onChange, value}) => (
-            <BRadioButton
-              label="¿Tomó acciones ante el resultado?"
-              value={value}
-              error={errors.ACCION_PROSTATA}
-              items={logicOption}
-              onChange={(value: any) => {
-                if (value) {
+                  setresultPro(value);
+                  validateProstataResu();
+                }}
+                selectedValue={resultPro}
+                items={examOption}
+              />
+            )}
+            name="RESUL_PROSTATA"
+          />
+        ) : null}
+        {enableProsResu ? (
+          <Controller
+            control={control}
+            render={({onChange, value}) => (
+              <BPicker
+                enabled={true}
+                label={'¿Tomó acciones ante el resultado?'}
+                error={errors.ACCION_PROSTATA}
+                onChange={(value: any) => {
                   onChange(value);
-                }
-              }}
-            />
-          )}
-          name="ACCION_PROSTATA"
-        />
+                  setresultProAcc(value);
+                }}
+                selectedValue={resultProacc}
+                items={logicOption2}
+              />
+            )}
+            name="ACCION_PROSTATA"
+          />
+        ) : null}
         <ButtonAction
           onAccept={handleSubmit(onSubmit)}
           onCancel={() => navigation.goBack()}
@@ -382,6 +570,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (store: any) => {
   return {
     FNCSALREP: store.sarhealthperson.FNCSALREP,
+    FNCPERSON: store.person.FNCPERSON,
   };
 };
 export default connect(

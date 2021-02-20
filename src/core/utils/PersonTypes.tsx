@@ -82,9 +82,15 @@ export const logicOption = [
   {value: true, label: 'Si'},
   {value: false, label: 'No'},
 ];
+export const logicOption2 = [
+  {value: '-1', label: 'Seleccione', item: null},
+  {value: '1', label: 'Si'},
+  {value: '2', label: 'No'},
+];
 export const examOption = [
-  {value: true, label: 'Normal'},
-  {value: false, label: 'Anormal'},
+  {value: '-1', label: 'Seleccione', item: null},
+  {value: 'NORMAL', label: 'Normal'},
+  {value: 'ANORMAL', label: 'Anormal'},
 ];
 export const timeOption = [
   {value: true, label: 'Mayor a 5 años'},

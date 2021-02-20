@@ -180,7 +180,10 @@ const _ReproductiveSexualHealtForm = (props: any) => {
     let paridez = Number(getValues('parideznumber'));
     let abortion = Number(getValues('abortionnumber'));
     let cesarian = Number(getValues('cesariannumber'));
-    let sum = paridez + abortion + cesarian;
+    let sum =
+      (paridez ? paridez : 0) +
+      (abortion ? abortion : 0) +
+      (cesarian ? cesarian : 0);
     if (sum == pregnancyr) {
       isValid = true;
     }
@@ -191,7 +194,7 @@ const _ReproductiveSexualHealtForm = (props: any) => {
     let pregnancyr = Number(getValues('pregnancynumber'));
     let born = Number(getValues('bornnumber'));
     let bornD = Number(getValues('bornnumberdeath'));
-    let sum = born + bornD;
+    let sum = (born ? born : 0) + (bornD ? bornD : 0);
     if (sum >= pregnancyr) {
       isValid = true;
     }

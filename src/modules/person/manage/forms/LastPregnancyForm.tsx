@@ -21,9 +21,11 @@ import {
 } from '../../../../core/utils/PersonTypes';
 import {SexAndRepHealthPersonQuestion} from '../state/types';
 import {theme} from '../../../../core/style/theme';
-import {useFNCSALREP, useFNCSALREP_FNCCONREP} from '../../../../hooks';
+import {useFNCSALREP, useFNCSALREP_FNCCONREP, useSGCSISPAR} from '../../../../hooks';
 import {useFNCCONREP} from '../../../../hooks/useFNCCONREP';
-import {FNCCONREP, FNCSALREP} from '../../../../types';
+import {FNCCONREP, FNCPERSON, FNCSALREP} from '../../../../types';
+import moment from 'moment';
+import { SystemParameterEnum } from '../../../../core/utils/SystemParameters';
 
 const questionscodes = [
   QuestionSexAndRepHealthPersonCodes.TerminacionGestacion,
@@ -42,6 +44,7 @@ const schemaForm = yup.object().shape({
 
 const _LastPregnancyForm = (props: any) => {
   const {itemFNCSALREP, updateFNCSALREP, loadingFNCSALREP} = useFNCSALREP();
+  const {getByCode} = useSGCSISPAR();
   const {
     getQuestionsOptions,
     getMultiselect,
@@ -49,9 +52,24 @@ const _LastPregnancyForm = (props: any) => {
     getLabel,
     listFNCCONREP,
   } = useFNCCONREP();
+  const [vDate, setvDate] = useState<Date>();
+  const [enableFinishPergancy, setenableFinishPergancy] = useState<boolean>(false);
+
   const {saveAnswer, getAnswerquestion} = useFNCSALREP_FNCCONREP();
   useEffect(() => {
     getQuestionsOptions(questionscodes);
+    const {GRAVIDEZ} = props.FNCSALREP as FNCSALREP;
+    console.error(GRAVIDEZ);
+    if (!GRAVIDEZ || GRAVIDEZ == null || GRAVIDEZ == 'null' || GRAVIDEZ == 0) {
+      setenableFinishPergancy(false);
+      Alert.alert(
+        'Acción no permitida',
+        'Opción valida solo cuando a tenido gravidez',
+      );
+      navigation.goBack();
+    } else if (GRAVIDEZ > 0) {
+      
+    }
   }, []);
   useEffect(() => {
     if (listFNCCONREP) {
@@ -59,13 +77,37 @@ const _LastPregnancyForm = (props: any) => {
     }
   }, [listFNCCONREP]);
   const navigation = useNavigation();
-  const {handleSubmit, control, errors, setValue} = useForm({
+  const {handleSubmit, control, errors, setValue, getValues} = useForm({
     resolver: yupResolver(schemaForm),
   });
 
   async function fetchQuestions() {
     const {PARTO_ULTIMO} = props.FNCSALREP as FNCSALREP;
-    setValue('FechaTerminacionDeLaGestacion', PARTO_ULTIMO);
+    const {FECHA_NACIMIENTO} = props.FNCPERSON as FNCPERSON;
+    if (FECHA_NACIMIENTO) {
+      let birthDate = moment(FECHA_NACIMIENTO).toDate();
+      var years = moment().diff(moment(birthDate, 'DD-MM-YYYY'), 'years');
+      var days = moment().diff(moment(birthDate, 'DD-MM-YYYY'), 'days');
+      let edadMinima = await getByCode(SystemParameterEnum.PRM020);
+      if (days > Number(edadMinima.VALOR)) {
+        setenableFinishPergancy(false);
+        for (let i = 0; i < listFNCCONREP.length; i++) {
+          const element = listFNCCONREP[i];
+          if (
+            element.QUESTIONCODE ==  QuestionSexAndRepHealthPersonCodes.TerminacionGestacion &&
+            element.NOMBRE.includes('No aplica')
+          ) {
+            setValue('TerminacionGestacion', '' + element.ID);
+          }
+        }
+      } else {
+        setenableFinishPergancy(true);
+      }
+    }
+    if (PARTO_ULTIMO) {
+      setvDate(moment(PARTO_ULTIMO).toDate());
+      setValue('FechaTerminacionDeLaGestacion', PARTO_ULTIMO);
+    }
     getAnswers(
       QuestionSexAndRepHealthPersonCodes.TerminacionGestacion,
       'TerminacionGestacion',
@@ -147,6 +189,49 @@ const _LastPregnancyForm = (props: any) => {
     );
     navigation.goBack();
   }
+  function changeTerminacion() {
+    setenableFinishPergancy(true);
+    let value = getValues('TerminacionGestacion');
+    for (let i = 0; i < listFNCCONREP.length; i++) {
+      const element = listFNCCONREP[i];
+      if (
+        element.QUESTIONCODE ==  QuestionSexAndRepHealthPersonCodes.TerminacionGestacion &&
+        element.NOMBRE.includes('No aplica')
+      ) {
+        console.error(element.ID, value);
+        if (element.ID == value) {
+          setenableFinishPergancy(false);
+          for (let i = 0; i < listFNCCONREP.length; i++) {
+            const item = listFNCCONREP[i];
+            if (
+              item.QUESTIONCODE ==  QuestionSexAndRepHealthPersonCodes.PersonaQueAtendioUltimoParto &&
+              item.NOMBRE.includes('No aplica')
+            ) {
+              setValue('PersonaQueAtendioUltimoParto', '' + item.ID);
+            }
+          }
+          for (let i = 0; i < listFNCCONREP.length; i++) {
+            const item = listFNCCONREP[i];
+            if (
+              item.QUESTIONCODE ==  QuestionSexAndRepHealthPersonCodes.LugarAtencionUltimoParto &&
+              item.NOMBRE.includes('No aplica')
+            ) {
+              setValue('LugarAtencionUltimoParto', '' + item.ID);
+            }
+          }
+          for (let i = 0; i < listFNCCONREP.length; i++) {
+            const item = listFNCCONREP[i];
+            if (
+              item.QUESTIONCODE ==  QuestionSexAndRepHealthPersonCodes.LugarAtencionUltimoParto &&
+              item.NOMBRE.includes('No aplica')
+            ) {
+              setValue('LugarAtencionUltimoParto', '' + item.ID);
+            }
+          }
+        }
+      }
+    }
+  }
   return (
     <KeyboardAwareScrollView>
       <View style={styles.container}>
@@ -161,6 +246,7 @@ const _LastPregnancyForm = (props: any) => {
               error={errors.TerminacionGestacion}
               onChange={(value: any) => {
                 onChange(value);
+                changeTerminacion();
               }}
               selectedValue={value}
               items={getPicker(
@@ -178,11 +264,9 @@ const _LastPregnancyForm = (props: any) => {
               error={errors.FechaTerminacionDeLaGestacion}
               onChange={(value: any) => {
                 onChange(value);
-                if (value) {
-                  // props.saveFNCSALREPPropiety('PARTO_ULTIMO', value);
-                }
+                setvDate(value);
               }}
-              value={value}
+              value={vDate}
             />
           )}
           name="FechaTerminacionDeLaGestacion"
@@ -191,7 +275,7 @@ const _LastPregnancyForm = (props: any) => {
           control={control}
           render={({onChange, value}) => (
             <BPicker
-              enabled={true}
+              enabled={enableFinishPergancy}
               label={getLabel(
                 QuestionSexAndRepHealthPersonCodes.PersonaQueAtendioUltimoParto,
               )}
@@ -211,6 +295,7 @@ const _LastPregnancyForm = (props: any) => {
           control={control}
           render={({onChange, value}) => (
             <BPicker
+              enabled={enableFinishPergancy}
               label={getLabel(
                 QuestionSexAndRepHealthPersonCodes.LugarAtencionUltimoParto,
               )}
@@ -226,27 +311,28 @@ const _LastPregnancyForm = (props: any) => {
           )}
           name="LugarAtencionUltimoParto"
         />
-
-        <Controller
-          control={control}
-          render={({onChange, onBlur, value}) => (
-            <BMultiSelect
-              label={getLabel(
-                QuestionSexAndRepHealthPersonCodes.ComplicacionAtencionUltimoParto,
-              )}
-              onBlur={onBlur}
-              error={errors.ComplicacionAtencionUltimoParto}
-              onChange={(values: any) => {
-                onChange(values);
-              }}
-              selectedItems={value}
-              items={getMultiselect(
-                QuestionSexAndRepHealthPersonCodes.ComplicacionAtencionUltimoParto,
-              )}
-            />
-          )}
-          name="ComplicacionAtencionUltimoParto"
-        />
+        {enableFinishPergancy ? (
+          <Controller
+            control={control}
+            render={({onChange, onBlur, value}) => (
+              <BMultiSelect
+                label={getLabel(
+                  QuestionSexAndRepHealthPersonCodes.ComplicacionAtencionUltimoParto,
+                )}
+                onBlur={onBlur}
+                error={errors.ComplicacionAtencionUltimoParto}
+                onChange={(values: any) => {
+                  onChange(values);
+                }}
+                selectedItems={value}
+                items={getMultiselect(
+                  QuestionSexAndRepHealthPersonCodes.ComplicacionAtencionUltimoParto,
+                )}
+              />
+            )}
+            name="ComplicacionAtencionUltimoParto"
+          />
+        ) : null}
         <ButtonAction
           onAccept={handleSubmit(onSubmit)}
           onCancel={() => navigation.goBack()}
@@ -297,6 +383,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (store: any) => {
   return {
     FNCSALREP: store.sarhealthperson.FNCSALREP,
+    FNCPERSON: store.person.FNCPERSON,
   };
 };
 export default connect(mapStateToProps, null)(_LastPregnancyForm);
