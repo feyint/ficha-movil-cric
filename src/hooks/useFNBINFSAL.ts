@@ -67,8 +67,8 @@ export function useFNBINFSAL() {
   }
   async function createFNBINFSAL(item: FNBINFSAL) {
     setLoading(true);
-    let statement = `INSERT INTO {0} 
-            (FNCPERSON_ID) 
+    let statement = `INSERT INTO {0}
+            (FNCPERSON_ID)
             VALUES ('${item.FNCPERSON_ID}');`;
     return await database
       .executeQuery('FNBINFSAL', statement)
@@ -84,27 +84,96 @@ export function useFNBINFSAL() {
   async function updateFNBINFSAL(item: FNBINFSAL): Promise<void> {
     setLoading(true);
     let statement = `UPDATE {0}  SET
-            TALLA=${item.TALLA ? item.TALLA : null}, 
-            PESO=${item.PESO ? item.PESO : null}, 
-            TA_SISTOLICA=${item.TA_SISTOLICA ? item.TA_SISTOLICA : null}, 
-            TA_DIASTOLICA=${item.TA_DIASTOLICA ? item.TA_DIASTOLICA : null}, 
-            USO_PROTESIS=${item.USO_PROTESIS ? 1 : 0}, 
-            TIEMPO_PROTESIS=${item.TIEMPO_PROTESIS ? 1 : 0}, 
-            ULTIMA_VISITA='${item.ULTIMA_VISITA ? item.ULTIMA_VISITA : ''}', 
+            TALLA=${item.TALLA ? item.TALLA : null},
+            PESO=${item.PESO ? item.PESO : null},
+            TA_SISTOLICA=${item.TA_SISTOLICA ? item.TA_SISTOLICA : null},
+            TA_DIASTOLICA=${item.TA_DIASTOLICA ? item.TA_DIASTOLICA : null},
+            USO_PROTESIS=${item.USO_PROTESIS ? 1 : 0},
+            TIEMPO_PROTESIS=${item.TIEMPO_PROTESIS ? 1 : 0},
+            ULTIMA_VISITA='${item.ULTIMA_VISITA ? item.ULTIMA_VISITA : ''}',
             FECHA_MUERTE='${item.FECHA_MUERTE ? item.FECHA_MUERTE : ''}',
-            FNCINTIMC_ID=${item.FNCINTIMC_ID ? item.FNCINTIMC_ID : null}, 
-            FNCINTTEA_ID=${item.FNCINTTEA_ID ? item.FNCINTTEA_ID : null}, 
-            ESTADO=${item.ESTADO ? item.ESTADO : 0}
+            FNCINTIMC_ID=${item.FNCINTIMC_ID ? item.FNCINTIMC_ID : null},
+            FNCINTTEA_ID=${item.FNCINTTEA_ID ? item.FNCINTTEA_ID : null},
+            ESTADO=1
             WHERE ID = ${item.ID}`;
     return await database
       .executeQuery('FNBINFSAL', statement)
       .then((results) => {
         getFNBINFSALbyID(item.ID);
+        updateEstado(item.FNCPERSON_ID);
       })
       .finally(() => {
         setLoading(false);
       });
   }
+
+  async function updateEstado(personID: any): Promise<void> {
+    setLoading(true);
+    let statement = `UPDATE {0} SET
+            ESTADO=1
+            WHERE ID = ${personID}`;
+    return await database
+      .executeQuery('FNCPERSON', statement)
+      .then((results) => {
+        getNucleos(personID);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }
+
+  async function getNucleos(personID: any): Promise<void> {
+    setLoading(true);
+    let statement = `SELECT * FROM {0}
+    INNER JOIN FNBNUCVIV_FNCPERSON ON FNBNUCVIV_FNCPERSON.FNBNUCVIV_ID = FNBNUCVIV.ID
+    WHERE FNBNUCVIV_FNCPERSON.FNCPERSON_ID = ${personID}`;
+    return await database
+      .executeQuery('FNBNUCVIV', statement)
+      .then((results) => {
+        const count = results.rows.length;
+        const items = [];
+        for (let i = 0; i < count; i++) {
+          const row = results.rows.item(i);
+          udpateNucleos(results.rows.item(i).ID);
+          udpateViviendas(results.rows.item(i).FUBUBIVIV_ID);
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }
+
+  async function udpateViviendas(FUBUBIVIV_ID: any): Promise<void> {
+
+    let statement = `UPDATE {0} SET
+    ESTADO=1
+    WHERE ID = ${FUBUBIVIV_ID}`;
+    return await database
+    .executeQuery('FUBUBIVIV', statement)
+    .then((results) => {
+    })
+    .finally(() => {
+    setLoading(false);
+    });
+
+  }
+
+  async function udpateNucleos(ID: any): Promise<void> {
+
+    let statement = `UPDATE {0} SET
+    ESTADO=1
+    WHERE ID = ${ID}`;
+    return await database
+    .executeQuery('FNBNUCVIV', statement)
+    .then((results) => {
+    })
+    .finally(() => {
+    setLoading(false);
+    });
+
+  }
+
+
   async function countEntity(): Promise<void> {
     return database.countEntity('FNBINFSAL').then(setCount);
   }

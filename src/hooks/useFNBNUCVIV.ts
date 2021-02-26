@@ -120,19 +120,19 @@ export function useFNBNUCVIV() {
   }
   async function createFNBNUCVIV(newItem: FNBNUCVIV) {
     setLoading(true);
-    let statement = `INSERT INTO {0} 
-    ( CODIGO, 
-      HUMO_CASA, 
-      RESIDUO_BOR, 
-      RESIDUO_PELIGROSO, 
-      ANIMAL_VACUNADO, 
-      ANIMAL_NOVACUNADO, 
-      RIESGO, 
-      OBSERVACION, 
-      LUGAR_COCINA, 
-      HUMO_DENTRO, 
-      ACCESO_INTERNET, 
-      FUBUBIVIV_ID) 
+    let statement = `INSERT INTO {0}
+    ( CODIGO,
+      HUMO_CASA,
+      RESIDUO_BOR,
+      RESIDUO_PELIGROSO,
+      ANIMAL_VACUNADO,
+      ANIMAL_NOVACUNADO,
+      RIESGO,
+      OBSERVACION,
+      LUGAR_COCINA,
+      HUMO_DENTRO,
+      ACCESO_INTERNET,
+      FUBUBIVIV_ID)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`;
     let params = [
       newItem.CODIGO,
@@ -208,17 +208,18 @@ export function useFNBNUCVIV() {
   async function updateFNBNUCVIV(item: FNBNUCVIV): Promise<void> {
     setLoading(true);
     let statement = `UPDATE {0}  SET
-      CODIGO = ?, 
-      HUMO_CASA= ?, 
-      RESIDUO_BOR= ?, 
-      RESIDUO_PELIGROSO= ?, 
-      ANIMAL_VACUNADO= ?, 
-      ANIMAL_NOVACUNADO= ?, 
-      RIESGO= ?, 
-      OBSERVACION= ?, 
-      LUGAR_COCINA= ?, 
-      HUMO_DENTRO= ?, 
-      ACCESO_INTERNET= ?
+      CODIGO = ?,
+      HUMO_CASA= ?,
+      RESIDUO_BOR= ?,
+      RESIDUO_PELIGROSO= ?,
+      ANIMAL_VACUNADO= ?,
+      ANIMAL_NOVACUNADO= ?,
+      RIESGO= ?,
+      OBSERVACION= ?,
+      LUGAR_COCINA= ?,
+      HUMO_DENTRO= ?,
+      ACCESO_INTERNET= ?,
+      ESTADO=1
     WHERE ID = ${item.ID}`;
     let params = [
       item.CODIGO,
@@ -237,10 +238,27 @@ export function useFNBNUCVIV() {
       .executeQuery('FNBNUCVIV', statement, params)
       .then((results) => {
         getFNBNUCVIVbyID(item.ID);
+        udpateViviendas(item.FUBUBIVIV_ID);
       })
       .finally(() => {
         setLoading(false);
       });
+  }
+
+
+  async function udpateViviendas(FUBUBIVIV_ID: any): Promise<void> {
+
+    let statement = `UPDATE {0} SET
+    ESTADO=1
+    WHERE ID = ${FUBUBIVIV_ID}`;
+    return await database
+    .executeQuery('FUBUBIVIV', statement)
+    .then((results) => {
+    })
+    .finally(() => {
+    setLoading(false);
+    });
+
   }
   async function countEntity(): Promise<void> {
     return database.countEntity('FNBNUCVIV').then(setCount);
@@ -258,9 +276,9 @@ export function useFNBNUCVIV() {
   }
   async function alreadyexistParent(FNBNUCVIV_ID: number) {
     let statement = `
-    SELECT prnt.ID FROM FNCPERSON p 
+    SELECT prnt.ID FROM FNCPERSON p
     INNER JOIN FNBNUCVIV_FNCPERSON np ON np.FNCPERSON_ID  = p.ID
-    LEFT JOIN FNCPAREN prnt ON prnt.ID = p.FNCPAREN_ID 
+    LEFT JOIN FNCPAREN prnt ON prnt.ID = p.FNCPAREN_ID
     WHERE  np .FNBNUCVIV_ID = ${FNBNUCVIV_ID} AND prnt.CODIGO = '${PersonParametersConst.fncpersonparentheadercode}'`;
     return await database
       .executeQuery('FNCPERSON', statement)
@@ -277,9 +295,9 @@ export function useFNBNUCVIV() {
   }
   async function alreadyexistConyugue(FNBNUCVIV_ID: number) {
     let statement = `
-    SELECT prnt.ID FROM FNCPERSON p 
+    SELECT prnt.ID FROM FNCPERSON p
     INNER JOIN FNBNUCVIV_FNCPERSON np ON np.FNCPERSON_ID  = p.ID
-    LEFT JOIN FNCPAREN prnt ON prnt.ID = p.FNCPAREN_ID 
+    LEFT JOIN FNCPAREN prnt ON prnt.ID = p.FNCPAREN_ID
     WHERE  np .FNBNUCVIV_ID = ${FNBNUCVIV_ID} AND prnt.CODIGO = '${PersonParametersConst.fncpersonConyugueheadercode}'`;
     return await database
       .executeQuery('FNCPERSON', statement)

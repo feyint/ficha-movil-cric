@@ -23,7 +23,7 @@ export function useFUBUBIVIV() {
   }
   async function getLastCode(FUBUBIVIVCODE: string) {
     let NEWCODIGO = '';
-    let statement = ` SELECT * FROM FUBUBIVIV 
+    let statement = ` SELECT * FROM FUBUBIVIV
     WHERE CODIGO LIKE '%${FUBUBIVIVCODE}%' ORDER BY ID DESC LIMIT 1;`;
     await database.executeQuery('FNBNUCVIV', statement).then((results) => {
       const count = results.rows.length;
@@ -89,15 +89,15 @@ export function useFUBUBIVIV() {
   }
   function getFUBUBIVIVDETAILS(_fububiviv: number) {
     let statement = `
-    SELECT ff.FUCBARVER_ID , ff.FUCZONCUI_ID,bv.FUCRESGUA_ID, tipregu.FUCTIPTER_ID, tipt.CODIGO as CODIGOTERRITORIO, re.FUCMUNICI_ID, mu.FUCDEPART_ID ,  f.*  FROM FUBUBIVIV f 
-    LEFT JOIN FUCZONCUI_FUCBARVER ff  ON ff.ID = f.FUCZONCUI_FUCBARVER_ID 
-    LEFT JOIN FUCZONCUI zc ON zc.ID = ff.FUCZONCUI_ID 
-    LEFT JOIN FUCBARVER bv ON bv.ID  = ff.FUCBARVER_ID 
-    LEFT JOIN FUCRESGUA re ON re.ID = bv.FUCRESGUA_ID 
-    LEFT JOIN FUCMUNICI mu ON mu.ID  = re.FUCMUNICI_ID 
-    LEFT JOIN FUCTIPTER_FUCRESGUA tipregu ON tipregu.FUCRESGUA_ID =  re.ID 
-    LEFT JOIN FUCTIPTER tipt ON tipt.ID  = tipregu.FUCTIPTER_ID 
-    LEFT JOIN FUCDEPART dep ON dep.ID = mu.FUCDEPART_ID 
+    SELECT ff.FUCBARVER_ID , ff.FUCZONCUI_ID,bv.FUCRESGUA_ID, tipregu.FUCTIPTER_ID, tipt.CODIGO as CODIGOTERRITORIO, re.FUCMUNICI_ID, mu.FUCDEPART_ID ,  f.*  FROM FUBUBIVIV f
+    LEFT JOIN FUCZONCUI_FUCBARVER ff  ON ff.ID = f.FUCZONCUI_FUCBARVER_ID
+    LEFT JOIN FUCZONCUI zc ON zc.ID = ff.FUCZONCUI_ID
+    LEFT JOIN FUCBARVER bv ON bv.ID  = ff.FUCBARVER_ID
+    LEFT JOIN FUCRESGUA re ON re.ID = bv.FUCRESGUA_ID
+    LEFT JOIN FUCMUNICI mu ON mu.ID  = re.FUCMUNICI_ID
+    LEFT JOIN FUCTIPTER_FUCRESGUA tipregu ON tipregu.FUCRESGUA_ID =  re.ID
+    LEFT JOIN FUCTIPTER tipt ON tipt.ID  = tipregu.FUCTIPTER_ID
+    LEFT JOIN FUCDEPART dep ON dep.ID = mu.FUCDEPART_ID
     WHERE f.ID = ${_fububiviv};`;
     database.executeQuery('FUBUBIVIV', statement).then((results) => {
       const count = results.rows.length;
@@ -130,30 +130,30 @@ export function useFUBUBIVIV() {
   }
   function search(query: string, person = false) {
     let statement = `
-    SELECT 
+    SELECT
     p.PRIMER_NOMBRE, p.SEGUNDO_NOMBRE , p.PRIMER_APELLIDO , p.SEGUNDO_APELLIDO,
     viv.DIRECCION , barver.NOMBRE as BARRIO_VEREDA, zoncui.NOMBRE as ZONA_CUIDADO, viv.*
     FROM FNCPERSON p
-    LEFT JOIN FNBNUCVIV_FNCPERSON nvp on nvp.FNCPERSON_ID = p.ID 
-    LEFT JOIN FNBNUCVIV nucviv on nucviv.ID = nvp.FNBNUCVIV_ID 
-    LEFT JOIN FUBUBIVIV viv on viv.ID  = nucviv.FUBUBIVIV_ID 
-    LEFT JOIN FUCZONCUI_FUCBARVER fbar on fbar.ID = viv.FUCZONCUI_FUCBARVER_ID 
-    LEFT JOIN  FUCBARVER barver on barver.ID  = fbar.FUCBARVER_ID  
-    LEFT JOIN FUCZONCUI zoncui on zoncui.ID = fbar.FUCZONCUI_ID 
+    LEFT JOIN FNBNUCVIV_FNCPERSON nvp on nvp.FNCPERSON_ID = p.ID
+    LEFT JOIN FNBNUCVIV nucviv on nucviv.ID = nvp.FNBNUCVIV_ID
+    LEFT JOIN FUBUBIVIV viv on viv.ID  = nucviv.FUBUBIVIV_ID
+    LEFT JOIN FUCZONCUI_FUCBARVER fbar on fbar.ID = viv.FUCZONCUI_FUCBARVER_ID
+    LEFT JOIN  FUCBARVER barver on barver.ID  = fbar.FUCBARVER_ID
+    LEFT JOIN FUCZONCUI zoncui on zoncui.ID = fbar.FUCZONCUI_ID
     where p.IDENTIFICACION  LIKE '%${query}%';`;
     if (!person) {
       statement = `
-      SELECT bv.NOMBRE as barver, dep.NOMBRE as Dept, mu.NOMBRE as Muni , tipt.CODIGO as CODIGOTERRITORIO, f.*  FROM FUBUBIVIV f 
-      LEFT JOIN FUCZONCUI_FUCBARVER ff  ON ff.ID = f.FUCZONCUI_FUCBARVER_ID 
-      LEFT JOIN FUCZONCUI zc ON zc.ID = ff.FUCZONCUI_ID 	
-      LEFT JOIN FUCBARVER bv ON bv.ID  = ff.FUCBARVER_ID 
-      LEFT JOIN FUCRESGUA re ON re.ID = bv.FUCRESGUA_ID 
-      LEFT JOIN FUCMUNICI mu ON mu.ID  = re.FUCMUNICI_ID 
-      LEFT JOIN FUCTIPTER_FUCRESGUA tipregu ON tipregu.FUCRESGUA_ID =  re.ID 
-      LEFT JOIN FUCTIPTER tipt ON tipt.ID  = tipregu.FUCTIPTER_ID 
-      LEFT JOIN FUCDEPART dep ON dep.ID = mu.FUCDEPART_ID 
-      WHERE f.DIRECCION LIKE '%${query}%' 
-      OR bv.NOMBRE  like '%${query}%' or f.CODIGO like '%${query}%' 
+      SELECT bv.NOMBRE as barver, dep.NOMBRE as Dept, mu.NOMBRE as Muni , tipt.CODIGO as CODIGOTERRITORIO, f.*  FROM FUBUBIVIV f
+      LEFT JOIN FUCZONCUI_FUCBARVER ff  ON ff.ID = f.FUCZONCUI_FUCBARVER_ID
+      LEFT JOIN FUCZONCUI zc ON zc.ID = ff.FUCZONCUI_ID
+      LEFT JOIN FUCBARVER bv ON bv.ID  = ff.FUCBARVER_ID
+      LEFT JOIN FUCRESGUA re ON re.ID = bv.FUCRESGUA_ID
+      LEFT JOIN FUCMUNICI mu ON mu.ID  = re.FUCMUNICI_ID
+      LEFT JOIN FUCTIPTER_FUCRESGUA tipregu ON tipregu.FUCRESGUA_ID =  re.ID
+      LEFT JOIN FUCTIPTER tipt ON tipt.ID  = tipregu.FUCTIPTER_ID
+      LEFT JOIN FUCDEPART dep ON dep.ID = mu.FUCDEPART_ID
+      WHERE f.DIRECCION LIKE '%${query}%'
+      OR bv.NOMBRE  like '%${query}%' or f.CODIGO like '%${query}%'
       or dep.NOMBRE like '%${query}%' or mu.NOMBRE  like '%${query}%'
       `;
     }
@@ -254,8 +254,8 @@ export function useFUBUBIVIV() {
     });
   }
   async function createFUBUBIVIV(newItem: FUBUBIVIV): Promise<void> {
-    let statement = `INSERT INTO {0} 
-    (CODIGO, DIRECCION, COORDENADA_X, COORDENADA_Y, FVBENCUES_ID, FUCZONCUI_FUCBARVER_ID) 
+    let statement = `INSERT INTO {0}
+    (CODIGO, DIRECCION, COORDENADA_X, COORDENADA_Y, FVBENCUES_ID, FUCZONCUI_FUCBARVER_ID)
     VALUES (?, ?, ?, ?, ?, ?);`;
     let params = [
       newItem.CODIGO,
@@ -275,11 +275,12 @@ export function useFUBUBIVIV() {
   async function updateFUBUBIVIV(item: FUBUBIVIV): Promise<void> {
     setLoading(true);
     let statement = `UPDATE {0}  SET
-      CODIGO = ?, 
-      COORDENADA_X= ?, 
-      COORDENADA_Y= ?, 
-      DIRECCION= ?, 
-      FUCZONCUI_FUCBARVER_ID= ?
+      CODIGO = ?,
+      COORDENADA_X= ?,
+      COORDENADA_Y= ?,
+      DIRECCION= ?,
+      FUCZONCUI_FUCBARVER_ID= ?,
+      ESTADO=1
     WHERE ID = ${item.ID}`;
     let params = [
       item.CODIGO,
@@ -321,7 +322,7 @@ export function useFUBUBIVIV() {
     getLastCode,
     getFUBUBIVIVDETAILS,
     createFUBUBIVIV,
-    updateFUBUBIVIV,
+     FUBUBIVIV,
     deleteFUBUBIVIV,
     selectFUBUBIVIV,
     getAllFUBUBIVIV,
