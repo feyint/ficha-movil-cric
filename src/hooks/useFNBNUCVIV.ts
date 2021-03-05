@@ -1,9 +1,10 @@
 import {useState, useEffect} from 'react';
-import { useFNBNUCVIV_FVCCONVIV, useFVCCONVIV } from '.';
 import {useDatabase} from '../context/DatabaseContext';
 import { QuestionFamilyCodes } from '../core/utils/HousingTypes';
 import {PersonParametersConst} from '../core/utils/SystemParameters';
 import {FNBNUCVIV, FUBUBIVIVDETAILS, FVCCONVIV} from '../types';
+import { useFNBNUCVIV_FVCCONVIV } from './useFNBNUCVIV_FVCCONVIV';
+import { useFVCCONVIV } from './useFVCCONVIV';
 
 export function useFNBNUCVIV() {
   const [listFNBNUCVIV, setItem] = useState<FNBNUCVIV[]>([]);

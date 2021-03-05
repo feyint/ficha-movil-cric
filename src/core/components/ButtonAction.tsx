@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import {withTheme} from 'react-native-paper';
 import {Alert, BackHandler, StyleSheet, View} from 'react-native';
-import {BButton} from '.';
 import {theme} from '../style/theme';
+import { BButton } from '.';
 interface Props {
   theme: any;
   onCancel: any;

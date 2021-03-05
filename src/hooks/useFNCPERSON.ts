@@ -1,7 +1,8 @@
 import {useState, useEffect} from 'react';
-import {useFNBINFSAL, useFNBNUCVIV_FNCPERSON} from '.';
 import {useDatabase} from '../context/DatabaseContext';
 import {FNCPERSON, FUBUBIVIVDETAILS, FNBINFSAL, FNCSALREP} from '../types';
+import { useFNBINFSAL } from './useFNBINFSAL';
+import { useFNBNUCVIV_FNCPERSON } from './useFNBNUCVIV_FNCPERSON';
 import { useFNCSALREP } from './useFNCSALREP';
 
 export function useFNCPERSON() {

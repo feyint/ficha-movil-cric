@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {HelperText, TextInput} from 'react-native-paper';
 import {StyleSheet, View} from 'react-native';
-import { BError } from '.';
+import BError from './BError';
 
 interface Props {
   label?: string;

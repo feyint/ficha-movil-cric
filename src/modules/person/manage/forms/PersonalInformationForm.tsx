@@ -134,6 +134,7 @@ const _PersonalInformationForm = (props: any) => {
         listFNCPAREN.forEach((item) => {
           if (item.CODIGO == PersonParametersConst.parentCode) {
             setParentezcoGrupoFamiliar('' + item.ID);
+            setValue('parentezcoGrupoFamiliar', '' + item.ID);
           }
         });
       }
